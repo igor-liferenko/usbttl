@@ -1,0 +1,2 @@
+cp -r LUFA ~/usbttl/
+cp -r Projects/USBtoSerial/* ~/usbttl/
