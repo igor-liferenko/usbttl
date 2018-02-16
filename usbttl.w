@@ -14,9 +14,6 @@ setup of all components and the main program loop.
 @<Type definitions@>@;
 @<Function prototypes@>@;
 @<Global variables@>@;
-@<XXX structure@>@;
-@<YYY structure@>@;
-@<ZZZ structure@>@;
 
 int main(void)
 {
@@ -102,28 +99,12 @@ Let's have a look at xxx.
 passed to all CDC Class driver functions, so that multiple instances of the same class
 within a device can be differentiated from one another.
 
-@<XXX structure@>=
-USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface =
-{
-  {
-	INTERFACE_ID_CDC_CCI,
-	{
-	  CDC_TX_EPADDR,
-	  CDC_TXRX_EPSIZE,
-	  1,
-	},
-	{
-	  CDC_RX_EPADDR,
-	  CDC_TXRX_EPSIZE,
-	  1,
-	},
-	{
-	  CDC_NOTIFICATION_EPADDR,
-	  CDC_NOTIFICATION_EPSIZE,
-	  1,
-	},
-  },
-};
+@<Global...@>=
+USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface = {@|
+INTERFACE_ID_CDC_CCI,@|
+{CDC_TX_EPADDR, CDC_TXRX_EPSIZE, 1},@|
+{CDC_RX_EPADDR, CDC_TXRX_EPSIZE, 1},@|
+{CDC_NOTIFICATION_EPADDR, CDC_NOTIFICATION_EPSIZE, 1}};
 
 
 @ Configures the board hardware and chip peripherals for the demo's functionality.
@@ -285,23 +266,21 @@ number of device configurations. Let's have a look at xxx.
 @ The descriptor is read out by the USB host when the enumeration
 process begins.
 
-@<YYY structure@>=
-const USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
-{@|
-  {sizeof(USB_Descriptor_Device_t), DTYPE_Device},@|
-  VERSION_BCD(1,1,0),@|
-  CDC_CSCP_CDCClass,@|
-  CDC_CSCP_NoSpecificSubclass,@|
-  CDC_CSCP_NoSpecificProtocol,@|
-  FIXED_CONTROL_ENDPOINT_SIZE,@|
-  0x03EB,@|
-  0x204B,@|
-  VERSION_BCD(0,0,1),@|
-  STRING_ID_Manufacturer,@|
-  STRING_ID_Product,@|
-  USE_INTERNAL_SERIAL,@|
-  FIXED_NUM_CONFIGURATIONS
-};
+@<Global...@>=
+const USB_Descriptor_Device_t PROGMEM DeviceDescriptor = {@|
+{sizeof (USB_Descriptor_Device_t), DTYPE_Device},@|
+VERSION_BCD(1,1,0),@|
+CDC_CSCP_CDCClass,@|
+CDC_CSCP_NoSpecificSubclass,@|
+CDC_CSCP_NoSpecificProtocol,@|
+FIXED_CONTROL_ENDPOINT_SIZE,@|
+0x03EB,@|
+0x204B,@|
+VERSION_BCD(0,0,1),@|
+STRING_ID_Manufacturer,@|
+STRING_ID_Product,@|
+USE_INTERNAL_SERIAL,@|
+FIXED_NUM_CONFIGURATIONS};
 
 @ Configuration descriptor structure. This descriptor, located in FLASH memory, describes the usage
 of the device in one of its supported configurations, including information about any device interfaces
@@ -322,76 +301,65 @@ dpoint */
 @d CDC_NOTIFICATION_EPSIZE 8 /* size in bytes of the CDC device-to-host notification IN endpoint */
 @d CDC_TXRX_EPSIZE 16 /* size in bytes of the CDC data IN and OUT endpoints */
 
-@<ZZZ structure@>=
-const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
-{
-  {
-	{ sizeof(USB_Descriptor_Configuration_Header_t), DTYPE_Configuration },
-	sizeof(USB_Descriptor_Configuration_t),
-	2,
-	1,
-	NO_DESCRIPTOR,
-	(USB_CONFIG_ATTR_RESERVED | USB_CONFIG_ATTR_SELFPOWERED),
-	USB_CONFIG_POWER_MA(100)
-  },
-  {
-    { sizeof(USB_Descriptor_Interface_t), DTYPE_Interface },
-    INTERFACE_ID_CDC_CCI,
-    0,
-    1,
-    CDC_CSCP_CDCClass,
-    CDC_CSCP_ACMSubclass,
-    CDC_CSCP_ATCommandProtocol,
-    NO_DESCRIPTOR
-  },
-  {
-    { sizeof(USB_CDC_Descriptor_FunctionalHeader_t), DTYPE_CSInterface },
-    CDC_DSUBTYPE_CSInterface_Header,
-    VERSION_BCD(1,1,0),
-  },
-  {
-    { sizeof(USB_CDC_Descriptor_FunctionalACM_t), DTYPE_CSInterface },
-    CDC_DSUBTYPE_CSInterface_ACM,
-    0x06,
-  },
-  {
-    { sizeof(USB_CDC_Descriptor_FunctionalUnion_t), DTYPE_CSInterface },
-    CDC_DSUBTYPE_CSInterface_Union,
-    INTERFACE_ID_CDC_CCI,
-    INTERFACE_ID_CDC_DCI,
-  },
-  {
-    { sizeof(USB_Descriptor_Endpoint_t), DTYPE_Endpoint },
-    CDC_NOTIFICATION_EPADDR,
-    (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
-    CDC_NOTIFICATION_EPSIZE,
-    0xFF
-  },
-  {
-    { sizeof(USB_Descriptor_Interface_t), DTYPE_Interface },
-    INTERFACE_ID_CDC_DCI,
-    0,
-    2,
-    CDC_CSCP_CDCDataClass,
-    CDC_CSCP_NoDataSubclass,
-    CDC_CSCP_NoDataProtocol,
-    NO_DESCRIPTOR
-  },
-  {
-    { sizeof(USB_Descriptor_Endpoint_t), DTYPE_Endpoint },
-    CDC_RX_EPADDR,
-    (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
-    CDC_TXRX_EPSIZE,
-    0x05
-  },
-  {
-    { sizeof(USB_Descriptor_Endpoint_t), DTYPE_Endpoint },
-    CDC_TX_EPADDR,
-    (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
-    CDC_TXRX_EPSIZE,
-    0x05
-  }
-};
+@<Global...@>=
+const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor = {@|
+{@|
+  {sizeof (USB_Descriptor_Configuration_Header_t), DTYPE_Configuration},@|
+  sizeof (USB_Descriptor_Configuration_t),@|
+  2,@|
+  1,@|
+  NO_DESCRIPTOR,@|
+  (USB_CONFIG_ATTR_RESERVED | USB_CONFIG_ATTR_SELFPOWERED),@|
+  USB_CONFIG_POWER_MA(100)},@|
+{@|
+  {sizeof (USB_Descriptor_Interface_t), DTYPE_Interface},@|
+  INTERFACE_ID_CDC_CCI,@|
+  0,@|
+  1,@|
+  CDC_CSCP_CDCClass,@|
+  CDC_CSCP_ACMSubclass,@|
+  CDC_CSCP_ATCommandProtocol,@|
+  NO_DESCRIPTOR},@|
+{@|
+  {sizeof (USB_CDC_Descriptor_FunctionalHeader_t), DTYPE_CSInterface},@|
+  CDC_DSUBTYPE_CSInterface_Header,@|
+  VERSION_BCD(1,1,0)},@|
+{@|
+  {sizeof (USB_CDC_Descriptor_FunctionalACM_t), DTYPE_CSInterface},@|
+  CDC_DSUBTYPE_CSInterface_ACM,@|
+  0x06},@|
+{@|
+  {sizeof (USB_CDC_Descriptor_FunctionalUnion_t), DTYPE_CSInterface},@|
+  CDC_DSUBTYPE_CSInterface_Union,@|
+  INTERFACE_ID_CDC_CCI,@|
+  INTERFACE_ID_CDC_DCI},@|
+{@|
+  {sizeof (USB_Descriptor_Endpoint_t), DTYPE_Endpoint},@|
+  CDC_NOTIFICATION_EPADDR,@|
+  (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),@|
+  CDC_NOTIFICATION_EPSIZE,@|
+  0xFF},@|
+{@|
+  {sizeof (USB_Descriptor_Interface_t), DTYPE_Interface},@|
+  INTERFACE_ID_CDC_DCI,@|
+  0,@|
+  2,@|
+  CDC_CSCP_CDCDataClass,@|
+  CDC_CSCP_NoDataSubclass,@|
+  CDC_CSCP_NoDataProtocol,@|
+  NO_DESCRIPTOR},
+{@|
+  {sizeof (USB_Descriptor_Endpoint_t), DTYPE_Endpoint},@|
+  CDC_RX_EPADDR,@|
+  (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),@|
+  CDC_TXRX_EPSIZE,@|
+  0x05},@|
+{@|
+  {sizeof (USB_Descriptor_Endpoint_t), DTYPE_Endpoint},@|
+  CDC_TX_EPADDR,@|
+  (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),@|
+  CDC_TXRX_EPSIZE,@|
+  0x05}};
 
 @ Language descriptor structure. This descriptor, located in FLASH memory, is returned when the host requests
 the string descriptor with index 0 (the first index). It is actually an array of 16-bit integers, which indicate
