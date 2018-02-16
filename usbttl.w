@@ -124,6 +124,8 @@ CDCInterfaceInfo parameter. This stores each CDC interface's configuration and s
 information.
 
 @s USB_ClassInfo_CDC_Device_t int
+@s uint8_t int
+@s uint16_t int
 
 @(/dev/null@>=
 typedef struct {
@@ -343,6 +345,8 @@ names.
 Note, that egardless of CPU architecture, these values should be stored as little endian.
 
 @s USB_Descriptor_Device_t int
+@s uint8_t int
+@s uint16_t int
 
 @(/dev/null@>=
 typedef struct {
@@ -403,6 +407,7 @@ sub-descriptors which
 	  vary between devices, and which describe the device's usage to the host.
 	
 @s USB_Descriptor_Configuration_t int
+@s USB_Descriptor_Configuration_Header_t int
 
 @(/dev/null@>=
 		typedef struct
