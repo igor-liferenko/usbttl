@@ -90,37 +90,38 @@ uint8_t      USBtoUSART_Buffer_Data[128]; /* underlying data buffer for |USBtoUS
 RingBuffer_t USARTtoUSB_Buffer; /* circular buffer to hold data from the serial port before it is sent to the host */
 uint8_t      USARTtoUSB_Buffer_Data[128]; /* underlying data buffer for |USARTtoUSB_Buffer|, where the stored bytes are located */
 
-@ LUFA CDC Class driver interface configuration and state information. This structure is
-passed to all CDC Class driver functions, so that multiple instances of the same class
-within a device can be differentiated from one another.
+@ LUFA CDC Class driver interface configuration and state information.
+Let's have a look at xxx.
 
 @s USB_ClassInfo_CDC_Device_t int
+
+@(/dev/null@>=
+
+@ This structure is
+passed to all CDC Class driver functions, so that multiple instances of the same class
+within a device can be differentiated from one another.
 
 @<XXX structure@>=
 USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface =
 {
-	.Config =
-		{
-			.ControlInterfaceNumber         = INTERFACE_ID_CDC_CCI,
-			.DataINEndpoint                 =
-				{
-					.Address                = CDC_TX_EPADDR,
-					.Size                   = CDC_TXRX_EPSIZE,
-					.Banks                  = 1,
-				},
-			.DataOUTEndpoint                =
-				{
-					.Address                = CDC_RX_EPADDR,
-					.Size                   = CDC_TXRX_EPSIZE,
-					.Banks                  = 1,
-				},
-			.NotificationEndpoint           =
-				{
-					.Address                = CDC_NOTIFICATION_EPADDR,
-					.Size                   = CDC_NOTIFICATION_EPSIZE,
-					.Banks                  = 1,
-				},
-		},
+  {
+	INTERFACE_ID_CDC_CCI,
+	{
+	  CDC_TX_EPADDR,
+	  CDC_TXRX_EPSIZE,
+	  1,
+	},
+	{
+	  CDC_RX_EPADDR,
+	  CDC_TXRX_EPSIZE,
+	  1,
+	},
+	{
+	  CDC_NOTIFICATION_EPADDR,
+	  CDC_NOTIFICATION_EPSIZE,
+	  1,
+	},
+  },
 };
 
 
@@ -274,37 +275,43 @@ the device's capabilities and functions.
 
 @ Device descriptor structure. This descriptor, located in FLASH memory, describes the overall
 device characteristics, including the supported USB version, control endpoint size and the
-number of device configurations. The descriptor is read out by the USB host when the enumeration
-process begins.
+number of device configurations. Let's have a look at xxx.
 
 @s USB_Descriptor_Device_t int
+
+@(/dev/null@>=
+
+@ The descriptor is read out by the USB host when the enumeration
+process begins.
 
 @<YYY structure@>=
 const USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 {@|
-  .@t\kern-1.2pt@>Header = {.Size = sizeof(USB_Descriptor_Device_t), .Type = DTYPE_Device},@|
-
-  .USBSpecification       = VERSION_BCD(1,1,0),@|
-  .Class                  = CDC_CSCP_CDCClass,@|
-  .SubClass               = CDC_CSCP_NoSpecificSubclass,@|
-  .Protocol               = CDC_CSCP_NoSpecificProtocol,@|
-
-  .Endpoint0Size          = FIXED_CONTROL_ENDPOINT_SIZE,@|
-
-  .VendorID               = 0x03EB,@|
-  .ProductID              = 0x204B,@|
-  .ReleaseNumber          = VERSION_BCD(0,0,1),@|
-
-  .ManufacturerStrIndex   = STRING_ID_Manufacturer,@|
-  .ProductStrIndex        = STRING_ID_Product,@|
-  .SerialNumStrIndex      = USE_INTERNAL_SERIAL,@|
-
-  .NumberOfConfigurations = FIXED_NUM_CONFIGURATIONS
+  {sizeof(USB_Descriptor_Device_t), DTYPE_Device},@|
+  VERSION_BCD(1,1,0),@|
+  CDC_CSCP_CDCClass,@|
+  CDC_CSCP_NoSpecificSubclass,@|
+  CDC_CSCP_NoSpecificProtocol,@|
+  FIXED_CONTROL_ENDPOINT_SIZE,@|
+  0x03EB,@|
+  0x204B,@|
+  VERSION_BCD(0,0,1),@|
+  STRING_ID_Manufacturer,@|
+  STRING_ID_Product,@|
+  USE_INTERNAL_SERIAL,@|
+  FIXED_NUM_CONFIGURATIONS
 };
 
 @ Configuration descriptor structure. This descriptor, located in FLASH memory, describes the usage
 of the device in one of its supported configurations, including information about any device interfaces
-and endpoints. The descriptor is read out by the USB host during the enumeration process when selecting
+and endpoints.
+Let's have a look at xxx.
+
+@s USB_Descriptor_Configuration_t int
+
+@(/dev/null@>=
+
+@ The descriptor is read out by the USB host during the enumeration process when selecting
 a configuration so that the host may correctly communicate with the USB device.
 
 @d CDC_NOTIFICATION_EPADDR (ENDPOINT_DIR_IN  | 2) /* endpoint address of the CDC device-to-host notification IN en
@@ -314,112 +321,75 @@ dpoint */
 @d CDC_NOTIFICATION_EPSIZE 8 /* size in bytes of the CDC device-to-host notification IN endpoint */
 @d CDC_TXRX_EPSIZE 16 /* size in bytes of the CDC data IN and OUT endpoints */
 
-@s USB_Descriptor_Configuration_t int
-
 @<ZZZ structure@>=
 const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 {
-  .Config =
-	{
-		.Header = {.Size = sizeof(USB_Descriptor_Configuration_Header_t), .Type = DTYPE_Configuration},
-
-		.TotalConfigurationSize = sizeof(USB_Descriptor_Configuration_t),
-		.TotalInterfaces        = 2,
-
-		.ConfigurationNumber    = 1,
-		.ConfigurationStrIndex  = NO_DESCRIPTOR,
-
-		.ConfigAttributes       = (USB_CONFIG_ATTR_RESERVED | USB_CONFIG_ATTR_SELFPOWERED),
-
-		.MaxPowerConsumption    = USB_CONFIG_POWER_MA(100)
-	},
-
-  .CDC_CCI_Interface =
-	{
-		.Header                 = {.Size = sizeof(USB_Descriptor_Interface_t), .Type = DTYPE_Interface},
-
-		.InterfaceNumber        = INTERFACE_ID_CDC_CCI,
-		.AlternateSetting       = 0,
-
-		.TotalEndpoints         = 1,
-
-		.Class                  = CDC_CSCP_CDCClass,
-		.SubClass               = CDC_CSCP_ACMSubclass,
-		.Protocol               = CDC_CSCP_ATCommandProtocol,
-
-		.InterfaceStrIndex      = NO_DESCRIPTOR
-	},
-
-  .CDC_Functional_Header =
-	{
-		.Header = {.Size = sizeof(USB_CDC_Descriptor_FunctionalHeader_t), .Type = DTYPE_CSInterface},
-		.Subtype                = CDC_DSUBTYPE_CSInterface_Header,
-
-		.CDCSpecification       = VERSION_BCD(1,1,0),
-	},
-
-  .CDC_Functional_ACM =
-	{
-		.Header = {.Size = sizeof(USB_CDC_Descriptor_FunctionalACM_t), .Type = DTYPE_CSInterface},
-		.Subtype                = CDC_DSUBTYPE_CSInterface_ACM,
-
-		.Capabilities           = 0x06,
-	},
-
-  .CDC_Functional_Union =
-	{
-		.Header = {.Size = sizeof(USB_CDC_Descriptor_FunctionalUnion_t), .Type = DTYPE_CSInterface},
-		.Subtype                = CDC_DSUBTYPE_CSInterface_Union,
-
-		.MasterInterfaceNumber  = INTERFACE_ID_CDC_CCI,
-		.SlaveInterfaceNumber   = INTERFACE_ID_CDC_DCI,
-	},
-
-  .CDC_NotificationEndpoint =
-	{
-		.Header                 = {.Size = sizeof(USB_Descriptor_Endpoint_t), .Type = DTYPE_Endpoint},
-
-		.EndpointAddress        = CDC_NOTIFICATION_EPADDR,
-		.Attributes             = (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
-		.EndpointSize           = CDC_NOTIFICATION_EPSIZE,
-		.PollingIntervalMS      = 0xFF
-	},
-
-  .CDC_DCI_Interface =
-	{
-		.Header                 = {.Size = sizeof(USB_Descriptor_Interface_t), .Type = DTYPE_Interface},
-
-		.InterfaceNumber        = INTERFACE_ID_CDC_DCI,
-		.AlternateSetting       = 0,
-
-		.TotalEndpoints         = 2,
-
-		.Class                  = CDC_CSCP_CDCDataClass,
-		.SubClass               = CDC_CSCP_NoDataSubclass,
-		.Protocol               = CDC_CSCP_NoDataProtocol,
-
-		.InterfaceStrIndex      = NO_DESCRIPTOR
-	},
-
-  .CDC_DataOutEndpoint =
-	{
-		.Header                 = {.Size = sizeof(USB_Descriptor_Endpoint_t), .Type = DTYPE_Endpoint},
-
-		.EndpointAddress        = CDC_RX_EPADDR,
-		.Attributes             = (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
-		.EndpointSize           = CDC_TXRX_EPSIZE,
-		.PollingIntervalMS      = 0x05
-	},
-
-  .CDC_DataInEndpoint =
-	{
-		.Header                 = {.Size = sizeof(USB_Descriptor_Endpoint_t), .Type = DTYPE_Endpoint},
-
-		.EndpointAddress        = CDC_TX_EPADDR,
-		.Attributes             = (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
-		.EndpointSize           = CDC_TXRX_EPSIZE,
-		.PollingIntervalMS      = 0x05
-	}
+  {
+	{ sizeof(USB_Descriptor_Configuration_Header_t), DTYPE_Configuration },
+	sizeof(USB_Descriptor_Configuration_t),
+	2,
+	1,
+	NO_DESCRIPTOR,
+	(USB_CONFIG_ATTR_RESERVED | USB_CONFIG_ATTR_SELFPOWERED),
+	USB_CONFIG_POWER_MA(100)
+  },
+  {
+    { sizeof(USB_Descriptor_Interface_t), DTYPE_Interface },
+    INTERFACE_ID_CDC_CCI,
+    0,
+    1,
+    CDC_CSCP_CDCClass,
+    CDC_CSCP_ACMSubclass,
+    CDC_CSCP_ATCommandProtocol,
+    NO_DESCRIPTOR
+  },
+  {
+    { sizeof(USB_CDC_Descriptor_FunctionalHeader_t), DTYPE_CSInterface },
+    CDC_DSUBTYPE_CSInterface_Header,
+    VERSION_BCD(1,1,0),
+  },
+  {
+    { sizeof(USB_CDC_Descriptor_FunctionalACM_t), DTYPE_CSInterface },
+    CDC_DSUBTYPE_CSInterface_ACM,
+    0x06,
+  },
+  {
+    { sizeof(USB_CDC_Descriptor_FunctionalUnion_t), DTYPE_CSInterface },
+    CDC_DSUBTYPE_CSInterface_Union,
+    INTERFACE_ID_CDC_CCI,
+    INTERFACE_ID_CDC_DCI,
+  },
+  {
+    { sizeof(USB_Descriptor_Endpoint_t), DTYPE_Endpoint },
+    CDC_NOTIFICATION_EPADDR,
+    (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
+    CDC_NOTIFICATION_EPSIZE,
+    0xFF
+  },
+  {
+    { sizeof(USB_Descriptor_Interface_t), DTYPE_Interface },
+    INTERFACE_ID_CDC_DCI,
+    0,
+    2,
+    CDC_CSCP_CDCDataClass,
+    CDC_CSCP_NoDataSubclass,
+    CDC_CSCP_NoDataProtocol,
+    NO_DESCRIPTOR
+  },
+  {
+    { sizeof(USB_Descriptor_Endpoint_t), DTYPE_Endpoint },
+    CDC_RX_EPADDR,
+    (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
+    CDC_TXRX_EPSIZE,
+    0x05
+  },
+  {
+    { sizeof(USB_Descriptor_Endpoint_t), DTYPE_Endpoint },
+    CDC_TX_EPADDR,
+    (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
+    CDC_TXRX_EPSIZE,
+    0x05
+  }
 };
 
 @ Language descriptor structure. This descriptor, located in FLASH memory, is returned when the host requests
