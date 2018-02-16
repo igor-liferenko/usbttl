@@ -1,4 +1,5 @@
 TODO: put comments after
+TODO: see how big structures are formatted in mmix and do like there
 
 @s uint8_t int
 @s int16_t int
