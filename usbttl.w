@@ -282,7 +282,7 @@ process begins.
 @<YYY structure@>=
 const USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 {@|
-  .Header = {.Size = sizeof(USB_Descriptor_Device_t), .Type = DTYPE_Device},@|
+  .@t\kern-1.2pt@>Header = {.Size = sizeof(USB_Descriptor_Device_t), .Type = DTYPE_Device},@|
 
   .USBSpecification       = VERSION_BCD(1,1,0),@|
   .Class                  = CDC_CSCP_CDCClass,@|
