@@ -3,9 +3,12 @@ setup of all components and the main program loop.
 
 @c
 @<Includes@>@;
+@<Type definitions@>@;
 @<Function prototypes@>@;
 @<Global variables@>@;
 @<XXX structure@>@;
+@<YYY structure@>@;
+@<ZZZ structure@>@;
 
 int main(void)
 {

@@ -2,17 +2,12 @@
 computer-readable structures which the host requests upon device enumeration, to determine
 the device's capabilities and functions.
 
-@c
-@<Includes@>@;
-@<Type definitions@>@;
-@<Function prototypes@>@;
-
 @ Device descriptor structure. This descriptor, located in FLASH memory, describes the overall
 device characteristics, including the supported USB version, control endpoint size and the
 number of device configurations. The descriptor is read out by the USB host when the enumeration
 process begins.
 
-@c
+@<YYY structure@>=
 const USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 {
 	.Header                 = {.Size = sizeof(USB_Descriptor_Device_t), .Type = DTYPE_Device},
@@ -47,7 +42,7 @@ dpoint */
 @d CDC_NOTIFICATION_EPSIZE 8 /* size in bytes of the CDC device-to-host notification IN endpoint */
 @d CDC_TXRX_EPSIZE 16 /* size in bytes of the CDC data IN and OUT endpoints */
 
-@c
+@<ZZZ structure@>=
 const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 {
   .Config =
@@ -157,21 +152,21 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 the string descriptor with index 0 (the first index). It is actually an array of 16-bit integers, which indicate
 via the language ID table available at USB.org what languages the device supports for its string descriptors.
 
-@c
+@<Global...@>=
 const USB_Descriptor_String_t PROGMEM LanguageString = USB_STRING_DESCRIPTOR_ARRAY(LANGUAGE_ID_ENG);
 
 @ Manufacturer descriptor string. This is a Unicode string containing the manufacturer's details in human readable
 form, and is read out upon request by the host when the appropriate string ID is requested, listed in the Device
 Descriptor.
 
-@c
+@<Global...@>=
 const USB_Descriptor_String_t PROGMEM ManufacturerString = USB_STRING_DESCRIPTOR(L"Dean Camera");
 
 @ Product descriptor string. This is a Unicode string containing the product's details in human readable form,
 and is read out upon request by the host when the appropriate string ID is requested, listed in the Device
 Descriptor.
 
-@c
+@<Global...@>=
 const USB_Descriptor_String_t PROGMEM ProductString = USB_STRING_DESCRIPTOR(L"LUFA USB-RS232 Adapter");
 
 @ This function is called by the library when in device mode, and must be overridden (see library "USB Descriptors"
@@ -180,7 +175,13 @@ to the USB library. When the device receives a Get Descriptor request on the con
 is called so that the descriptor details can be passed back and the appropriate descriptor sent back to the
 USB host.
 
-@c
+@<Function prototypes@>=
+uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
+                                    const uint16_t wIndex,
+                                    const void** const DescriptorAddress)
+                                    ATTR_WARN_UNUSED_RESULT ATTR_NON_NULL_PTR_ARG(3);
+
+@ @c
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
                                     const uint16_t wIndex,
                                     const void** const DescriptorAddress)
@@ -273,9 +274,3 @@ enum StringDescriptors_t
 	STRING_ID_Manufacturer = 1, /* Manufacturer string ID */
 	STRING_ID_Product      = 2, /* Product string ID */
 };
-
-@ @<Function prototypes@>=
-uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
-                                    const uint16_t wIndex,
-                                    const void** const DescriptorAddress)
-                                    ATTR_WARN_UNUSED_RESULT ATTR_NON_NULL_PTR_ARG(3);
