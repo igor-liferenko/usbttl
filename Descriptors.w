@@ -4,7 +4,6 @@ the device's capabilities and functions.
 
 @c
 @<Includes@>@;
-@<Macros@>@;
 @<Type Defines@>@;
 @<Function Prototypes@>@;
 
@@ -40,6 +39,13 @@ const USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 of the device in one of its supported configurations, including information about any device interfaces
 and endpoints. The descriptor is read out by the USB host during the enumeration process when selecting
 a configuration so that the host may correctly communicate with the USB device.
+
+@d CDC_NOTIFICATION_EPADDR (ENDPOINT_DIR_IN  | 2) /* endpoint address of the CDC device-to-host notification IN en
+dpoint */
+@d CDC_TX_EPADDR (ENDPOINT_DIR_IN  | 3) /* endpoint address of the CDC device-to-host data IN endpoint */
+@d CDC_RX_EPADDR (ENDPOINT_DIR_OUT | 4) /* endpoint address of the CDC host-to-device data OUT endpoint */
+@d CDC_NOTIFICATION_EPSIZE 8 /* size in bytes of the CDC device-to-host notification IN endpoint */
+@d CDC_TXRX_EPSIZE 16 /* size in bytes of the CDC data IN and OUT endpoints */
 
 @c
 const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
@@ -222,13 +228,6 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 @ @<Includes@>=
 #include <avr/pgmspace.h>
 #include <LUFA/Drivers/USB/USB.h>
-
-@ @<Macros@>=
-#define CDC_NOTIFICATION_EPADDR (ENDPOINT_DIR_IN  | 2) /* endpoint address of the CDC device-to-host notification IN endpoint */
-#define CDC_TX_EPADDR (ENDPOINT_DIR_IN  | 3) /* endpoint address of the CDC device-to-host data IN endpoint */
-#define CDC_RX_EPADDR (ENDPOINT_DIR_OUT | 4) /* endpoint address of the CDC host-to-device data OUT endpoint */
-#define CDC_NOTIFICATION_EPSIZE 8 /* size in bytes of the CDC device-to-host notification IN endpoint */
-#define CDC_TXRX_EPSIZE 16 /* size in bytes of the CDC data IN and OUT endpoints */
 
 @ Type define for the device configuration descriptor structure. This must be defined in the
 application code, as the configuration descriptor contains several sub-descriptors which
