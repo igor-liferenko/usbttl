@@ -394,11 +394,17 @@ FIXED_NUM_CONFIGURATIONS};
 @ Configuration descriptor structure. This descriptor, located in FLASH memory, describes the usage
 of the device in one of its supported configurations, including information about any device interfaces
 and endpoints.
-Let's have a look at xxx.
-
+Type define for the device configuration descriptor structure. This must be defined in the
+	  application code, as the configuration descriptor contains several sub-descriptors which
+	  vary between devices, and which describe the device's usage to the host.
+	
 @s USB_Descriptor_Configuration_t int
 
 @(/dev/null@>=
+		typedef struct
+		{
+			USB_Descriptor_Configuration_Header_t Config;
+		} USB_Descriptor_Configuration_t;
 
 @ The descriptor is read out by the USB host during the enumeration process when selecting
 a configuration so that the host may correctly communicate with the USB device.
