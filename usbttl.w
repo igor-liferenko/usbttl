@@ -2,7 +2,7 @@
 setup of all components and the main program loop.
 
 @c
-@<Includes@>@;
+@<Header files@>@;
 @<Type definitions@>@;
 @<Function prototypes@>@;
 @<Global variables@>@;
@@ -256,19 +256,6 @@ USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo; /* pointer to the CDC class 
 	PORTD &= ~(1 << 3);
 }
 
-@ @<Includes@>=
-#include <avr/io.h>
-#include <avr/wdt.h>
-#include <avr/interrupt.h>
-#include <avr/power.h>
-
-		#include "Descriptors.h"
-
-#include <LUFA/Drivers/Board/LEDs.h>
-#include <LUFA/Drivers/Peripheral/Serial.h>
-#include <LUFA/Drivers/Misc/RingBuffer.h>
-#include <LUFA/Drivers/USB/USB.h>
-#include <LUFA/Platform/Platform.h>
 @* USB Device Descriptors. Used in USB device mode. Descriptors are special
 computer-readable structures which the host requests upon device enumeration, to determine
 the device's capabilities and functions.
@@ -497,10 +484,6 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 	return Size;
 }
 
-@ @<Includes@>=
-#include <avr/pgmspace.h>
-#include <LUFA/Drivers/USB/USB.h>
-
 @ Type define for the device configuration descriptor structure. This must be defined in the
 application code, as the configuration descriptor contains several sub-descriptors which
 vary between devices, and which describe the device's usage to the host.
@@ -545,3 +528,16 @@ enum StringDescriptors_t
 	STRING_ID_Manufacturer = 1, /* Manufacturer string ID */
 	STRING_ID_Product      = 2, /* Product string ID */
 };
+
+@ @<Header files@>=
+#include <avr/io.h>
+#include <avr/wdt.h>
+#include <avr/interrupt.h>
+#include <avr/power.h>
+#include <avr/pgmspace.h>
+#include <LUFA/Drivers/USB/USB.h>
+#include <LUFA/Drivers/Board/LEDs.h>
+#include <LUFA/Drivers/Peripheral/Serial.h>
+#include <LUFA/Drivers/Misc/RingBuffer.h>
+#include <LUFA/Drivers/USB/USB.h>
+#include <LUFA/Platform/Platform.h>
