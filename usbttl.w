@@ -279,25 +279,25 @@ process begins.
 
 @<YYY structure@>=
 const USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
-{
-	.Header                 = {.Size = sizeof(USB_Descriptor_Device_t), .Type = DTYPE_Device},
+{@|
+  .Header = {.Size = sizeof(USB_Descriptor_Device_t), .Type = DTYPE_Device},@|
 
-	.USBSpecification       = VERSION_BCD(1,1,0),
-	.Class                  = CDC_CSCP_CDCClass,
-	.SubClass               = CDC_CSCP_NoSpecificSubclass,
-	.Protocol               = CDC_CSCP_NoSpecificProtocol,
+  .USBSpecification       = VERSION_BCD(1,1,0),@|
+  .Class                  = CDC_CSCP_CDCClass,@|
+  .SubClass               = CDC_CSCP_NoSpecificSubclass,@|
+  .Protocol               = CDC_CSCP_NoSpecificProtocol,@|
 
-	.Endpoint0Size          = FIXED_CONTROL_ENDPOINT_SIZE,
+  .Endpoint0Size          = FIXED_CONTROL_ENDPOINT_SIZE,@|
 
-	.VendorID               = 0x03EB,
-	.ProductID              = 0x204B,
-	.ReleaseNumber          = VERSION_BCD(0,0,1),
+  .VendorID               = 0x03EB,@|
+  .ProductID              = 0x204B,@|
+  .ReleaseNumber          = VERSION_BCD(0,0,1),@|
 
-	.ManufacturerStrIndex   = STRING_ID_Manufacturer,
-	.ProductStrIndex        = STRING_ID_Product,
-	.SerialNumStrIndex      = USE_INTERNAL_SERIAL,
+  .ManufacturerStrIndex   = STRING_ID_Manufacturer,@|
+  .ProductStrIndex        = STRING_ID_Product,@|
+  .SerialNumStrIndex      = USE_INTERNAL_SERIAL,@|
 
-	.NumberOfConfigurations = FIXED_NUM_CONFIGURATIONS
+  .NumberOfConfigurations = FIXED_NUM_CONFIGURATIONS
 };
 
 @ Configuration descriptor structure. This descriptor, located in FLASH memory, describes the usage
