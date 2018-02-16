@@ -142,21 +142,16 @@ typedef struct {
     struct {
       uint16_t HostToDevice; /* Control line states from the host to device,
  as a set of \.{CDC\_CONTROL\_LINE\_OUT\_*}
-											     masks. This value is updated each time |CDC_Device_USBTask| is called.
+		     masks. This value is updated each time |CDC_Device_USBTask| is called.
 											    */
       uint16_t DeviceToHost; /* Control line states from the device
  to host, as a set of \.{CDC\_CONTROL\_LINE\_IN\_*}
-											    masks - to notify the host of changes to these values, call the
-											    |CDC_Device_SendControlLineStateChange| function.
+				    masks - to notify the host of changes to these values, call the
+					    |CDC_Device_SendControlLineStateChange| function.
 											    */
-    } ControlLineStates; /* Current states of the virtual serial
- port's control lines between the device and host. */
+    } ControlLineStates;
 
-    CDC_LineEncoding_t LineEncoding; /* Line encoding used in the virtual
- serial port, for the device's information.
-                     This is generally only used if the virtual serial port data is to be
-                                     reconstructed on a physical UART.
-					                                  */
+    CDC_LineEncoding_t LineEncoding;
   } State; /* State data for the USB class
  interface within the device. All elements in this section
              are reset to their defaults when the interface is enumerated.
@@ -359,7 +354,7 @@ typedef struct {
 				uint8_t  SubClass; /* USB device subclass. */
 				uint8_t  Protocol; /* USB device protocol. */
 
-  uint8_t  Endpoint0Size; /* Size of the control (address 0) endpoint's bank in bytes. */
+  uint8_t  Endpoint0Size;
 
   uint16_t VendorID; /* Vendor ID for the USB product. */
   uint16_t ProductID; /* Unique product ID for the USB product. */
@@ -367,25 +362,11 @@ typedef struct {
 				                         
 			                            see |VERSION_BCD| utility macro.
 				                         */
-  uint8_t  ManufacturerStrIndex; /* String index for the manufacturer's name. The
-	                                  host will request this string via a separate
-	                                   control request for the string descriptor.
-                                  Note: If no string supplied, use |NO_DESCRIPTOR|.
-				                                */
+  uint8_t  ManufacturerStrIndex;
   uint8_t  ProductStrIndex; /* String index for the product name/details.
                              see ManufacturerStrIndex structure entry.
 				                           */
-  uint8_t  SerialNumStrIndex; /* String index for the product's globally unique hexadecimal
-	                                serial number, in uppercase Unicode ASCII.
-                note On some microcontroller models, there is an embedded serial number
-                              in the chip which can be used for the device serial number.
-                             To use this serial number, set this to |USE_INTERNAL_SERIAL|.
-                            On unsupported devices, this will evaluate to |NO_DESCRIPTOR|
-                        and will cause the host to generate a pseudo-unique value for the
-                                   device upon insertion.
-				                             
-                            see ManufacturerStrIndex structure entry.
-				                             */
+  uint8_t  SerialNumStrIndex;
   uint8_t  NumberOfConfigurations; /* Total number of configurations supported by
 			                                     the device.
 				                                  */
