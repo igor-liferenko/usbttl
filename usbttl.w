@@ -18,8 +18,8 @@ setup of all components and the main program loop.
 int main(void)
 {
   SetupHardware();
-  RingBuffer_InitBuffer(&USBtoUSART_Buffer, USBtoUSART_Buffer_Data, sizeof(USBtoUSART_Buffer_Data));
-  RingBuffer_InitBuffer(&USARTtoUSB_Buffer, USARTtoUSB_Buffer_Data, sizeof(USARTtoUSB_Buffer_Data));
+  RingBuffer_InitBuffer(&USBtoUSART_Buffer, USBtoUSART_Buffer_Data, sizeof USBtoUSART_Buffer_Data);
+  RingBuffer_InitBuffer(&USARTtoUSB_Buffer, USARTtoUSB_Buffer_Data, sizeof USARTtoUSB_Buffer_Data);
 
   @<Disconnect USB device@>@;
   GlobalInterruptEnable();
@@ -106,11 +106,47 @@ RingBuffer_t USARTtoUSB_Buffer;
 uint8_t      USARTtoUSB_Buffer_Data[128];
 
 @ LUFA CDC Class driver interface configuration and state information.
-Let's have a look at xxx.
+
+Class state structure. An instance of this structure should be made for each CDC interface
+within the user application, and passed to each of the CDC class driver functions as the
+CDCInterfaceInfo parameter. This stores each CDC interface's configuration and state information.
 
 @s USB_ClassInfo_CDC_Device_t int
 
 @(/dev/null@>=
+			typedef struct
+			{
+				struct
+				{
+					uint8_t ControlInterfaceNumber; /* Interface number of the CDC control interface within the device. */
+
+					USB_Endpoint_Table_t DataINEndpoint; /* Data IN endpoint configuration table. */
+					USB_Endpoint_Table_t DataOUTEndpoint; /* Data OUT endpoint configuration table. */
+					USB_Endpoint_Table_t NotificationEndpoint; /* Notification IN Endpoint configuration table. */
+				} Config; /* Config data for the USB class interface within the device. All elements in this section
+				             {\bf must} be set or the interface will fail to enumerate and operate correctly.
+				           */
+				struct
+				{
+					struct
+					{
+						uint16_t HostToDevice; /* Control line states from the host to device, as a set of \.{CDC\_CONTROL\_LINE\_OUT\_*}
+											    masks. This value is updated each time |CDC_Device_USBTask| is called.
+											    */
+						uint16_t DeviceToHost; /* Control line states from the device to host, as a set of \.{CDC\_CONTROL\_LINE\_IN\_*}
+											    masks - to notify the host of changes to these values, call the
+											    |CDC_Device_SendControlLineStateChange| function.
+											    */
+					} ControlLineStates; /* Current states of the virtual serial port's control lines between the device and host. */
+
+					CDC_LineEncoding_t LineEncoding; /* Line encoding used in the virtual serial port, for the device's information.
+					                                     This is generally only used if the virtual serial port data is to be
+					                                     reconstructed on a physical UART.
+					                                  */
+				} State; /* State data for the USB class interface within the device. All elements in this section
+				             are reset to their defaults when the interface is enumerated.
+				          */
+			} USB_ClassInfo_CDC_Device_t;
 
 @ This structure is
 passed to all CDC Class driver functions, so that multiple instances of the same class
@@ -122,7 +158,6 @@ INTERFACE_ID_CDC_CCI,@|
 {CDC_TX_EPADDR, CDC_TXRX_EPSIZE, 1},@|
 {CDC_RX_EPADDR, CDC_TXRX_EPSIZE, 1},@|
 {CDC_NOTIFICATION_EPADDR, CDC_NOTIFICATION_EPSIZE, 1}};
-
 
 @ Configures the board hardware and chip peripherals for the demo's functionality.
 
@@ -281,9 +316,61 @@ the device's capabilities and functions.
 device characteristics, including the supported USB version, control endpoint size and the
 number of device configurations. Let's have a look at xxx.
 
+Type define for a standard Device Descriptor. This structure uses LUFA-specific element names to make each
+element's purpose clearer.
+
+See \&{USB\_StdDescriptor\_Device\_t} for the version of this type with standard element names.
+
+Note, that egardless of CPU architecture, these values should be stored as little endian.
+
 @s USB_Descriptor_Device_t int
 
 @(/dev/null@>=
+		typedef struct
+			{
+				USB_Descriptor_Header_t Header; /* Descriptor header, including type and size. */
+
+				uint16_t USBSpecification; /* BCD of the supported USB specification;
+				                               see |VERSION_BCD| utility macro
+				                            */
+				uint8_t  Class; /* USB device class. */
+				uint8_t  SubClass; /* USB device subclass. */
+				uint8_t  Protocol; /* USB device protocol. */
+
+				uint8_t  Endpoint0Size; /* Size of the control (address 0) endpoint's bank in bytes. */
+
+				uint16_t VendorID; /* Vendor ID for the USB product. */
+				uint16_t ProductID; /* Unique product ID for the USB product. */
+				uint16_t ReleaseNumber; /* Product release (version) number.
+				                         
+				                            see |VERSION_BCD| utility macro.
+				                         */
+				uint8_t  ManufacturerStrIndex; /* String index for the manufacturer's name. The
+				                                   host will request this string via a separate
+				                                   control request for the string descriptor.
+				                                
+				                                   Note: If no string supplied, use |NO_DESCRIPTOR|.
+				                                */
+				uint8_t  ProductStrIndex; /* String index for the product name/details.
+				                          
+				                             see ManufacturerStrIndex structure entry.
+				                           */
+				uint8_t  SerialNumStrIndex; /* String index for the product's globally unique hexadecimal
+				                                serial number, in uppercase Unicode ASCII.
+				                             
+				                               note On some microcontroller models, there is an embedded serial number
+				                                     in the chip which can be used for the device serial number.
+				                                     To use this serial number, set this to |USE_INTERNAL_SERIAL|.
+				                                     On unsupported devices, this will evaluate to |NO_DESCRIPTOR|
+				                                     and will cause the host to generate a pseudo-unique value for the
+				                                     device upon insertion.
+				                             
+				                               see ManufacturerStrIndex structure entry.
+				                             */
+				uint8_t  NumberOfConfigurations; /* Total number of configurations supported by
+				                                     the device.
+				                                  */
+			} ATTR_PACKED USB_Descriptor_Device_t;
 
 @ The descriptor is read out by the USB host when the enumeration
 process begins.
@@ -430,11 +517,11 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 	{
 		case DTYPE_Device: @/
 			Address = &DeviceDescriptor;
-			Size    = sizeof(USB_Descriptor_Device_t);
+			Size    = sizeof (USB_Descriptor_Device_t);
 			break;
 		case DTYPE_Configuration: @/
 			Address = &ConfigurationDescriptor;
-			Size    = sizeof(USB_Descriptor_Configuration_t);
+			Size    = sizeof (USB_Descriptor_Configuration_t);
 			break;
 		case DTYPE_String: @/
 			switch (DescriptorNumber)
