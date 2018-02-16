@@ -116,7 +116,7 @@ USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface =
 
 @ Configures the board hardware and chip peripherals for the demo's functionality.
 
-@<Function Prototypes@>=
+@<Function prototypes@>=
 void SetupHardware(void);
 
 @ @c
@@ -137,7 +137,7 @@ void SetupHardware(void)
 
 @ Event handler for the library USB Connection event.
 
-@<Function Prototypes@>=
+@<Function prototypes@>=
 void EVENT_USB_Device_Connect(void);
 
 @ @d LEDMASK_USB_ENUMERATING  (LEDS_LED2 | LEDS_LED3) /* LED mask for the library LED driver, to indicate that the USB interface is enumerating */
@@ -149,7 +149,7 @@ void EVENT_USB_Device_Connect(void)
 }
 
 @ Event handler for the library USB Disconnection event.
-@<Function Prototypes@>=
+@<Function prototypes@>=
 void EVENT_USB_Device_Disconnect(void);
 
 @ @c
@@ -159,7 +159,7 @@ void EVENT_USB_Device_Disconnect(void)
 }
 
 @ Event handler for the library USB Configuration Changed event.
-@<Function Prototypes@>=
+@<Function prototypes@>=
 void EVENT_USB_Device_ConfigurationChanged(void);
 
 @ @d LEDMASK_USB_READY (LEDS_LED2 | LEDS_LED4) /* LED mask for the library LED driver, to indicate that the USB inte
@@ -178,7 +178,7 @@ void EVENT_USB_Device_ConfigurationChanged(void)
 
 @ Event handler for the library USB Control Request reception event.
 
-@<Function Prototypes@>=
+@<Function prototypes@>=
 void EVENT_USB_Device_ControlRequest(void);
 
 @ @c
@@ -201,11 +201,11 @@ ISR(USART1_RX_vect, ISR_BLOCK)
 
 @ Event handler for the CDC Class driver Line Encoding Changed event.
 
-@<Function Prototypes@>=
+@<Function prototypes@>=
 void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo);
 
 @ @c
-void EVENT_CDC_Device_LineEncodingChanged(const CDCInterfaceInfo)
+void EVENT_CDC_Device_LineEncodingChanged(CDCInterfaceInfo)
 USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo; /* pointer to the CDC class interface configuration structure being referenced */
 {
 	uint8_t ConfigMask = 0;
