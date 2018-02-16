@@ -1,3 +1,8 @@
+@s uint8_t int
+@s int16_t int
+@s uint16_t int
+@s USB_Descriptor_String_t int
+
 @* Main program entry point. This routine contains the overall program flow, including initial
 setup of all components and the main program loop.
 
@@ -20,8 +25,7 @@ int main(void)
 	@<Disconnect USB device@>@;
 	GlobalInterruptEnable();
 
-	for (;;)
-	{
+	while (1) {
 		/* Only try to read in bytes from the CDC interface if the transmit buffer is not full */
 		if (!(RingBuffer_IsFull(&USBtoUSART_Buffer)))
 		{
@@ -76,7 +80,9 @@ t ready */
 @<Disconnect USB device@>=
 LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
 
-@ @<Global...@>=
+@ @s RingBuffer_t int
+
+@<Global...@>=
 RingBuffer_t USBtoUSART_Buffer; /* circular buffer to hold data from the host before it is sent to the device via the serial port */
 uint8_t      USBtoUSART_Buffer_Data[128]; /* underlying data buffer for |USBtoUSART_Buffer|, where the stored bytes are located */
 RingBuffer_t USARTtoUSB_Buffer; /* circular buffer to hold data from the serial port before it is sent to the host */
@@ -85,6 +91,8 @@ uint8_t      USARTtoUSB_Buffer_Data[128]; /* underlying data buffer for |USARTto
 @ LUFA CDC Class driver interface configuration and state information. This structure is
 passed to all CDC Class driver functions, so that multiple instances of the same class
 within a device can be differentiated from one another.
+
+@s USB_ClassInfo_CDC_Device_t int
 
 @<XXX structure@>=
 USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface =
@@ -123,17 +131,19 @@ void SetupHardware(void);
 void SetupHardware(void)
 {
 #if (ARCH == ARCH_AVR8)
-	// disable watchdog if enabled by bootloader/fuses
-	MCUSR &= ~(1 << WDRF);
-	wdt_disable();
-
+	@<Disable watchdog if enabled by bootloader/fuses@>@;
 	clock_prescale_set(clock_div_1); /* disable clock division */
 #endif
-
-	// hardware initialization
-	LEDs_Init();
-	USB_Init();
+  @<Hardware initialization@>@;
 }
+
+@ @<Disable watchdog if enabled by bootloader/fuses@>=
+MCUSR &= ~(1 << WDRF);
+wdt_disable();
+
+@ @<Hardware initialization@>=
+LEDs_Init();
+USB_Init();
 
 @ Event handler for the library USB Connection event.
 
@@ -213,10 +223,10 @@ USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo; /* pointer to the CDC class 
 	switch (CDCInterfaceInfo->State.LineEncoding.ParityType)
 	{
 		case CDC_PARITY_Odd:
-			ConfigMask = ((1 << UPM11) | (1 << UPM10));
+			ConfigMask = ((1 << UPM11) | (1 << UPM10)); @+
 			break;
 		case CDC_PARITY_Even:
-			ConfigMask = (1 << UPM11);
+			ConfigMask = (1 << UPM11); @+
 			break;
 	}
 
@@ -226,13 +236,13 @@ USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo; /* pointer to the CDC class 
 	switch (CDCInterfaceInfo->State.LineEncoding.DataBits)
 	{
 		case 6:
-			ConfigMask |= (1 << UCSZ10);
+			ConfigMask |= (1 << UCSZ10); @+
 			break;
 		case 7:
-			ConfigMask |= (1 << UCSZ11);
+			ConfigMask |= (1 << UCSZ11); @+
 			break;
 		case 8:
-			ConfigMask |= ((1 << UCSZ11) | (1 << UCSZ10));
+			ConfigMask |= ((1 << UCSZ11) | (1 << UCSZ10)); @+
 			break;
 	}
 
@@ -264,6 +274,8 @@ the device's capabilities and functions.
 device characteristics, including the supported USB version, control endpoint size and the
 number of device configurations. The descriptor is read out by the USB host when the enumeration
 process begins.
+
+@s USB_Descriptor_Device_t int
 
 @<YYY structure@>=
 const USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
@@ -299,6 +311,8 @@ dpoint */
 @d CDC_RX_EPADDR (ENDPOINT_DIR_OUT | 4) /* endpoint address of the CDC host-to-device data OUT endpoint */
 @d CDC_NOTIFICATION_EPSIZE 8 /* size in bytes of the CDC device-to-host notification IN endpoint */
 @d CDC_TXRX_EPSIZE 16 /* size in bytes of the CDC data IN and OUT endpoints */
+
+@s USB_Descriptor_Configuration_t int
 
 @<ZZZ structure@>=
 const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
@@ -452,26 +466,26 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 
 	switch (DescriptorType)
 	{
-		case DTYPE_Device:
+		case DTYPE_Device: @/
 			Address = &DeviceDescriptor;
 			Size    = sizeof(USB_Descriptor_Device_t);
 			break;
-		case DTYPE_Configuration:
+		case DTYPE_Configuration: @/
 			Address = &ConfigurationDescriptor;
 			Size    = sizeof(USB_Descriptor_Configuration_t);
 			break;
-		case DTYPE_String:
+		case DTYPE_String: @/
 			switch (DescriptorNumber)
 			{
-				case STRING_ID_Language:
+				case STRING_ID_Language: @/
 					Address = &LanguageString;
 					Size    = pgm_read_byte(&LanguageString.Header.Size);
 					break;
-				case STRING_ID_Manufacturer:
+				case STRING_ID_Manufacturer: @/
 					Address = &ManufacturerString;
 					Size    = pgm_read_byte(&ManufacturerString.Header.Size);
 					break;
-				case STRING_ID_Product:
+				case STRING_ID_Product: @/
 					Address = &ProductString;
 					Size    = pgm_read_byte(&ProductString.Header.Size);
 					break;
@@ -488,23 +502,32 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 application code, as the configuration descriptor contains several sub-descriptors which
 vary between devices, and which describe the device's usage to the host.
 
+@s USB_Descriptor_Configuration_Header_t int
+@s USB_Descriptor_Interface_t int
+@s USB_CDC_Descriptor_FunctionalHeader_t int
+@s USB_CDC_Descriptor_FunctionalACM_t int
+@s USB_CDC_Descriptor_FunctionalUnion_t int
+@s USB_Descriptor_Endpoint_t int
+
 @<Type definitions@>= 
 typedef struct
 {
-	USB_Descriptor_Configuration_Header_t    Config;
-
-	// CDC Command Interface
-	USB_Descriptor_Interface_t               CDC_CCI_Interface;
-	USB_CDC_Descriptor_FunctionalHeader_t    CDC_Functional_Header;
-	USB_CDC_Descriptor_FunctionalACM_t       CDC_Functional_ACM;
-	USB_CDC_Descriptor_FunctionalUnion_t     CDC_Functional_Union;
-	USB_Descriptor_Endpoint_t                CDC_NotificationEndpoint;
-
-	// CDC Data Interface
-	USB_Descriptor_Interface_t               CDC_DCI_Interface;
-	USB_Descriptor_Endpoint_t                CDC_DataOutEndpoint;
-	USB_Descriptor_Endpoint_t                CDC_DataInEndpoint;
+	USB_Descriptor_Configuration_Header_t Config; @+@t}\6{@>
+	@<CDC Command Interface@>@;
+	@<CDC Data Interface@>@;
 } USB_Descriptor_Configuration_t;
+
+@ @<CDC Command Interface@>=
+        USB_Descriptor_Interface_t               CDC_CCI_Interface;
+        USB_CDC_Descriptor_FunctionalHeader_t    CDC_Functional_Header;
+        USB_CDC_Descriptor_FunctionalACM_t       CDC_Functional_ACM;
+        USB_CDC_Descriptor_FunctionalUnion_t     CDC_Functional_Union;
+        USB_Descriptor_Endpoint_t                CDC_NotificationEndpoint;
+
+@ @<CDC Data Interface@>=
+        USB_Descriptor_Interface_t               CDC_DCI_Interface;
+        USB_Descriptor_Endpoint_t                CDC_DataOutEndpoint;
+        USB_Descriptor_Endpoint_t                CDC_DataInEndpoint;
 
 @ Enum for the device interface descriptor IDs within the device. Each interface descriptor
 should have a unique ID index associated with it, which can be used to refer to the
