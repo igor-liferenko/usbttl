@@ -4,8 +4,8 @@ the device's capabilities and functions.
 
 @c
 @<Includes@>@;
-@<Type Defines@>@;
-@<Function Prototypes@>@;
+@<Type definitions@>@;
+@<Function prototypes@>@;
 
 @ Device descriptor structure. This descriptor, located in FLASH memory, describes the overall
 device characteristics, including the supported USB version, control endpoint size and the
@@ -233,7 +233,7 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 application code, as the configuration descriptor contains several sub-descriptors which
 vary between devices, and which describe the device's usage to the host.
 
-@<Type Defines@>= 
+@<Type definitions@>= 
 typedef struct
 {
 	USB_Descriptor_Configuration_Header_t    Config;
@@ -255,7 +255,7 @@ typedef struct
 should have a unique ID index associated with it, which can be used to refer to the
 interface from other descriptors.
 
-@<Type Defines@>=
+@<Type definitions@>=
 enum InterfaceDescriptors_t
 {
 	INTERFACE_ID_CDC_CCI = 0, /* CDC CCI interface descriptor ID */
@@ -266,7 +266,7 @@ enum InterfaceDescriptors_t
 have a unique ID index associated with it, which can be used to refer to the string from
 other descriptors.
 
-@<Type Defines@>=
+@<Type definitions@>=
 enum StringDescriptors_t
 {
 	STRING_ID_Language     = 0, /* Supported Languages string descriptor ID (must be zero) */
@@ -274,7 +274,7 @@ enum StringDescriptors_t
 	STRING_ID_Product      = 2, /* Product string ID */
 };
 
-@ @<Function Prototypes@>=
+@ @<Function prototypes@>=
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
                                     const uint16_t wIndex,
                                     const void** const DescriptorAddress)
