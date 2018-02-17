@@ -3,6 +3,8 @@
 
 %TODO put here info from "The PC audio driver writes playback data to USB as chunks..." at http://imi.aau.dk/~sd/phd/index.php?title=AudioArduino
 
+% TODO add here info from http://www.ftdichip.com/Support/Documents/AppNotes/AN232B-04_DataLatencyFlow.pdf
+
 \let\lheader\rheader
 @s uint8_t int
 @s int16_t int
