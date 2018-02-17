@@ -125,6 +125,9 @@ Class state structure. An instance of this structure should be made for each CDC
 within the user application, and passed to each of the CDC class driver functions as the
 CDCInterfaceInfo parameter. This stores each CDC interface's configuration and state
 information.
+This structure is
+passed to all CDC Class driver functions, so that multiple instances of the same class
+within a device can be differentiated from one another.
 
 @s USB_ClassInfo_CDC_Device_t int
 @s uint8_t int
@@ -163,11 +166,7 @@ typedef struct {
 				          */
 } USB_ClassInfo_CDC_Device_t;
 
-@ This structure is
-passed to all CDC Class driver functions, so that multiple instances of the same class
-within a device can be differentiated from one another.
-
-@<Global...@>=
+@ @<Global...@>=
 USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface = {@|
 INTERFACE_ID_CDC_CCI,@|
 {CDC_TX_EPADDR, CDC_TXRX_EPSIZE, 1},@|
@@ -336,7 +335,11 @@ the device's capabilities and functions.
 @ Device descriptor structure. This descriptor, located in FLASH memory, describes the
 overall
 device characteristics, including the supported USB version, control endpoint size and the
-number of device configurations. Let's have a look at xxx.
+number of device configurations.
+The descriptor is read out by the USB host when the enumeration
+process begins.
+
+Let's have a look at xxx.
 
 Type define for a standard Device Descriptor. This structure uses LUFA-specific element
 names to make each
@@ -379,10 +382,7 @@ typedef struct {
 				                                  */
 } ATTR_PACKED USB_Descriptor_Device_t;
 
-@ The descriptor is read out by the USB host when the enumeration
-process begins.
-
-@<Global...@>=
+@ @<Global...@>=
 const USB_Descriptor_Device_t PROGMEM DeviceDescriptor = {@|
 {sizeof (USB_Descriptor_Device_t), DTYPE_Device},@|
 VERSION_BCD(1,1,0),@|
@@ -403,6 +403,9 @@ the usage
 of the device in one of its supported configurations, including information about any
 device interfaces
 and endpoints.
+The descriptor is read out by the USB host during the enumeration process when selecting
+a configuration so that the host may correctly communicate with the USB device.
+
 Type define for the device configuration descriptor structure. This must be defined in
 the
 	  application code, as the configuration descriptor contains several
@@ -418,10 +421,7 @@ sub-descriptors which
 			USB_Descriptor_Configuration_Header_t Config;
 		} USB_Descriptor_Configuration_t;
 
-@ The descriptor is read out by the USB host during the enumeration process when selecting
-a configuration so that the host may correctly communicate with the USB device.
-
-@d CDC_NOTIFICATION_EPADDR (ENDPOINT_DIR_IN  | 2) /* endpoint address of the CDC
+@ @d CDC_NOTIFICATION_EPADDR (ENDPOINT_DIR_IN  | 2) /* endpoint address of the CDC
   device-to-host notification IN endpoint */
 @d CDC_TX_EPADDR (ENDPOINT_DIR_IN  | 3) /* endpoint address of the CDC device-to-host
   data IN endpoint */
