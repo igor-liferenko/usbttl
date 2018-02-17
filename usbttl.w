@@ -1,5 +1,8 @@
 %TODO understand why ccw shows \6 \7 difference
 %TODO understand why it did not work before commit 1f68 
+
+%TODO put here info from "The PC audio driver writes playback data to USB as chunks..." at http://imi.aau.dk/~sd/phd/index.php?title=AudioArduino
+
 \let\lheader\rheader
 @s uint8_t int
 @s int16_t int
