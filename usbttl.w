@@ -1,3 +1,4 @@
+%TODO clear-out LUFA stuff step-by-step replacing its functions with direct code which those functions execute
 %TODO understand why ccw shows \6 \7 difference
 %TODO understand why it did not work before commit 1f68 
 
