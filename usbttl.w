@@ -1,10 +1,13 @@
-%TODO clear-out LUFA stuff step-by-step replacing its functions with direct code which those functions execute
+%TODO clear-out LUFA stuff step-by-step replacing its functions with direct code
+% which those functions execute
 %TODO understand why ccw shows \6 \7 difference
 %TODO understand why it did not work before commit 1f68 
 
-%TODO put here info from "The PC audio driver writes playback data to USB as chunks..." at http://imi.aau.dk/~sd/phd/index.php?title=AudioArduino
+%TODO put here info from "The PC audio driver writes playback data to USB as chunks..." at
+% http://imi.aau.dk/~sd/phd/index.php?title=AudioArduino
 
-% TODO add here info from http://www.ftdichip.com/Support/Documents/AppNotes/AN232B-04_DataLatencyFlow.pdf
+% TODO add here info from
+% http://www.ftdichip.com/Support/Documents/AppNotes/AN232B-04_DataLatencyFlow.pdf
 
 \let\lheader\rheader
 @s uint8_t int
@@ -136,6 +139,8 @@ passed to all CDC Class driver functions, so that multiple instances of the same
 within a device can be differentiated from one another.
 
 @s USB_ClassInfo_CDC_Device_t int
+@s CDC_LineEncoding_t int
+@s USB_Endpoint_Table_t int
 @s uint8_t int
 @s uint16_t int
 
@@ -150,34 +155,17 @@ typedef struct {
     USB_Endpoint_Table_t NotificationEndpoint;
       /* Notification IN Endpoint configuration table. */
   } Config; /* Config data for the USB class interface within the device.
-               All elements in this section {\bf must} be set or the
+               All elements in this section must be set or the
                interface will fail to enumerate and operate correctly. */
-  struct {
-    struct {
-      uint16_t HostToDevice; /* Control line states from the host to device,
- as a set of \.{CDC\_CONTROL\_LINE\_OUT\_*}
-		     masks. This value is updated each time |CDC_Device_USBTask| is called.
-											    */
-      uint16_t DeviceToHost; /* Control line states from the device
- to host, as a set of \.{CDC\_CONTROL\_LINE\_IN\_*}
-				    masks - to notify the host of changes to these values, call the
-					    |CDC_Device_SendControlLineStateChange| function.
-											    */
-    } ControlLineStates;
-
-    CDC_LineEncoding_t LineEncoding;
-  } State; /* State data for the USB class
- interface within the device. All elements in this section
-             are reset to their defaults when the interface is enumerated.
-				          */
+  /* skipped code which is not used in next section */
 } USB_ClassInfo_CDC_Device_t;
 
 @ @<Global...@>=
-USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface = {@|
-INTERFACE_ID_CDC_CCI,@|
-{CDC_TX_EPADDR, CDC_TXRX_EPSIZE, 1},@|
-{CDC_RX_EPADDR, CDC_TXRX_EPSIZE, 1},@|
-{CDC_NOTIFICATION_EPADDR, CDC_NOTIFICATION_EPSIZE, 1}};
+USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface = {{@|
+  INTERFACE_ID_CDC_CCI,@|
+  {CDC_TX_EPADDR, CDC_TXRX_EPSIZE, .Banks=1},@|
+  {CDC_RX_EPADDR, CDC_TXRX_EPSIZE, .Banks=1},@|
+  {CDC_NOTIFICATION_EPADDR, CDC_NOTIFICATION_EPSIZE, .Banks=1}}};
 
 @ Configures the board hardware and chip peripherals for the demo's functionality.
 
@@ -357,6 +345,7 @@ names.
 Note, that egardless of CPU architecture, these values should be stored as little endian.
 
 @s USB_Descriptor_Device_t int
+@s USB_Descriptor_Header_t int
 @s uint8_t int
 @s uint16_t int
 
@@ -390,7 +379,7 @@ typedef struct {
 
 @ @<Global...@>=
 const USB_Descriptor_Device_t PROGMEM DeviceDescriptor = {@|
-{sizeof (USB_Descriptor_Device_t), DTYPE_Device},@|
+{sizeof @[@](USB_Descriptor_Device_t), DTYPE_Device},@|
 VERSION_BCD(1,1,0),@|
 CDC_CSCP_CDCClass,@|
 CDC_CSCP_NoSpecificSubclass,@|
