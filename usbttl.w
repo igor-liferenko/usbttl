@@ -326,16 +326,7 @@ PORTD &= ~(1 << 3);
 computer-readable structures which the host requests upon device enumeration, to determine
 the device's capabilities and functions.
 
-@ Device descriptor structure. This descriptor, located in FLASH memory, describes the
-overall
-device characteristics, including the supported USB version, control endpoint size and the
-number of device configurations.
-The descriptor is read out by the USB host when the enumeration
-process begins.
-
-Let's have a look at xxx.
-
-Type define for a standard Device Descriptor. This structure uses LUFA-specific element
+@ Type define for a standard Device Descriptor. This structure uses LUFA-specific element
 names to make each
 element's purpose clearer.
 
@@ -377,7 +368,14 @@ typedef struct {
 				                                  */
 } ATTR_PACKED USB_Descriptor_Device_t;
 
-@ @<Global...@>=
+@ Device descriptor structure. This descriptor, located in FLASH memory, describes the
+overall
+device characteristics, including the supported USB version, control endpoint size and the
+number of device configurations.
+The descriptor is read out by the USB host when the enumeration
+process begins.
+
+@<Global...@>=
 const USB_Descriptor_Device_t PROGMEM DeviceDescriptor = {@|
 {sizeof @[@](USB_Descriptor_Device_t), DTYPE_Device},@|
 VERSION_BCD(1,1,0),@|
@@ -393,20 +391,25 @@ STRING_ID_Product,@|
 USE_INTERNAL_SERIAL,@|
 FIXED_NUM_CONFIGURATIONS};
 
-@ Configuration descriptor structure. This descriptor, located in FLASH memory, describes
-the usage
-of the device in one of its supported configurations, including information about any
-device interfaces
-and endpoints.
-The descriptor is read out by the USB host during the enumeration process when selecting
-a configuration so that the host may correctly communicate with the USB device.
+@                         /** \brief Standard USB Configuration Descriptor (LUFA naming conventions).
+                         *  
+                         *  Type define for a standard Configuration Descriptor header. This structure uses LUFA-specific element names
+                         *  to make each element's purpose clearer.
+                         *
+                         *  \see \ref USB_StdDescriptor_Configuration_Header_t for the version of this type with standard element names.
+                         *  
+                         *  \note Regardless of CPU architecture, these values should be stored as little endian.
+                         */
 
-Type define for the device configuration descriptor structure. This must be defined in
-the
-	  application code, as the configuration descriptor contains several
-sub-descriptors which
-	  vary between devices, and which describe the device's usage to the host.
-	
+
+
+
+
+
+
+
+
+
 @s USB_Descriptor_Configuration_Header_t int
 @s USB_Descriptor_Header_t int
 @s uint16_t int
@@ -430,7 +433,46 @@ typedef struct {
                                    macro. */
 } ATTR_PACKED USB_Descriptor_Configuration_Header_t;
 
-@ @d CDC_NOTIFICATION_EPADDR (ENDPOINT_DIR_IN  | 2) /* endpoint address of the CDC
+@ Standard USB Endpoint Descriptor (LUFA naming conventions).
+                         *
+                         *  Type define for a standard Endpoint Descriptor. This structure uses LUFA-specific element names
+                         *  to make each element's purpose clearer.
+                         *
+                         *  \see \ref USB_StdDescriptor_Endpoint_t for the version of this type with standard element names.
+                         *
+                         *  \note Regardless of CPU architecture, these values should be stored as little endian.
+                         */
+
+@(/dev/null@>=
+typedef struct {
+                                USB_Descriptor_Header_t Header; /**< Descriptor header, including type and size. */
+
+                                uint8_t  EndpointAddress; /**< Logical address of the endpoint within the device for the current
+                                                           *   configuration, including direction mask.
+                                                           */
+                                uint8_t  Attributes; /**< Endpoint attributes, comprised of a mask of the endpoint type (EP_TYPE_*)
+                                                      *   and attributes (ENDPOINT_ATTR_*) masks.
+                                                      */
+                                uint16_t EndpointSize; /**< Size of the endpoint bank, in bytes. This indicates the maximum packet
+                                                        *   size that the endpoint can receive at a time.
+                                                        */
+                                uint8_t  PollingIntervalMS; /**< Polling interval in milliseconds for the endpoint if it is an INTERRUPT
+                                                             *   or ISOCHRONOUS type.
+                                                             */
+                        } ATTR_PACKED USB_Descriptor_Endpoint_t;
+
+
+
+
+@ Configuration descriptor structure. This descriptor, located in FLASH memory, describes
+the usage
+of the device in one of its supported configurations, including information about any
+device interfaces
+and endpoints.
+The descriptor is read out by the USB host during the enumeration process when selecting
+a configuration so that the host may correctly communicate with the USB device.
+
+@d CDC_NOTIFICATION_EPADDR (ENDPOINT_DIR_IN  | 2) /* endpoint address of the CDC
   device-to-host notification IN endpoint */
 @d CDC_TX_EPADDR (ENDPOINT_DIR_IN  | 3) /* endpoint address of the CDC device-to-host
   data IN endpoint */
