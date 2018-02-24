@@ -128,15 +128,10 @@ RingBuffer_t USARTtoUSB_Buffer;
 @<Global...@>=
 uint8_t      USARTtoUSB_Buffer_Data[128];
 
-@ LUFA CDC Class driver interface configuration and state information.
-
-Class state structure. An instance of this structure should be made for each CDC interface
+@ Class state structure. An instance of this structure should be made for each CDC interface
 within the user application, and passed to each of the CDC class driver functions as the
 CDCInterfaceInfo parameter. This stores each CDC interface's configuration and state
 information.
-This structure is
-passed to all CDC Class driver functions, so that multiple instances of the same class
-within a device can be differentiated from one another.
 
 @s USB_ClassInfo_CDC_Device_t int
 @s CDC_LineEncoding_t int
@@ -160,7 +155,12 @@ typedef struct {
   /* skipped code which is not used in next section */
 } USB_ClassInfo_CDC_Device_t;
 
-@ @<Global...@>=
+@ LUFA CDC Class driver interface configuration and state information.
+This structure is
+passed to all CDC Class driver functions, so that multiple instances of the same class
+within a device can be differentiated from one another.
+
+@<Global...@>=
 USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface = {{@|
   INTERFACE_ID_CDC_CCI,@|
   {CDC_TX_EPADDR, CDC_TXRX_EPSIZE, .Banks=1},@|
@@ -391,24 +391,14 @@ STRING_ID_Product,@|
 USE_INTERNAL_SERIAL,@|
 FIXED_NUM_CONFIGURATIONS};
 
-@                         /** \brief Standard USB Configuration Descriptor (LUFA naming conventions).
-                         *  
-                         *  Type define for a standard Configuration Descriptor header. This structure uses LUFA-specific element names
-                         *  to make each element's purpose clearer.
-                         *
-                         *  \see \ref USB_StdDescriptor_Configuration_Header_t for the version of this type with standard element names.
-                         *  
-                         *  \note Regardless of CPU architecture, these values should be stored as little endian.
-                         */
+@ Standard USB Configuration Descriptor.
+  
+Type define for a standard Configuration Descriptor header. This structure uses LUFA-specific element names
+to make each element's purpose clearer.
 
-
-
-
-
-
-
-
-
+See |USB_StdDescriptor_Configuration_Header_t| for the version of this type with standard element names.
+  
+Note, that regardless of CPU architecture, these values should be stored as little endian.
 
 @s USB_Descriptor_Configuration_Header_t int
 @s USB_Descriptor_Header_t int
@@ -433,36 +423,28 @@ typedef struct {
                                    macro. */
 } ATTR_PACKED USB_Descriptor_Configuration_Header_t;
 
-@ Standard USB Endpoint Descriptor (LUFA naming conventions).
-                         *
-                         *  Type define for a standard Endpoint Descriptor. This structure uses LUFA-specific element names
-                         *  to make each element's purpose clearer.
-                         *
-                         *  \see \ref USB_StdDescriptor_Endpoint_t for the version of this type with standard element names.
-                         *
-                         *  \note Regardless of CPU architecture, these values should be stored as little endian.
-                         */
+@ Standard USB Endpoint Descriptor.
+
+Type define for a standard Endpoint Descriptor. This structure uses LUFA-specific element names
+to make each element's purpose clearer.
+
+See |USB_StdDescriptor_Endpoint_t| for the version of this type with standard element names.
+
+Note, that regardless of CPU architecture, these values should be stored as little endian.
 
 @(/dev/null@>=
 typedef struct {
-                                USB_Descriptor_Header_t Header; /**< Descriptor header, including type and size. */
+  USB_Descriptor_Header_t Header; /* Descriptor header, including type and size. */
 
-                                uint8_t  EndpointAddress; /**< Logical address of the endpoint within the device for the current
-                                                           *   configuration, including direction mask.
-                                                           */
-                                uint8_t  Attributes; /**< Endpoint attributes, comprised of a mask of the endpoint type (EP_TYPE_*)
-                                                      *   and attributes (ENDPOINT_ATTR_*) masks.
-                                                      */
-                                uint16_t EndpointSize; /**< Size of the endpoint bank, in bytes. This indicates the maximum packet
-                                                        *   size that the endpoint can receive at a time.
-                                                        */
-                                uint8_t  PollingIntervalMS; /**< Polling interval in milliseconds for the endpoint if it is an INTERRUPT
-                                                             *   or ISOCHRONOUS type.
-                                                             */
-                        } ATTR_PACKED USB_Descriptor_Endpoint_t;
-
-
-
+  uint8_t  EndpointAddress; /* Logical address of the endpoint within the device for the current
+                               configuration, including direction mask. */
+  uint8_t  Attributes; /* Endpoint attributes, comprised of a mask of the endpoint type (\.{EP\_TYPE\_*})
+                          and attributes (\.{ENDPOINT\_ATTR\_*}) masks. */
+  uint16_t EndpointSize; /* Size of the endpoint bank, in bytes. This indicates the maximum packet
+                            size that the endpoint can receive at a time. */
+  uint8_t  PollingIntervalMS; /* Polling interval in milliseconds for the endpoint if it is an \.{INTERRUPT}
+                                 or \.{ISOCHRONOUS} type. */
+} ATTR_PACKED USB_Descriptor_Endpoint_t;
 
 @ Configuration descriptor structure. This descriptor, located in FLASH memory, describes
 the usage
