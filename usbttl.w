@@ -1,3 +1,15 @@
+%roadmap:
+%add /dev/null sections for the following:
+% USB_Descriptor_Interface_t
+% USB_CDC_Descriptor_FunctionalHeader_t
+% USB_CDC_Descriptor_FunctionalACM_t
+% USB_CDC_Descriptor_FunctionalUnion_t
+% USB_Descriptor_Header_t
+%next step: do via
+% USB_StdDescriptor_Configuration_Header_t
+%and
+% USB_StdDescriptor_Endpoint_t
+
 %TODO clear-out LUFA stuff step-by-step replacing its functions with direct code
 % which those functions execute
 %TODO understand why ccw shows \6 \7 difference
