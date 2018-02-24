@@ -407,14 +407,28 @@ the
 sub-descriptors which
 	  vary between devices, and which describe the device's usage to the host.
 	
-@s USB_Descriptor_Configuration_t int
 @s USB_Descriptor_Configuration_Header_t int
+@s USB_Descriptor_Header_t int
+@s uint16_t int
+@s uint8_t int
 
 @(/dev/null@>=
-		typedef struct
-		{
-			USB_Descriptor_Configuration_Header_t Config;
-		} USB_Descriptor_Configuration_t;
+typedef struct {
+  USB_Descriptor_Header_t Header; /* Descriptor header, including type and size. */
+  uint16_t TotalConfigurationSize; /* Size of the configuration descriptor header,
+                                     and all sub descriptors inside the configuration. */
+  uint8_t  TotalInterfaces; /* Total number of interfaces in the configuration. */
+  uint8_t  ConfigurationNumber; /* Configuration index of the current configuration. */
+  uint8_t  ConfigurationStrIndex; /* Index of a string descriptor describing the configuration. */
+  uint8_t  ConfigAttributes; /* Configuration attributes, comprised of a mask of
+                                \.{USB\_CONFIG\_ATTR\_*}
+                                masks. On all devices, this should include
+                                |USB_CONFIG_ATTR_RESERVED|
+                                at a minimum. */
+  uint8_t  MaxPowerConsumption; /* Maximum power consumption of the device while in the
+                                   current configuration, calculated by the |USB_CONFIG_POWER_MA|
+                                   macro. */
+} ATTR_PACKED USB_Descriptor_Configuration_Header_t;
 
 @ @d CDC_NOTIFICATION_EPADDR (ENDPOINT_DIR_IN  | 2) /* endpoint address of the CDC
   device-to-host notification IN endpoint */
@@ -429,8 +443,8 @@ sub-descriptors which
 @<Global...@>=
 const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor = {@|
 {@|
-  {sizeof (USB_Descriptor_Configuration_Header_t), DTYPE_Configuration},@|
-  sizeof (USB_Descriptor_Configuration_t),@|
+  {sizeof @[@](USB_Descriptor_Configuration_Header_t), DTYPE_Configuration},@|
+  sizeof @[@](USB_Descriptor_Configuration_t),@|
   2,@|
   1,@|
   NO_DESCRIPTOR,@|
