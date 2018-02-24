@@ -1,3 +1,5 @@
+%TODO clear-out LUFA stuff step-by-step replacing its functions with direct code
+% which those functions execute
 %roadmap:
 %add /dev/null sections for the following:
 % USB_Descriptor_Interface_t
@@ -10,10 +12,7 @@
 %and
 % USB_StdDescriptor_Endpoint_t
 
-%TODO clear-out LUFA stuff step-by-step replacing its functions with direct code
-% which those functions execute
-%TODO understand why ccw shows \6 \7 difference
-%TODO understand why it did not work before commit 1f68
+%TODO understand why it did not work before commit 1f68 and restore back those comments
 
 %TODO put here info from "The PC audio driver writes playback data to USB as chunks..." at
 % http://imi.aau.dk/~sd/phd/index.php?title=AudioArduino
@@ -356,11 +355,10 @@ Note, that egardless of CPU architecture, these values should be stored as littl
 typedef struct {
   USB_Descriptor_Header_t Header; /* Descriptor header, including type and size. */
   uint16_t USBSpecification; /* BCD of the supported USB specification;
-		                               see |VERSION_BCD| utility macro
-				                            */
-				uint8_t  Class; /* USB device class. */
-				uint8_t  SubClass; /* USB device subclass. */
-				uint8_t  Protocol; /* USB device protocol. */
+		                see |VERSION_BCD| utility macro */
+  uint8_t  Class; /* USB device class. */
+  uint8_t  SubClass; /* USB device subclass. */
+  uint8_t  Protocol; /* USB device protocol. */
 
   uint8_t  Endpoint0Size;
 
@@ -374,8 +372,7 @@ typedef struct {
 				                           */
   uint8_t  SerialNumStrIndex;
   uint8_t  NumberOfConfigurations; /* Total number of configurations supported by
-			                                     the device.
-				                                  */
+                                      the device. */
 } ATTR_PACKED USB_Descriptor_Device_t;
 
 @ Device descriptor structure. This descriptor, located in FLASH memory, describes the
@@ -445,6 +442,9 @@ See |USB_StdDescriptor_Endpoint_t| for the version of this type with standard el
 Note, that regardless of CPU architecture, these values should be stored as little endian.
 
 @s USB_Descriptor_Header_t int
+@s USB_Descriptor_Endpoint_t int
+@s uint8_t int
+@s uint16_t int
 
 @(/dev/null@>=
 typedef struct {
