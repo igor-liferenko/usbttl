@@ -462,7 +462,7 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor = {@|
   (USB_CONFIG_ATTR_RESERVED | USB_CONFIG_ATTR_SELFPOWERED),@|
   USB_CONFIG_POWER_MA(100)}
 
-@ @<Initialize |CDR_CCI_Interface|@>= {@|
+@ @<Initialize |CDC_CCI_Interface|@>= {@|
   {sizeof (USB_Descriptor_Interface_t), DTYPE_Interface},@|
   INTERFACE_ID_CDC_CCI,@|
   0,@|
