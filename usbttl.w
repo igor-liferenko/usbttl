@@ -13,7 +13,7 @@
 %TODO clear-out LUFA stuff step-by-step replacing its functions with direct code
 % which those functions execute
 %TODO understand why ccw shows \6 \7 difference
-%TODO understand why it did not work before commit 1f68 
+%TODO understand why it did not work before commit 1f68
 
 %TODO put here info from "The PC audio driver writes playback data to USB as chunks..." at
 % http://imi.aau.dk/~sd/phd/index.php?title=AudioArduino
@@ -367,9 +367,7 @@ typedef struct {
   uint16_t VendorID; /* Vendor ID for the USB product. */
   uint16_t ProductID; /* Unique product ID for the USB product. */
   uint16_t ReleaseNumber; /* Product release (version) number.
-				                         
-			                            see |VERSION_BCD| utility macro.
-				                         */
+                            see |VERSION_BCD| utility macro. */
   uint8_t  ManufacturerStrIndex;
   uint8_t  ProductStrIndex; /* String index for the product name/details.
                              see ManufacturerStrIndex structure entry.
@@ -404,12 +402,14 @@ USE_INTERNAL_SERIAL,@|
 FIXED_NUM_CONFIGURATIONS};
 
 @ Standard USB Configuration Descriptor.
-  
-Type define for a standard Configuration Descriptor header. This structure uses LUFA-specific element names
+
+Type define for a standard Configuration Descriptor header. This structure uses LUFA-specific
+element names
 to make each element's purpose clearer.
 
-See |USB_StdDescriptor_Configuration_Header_t| for the version of this type with standard element names.
-  
+See |USB_StdDescriptor_Configuration_Header_t| for the version of this type with standard
+element names.
+
 Note, that regardless of CPU architecture, these values should be stored as little endian.
 
 @s USB_Descriptor_Configuration_Header_t int
@@ -444,17 +444,21 @@ See |USB_StdDescriptor_Endpoint_t| for the version of this type with standard el
 
 Note, that regardless of CPU architecture, these values should be stored as little endian.
 
+@s USB_Descriptor_Header_t int
+
 @(/dev/null@>=
 typedef struct {
   USB_Descriptor_Header_t Header; /* Descriptor header, including type and size. */
 
   uint8_t  EndpointAddress; /* Logical address of the endpoint within the device for the current
                                configuration, including direction mask. */
-  uint8_t  Attributes; /* Endpoint attributes, comprised of a mask of the endpoint type (\.{EP\_TYPE\_*})
+  uint8_t  Attributes; /* Endpoint attributes, comprised of a mask of the endpoint type
+                          (\.{EP\_TYPE\_*})
                           and attributes (\.{ENDPOINT\_ATTR\_*}) masks. */
   uint16_t EndpointSize; /* Size of the endpoint bank, in bytes. This indicates the maximum packet
                             size that the endpoint can receive at a time. */
-  uint8_t  PollingIntervalMS; /* Polling interval in milliseconds for the endpoint if it is an \.{INTERRUPT}
+  uint8_t  PollingIntervalMS; /* Polling interval in milliseconds for the endpoint if it is an
+                                 \.{INTERRUPT}
                                  or \.{ISOCHRONOUS} type. */
 } ATTR_PACKED USB_Descriptor_Endpoint_t;
 
@@ -659,7 +663,7 @@ vary between devices, and which describe the device's usage to the host.
 @s USB_CDC_Descriptor_FunctionalUnion_t int
 @s USB_Descriptor_Endpoint_t int
 
-@<Type definitions@>= 
+@<Type definitions@>=
 typedef struct {
 	USB_Descriptor_Configuration_Header_t Config; @+@t}\6{@>
 	@<CDC Command Interface@>@;
