@@ -494,13 +494,14 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor = {@|
   @<Initialize |CDC_DataInEndpoint|@>};
 
 @ @<Initialize |Config|@>= {@|
-  {sizeof @[@](USB_Descriptor_Configuration_Header_t), DTYPE_Configuration},@|
+  {@,@, sizeof @[@](USB_Descriptor_Configuration_Header_t), @,@, DTYPE_Configuration @,@,},@|
   sizeof @[@](USB_Descriptor_Configuration_t),@|
   2,@|
   1,@|
   NO_DESCRIPTOR,@|
   (USB_CONFIG_ATTR_RESERVED | USB_CONFIG_ATTR_SELFPOWERED),@|
-  USB_CONFIG_POWER_MA(100)}
+  USB_CONFIG_POWER_MA(100)@/
+}
 
 @ @<Initialize |CDC_CCI_Interface|@>= {@|
   {sizeof (USB_Descriptor_Interface_t), DTYPE_Interface},@|
