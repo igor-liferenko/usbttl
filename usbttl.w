@@ -12,7 +12,7 @@
 %and
 % USB_StdDescriptor_Endpoint_t
 
-%TODO understand why it did not work before commit 1f68 and restore back those comments
+%TODO restore back comments which were removed in commit 1f68
 
 % TODO: make DTR work (see arduino's modification of this firmware at
 % https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/firmwares/atmegaxxu2)
@@ -344,7 +344,7 @@ the device's capabilities and functions.
 names to make each
 element's purpose clearer.
 
-See \&{USB\_StdDescriptor\_Device\_t} for the version of this type with standard element
+See |USB_StdDescriptor_Device_t| for the version of this type with standard element
 names.
 
 Note, that egardless of CPU architecture, these values should be stored as little endian.
@@ -371,8 +371,7 @@ typedef struct {
                             see |VERSION_BCD| utility macro. */
   uint8_t  ManufacturerStrIndex;
   uint8_t  ProductStrIndex; /* String index for the product name/details.
-                             see ManufacturerStrIndex structure entry.
-				                           */
+                             see ManufacturerStrIndex structure entry. */
   uint8_t  SerialNumStrIndex;
   uint8_t  NumberOfConfigurations; /* Total number of configurations supported by
                                       the device. */
