@@ -14,6 +14,9 @@
 
 %TODO understand why it did not work before commit 1f68 and restore back those comments
 
+% TODO: make DTR work (see arduino's modification of this firmware at
+% https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/firmwares/atmegaxxu2)
+
 %TODO put here info from "The PC audio driver writes playback data to USB as chunks..." at
 % http://imi.aau.dk/~sd/phd/index.php?title=AudioArduino
 
