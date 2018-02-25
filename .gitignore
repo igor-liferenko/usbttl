@@ -1,0 +1,9 @@
+obj/
+usbttl.bin
+usbttl.c
+usbttl.eep
+usbttl.elf
+usbttl.hex
+usbttl.lss
+usbttl.map
+usbttl.sym
