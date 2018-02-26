@@ -15,13 +15,15 @@
 %TODO restore back comments which were removed in commit 1f68
 
 % TODO: make DTR work (see arduino's modification of this firmware at
-% https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/firmwares/atmegaxxu2)
+% https://github.com/arduino/Arduino/tree/master/hardware/arduino/%
+%   avr/firmwares/atmegaxxu2)
 
 %TODO put here info from "The PC audio driver writes playback data to USB as chunks..." at
 % http://imi.aau.dk/~sd/phd/index.php?title=AudioArduino
 
 % TODO add here info from
-% http://www.ftdichip.com/Support/Documents/AppNotes/AN232B-04_DataLatencyFlow.pdf
+% http://www.ftdichip.com/Support/Documents/AppNotes/%
+%   AN232B-04_DataLatencyFlow.pdf
 
 \let\lheader\rheader
 @s uint8_t int
