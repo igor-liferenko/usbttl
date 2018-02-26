@@ -1,18 +1,17 @@
-%TODO clear-out LUFA stuff step-by-step replacing its functions with direct code
-% which those functions execute
-%roadmap:
-%add /dev/null sections for the following:
+%TODO restore back comments which were removed in commit 1f68
+
+%TODO: add /dev/null sections for the following:
 % USB_Descriptor_Interface_t
 % USB_CDC_Descriptor_FunctionalHeader_t
 % USB_CDC_Descriptor_FunctionalACM_t
 % USB_CDC_Descriptor_FunctionalUnion_t
 % USB_Descriptor_Header_t
-%next step: do via
+
+%NOTE: do not do via
 % USB_StdDescriptor_Configuration_Header_t
 %and
 % USB_StdDescriptor_Endpoint_t
-
-%TODO restore back comments which were removed in commit 1f68
+%until you do everything in one file - and then think if it is necessary at all
 
 % TODO: make DTR work (see arduino's modification of this firmware at
 % https://github.com/arduino/Arduino/tree/master/hardware/arduino/%
