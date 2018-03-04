@@ -9,7 +9,7 @@
 % USB_StdDescriptor_Configuration_Header_t
 %and
 % USB_StdDescriptor_Endpoint_t
-%until you do everything in one file - and then think if it is necessary at all
+%until you do everything in one file - and then think if doing via USB_StdDescriptor_Configuration_Header_t is necessary at all
 
 % TODO: make DTR work (see arduino's modification of this firmware at
 % https://github.com/arduino/Arduino/tree/master/hardware/arduino/%
