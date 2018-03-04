@@ -1,5 +1,3 @@
-%TODO restore back comments which were removed in commit 1f68
-
 %TODO: add /dev/null sections for the following:
 % USB_Descriptor_Interface_t
 % USB_CDC_Descriptor_FunctionalHeader_t
@@ -364,16 +362,30 @@ typedef struct {
   uint8_t  SubClass; /* USB device subclass. */
   uint8_t  Protocol; /* USB device protocol. */
 
-  uint8_t  Endpoint0Size;
+  uint8_t  Endpoint0Size; /* Size of the control (address 0) endpoint's bank in bytes. */
 
   uint16_t VendorID; /* Vendor ID for the USB product. */
   uint16_t ProductID; /* Unique product ID for the USB product. */
   uint16_t ReleaseNumber; /* Product release (version) number.
                             see |VERSION_BCD| utility macro. */
-  uint8_t  ManufacturerStrIndex;
+  uint8_t  ManufacturerStrIndex; /* String index for the manufacturer's name. The
+                                          host will request this string via a separate
+                                           control request for the string descriptor.
+                                  Note: If no string supplied, use |NO_DESCRIPTOR|.
+                                                                */
   uint8_t  ProductStrIndex; /* String index for the product name/details.
                              see ManufacturerStrIndex structure entry. */
-  uint8_t  SerialNumStrIndex;
+  uint8_t  SerialNumStrIndex; /* String index for the product's globally unique hexadecimal
+                                        serial number, in uppercase Unicode ASCII.
+                note On some microcontroller models, there is an embedded serial number
+                              in the chip which can be used for the device serial number.
+                             To use this serial number, set this to |USE_INTERNAL_SERIAL|.
+                            On unsupported devices, this will evaluate to |NO_DESCRIPTOR|
+                        and will cause the host to generate a pseudo-unique value for the
+                                   device upon insertion.
+                                                             
+                            see ManufacturerStrIndex structure entry.
+                                                             */
   uint8_t  NumberOfConfigurations; /* Total number of configurations supported by
                                       the device. */
 } ATTR_PACKED USB_Descriptor_Device_t;
