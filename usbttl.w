@@ -1,3 +1,5 @@
+%NOTE: to test, use avr/check.w + see cweb/SERIAL_TODO
+
 %TODO: add /dev/null sections for the following:
 % USB_Descriptor_Interface_t
 % USB_CDC_Descriptor_FunctionalHeader_t
