@@ -27,6 +27,8 @@
 @s uint16_t int
 @s USB_Descriptor_String_t int
 
+\secpagedepth=1
+
 @** Latency, Data Throughput and Handshaking Issues.
 @*1 Background.
 The Universal Serial Bus may be new to some users and developers. Here are described the major
@@ -76,7 +78,8 @@ packet size is needed. For `real-time' applications that are transferring audio 
 be holding up 4k of data at a time. This can give the effect of
 `jerky' data transfer if the USB request size is too large and the data rate too low (relatively).
 
-@*1 Buffers and the latency timer (??? Small amounts of data or end of buffer conditions ???).
+@*1 Buffers and the latency timer.
+(??? Small amounts of data or end of buffer conditions ???)
 When transferring data to the PC, the device will send the data, given one of the following
 conditions:
 
@@ -394,8 +397,8 @@ typedef struct {
   /* skipped code which is not used in next section */
 } USB_ClassInfo_CDC_Device_t;
 
-@ Type define for a endpoint table entry, used to configure endpoints in groups via
-|Endpoint_ConfigureEndpointTable|.
+@ Type define for an endpoint table entry, used to configure endpoints in groups via
+\hfil\break |Endpoint_ConfigureEndpointTable|.
 
 @(/dev/null@>=
 typedef struct {
@@ -979,8 +982,8 @@ enum {
 
 @ TODO: Do everything as one self-contained program. It is possible to do it,
 because it's just a microcontroller. This can be done gradually, step-by-step,
-by the following algorithm: replace all "@(/dev/null@>" sections by "@<Header files@>",
-and when no "@(/dev/null@>" sections will remain, try to remove this section and
+by the following algorithm: replace all "@@(/dev/null@@>" sections by "@@<Header files@@>",
+and when no "@@(/dev/null@@>" sections will remain, try to remove this section and
 compile and see if there will be any errors.
 (first replace "skipped code which is not used in next section" with real code)
 And when I will do it, get rid of `\.{USB\_}' prefix in all type names.
