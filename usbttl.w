@@ -400,6 +400,9 @@ typedef struct {
 @ Type define for an endpoint table entry, used to configure endpoints in groups via
 \hfil\break |Endpoint_ConfigureEndpointTable|.
 
+@s uint8_t int
+@s uint16_t int
+
 @(/dev/null@>=
 typedef struct {
   uint8_t  Address; /* address of the endpoint to configure, or zero if
