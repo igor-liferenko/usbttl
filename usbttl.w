@@ -21,10 +21,6 @@
 %TODO put here info from "The PC audio driver writes playback data to USB as chunks..." at
 % http://imi.aau.dk/~sd/phd/index.php?title=AudioArduino
 
-% TODO add here info from
-% http://www.ftdichip.com/Support/Documents/AppNotes/%
-%   AN232B-04_DataLatencyFlow.pdf
-
 \let\lheader\rheader
 @s uint8_t int
 @s int16_t int
@@ -81,7 +77,8 @@ be holding up 4k of data at a time. This can give the effect of
 `jerky' data transfer if the USB request size is too large and the data rate too low (relatively).
 
 @*1 Buffers and the latency timer (??? Small amounts of data or end of buffer conditions ???).
-When transferring data to the PC, the device will send the data, given one of the following conditions:
+When transferring data to the PC, the device will send the data, given one of the following
+conditions:
 
 \item{1.} The buffer is full (64 bytes made up of 2 status bytes and 62 user bytes).
 \item{2.} One of the RS232 status lines has changed (on some chips). A change of level
@@ -106,7 +103,8 @@ individual character, over and above the transfer time on serial or parallel lin
 
 \noindent
 For large amounts of data, at high data rates, the timer will not be used. It may be used to send
-the last packet of a block, if the final packet size works out to be less than 64 bytes. The first 2
+the last packet of a block, if the final packet size works out to be less than 64 bytes. The
+first 2
 bytes of every packet are used as status bytes for the driver. This status is sent every 16
 milliseconds, even when no data is present in the device.
 
@@ -115,10 +113,12 @@ A worst case condition could occur when 62 bytes of data are received in 16 mill
 would not cause a timeout, but would send the 64 bytes (2 status + 62 user data bytes) back to
 USB every 16 milliseconds. When the USB driver receives the 64 bytes it would hold on
 to them and request another 'IN' transaction. This would be completed another 16 milliseconds
-later and so on until USB driver gets all of the 4K of data required. The overall time would be (4096 /
-64) * 16 milliseconds = 1.024 seconds between data packets being received by the application. In
+later and so on until USB driver gets all of the 4K of data required. The overall time would
+be (4096 / 64) * 16 milliseconds = 1.024 seconds between data packets being received by the
+application. In
 order to stop the data arriving in 4K packets, it should be requested in smaller amounts. A short
-packet (< 64 bytes) will of course cause the data to pass from USB driver back to the chip driver for
+packet (< 64 bytes) will of course cause the data to pass from USB driver back to the chip
+driver for
 use by the application.
 
 \item{$\bullet$} For application programmers it must be stressed that data
@@ -187,7 +187,8 @@ with no handshaking. If the
 data rate is low or data loss is acceptable then flow control may be omitted. 
 
 @* Effect of USB Buffer Size and the Latency Timer on Data Throughput.
-An effect that is not immediately obvious is the way the size of the USB total packet request has on
+An effect that is not immediately obvious is the way the size of the USB total packet request
+has on
 the smoothness of data flow. When a read request is sent to USB, the USB host controller will
 continue to read 64 byte packets until one of the following conditions is met:
 
@@ -196,7 +197,8 @@ continue to read 64 byte packets until one of the following conditions is met:
 \item{3.} It has been cancelled.
 
 \noindent
-While the host controller is waiting for one of the above conditions to occur, NO data is received by
+While the host controller is waiting for one of the above conditions to occur, NO data is
+received by
 our driver and hence the user's application. The data, if there is any, is only finally transferred
 after
 one of the above conditions has occurred.
@@ -207,11 +209,13 @@ continually sent back to the host, then it will continue to read the data to mat
 requested before it sends the block back to the driver. If a small amount of data is sent, or the
 data is sent slowly, then the latency timer will take over and send a short packet back to the host
 which will terminate the read request. The data that has been read so far is then passed on to the
-users application via the chip driver. This shows a relationship between the latency timer, the data
+users application via the chip driver. This shows a relationship between the latency timer, the
+data
 rate and when the data will become available to the user. A condition can occur where if data is
 passed into the chip at such a rate as to avoid the latency timer timing out, it can take a long
 time between receiving data blocks. This occurs because the host controller will see 64 byte
-packets at the point just before the end of the latency period and will therefore continue to read the
+packets at the point just before the end of the latency period and will therefore continue to
+read the
 data until it reaches the block size before it is passed back to the user's application.
 
 The rate that causes this will be:
@@ -224,7 +228,8 @@ For the default values: -
 
 Therefore if data is received at a rate of 3875 bytes per second (38.75 KBaud) or faster, then the
 data will be subject to delays based on the requested USB block length. If data is received at a
-slower rate, then there will be less than 62 bytes (64 including our 2 status bytes) available after 16
+slower rate, then there will be less than 62 bytes (64 including our 2 status bytes) available
+after 16
 milliseconds. Therefore a short packet will occur, thus terminating the USB request and passing
 the data back. At the limit condition of 38.75 KBaud it will take approximately 1.06 seconds
 between data buffers into the users application (assuming a 4Kbyte USB block request buffer size).
@@ -257,7 +262,7 @@ int main(void)
   RingBuffer_InitBuffer(&USARTtoUSB_Buffer, USARTtoUSB_Buffer_Data,
     sizeof USARTtoUSB_Buffer_Data);
 
-  @<Disconnect USB device@>@;
+  @<Indicate that USB device is disconnected@>@;
   GlobalInterruptEnable();
 
   while (1) {
@@ -265,7 +270,7 @@ int main(void)
     uint16_t BufferCount = RingBuffer_GetCount(&USARTtoUSB_Buffer);
     if (BufferCount) {
       Endpoint_SelectEndpoint(VirtualSerial_CDC_Interface.Config.DataINEndpoint.Address);
-      @<Check if a packet is already enqueued to the host@>@;
+      @<Try to send more data@>@;
     }
     @<Load the next byte from the USART transmit buffer into the USART if transmit...@>@;
     CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
@@ -279,21 +284,20 @@ if (!(RingBuffer_IsFull(&USBtoUSART_Buffer))) {
   @<Store received byte into the USART transmit buffer@>@;
 }
 
+@ @<Store received byte into the USART transmit buffer@>=
+if (!(ReceivedByte < 0))
+  RingBuffer_Insert(&USBtoUSART_Buffer, ReceivedByte);
+
 @ Check if a packet is already enqueued to the host - if so, we shouldn't try to send
 more data
 until it completes as there is a chance nothing is listening and a lengthy timeout could
 occur.
 
-@<Check if a packet is already enqueued to the host@>=
+@<Try to send more data@>=
 if (Endpoint_IsINReady()) {
   @<Calculate bytes to send@>@;
   @<Read bytes from the USART receive buffer into the USB IN endpoint@>@;
 }
-
-@ @<Load the next byte from the USART transmit buffer into the USART if transmit buffer
-    space is available@>=
-if (Serial_IsSendReady() && !(RingBuffer_IsEmpty(&USBtoUSART_Buffer)))
-  Serial_SendByte(RingBuffer_Remove(&USBtoUSART_Buffer));
 
 @ Never send more than one bank size less one byte to the host at a time, so that we
 don't block
@@ -320,13 +324,14 @@ if (CDC_Device_SendByte(&VirtualSerial_CDC_Interface,
     transmission error occurred@>=
 RingBuffer_Remove(&USARTtoUSB_Buffer);
 
-@ @<Store received byte into the USART transmit buffer@>=
-if (!(ReceivedByte < 0))
-  RingBuffer_Insert(&USBtoUSART_Buffer, ReceivedByte);
+@ @<Load the next byte from the USART transmit buffer into the USART if transmit buffer
+    space is available@>=
+if (Serial_IsSendReady() && !(RingBuffer_IsEmpty(&USBtoUSART_Buffer)))
+  Serial_SendByte(RingBuffer_Remove(&USBtoUSART_Buffer));
 
 @ LED mask for the library LED driver, to indicate that the USB interface is not ready.
 
-@<Disconnect USB device@>=
+@<Indicate that USB device is disconnected@>=
 LEDs_SetAllLEDs(LEDS_LED1);
 
 @ Circular buffer to hold data from the host before it is sent to the device via the
@@ -435,7 +440,7 @@ void EVENT_USB_Device_Disconnect(void);
 @ @c
 void EVENT_USB_Device_Disconnect(void)
 {
-  @<Disconnect USB device@>@;
+  @<Indicate that USB device is disconnected@>@;
 }
 
 @ Event handler for the library USB Configuration Changed event.
