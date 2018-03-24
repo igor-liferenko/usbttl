@@ -150,14 +150,14 @@ if you want to send large amounts of random data or small command sequences.
 The Event character does not work
 if it is the first character in the buffer. It needs to be the second or more. The reason for
 this was for applications that
-use the Internet, for example, will program up the event character as `$7E'. All the data is then
+use the Internet, for example, will program up the event character as `\$7E'. All the data is then
 sent and received in
-packets that have `$7E' at the start and end of the packet. To maximise throughput and
+packets that have `\$7E' at the start and end of the packet. To maximise throughput and
 avoid a packet with only the
-starting `$7E' in it, the event character does not trigger on the first position.
+starting `\$7E' in it, the event character does not trigger on the first position.
 
 @*2 Flow Control.
-Some chips use handshaking as part of their design by proper use of the TXE# line.
+Some chips use handshaking as part of their design by proper use of the TXE\# line.
 Such chips can use
 RTS/CTS, DTR/DSR hardware or XON/XOFF software handshaking. It is highly
 recommended that handshaking is used.
@@ -357,9 +357,18 @@ RingBuffer_t USARTtoUSB_Buffer;
 @<Global...@>=
 uint8_t      USARTtoUSB_Buffer_Data[128];
 
+@ LUFA CDC Class driver interface configuration and state information.
+This structure is
+passed to all CDC Class driver functions, so that multiple instances of the same class
+within a device can be differentiated from one another.
+
+@<Global...@>=
+USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface = {
+@<Initialize |Config| of |USB_ClassInfo_CDC_Device_t|@>};
+
 @ Class state structure. An instance of this structure should be made for each CDC interface
 within the user application, and passed to each of the CDC class driver functions as the
-CDCInterfaceInfo parameter. This stores each CDC interface's configuration and state
+|CDCInterfaceInfo| parameter. This stores each CDC interface's configuration and state
 information.
 
 @s USB_ClassInfo_CDC_Device_t int
@@ -384,17 +393,24 @@ typedef struct {
   /* skipped code which is not used in next section */
 } USB_ClassInfo_CDC_Device_t;
 
-@ LUFA CDC Class driver interface configuration and state information.
-This structure is
-passed to all CDC Class driver functions, so that multiple instances of the same class
-within a device can be differentiated from one another.
+@ Type define for a endpoint table entry, used to configure endpoints in groups via
+|Endpoint_ConfigureEndpointTable|.
 
-@<Global...@>=
-USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface = {{@|
+@(/dev/null@>=
+typedef struct {
+  uint8_t  Address; /* address of the endpoint to configure, or zero if
+     the table entry is to be unused */
+  uint16_t Size; /* size of the endpoint bank, in bytes */
+  uint8_t Type; /* type of the endpoint, a \.{EP\_TYPE\_*} mask */
+  uint8_t Banks; /* number of hardware banks to use for the endpoint */
+} USB_Endpoint_Table_t;
+
+@ @<Initialize |Config| of |USB_ClassInfo_CDC_Device_t|@>= {@|
   INTERFACE_ID_CDC_CCI,@|
   {CDC_TX_EPADDR, CDC_TXRX_EPSIZE, .Banks=1},@|
   {CDC_RX_EPADDR, CDC_TXRX_EPSIZE, .Banks=1},@|
-  {CDC_NOTIFICATION_EPADDR, CDC_NOTIFICATION_EPSIZE, .Banks=1}}};
+  {CDC_NOTIFICATION_EPADDR, CDC_NOTIFICATION_EPSIZE, .Banks=1}@/
+}
 
 @ Configures the board hardware and chip peripherals for the demo's functionality.
 
@@ -478,7 +494,7 @@ for later transmission to the host.
 ISR(USART1_RX_vect, ISR_BLOCK)
 {
 	uint8_t ReceivedByte = UDR1;
-
+@^see datasheet@>
 	if ((USB_DeviceState == DEVICE_STATE_Configured) &&
  !(RingBuffer_IsFull(&USARTtoUSB_Buffer)))
 	  RingBuffer_Insert(&USARTtoUSB_Buffer, ReceivedByte);
@@ -501,6 +517,7 @@ USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo; /* pointer to the CDC
 	{
 		case CDC_PARITY_Odd:
 			ConfigMask = ((1 << UPM11) | (1 << UPM10)); @+
+@^see datasheet@>
 			break;
 		case CDC_PARITY_Even:
 			ConfigMask = (1 << UPM11); @+
@@ -509,6 +526,7 @@ USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo; /* pointer to the CDC
 
   if (CDCInterfaceInfo->State.LineEncoding.CharFormat == CDC_LINEENCODING_TwoStopBits)
 	  ConfigMask |= (1 << USBS1);
+@^see datasheet@>
 
 	switch (CDCInterfaceInfo->State.LineEncoding.DataBits)
 	{
@@ -519,6 +537,7 @@ USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo; /* pointer to the CDC
 			ConfigMask |= (1 << UCSZ11); @+
 			break;
 		case 8:
+@^see datasheet@>
 			ConfigMask |= ((1 << UCSZ11) | (1 << UCSZ10)); @+
 			break;
 	}
@@ -528,8 +547,8 @@ USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo; /* pointer to the CDC
 
         @<Turn off USART before reconfiguring it@>@;
 	@<Set the new baud rate before configuring the USART@>@;
-  @<Reconfigure the USART in double speed mode for a wider baud rate range...@>@;
-	@<Release the TX line after the USART has been reconfigured@>@;
+	@<Reconfigure the USART in double speed mode for a wider baud rate range...@>@;
+	PORTD &= ~(1 << 3); /* release the TX line after the USART has been reconfigured */
 }
 
 @ Must turn off USART before reconfiguring it, otherwise incorrect operation may occur.
@@ -538,6 +557,7 @@ USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo; /* pointer to the CDC
 UCSR1B = 0;
 UCSR1A = 0;
 UCSR1C = 0;
+@^see datasheet@>
 
 @ @<Set the new baud rate before configuring the USART@>=
 UBRR1  = SERIAL_2X_UBBRVAL(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS);
@@ -547,9 +567,7 @@ UBRR1  = SERIAL_2X_UBBRVAL(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS);
 UCSR1C = ConfigMask;
 UCSR1A = (1 << U2X1);
 UCSR1B = ((1 << RXCIE1) | (1 << TXEN1) | (1 << RXEN1));
-
-@ @<Release the TX line after the USART has been reconfigured@>=
-PORTD &= ~(1 << 3);
+@^see datasheet@>
 
 @* USB Device Descriptors. Used in USB device mode. Descriptors are special
 computer-readable structures which the host requests upon device enumeration, to determine
@@ -714,7 +732,7 @@ a configuration so that the host may correctly communicate with the USB device.
 
 @<Global...@>=
 const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor = {@|
-  @<Initialize |Config|@>,@|
+  @<Initialize |Config| of |USB_Descriptor_Configuration_t|@>,@|
   @<Initialize |CDC_CCI_Interface|@>,@|
   @<Initialize |CDC_Functional_Header|@>,@|
   @<Initialize |CDC_Functional_ACM|@>,@|
@@ -724,7 +742,38 @@ const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor = {@|
   @<Initialize |CDC_DataOutEndpoint|@>,@|
   @<Initialize |CDC_DataInEndpoint|@>};
 
-@ @<Initialize |Config|@>= {@|
+@ Type define for the device configuration descriptor structure. This must be defined in
+the
+application code, as the configuration descriptor contains several sub-descriptors which
+vary between devices, and which describe the device's usage to the host.
+
+@s USB_Descriptor_Configuration_Header_t int
+@s USB_Descriptor_Interface_t int
+@s USB_CDC_Descriptor_FunctionalHeader_t int
+@s USB_CDC_Descriptor_FunctionalACM_t int
+@s USB_CDC_Descriptor_FunctionalUnion_t int
+@s USB_Descriptor_Endpoint_t int
+
+@<Type definitions@>=
+typedef struct {
+	USB_Descriptor_Configuration_Header_t Config; @+@t}\6{@>
+	@<CDC Command Interface@>@;
+	@<CDC Data Interface@>@;
+} USB_Descriptor_Configuration_t;
+
+@ @<CDC Command Interface@>=
+        USB_Descriptor_Interface_t               CDC_CCI_Interface;
+        USB_CDC_Descriptor_FunctionalHeader_t    CDC_Functional_Header;
+        USB_CDC_Descriptor_FunctionalACM_t       CDC_Functional_ACM;
+        USB_CDC_Descriptor_FunctionalUnion_t     CDC_Functional_Union;
+        USB_Descriptor_Endpoint_t                CDC_NotificationEndpoint;
+
+@ @<CDC Data Interface@>=
+        USB_Descriptor_Interface_t               CDC_DCI_Interface;
+        USB_Descriptor_Endpoint_t                CDC_DataOutEndpoint;
+        USB_Descriptor_Endpoint_t                CDC_DataInEndpoint;
+
+@ @<Initialize |Config| of |USB_Descriptor_Configuration_t|@>= {@|
   {@,@, sizeof @[@](USB_Descriptor_Configuration_Header_t), @,@, DTYPE_Configuration @,@,},@|
   sizeof @[@](USB_Descriptor_Configuration_t),@|
   2,@|
@@ -882,37 +931,6 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 	*DescriptorAddress = Address;
 	return Size;
 }
-
-@ Type define for the device configuration descriptor structure. This must be defined in
-the
-application code, as the configuration descriptor contains several sub-descriptors which
-vary between devices, and which describe the device's usage to the host.
-
-@s USB_Descriptor_Configuration_Header_t int
-@s USB_Descriptor_Interface_t int
-@s USB_CDC_Descriptor_FunctionalHeader_t int
-@s USB_CDC_Descriptor_FunctionalACM_t int
-@s USB_CDC_Descriptor_FunctionalUnion_t int
-@s USB_Descriptor_Endpoint_t int
-
-@<Type definitions@>=
-typedef struct {
-	USB_Descriptor_Configuration_Header_t Config; @+@t}\6{@>
-	@<CDC Command Interface@>@;
-	@<CDC Data Interface@>@;
-} USB_Descriptor_Configuration_t;
-
-@ @<CDC Command Interface@>=
-        USB_Descriptor_Interface_t               CDC_CCI_Interface;
-        USB_CDC_Descriptor_FunctionalHeader_t    CDC_Functional_Header;
-        USB_CDC_Descriptor_FunctionalACM_t       CDC_Functional_ACM;
-        USB_CDC_Descriptor_FunctionalUnion_t     CDC_Functional_Union;
-        USB_Descriptor_Endpoint_t                CDC_NotificationEndpoint;
-
-@ @<CDC Data Interface@>=
-        USB_Descriptor_Interface_t               CDC_DCI_Interface;
-        USB_Descriptor_Endpoint_t                CDC_DataOutEndpoint;
-        USB_Descriptor_Endpoint_t                CDC_DataInEndpoint;
 
 @ Enum for the device interface descriptor IDs within the device. Each interface
 descriptor
