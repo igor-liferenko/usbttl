@@ -63,9 +63,15 @@ Data is received from USB to the PC by a polling method. The driver will request
 amount of data from the
 USB scheduler. This is done in multiples of 64 bytes. The `bulk packet size' on USB is a
 maximum of 64 bytes. The
-host controller will read data from the device until either (a) a packet shorter than
-64 bytes is received or (b) the
-requested data length is reached. The device driver will request packet sizes between 64
+host controller will read data from the device until either
+
+\item{(a)} a packet shorter than
+64 bytes is received or
+\item{(b)} the
+requested data length is reached.
+
+\noindent
+The device driver will request packet sizes between 64
 Bytes and 4 KBytes. The
 size of the packet will affect the performance and is dependent on the data rate.
 For very high speed, the largest
@@ -74,8 +80,8 @@ packet size is needed. For `real-time' applications that are transferring audio 
 be holding up 4k of data at a time. This can give the effect of
 `jerky' data transfer if the USB request size is too large and the data rate too low (relatively).
 
-@*1 Small amounts of data or end of buffer conditions.
-When transferring data to the PC, the device will send the data given one of the following conditions:
+@*1 Buffers and the latency timer (??? Small amounts of data or end of buffer conditions ???).
+When transferring data to the PC, the device will send the data, given one of the following conditions:
 
 \item{1.} The buffer is full (64 bytes made up of 2 status bytes and 62 user bytes).
 \item{2.} One of the RS232 status lines has changed (on some chips). A change of level
@@ -84,54 +90,58 @@ though it may be empty or have less than 64 bytes in it.
 \item{3.} An event character had been enabled and was detected in the in-coming data stream.
 \item{4.} A timer integral to the chip has timed out. There is a timer in some chips that measures
 the time since data was last sent to the PC. The value of the timer is set to 16 milliseconds.
+The value of the timer is adjustable from 1 to 255 milliseconds.
 Every time data is sent back to the PC the timer is reset. If it times-out then the chip
 will send back the 2 status bytes and any data that is
 held in the buffer.
 
 \noindent
-From this it can be seen that small amounts of data (or the end of large amounts of data),
-will be subject to a 16-millisecond delay when transferring into the PC. This delay should
-be taken along with the delays associated with the
-USB request size as mentioned in the previous section. A worst case condition could occur
-where 62 bytes of data
-were received in 16 milliseconds. This would not cause a timeout but would send the
-64 bytes (2 status + 62 user
-data) back to USB every 16 milliseconds. When the USB driver received the 64 bytes
-it would hold on to
-them and request another `IN' transaction. This would be completed 16 milliseconds
-later and so on until USB driver gets
-its 4K of data. The overall time would be (4096 / 64) * 16 milliseconds = 1.024 seconds
-between data packets being
-received by an application. In order for the data to avoid arriving in 4K packets,
-it should be requested in smaller
-amounts. A short packet (< 64 bytes) will of course cause the data to pass from USB driver
-back to our driver for use by the
-application.
-
-\item{$\bullet$} For application programmers it must be stressed that data
-should be sent or received using buffers and not
-individual characters.
-
-@*1 Overcoming the Latency timer.
-To try to overcome the latency timer, one of the other conditions has to be met. That is:
-
-\item{1.} The buffer is full (64 bytes made up of 2 status bytes and 62 user bytes).
-\item{2.} One of the RS232 status lines has changed (some chips only). A change of level
-(high or low) on CTS / DSR / DCD or RI will cause it to pass back the current buffer even
-though it may be empty or have less than 64 bytes in it.
-\item{3.} An event character had been enabled and was detected in the in-coming data stream.
+From this it can be seen that small amounts of data (or the end of large amounts of data), will be
+subject to a 16 millisecond delay when transferring into the PC. This delay should be taken along
+with the delays associated with the USB request size as mentioned in the previous section. The
+timer value was chosen so that we could make advantage of 64 byte packets to fill large buffers
+when in high speed mode, as well as letting single characters through. Since the value chosen for
+the latency timer is 16 milliseconds, this means that it will take 16 milliseconds to receive an
+individual character, over and above the transfer time on serial or parallel link.
 
 \noindent
-The most obvious way is to keep sending it data. In this way the data in continuously pushed
-through the chip and is not held waiting for a timeout. 
+For large amounts of data, at high data rates, the timer will not be used. It may be used to send
+the last packet of a block, if the final packet size works out to be less than 64 bytes. The first 2
+bytes of every packet are used as status bytes for the driver. This status is sent every 16
+milliseconds, even when no data is present in the device.
 
-Another method, that can be used by some chips, is to change one of the modem status lines. This
-can be done by an external device or by the host PC itself. If an unused output line
-(DTR) is connected to one of the unused inputs (DSR), then it can be used to flush
-the buffer in the chip. If the DTR line is changed by the application
-program from low to high or high to low, this will cause a change on DSR and make it flush the buffer.
+\noindent
+A worst case condition could occur when 62 bytes of data are received in 16 milliseconds. This
+would not cause a timeout, but would send the 64 bytes (2 status + 62 user data bytes) back to
+USB every 16 milliseconds. When the USB driver receives the 64 bytes it would hold on
+to them and request another 'IN' transaction. This would be completed another 16 milliseconds
+later and so on until USB driver gets all of the 4K of data required. The overall time would be (4096 /
+64) * 16 milliseconds = 1.024 seconds between data packets being received by the application. In
+order to stop the data arriving in 4K packets, it should be requested in smaller amounts. A short
+packet (< 64 bytes) will of course cause the data to pass from USB driver back to the chip driver for
+use by the application.
 
-The last method is Event Characters. If the Event character is enabled
+\item{$\bullet$} For application programmers it must be stressed that data
+should be sent or received using buffers and {\bf not}
+individual characters.
+
+??? So, the above four conditions can be used to overcome the latency timer.
+
+The most obvious way is to keep sending data. In this way the data is continuously pushed
+through the chip and is not held waiting for a timeout. ???
+
+@*1 Events and flow control.
+
+@*2 Flushing the Receive Buffer Using the Modem Status Lines.
+Flow control can be used by some chips to flush
+the buffer in the chip. Changing one of the modem status lines will do this. The modem status
+lines can be controlled by an external device or from the host PC itself. If an unused output line
+(DTR) is connected to one of the unused inputs (DSR), then if the DTR line is changed by the
+application program from low to high or high to low, this will cause a change on DSR and make it
+flush the buffer.
+
+@*2 Event Characters.
+If the Event character is enabled
 and it is detected in the data stream, then the buffer is sent immediately.
 The event character is not stripped out of the
 data stream by the device or drivers. It is up to the application to deal with it.
@@ -146,7 +156,7 @@ packets that have `$7E' at the start and end of the packet. To maximise throughp
 avoid a packet with only the
 starting `$7E' in it, the event character does not trigger on the first position.
 
-@*1 Flow Control.
+@*2 Flow Control.
 Some chips use handshaking as part of their design by proper use of the TXE# line.
 Such chips can use
 RTS/CTS, DTR/DSR hardware or XON/XOFF software handshaking. It is highly
@@ -175,6 +185,59 @@ This will result in a lot of
 graphics activity and data loss will occur if receiving data at 115200 baud (as an example)
 with no handshaking. If the
 data rate is low or data loss is acceptable then flow control may be omitted. 
+
+@* Effect of USB Buffer Size and the Latency Timer on Data Throughput.
+An effect that is not immediately obvious is the way the size of the USB total packet request has on
+the smoothness of data flow. When a read request is sent to USB, the USB host controller will
+continue to read 64 byte packets until one of the following conditions is met:
+
+\item{1.} It has read the requested size (default is 4 Kbytes).
+\item{2.} It has received a packet shorter than 64 bytes from the chip.
+\item{3.} It has been cancelled.
+
+\noindent
+While the host controller is waiting for one of the above conditions to occur, NO data is received by
+our driver and hence the user's application. The data, if there is any, is only finally transferred
+after
+one of the above conditions has occurred.
+
+\noindent
+Normally condition 3 will not occur so we will look at cases 1 and 2. If 64 byte packets are
+continually sent back to the host, then it will continue to read the data to match the block size
+requested before it sends the block back to the driver. If a small amount of data is sent, or the
+data is sent slowly, then the latency timer will take over and send a short packet back to the host
+which will terminate the read request. The data that has been read so far is then passed on to the
+users application via the chip driver. This shows a relationship between the latency timer, the data
+rate and when the data will become available to the user. A condition can occur where if data is
+passed into the chip at such a rate as to avoid the latency timer timing out, it can take a long
+time between receiving data blocks. This occurs because the host controller will see 64 byte
+packets at the point just before the end of the latency period and will therefore continue to read the
+data until it reaches the block size before it is passed back to the user's application.
+
+The rate that causes this will be:
+
+62 / Latency Timer bytes/Second
+(2 bytes per 64 byte packet are used for status)
+
+For the default values: -
+62 / 0.016 $\approx$ 3875 bytes/second $\approx$ 38.75 KBaud
+
+Therefore if data is received at a rate of 3875 bytes per second (38.75 KBaud) or faster, then the
+data will be subject to delays based on the requested USB block length. If data is received at a
+slower rate, then there will be less than 62 bytes (64 including our 2 status bytes) available after 16
+milliseconds. Therefore a short packet will occur, thus terminating the USB request and passing
+the data back. At the limit condition of 38.75 KBaud it will take approximately 1.06 seconds
+between data buffers into the users application (assuming a 4Kbyte USB block request buffer size).
+
+To get around this you can either increase the latency timer or reduce the USB block request.
+Reducing the USB block request is the preferred method though a balance between the 2 may be
+sought for optimum system response.
+
+USB Transfer (buffer) size can be adjusted in the chip. Transmit buffer and receive buffer
+are separate. TODO: read Dimitrov's arduino forum thread about this.
+@^TODO@>
+
+The size of the USB block requested can be adjusted in the chip.
 
 @** Main program entry point. This routine contains the overall program flow, including
 initial
