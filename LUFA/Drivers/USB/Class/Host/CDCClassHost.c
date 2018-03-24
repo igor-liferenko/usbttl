@@ -130,7 +130,7 @@ uint8_t CDC_Host_ConfigurePipes(USB_ClassInfo_CDC_Host_t* const CDCInterfaceInfo
 
 static uint8_t DCOMP_CDC_Host_NextCDCControlInterface(void* const CurrentDescriptor)
 {
-	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
+	USB_Descriptor_Device_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Device_Header_t);
 
 	if (Header->Type == DTYPE_Interface)
 	{
@@ -149,7 +149,7 @@ static uint8_t DCOMP_CDC_Host_NextCDCControlInterface(void* const CurrentDescrip
 
 static uint8_t DCOMP_CDC_Host_NextCDCDataInterface(void* const CurrentDescriptor)
 {
-	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
+	USB_Descriptor_Device_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Device_Header_t);
 
 	if (Header->Type == DTYPE_Interface)
 	{
@@ -168,7 +168,7 @@ static uint8_t DCOMP_CDC_Host_NextCDCDataInterface(void* const CurrentDescriptor
 
 static uint8_t DCOMP_CDC_Host_NextCDCInterfaceEndpoint(void* const CurrentDescriptor)
 {
-	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
+	USB_Descriptor_Device_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Device_Header_t);
 
 	if (Header->Type == DTYPE_Endpoint)
 	{

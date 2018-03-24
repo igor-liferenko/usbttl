@@ -601,7 +601,7 @@
 		 */
 		typedef struct
 		{
-			USB_Descriptor_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
+			USB_Descriptor_Device_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
 
 			uint16_t                HIDSpec; /**< BCD encoded version that the HID descriptor and device complies to.
 			                                  *

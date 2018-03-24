@@ -158,7 +158,7 @@
 		 */
 		typedef struct
 		{
-			USB_Descriptor_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
+			USB_Descriptor_Device_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
 			uint8_t                 Subtype; /**< Sub type value used to distinguish between audio class-specific descriptors. */
 
 			uint16_t                AudioSpecification; /**< Binary coded decimal value, indicating the supported Audio Class
@@ -207,7 +207,7 @@
 		 */
 		typedef struct
 		{
-			USB_Descriptor_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
+			USB_Descriptor_Device_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
 			uint8_t                 Subtype; /**< Sub type value used to distinguish between audio class-specific descriptors. */
 
 			uint8_t                 JackType; /**< Type of jack, one of the \c JACKTYPE_* mask values. */
@@ -252,7 +252,7 @@
 		 */
 		typedef struct
 		{
-			USB_Descriptor_Header_t   Header; /**< Regular descriptor header containing the descriptor's type and length. */
+			USB_Descriptor_Device_Header_t   Header; /**< Regular descriptor header containing the descriptor's type and length. */
 			uint8_t                   Subtype; /**< Sub type value used to distinguish between audio class-specific descriptors. */
 
 			uint8_t                   JackType; /**< Type of jack, one of the \c JACKTYPE_* mask values. */
@@ -306,7 +306,7 @@
 		 */
 		typedef struct
 		{
-			USB_Descriptor_Header_t   Header; /**< Regular descriptor header containing the descriptor's type and length. */
+			USB_Descriptor_Device_Header_t   Header; /**< Regular descriptor header containing the descriptor's type and length. */
 			uint8_t                   Subtype; /**< Sub type value used to distinguish between audio class-specific descriptors. */
 
 			uint8_t                   TotalEmbeddedJacks; /**< Total number of jacks inside this endpoint. */

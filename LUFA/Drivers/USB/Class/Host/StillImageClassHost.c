@@ -116,7 +116,7 @@ uint8_t SI_Host_ConfigurePipes(USB_ClassInfo_SI_Host_t* const SIInterfaceInfo,
 
 uint8_t DCOMP_SI_Host_NextSIInterface(void* const CurrentDescriptor)
 {
-	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
+	USB_Descriptor_Device_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Device_Header_t);
 
 	if (Header->Type == DTYPE_Interface)
 	{
@@ -135,7 +135,7 @@ uint8_t DCOMP_SI_Host_NextSIInterface(void* const CurrentDescriptor)
 
 uint8_t DCOMP_SI_Host_NextSIInterfaceEndpoint(void* const CurrentDescriptor)
 {
-	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
+	USB_Descriptor_Device_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Device_Header_t);
 
 	if (Header->Type == DTYPE_Endpoint)
 	{

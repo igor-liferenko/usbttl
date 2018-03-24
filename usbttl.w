@@ -5,7 +5,7 @@
 % USB_CDC_Descriptor_FunctionalHeader_t
 % USB_CDC_Descriptor_FunctionalACM_t
 % USB_CDC_Descriptor_FunctionalUnion_t
-% USB_Descriptor_Header_t
+% USB_Descriptor_Device_Header_t
 
 %NOTE: do not do via
 % USB_StdDescriptor_Configuration_Header_t
@@ -583,13 +583,13 @@ names.
 Note, that egardless of CPU architecture, these values should be stored as little endian.
 
 @s USB_Descriptor_Device_t int
-@s USB_Descriptor_Header_t int
+@s USB_Descriptor_Device_Header_t int
 @s uint8_t int
 @s uint16_t int
 
 @(/dev/null@>=
 typedef struct {
-  USB_Descriptor_Header_t Header; /* Descriptor header, including type and size. */
+  USB_Descriptor_Device_Header_t Header; /* Descriptor header, including type and size. */
   uint16_t USBSpecification; /* BCD of the supported USB specification;
 		                see |VERSION_BCD| utility macro */
   uint8_t  Class; /* USB device class. */
@@ -659,13 +659,13 @@ element names.
 Note, that regardless of CPU architecture, these values should be stored as little endian.
 
 @s USB_Descriptor_Configuration_Header_t int
-@s USB_Descriptor_Header_t int
+@s USB_Descriptor_Device_Header_t int
 @s uint16_t int
 @s uint8_t int
 
 @(/dev/null@>=
 typedef struct {
-  USB_Descriptor_Header_t Header; /* Descriptor header, including type and size. */
+  USB_Descriptor_Device_Header_t Header; /* Descriptor header, including type and size. */
   uint16_t TotalConfigurationSize; /* Size of the configuration descriptor header,
                                      and all sub descriptors inside the configuration. */
   uint8_t  TotalInterfaces; /* Total number of interfaces in the configuration. */
@@ -690,14 +690,14 @@ See |USB_StdDescriptor_Endpoint_t| for the version of this type with standard el
 
 Note, that regardless of CPU architecture, these values should be stored as little endian.
 
-@s USB_Descriptor_Header_t int
+@s USB_Descriptor_Device_Header_t int
 @s USB_Descriptor_Endpoint_t int
 @s uint8_t int
 @s uint16_t int
 
 @(/dev/null@>=
 typedef struct {
-  USB_Descriptor_Header_t Header; /* Descriptor header, including type and size. */
+  USB_Descriptor_Device_Header_t Header; /* Descriptor header, including type and size. */
 
   uint8_t  EndpointAddress; /* Logical address of the endpoint within the device for the current
                                configuration, including direction mask. */

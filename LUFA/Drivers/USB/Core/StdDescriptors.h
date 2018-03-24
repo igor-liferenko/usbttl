@@ -83,7 +83,7 @@
 			 *
 			 *  \param[in] UnicodeChars  Number of Unicode characters in the string text.
 			 */
-			#define USB_STRING_LEN(UnicodeChars)      (sizeof(USB_Descriptor_Header_t) + ((UnicodeChars) << 1))
+			#define USB_STRING_LEN(UnicodeChars)      (sizeof(USB_Descriptor_Device_Header_t) + ((UnicodeChars) << 1))
 
 			/** Convenience macro to easily create \ref USB_Descriptor_String_t instances from a wide character string.
 			 *
@@ -91,13 +91,13 @@
 			 *
 			 *  \param[in] String  String to initialize a USB String Descriptor structure with.
 			 */
-			#define USB_STRING_DESCRIPTOR(String)     { .Header = {.Size = sizeof(USB_Descriptor_Header_t) + (sizeof(String) - 2), .Type = DTYPE_String}, .UnicodeString = String }
+			#define USB_STRING_DESCRIPTOR(String)     { .Header = {.Size = sizeof(USB_Descriptor_Device_Header_t) + (sizeof(String) - 2), .Type = DTYPE_String}, .UnicodeString = String }
 
 			/** Convenience macro to easily create \ref USB_Descriptor_String_t instances from an array of characters.
 			 *
 			 *  \param[in] ...  Characters to initialize a USB String Descriptor structure with.
 			 */
-			#define USB_STRING_DESCRIPTOR_ARRAY(...)  { .Header = {.Size = sizeof(USB_Descriptor_Header_t) + sizeof((uint16_t){__VA_ARGS__}), .Type = DTYPE_String}, .UnicodeString = {__VA_ARGS__} }
+			#define USB_STRING_DESCRIPTOR_ARRAY(...)  { .Header = {.Size = sizeof(USB_Descriptor_Device_Header_t) + sizeof((uint16_t){__VA_ARGS__}), .Type = DTYPE_String}, .UnicodeString = {__VA_ARGS__} }
 
 			/** Macro to encode a given major/minor/revision version number into Binary Coded Decimal format for descriptor
 			 *  fields requiring BCD encoding, such as the USB version number in the standard device descriptor.
@@ -250,7 +250,7 @@
              *  Type define for all descriptors' standard header, indicating the descriptor's length and type. This structure
 			 *  uses LUFA-specific element names to make each element's purpose clearer.
 			 *
-			 *  \see \ref USB_StdDescriptor_Header_t for the version of this type with standard element names.
+			 *  \see \ref USB_StdDescriptor_Device_Header_t for the version of this type with standard element names.
 			 *
 			 *  \note Regardless of CPU architecture, these values should be stored as little endian.
 			 */
@@ -260,14 +260,14 @@
 				uint8_t Type; /**< Type of the descriptor, either a value in \ref USB_DescriptorTypes_t or a value
 				               *   given by the specific class.
 				               */
-			} ATTR_PACKED USB_Descriptor_Header_t;
+			} ATTR_PACKED USB_Descriptor_Device_Header_t;
 
 			/** \brief Standard USB Descriptor Header (USB-IF naming conventions).
 			 *
 			 *  Type define for all descriptors' standard header, indicating the descriptor's length and type. This structure
 			 *  uses the relevant standard's given element names to ensure compatibility with the standard.
 			 *
-			 *  \see \ref USB_Descriptor_Header_t for the version of this type with non-standard LUFA specific element names.
+			 *  \see \ref USB_Descriptor_Device_Header_t for the version of this type with non-standard LUFA specific element names.
 			 *
 			 *  \note Regardless of CPU architecture, these values should be stored as little endian.
 			 */
@@ -277,7 +277,7 @@
 				uint8_t bDescriptorType; /**< Type of the descriptor, either a value in \ref USB_DescriptorTypes_t or a value
 				                          *   given by the specific class.
 				                          */
-			} ATTR_PACKED USB_StdDescriptor_Header_t;
+			} ATTR_PACKED USB_StdDescriptor_Device_Header_t;
 
 			/** \brief Standard USB Device Descriptor (LUFA naming conventions).
 			 *
@@ -290,7 +290,7 @@
 			 */
 			typedef struct
 			{
-				USB_Descriptor_Header_t Header; /**< Descriptor header, including type and size. */
+				USB_Descriptor_Device_Header_t Header; /**< Descriptor header, including type and size. */
 
 				uint16_t USBSpecification; /**< BCD of the supported USB specification.
 				                            *
@@ -400,7 +400,7 @@
 			 */
 			typedef struct
 			{
-				USB_Descriptor_Header_t Header; /**< Descriptor header, including type and size. */
+				USB_Descriptor_Device_Header_t Header; /**< Descriptor header, including type and size. */
 
 				uint16_t USBSpecification; /**< BCD of the supported USB specification.
 				                            *
@@ -455,7 +455,7 @@
 			 */
 			typedef struct
 			{
-				USB_Descriptor_Header_t Header; /**< Descriptor header, including type and size. */
+				USB_Descriptor_Device_Header_t Header; /**< Descriptor header, including type and size. */
 
 				uint16_t TotalConfigurationSize; /**< Size of the configuration descriptor header,
 				                                  *   and all sub descriptors inside the configuration.
@@ -516,7 +516,7 @@
 			 */
 			typedef struct
 			{
-				USB_Descriptor_Header_t Header; /**< Descriptor header, including type and size. */
+				USB_Descriptor_Device_Header_t Header; /**< Descriptor header, including type and size. */
 
 				uint8_t InterfaceNumber; /**< Index of the interface in the current configuration. */
 				uint8_t AlternateSetting; /**< Alternate setting for the interface number. The same
@@ -580,7 +580,7 @@
 			 */
 			typedef struct
 			{
-				USB_Descriptor_Header_t Header; /**< Descriptor header, including type and size. */
+				USB_Descriptor_Device_Header_t Header; /**< Descriptor header, including type and size. */
 
 				uint8_t FirstInterfaceIndex; /**< Index of the first associated interface. */
 				uint8_t TotalInterfaces; /**< Total number of associated interfaces. */
@@ -637,7 +637,7 @@
 			 */
 			typedef struct
 			{
-				USB_Descriptor_Header_t Header; /**< Descriptor header, including type and size. */
+				USB_Descriptor_Device_Header_t Header; /**< Descriptor header, including type and size. */
 
 				uint8_t  EndpointAddress; /**< Logical address of the endpoint within the device for the current
 				                           *   configuration, including direction mask.
@@ -700,7 +700,7 @@
 			 */
 			typedef struct
 			{
-				USB_Descriptor_Header_t Header; /**< Descriptor header, including type and size. */
+				USB_Descriptor_Device_Header_t Header; /**< Descriptor header, including type and size. */
 
 				#if (((ARCH == ARCH_AVR8) || (ARCH == ARCH_XMEGA)) && !defined(__DOXYGEN__))
 				wchar_t  UnicodeString[];

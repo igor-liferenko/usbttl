@@ -100,7 +100,7 @@ uint8_t MS_Host_ConfigurePipes(USB_ClassInfo_MS_Host_t* const MSInterfaceInfo,
 
 static uint8_t DCOMP_MS_Host_NextMSInterface(void* const CurrentDescriptor)
 {
-	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
+	USB_Descriptor_Device_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Device_Header_t);
 
 	if (Header->Type == DTYPE_Interface)
 	{
@@ -119,7 +119,7 @@ static uint8_t DCOMP_MS_Host_NextMSInterface(void* const CurrentDescriptor)
 
 static uint8_t DCOMP_MS_Host_NextMSInterfaceEndpoint(void* const CurrentDescriptor)
 {
-	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
+	USB_Descriptor_Device_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Device_Header_t);
 
 	if (Header->Type == DTYPE_Endpoint)
 	{
