@@ -38,7 +38,7 @@ uint8_t USB_Host_GetDeviceConfigDescriptor(const uint8_t ConfigNumber,
                                            const uint16_t BufferSize)
 {
 	uint8_t ErrorCode;
-	uint8_t ConfigHeader[sizeof(USB_Descriptor_Configuration_Header_t)];
+	uint8_t ConfigHeader[sizeof(USB_Descriptor_Config_Header_t)];
 
 	USB_ControlRequest = (USB_Request_Header_t)
 		{
@@ -46,7 +46,7 @@ uint8_t USB_Host_GetDeviceConfigDescriptor(const uint8_t ConfigNumber,
 			.bRequest      = REQ_GetDescriptor,
 			.wValue        = ((DTYPE_Configuration << 8) | (ConfigNumber - 1)),
 			.wIndex        = 0,
-			.wLength       = sizeof(USB_Descriptor_Configuration_Header_t),
+			.wLength       = sizeof(USB_Descriptor_Config_Header_t),
 		};
 
 	Pipe_SelectPipe(PIPE_CONTROLPIPE);
@@ -54,7 +54,7 @@ uint8_t USB_Host_GetDeviceConfigDescriptor(const uint8_t ConfigNumber,
 	if ((ErrorCode = USB_Host_SendControlRequest(ConfigHeader)) != HOST_SENDCONTROL_Successful)
 	  return ErrorCode;
 
-	*ConfigSizePtr = le16_to_cpu(DESCRIPTOR_PCAST(ConfigHeader, USB_Descriptor_Configuration_Header_t)->TotalConfigurationSize);
+	*ConfigSizePtr = le16_to_cpu(DESCRIPTOR_PCAST(ConfigHeader, USB_Descriptor_Config_Header_t)->TotalConfigurationSize);
 
 	if (*ConfigSizePtr > BufferSize)
 	  return HOST_GETCONFIG_BuffOverflow;

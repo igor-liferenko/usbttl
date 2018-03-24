@@ -126,13 +126,13 @@
 			 */
 			#define USB_CONFIG_ATTR_RESERVED          0x80
 
-			/** Can be masked with other configuration descriptor attributes for a \ref USB_Descriptor_Configuration_Header_t
+			/** Can be masked with other configuration descriptor attributes for a \ref USB_Descriptor_Config_Header_t
 			 *  descriptor's \c ConfigAttributes value to indicate that the specified configuration can draw its power
 			 *  from the device's own power source.
 			 */
 			#define USB_CONFIG_ATTR_SELFPOWERED       0x40
 
-			/** Can be masked with other configuration descriptor attributes for a \ref USB_Descriptor_Configuration_Header_t
+			/** Can be masked with other configuration descriptor attributes for a \ref USB_Descriptor_Config_Header_t
 			 *  descriptor's \c ConfigAttributes value to indicate that the specified configuration supports the
 			 *  remote wakeup feature of the USB standard, allowing a suspended USB device to wake up the host upon
 			 *  request.
@@ -449,7 +449,7 @@
 			 *  Type define for a standard Configuration Descriptor header. This structure uses LUFA-specific element names
 			 *  to make each element's purpose clearer.
 			 *
-			 *  \see \ref USB_StdDescriptor_Configuration_Header_t for the version of this type with standard element names.
+			 *  \see \ref USB_StdDescriptor_Config_Header_t for the version of this type with standard element names.
 			 *
 			 *  \note Regardless of CPU architecture, these values should be stored as little endian.
 			 */
@@ -473,7 +473,7 @@
 				                               *   current configuration, calculated by the \ref USB_CONFIG_POWER_MA()
 				                               *   macro.
 				                               */
-			} ATTR_PACKED USB_Descriptor_Configuration_Header_t;
+			} ATTR_PACKED USB_Descriptor_Config_Header_t;
 
 			/** \brief Standard USB Configuration Descriptor (USB-IF naming conventions).
 			 *
@@ -503,7 +503,7 @@
 				                     *   current configuration, calculated by the \ref USB_CONFIG_POWER_MA()
 				                     *   macro.
 				                     */
-			} ATTR_PACKED USB_StdDescriptor_Configuration_Header_t;
+			} ATTR_PACKED USB_StdDescriptor_Config_Header_t;
 
 			/** \brief Standard USB Interface Descriptor (LUFA naming conventions).
 			 *

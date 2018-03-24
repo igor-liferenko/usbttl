@@ -74,8 +74,8 @@
 			 *  Usage Example:
 			 *  \code
 			 *  uint8_t* CurrDescriptor = &ConfigDescriptor[0]; // Pointing to the configuration header
-			 *  USB_Descriptor_Configuration_Header_t* ConfigHeaderPtr = DESCRIPTOR_PCAST(CurrDescriptor,
-			 *                                                           USB_Descriptor_Configuration_Header_t);
+			 *  USB_Descriptor_Config_Header_t* ConfigHeaderPtr = DESCRIPTOR_PCAST(CurrDescriptor,
+			 *                                                           USB_Descriptor_Config_Header_t);
 			 *
 			 *  // Can now access elements of the configuration header struct using the -> indirection operator
 			 *  \endcode
@@ -88,8 +88,8 @@
 			 *  Usage Example:
 			 *  \code
 			 *  uint8_t* CurrDescriptor = &ConfigDescriptor[0]; // Pointing to the configuration header
-			 *  USB_Descriptor_Configuration_Header_t ConfigHeader = DESCRIPTOR_CAST(CurrDescriptor,
-			 *                                                       USB_Descriptor_Configuration_Header_t);
+			 *  USB_Descriptor_Config_Header_t ConfigHeader = DESCRIPTOR_CAST(CurrDescriptor,
+			 *                                                       USB_Descriptor_Config_Header_t);
 			 *
 			 *  // Can now access elements of the configuration header struct using the . operator
 			 *  \endcode

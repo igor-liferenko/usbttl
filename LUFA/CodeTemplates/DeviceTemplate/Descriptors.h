@@ -52,8 +52,8 @@
 		 */
 		typedef struct
 		{
-			USB_Descriptor_Configuration_Header_t Config;
-		} USB_Descriptor_Configuration_t;
+			USB_Descriptor_Config_Header_t Config;
+		} USB_Descriptor_Config_t;
 
 #endif
 

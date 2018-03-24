@@ -8,11 +8,11 @@
 % USB_Descriptor_Device_Header_t
 
 %NOTE: do not do via
-% USB_StdDescriptor_Configuration_Header_t
+% USB_StdDescriptor_Config_Header_t
 %and
 % USB_StdDescriptor_Endpoint_t
 %until you do everything in one file (even when you do all in one file, think
-%if doing via |USB_StdDescriptor_Configuration_Header_t| is better than default)
+%if doing via |USB_StdDescriptor_Config_Header_t| is better than default)
 
 % TODO: make DTR work (see arduino's modification of this firmware at
 % https://github.com/arduino/Arduino/tree/master/hardware/arduino/%
@@ -659,12 +659,12 @@ Type define for a standard Configuration Descriptor header. This structure uses 
 element names
 to make each element's purpose clearer.
 
-See |USB_StdDescriptor_Configuration_Header_t| for the version of this type with standard
+See |USB_StdDescriptor_Config_Header_t| for the version of this type with standard
 element names.
 
 Note, that regardless of CPU architecture, these values should be stored as little endian.
 
-@s USB_Descriptor_Configuration_Header_t int
+@s USB_Descriptor_Config_Header_t int
 @s USB_Descriptor_Device_Header_t int
 @s uint16_t int
 @s uint8_t int
@@ -685,7 +685,7 @@ typedef struct {
   uint8_t  MaxPowerConsumption; /* Maximum power consumption of the device while in the
                                    current configuration, calculated by the |USB_CONFIG_POWER_MA|
                                    macro. */
-} ATTR_PACKED USB_Descriptor_Configuration_Header_t;
+} ATTR_PACKED USB_Descriptor_Config_Header_t;
 
 @ Configuration descriptor structure. This descriptor, located in FLASH memory, describes
 the usage
@@ -704,11 +704,11 @@ a configuration so that the host may correctly communicate with the USB device.
 @d CDC_NOTIFICATION_EPSIZE 8 /* size in bytes of the CDC device-to-host notification IN
   endpoint */
 @d CDC_TXRX_EPSIZE 16 /* size in bytes of the CDC data IN and OUT endpoints */
-@s USB_Descriptor_Configuration_t int
+@s USB_Descriptor_Config_t int
 
 @<Global...@>=
-const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor = {@|
-  @<Initialize |Config| of |USB_Descriptor_Configuration_t|@>,@|
+const USB_Descriptor_Config_t PROGMEM ConfigurationDescriptor = {@|
+  @<Initialize |Config| of |USB_Descriptor_Config_t|@>,@|
   @<Initialize |CDC_CCI_Interface|@>,@|
   @<Initialize |CDC_Functional_Header|@>,@|
   @<Initialize |CDC_Functional_ACM|@>,@|
@@ -723,7 +723,7 @@ the
 application code, as the configuration descriptor contains several sub-descriptors which
 vary between devices, and which describe the device's usage to the host.
 
-@s USB_Descriptor_Configuration_Header_t int
+@s USB_Descriptor_Config_Header_t int
 @s USB_Descriptor_Interface_t int
 @s USB_CDC_Descriptor_FunctionalHeader_t int
 @s USB_CDC_Descriptor_FunctionalACM_t int
@@ -732,10 +732,10 @@ vary between devices, and which describe the device's usage to the host.
 
 @<Type definitions@>=
 typedef struct {
-	USB_Descriptor_Configuration_Header_t Config; @+@t}\6{@>
+	USB_Descriptor_Config_Header_t Config; @+@t}\6{@>
 	@<CDC Command Interface@>@;
 	@<CDC Data Interface@>@;
-} USB_Descriptor_Configuration_t;
+} USB_Descriptor_Config_t;
 
 @ @<CDC Command Interface@>=
         USB_Descriptor_Interface_t               CDC_CCI_Interface;
@@ -749,9 +749,9 @@ typedef struct {
         USB_Descriptor_Endpoint_t                CDC_DataOut_Endpoint;
         USB_Descriptor_Endpoint_t                CDC_DataIn_Endpoint;
 
-@ @<Initialize |Config| of |USB_Descriptor_Configuration_t|@>= {@|
-  {@,@, sizeof @[@](USB_Descriptor_Configuration_Header_t), @,@, DTYPE_Configuration @,@,},@|
-  sizeof @[@](USB_Descriptor_Configuration_t),@|
+@ @<Initialize |Config| of |USB_Descriptor_Config_t|@>= {@|
+  {@,@, sizeof @[@](USB_Descriptor_Config_Header_t), @,@, DTYPE_Configuration @,@,},@|
+  sizeof @[@](USB_Descriptor_Config_t),@|
   2,@|
   1,@|
   NO_DESCRIPTOR,@|
@@ -920,7 +920,7 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 			break;
 		case DTYPE_Configuration: @/
 			Address = &ConfigurationDescriptor;
-			Size    = sizeof (USB_Descriptor_Configuration_t);
+			Size    = sizeof (USB_Descriptor_Config_t);
 			break;
 		case DTYPE_String: @/
 			switch (DescriptorNumber)

@@ -69,13 +69,13 @@ const USB_Descriptor_Device_t DeviceDescriptor =
  *  and endpoints. The descriptor is read out by the USB host during the enumeration process when selecting
  *  a configuration so that the host may correctly communicate with the USB device.
  */
-const USB_Descriptor_Configuration_t ConfigurationDescriptor =
+const USB_Descriptor_Config_t ConfigurationDescriptor =
 {
 	.Config =
 		{
-			.Header                   = {.Size = sizeof(USB_Descriptor_Configuration_Header_t), .Type = DTYPE_Configuration},
+			.Header                   = {.Size = sizeof(USB_Descriptor_Config_Header_t), .Type = DTYPE_Configuration},
 
-			.TotalConfigurationSize   = sizeof(USB_Descriptor_Configuration_t),
+			.TotalConfigurationSize   = sizeof(USB_Descriptor_Config_t),
 			.TotalInterfaces          = 0,
 
 			.ConfigurationNumber      = 1,
@@ -148,7 +148,7 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 			break;
 		case DTYPE_Configuration:
 			Address = &ConfigurationDescriptor;
-			Size    = sizeof(USB_Descriptor_Configuration_t);
+			Size    = sizeof(USB_Descriptor_Config_t);
 			break;
 		case DTYPE_String:
 			switch (DescriptorNumber)
