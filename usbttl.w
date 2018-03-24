@@ -251,6 +251,7 @@ setup of all components and the main program loop.
 @c
 @<Header files@>@;
 @<Type definitions@>@;
+@<Enums@>@;
 @<Function prototypes@>@;
 @<Global variables@>@;
 
@@ -490,6 +491,10 @@ void EVENT_USB_Device_ControlRequest(void)
 a circular buffer
 for later transmission to the host.
 
+FIXME: see arvtel.w how interrupt is done there, and articles on interrupts in avr/TIPS - what
+is ISR?
+@^FIXME@>
+
 @c
 ISR(USART1_RX_vect, ISR_BLOCK)
 {
@@ -633,19 +638,20 @@ process begins.
 
 @<Global...@>=
 const USB_Descriptor_Device_t PROGMEM DeviceDescriptor = {@|
-{@,@, sizeof @[@](USB_Descriptor_Device_t), DTYPE_Device @,@,},@|
-VERSION_BCD(1,1,0),@|
-CDC_CSCP_CDCClass,@|
-CDC_CSCP_NoSpecificSubclass,@|
-CDC_CSCP_NoSpecificProtocol,@|
-FIXED_CONTROL_ENDPOINT_SIZE,@|
-0x03EB,@|
-0x204B,@|
-VERSION_BCD(0,0,1),@|
-STRING_ID_Manufacturer,@|
-STRING_ID_Product,@|
-USE_INTERNAL_SERIAL,@|
-FIXED_NUM_CONFIGURATIONS};
+  {@,@, sizeof @[@](USB_Descriptor_Device_t), DTYPE_Device @,@,},@|
+  VERSION_BCD(1,1,0),@|
+  CDC_CSCP_CDCClass,@|
+  CDC_CSCP_NoSpecificSubclass,@|
+  CDC_CSCP_NoSpecificProtocol,@|
+  FIXED_CONTROL_ENDPOINT_SIZE,@|
+  0x03EB,@|
+  0x204B,@|
+  VERSION_BCD(0,0,1),@|
+  STRING_ID_Manufacturer,@|
+  STRING_ID_Product,@|
+  USE_INTERNAL_SERIAL,@|
+  FIXED_NUM_CONFIGURATIONS @/
+};
 
 @ Standard USB Configuration Descriptor.
 
@@ -945,11 +951,10 @@ descriptor
 should have a unique ID index associated with it, which can be used to refer to the
 interface from other descriptors.
 
-@<Type definitions@>=
-enum InterfaceDescriptors_t
-{@|
-	INTERFACE_ID_CDC_CCI = 0, /* CDC CCI interface descriptor ID */
-	INTERFACE_ID_CDC_DCI = 1, /* CDC DCI interface descriptor ID */
+@<Enums@>=
+enum {
+  INTERFACE_ID_CDC_CCI = 0, /* CDC CCI interface descriptor ID */
+  INTERFACE_ID_CDC_DCI = 1, /* CDC DCI interface descriptor ID */
 };
 
 @ Enum for the device string descriptor IDs within the device. Each string descriptor
@@ -957,12 +962,11 @@ should
 have a unique ID index associated with it, which can be used to refer to the string from
 other descriptors.
 
-@<Type definitions@>=
-enum StringDescriptors_t
-{@|
-  STRING_ID_Language     = 0, /* Supported Languages string descriptor ID (must be zero) */
-	STRING_ID_Manufacturer = 1, /* Manufacturer string ID */
-	STRING_ID_Product      = 2, /* Product string ID */
+@<Enums@>=
+enum {
+  STRING_ID_Language = 0, /* Supported Languages string descriptor ID (must be zero) */
+  STRING_ID_Manufacturer = 1, /* Manufacturer string ID */
+  STRING_ID_Product = 2, /* Product string ID */
 };
 
 @ @<Header files@>=
@@ -971,6 +975,18 @@ enum StringDescriptors_t
 #include <avr/interrupt.h>
 #include <avr/power.h>
 #include <avr/pgmspace.h>
+@<Get rid of this@>@;
+
+@ TODO: Do everything as one self-contained program. It is possible to do it,
+because it's just a microcontroller. This can be done gradually, step-by-step,
+by the following algorithm: replace all "@(/dev/null@>" sections by "@<Header files@>",
+and when no "@(/dev/null@>" sections will remain, try to remove this section and
+compile and see if there will be any errors.
+(first replace "skipped code which is not used in next section" with real code)
+And when I will do it, get rid of `\.{USB\_}' prefix in all type names.
+@^TODO@>
+
+@<Get rid of this@>=
 #include <LUFA/Drivers/USB/USB.h>
 #include <LUFA/Drivers/Board/LEDs.h>
 #include <LUFA/Drivers/Peripheral/Serial.h>
