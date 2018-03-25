@@ -129,65 +129,7 @@ use by the application.
 should be sent or received using buffers and {\bf not}
 individual characters.
 
-xxxxxxxxxxxxxx
-
-@*1 Flushing the receive buffer using the modem status lines. yyyyyyyyy move it to yyyyyyyyy
-Flow control can be used by some chips to flush
-the buffer in the chip. Changing one of the modem status lines will do this. The modem status
-lines can be controlled by an external device or from the host PC itself. If an unused output line
-(DTR) is connected to one of the unused inputs (DSR), then if the DTR line is changed by the
-application program from low to high or high to low, this will cause a change on DSR and make it
-flush the buffer.
-
-@*1 Event Characters.
-If the Event character is enabled
-and it is detected in the data stream, then the buffer is sent immediately.
-The event character is not stripped out of the
-data stream by the device or drivers. It is up to the application to deal with it.
-It may be turned on and off depending
-if you want to send large amounts of random data or small command sequences.
-The Event character does not work
-if it is the first character in the buffer. It needs to be the second or more. The reason for
-this was for applications that
-use the Internet, for example, will program up the event character as `\$7E'. All the data is then
-sent and received in
-packets that have `\$7E' at the start and end of the packet. To maximise throughput and
-avoid a packet with only the
-starting `\$7E' in it, the event character does not trigger on the first position.
-
-yyyyyyyyyyy
-
-@*1 Flow Control.
-Some chips use handshaking as part of their design by proper use of the TXE\# line.
-Such chips can use
-RTS/CTS, DTR/DSR hardware or XON/XOFF software handshaking. It is highly
-recommended that handshaking is used.
-
-There are 4 methods of flow control that can be programmed for some devices.
-
-\item{1.} None --- this may result in data loss at high speeds
-\item{2.} RTS/CTS --- 2 wire handshake. The device will transmit if CTS is active and
-will drop RTS if it cannot receive any
-more.
-\item{3.} DTR/DSR --- 2 wire handshake. The device will transmit if DSR is active
-and will drop DTR if it cannot receive any
-more.
-\item{4.} XON/XOFF --- flow control is done by sending or receiving special characters.
-One is XON (transmit on) the other is
-XOFF (transmit off). They are individually programmable to any value.
-
-\noindent
-Flow control is encouraged to be used because we are unable to ensure that we will always
-be scheduled. The chip
-can buffer up to 384 bytes of data. OS can `starve' the driver program of time if it is
-doing other things. The most
-obvious is moving an application around the screen with the mouse by grabbing its task bar.
-This will result in a lot of
-graphics activity and data loss will occur if receiving data at 115200 baud (as an example)
-with no handshaking. If the
-data rate is low or data loss is acceptable then flow control may be omitted. 
-
-@* Effect of USB buffer size and the latency timer on data throughput. xxxx move it to xxx
+@* Effect of USB buffer size and the latency timer on data throughput.
 
 An effect that is not immediately obvious is the way the size of the USB total packet request
 has on
@@ -245,6 +187,60 @@ are separate. TODO: read Dimitrov's arduino forum thread about this.
 @^TODO@>
 
 The size of the USB block requested can be adjusted in the chip.
+
+@*1 Event Characters.
+If the Event character is enabled
+and it is detected in the data stream, then the buffer is sent immediately.
+The event character is not stripped out of the
+data stream by the device or drivers. It is up to the application to deal with it.
+It may be turned on and off depending
+if you want to send large amounts of random data or small command sequences.
+The Event character does not work
+if it is the first character in the buffer. It needs to be the second or more. The reason for
+this was for applications that
+use the Internet, for example, will program up the event character as `\$7E'. All the data is then
+sent and received in
+packets that have `\$7E' at the start and end of the packet. To maximise throughput and
+avoid a packet with only the
+starting `\$7E' in it, the event character does not trigger on the first position.
+
+@*1 Flushing the receive buffer using the modem status lines.
+Flow control can be used by some chips to flush
+the buffer in the chip. Changing one of the modem status lines will do this. The modem status
+lines can be controlled by an external device or from the host PC itself. If an unused output line
+(DTR) is connected to one of the unused inputs (DSR), then if the DTR line is changed by the
+application program from low to high or high to low, this will cause a change on DSR and make it
+flush the buffer.
+
+@*1 Flow Control.
+Some chips use handshaking as part of their design by proper use of the TXE\# line.
+Such chips can use
+RTS/CTS, DTR/DSR hardware or XON/XOFF software handshaking. It is highly
+recommended that handshaking is used.
+
+There are 4 methods of flow control that can be programmed for some devices.
+
+\item{1.} None --- this may result in data loss at high speeds
+\item{2.} RTS/CTS --- 2 wire handshake. The device will transmit if CTS is active and
+will drop RTS if it cannot receive any
+more.
+\item{3.} DTR/DSR --- 2 wire handshake. The device will transmit if DSR is active
+and will drop DTR if it cannot receive any
+more.
+\item{4.} XON/XOFF --- flow control is done by sending or receiving special characters.
+One is XON (transmit on) the other is
+XOFF (transmit off). They are individually programmable to any value.
+
+\noindent
+Flow control is encouraged to be used because we are unable to ensure that we will always
+be scheduled. The chip
+can buffer up to 384 bytes of data. OS can `starve' the driver program of time if it is
+doing other things. The most
+obvious is moving an application around the screen with the mouse by grabbing its task bar.
+This will result in a lot of
+graphics activity and data loss will occur if receiving data at 115200 baud (as an example)
+with no handshaking. If the
+data rate is low or data loss is acceptable then flow control may be omitted. 
 
 @* Main program entry point. This routine contains the overall program flow, including
 initial
