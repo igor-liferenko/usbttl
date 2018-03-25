@@ -29,17 +29,19 @@
 
 \secpagedepth=1
 
-@** Latency, Data Throughput and Handshaking Issues.
-@*1 Background.
+@* Data throughput, latency and handshaking issues.
 The Universal Serial Bus may be new to some users and developers. Here are described the major
 architecture differences that need to be considered by both software and hardware designers
 when changing from atraditional RS232 based solution, to one that uses the USB to serial device.
 
-@* The need for handshaking.
+@*1 The need for handshaking.
 USB data transfer is prone to delays that do not normally appear in systems that have
 been used to transferring data using interrupts. The original COM ports of a PC were
 interrupt driven and therefore data could be transferred without
-using handshaking and still arrive into the PC without data loss. USB does not transfer
+using handshaking and still arrive into the PC without data loss.
+
+@*1 Data transfer comparison.
+USB does not transfer
 data using interrupts. It uses a scheduled system and as a result, there can be periods
 when the USB request does not get scheduled and, if handshaking is not used, data loss
 will occur. An example of scheduling delays can be seen if an open application is
@@ -78,8 +80,7 @@ packet size is needed. For `real-time' applications that are transferring audio 
 be holding up 4k of data at a time. This can give the effect of
 `jerky' data transfer if the USB request size is too large and the data rate too low (relatively).
 
-@*1 Buffers and the latency timer.
-(??? Small amounts of data or end of buffer conditions ???)
+@*1 Small amounts of data or end of buffer conditions.
 When transferring data to the PC, the device will send the data, given one of the following
 conditions:
 
@@ -128,14 +129,9 @@ use by the application.
 should be sent or received using buffers and {\bf not}
 individual characters.
 
-??? So, the above four conditions can be used to overcome the latency timer.
+xxxxxxxxxxxxxx
 
-The most obvious way is to keep sending data. In this way the data is continuously pushed
-through the chip and is not held waiting for a timeout. ???
-
-@*1 Events and flow control.
-
-@*2 Flushing the Receive Buffer Using the Modem Status Lines.
+@*1 Flushing the receive buffer using the modem status lines. yyyyyyyyy move it to yyyyyyyyy
 Flow control can be used by some chips to flush
 the buffer in the chip. Changing one of the modem status lines will do this. The modem status
 lines can be controlled by an external device or from the host PC itself. If an unused output line
@@ -143,7 +139,7 @@ lines can be controlled by an external device or from the host PC itself. If an 
 application program from low to high or high to low, this will cause a change on DSR and make it
 flush the buffer.
 
-@*2 Event Characters.
+@*1 Event Characters.
 If the Event character is enabled
 and it is detected in the data stream, then the buffer is sent immediately.
 The event character is not stripped out of the
@@ -159,7 +155,9 @@ packets that have `\$7E' at the start and end of the packet. To maximise through
 avoid a packet with only the
 starting `\$7E' in it, the event character does not trigger on the first position.
 
-@*2 Flow Control.
+yyyyyyyyyyy
+
+@*1 Flow Control.
 Some chips use handshaking as part of their design by proper use of the TXE\# line.
 Such chips can use
 RTS/CTS, DTR/DSR hardware or XON/XOFF software handshaking. It is highly
@@ -189,7 +187,8 @@ graphics activity and data loss will occur if receiving data at 115200 baud (as 
 with no handshaking. If the
 data rate is low or data loss is acceptable then flow control may be omitted. 
 
-@* Effect of USB Buffer Size and the Latency Timer on Data Throughput.
+@* Effect of USB buffer size and the latency timer on data throughput. xxxx move it to xxx
+
 An effect that is not immediately obvious is the way the size of the USB total packet request
 has on
 the smoothness of data flow. When a read request is sent to USB, the USB host controller will
@@ -247,7 +246,7 @@ are separate. TODO: read Dimitrov's arduino forum thread about this.
 
 The size of the USB block requested can be adjusted in the chip.
 
-@** Main program entry point. This routine contains the overall program flow, including
+@* Main program entry point. This routine contains the overall program flow, including
 initial
 setup of all components and the main program loop.
 
