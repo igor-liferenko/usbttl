@@ -1,7 +1,3 @@
-%TODO: use @@2 to understand how @@/ differs from @@; and from @@|
-%(see "Further details about formatting" in cwebman);
-%also see mmix docs how big structures are formatted
-
 %NOTE: to test, use avr/check.w + see cweb/SERIAL_TODO
 
 %TODO: add /dev/null sections for the following:
