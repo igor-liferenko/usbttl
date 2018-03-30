@@ -934,7 +934,7 @@ interface from other descriptors.
 @<Enums@>=
 enum {
   INTERFACE_ID_CDC_CCI = 0, /* CDC CCI interface descriptor ID */
-  INTERFACE_ID_CDC_DCI = 1, /* CDC DCI interface descriptor ID */
+  INTERFACE_ID_CDC_DCI = 1 @t\hskip4.2pt@>/* CDC DCI interface descriptor ID */
 };
 
 @ Enum for the device string descriptor IDs within the device. Each string descriptor
