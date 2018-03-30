@@ -1,4 +1,4 @@
-%TODO: use @2 to understand how @/ differs from @; and from @|
+%TODO: use @@2 to understand how @@/ differs from @@; and from @@|
 %(see "Further details about formatting" in cwebman);
 %also see mmix docs how big structures are formatted
 
