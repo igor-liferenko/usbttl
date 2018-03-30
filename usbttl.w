@@ -384,9 +384,9 @@ typedef struct {
 
 @ @<Initialize |Config| of |USB_ClassInfo_CDC_Device_t|@>= {@|
   INTERFACE_ID_CDC_CCI,@|
-  {CDC_TX_EPADDR, CDC_TXRX_EPSIZE, .Banks=1},@|
-  {CDC_RX_EPADDR, CDC_TXRX_EPSIZE, .Banks=1},@|
-  {CDC_NOTIFICATION_EPADDR, CDC_NOTIFICATION_EPSIZE, .Banks=1}@/
+  {@,@, CDC_TX_EPADDR, CDC_TXRX_EPSIZE, @[.@]Banks=1 @,@,},@|
+  {@,@, CDC_RX_EPADDR, CDC_TXRX_EPSIZE, @[.@]Banks=1 @,@,},@|
+  {@,@, CDC_NOTIFICATION_EPADDR, CDC_NOTIFICATION_EPSIZE, @[.@]Banks=1 @,@,}@/
 }
 
 @ Configures the board hardware and chip peripherals for the demo's functionality.
