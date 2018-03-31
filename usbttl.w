@@ -89,7 +89,7 @@ send the data given one of the following conditions:
 1. The buffer is full (64 bytes made up of 2 status bytes and 62 user bytes).
 
 2. One of the RS232 status lines has changed (USB-Serial chips only). A change of level (high
-or low) on CTS# / DSR# / DCD# or RI# will cause it to pass back the current buffer even
+or low) on CTS\# / DSR\# / DCD\# or RI\# will cause it to pass back the current buffer even
 though it may be empty or have less than 64 bytes in it.
 
 3. An event character had been enabled and was detected in the incoming data stream.
@@ -201,9 +201,9 @@ to be sent. The event character will not work if it is the first character in th
 needs to be
 the second or higher. The reason for this being applications that use the Internet for example,
 will
-program the event character as '$7E'. All the data is then sent and received in packets that have
-'$7E' at the start and at the end of the packet. In order to maximise throughput and to avoid a
-packet with only the starting '$7E' in it, the event character does not trigger on the first
+program the event character as `\$7E'. All the data is then sent and received in packets that have
+`\$7E' at the start and at the end of the packet. In order to maximise throughput and to avoid a
+packet with only the starting `\$7E' in it, the event character does not trigger on the first
 position.
 
 @*1 Flushing the receive buffer using the modem status lines.
@@ -216,7 +216,7 @@ flush the buffer.
 
 @*1 Flow Control.
 Some chips use their own handshaking as an
-integral part of its design, by proper use of the TXE# line. Such chips can use RTS/CTS,
+integral part of its design, by proper use of the TXE\# line. Such chips can use RTS/CTS,
 DTR/DSR hardware or XOn/XOff software handshaking.
 It is highly recommended that some form of handshaking be used.
 
