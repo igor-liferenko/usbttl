@@ -32,14 +32,17 @@
 @* Data throughput, latency and handshaking issues.
 The Universal Serial Bus may be new to some users and developers. Here are
 described the major architecture differences that need to be considered by both software and
-hardware designers when changing from a traditional RS232 based solution to one that uses the USB to serial interface devices.
+hardware designers when changing from a traditional RS232 based solution to one that uses
+the USB to serial interface devices.
 
 @*1 The need for handshaking.
 USB data transfer is prone to delays that do not normally appear in systems that have been used
-to transferring data using interrupts. The original COM ports of a PC were directly connected to the
+to transferring data using interrupts. The original COM ports of a PC were directly connected
+to the
 motherboard and were interrupt driven. When a character was transmitted or received (depending
 if FIFO's are used) the CPU would be interrupted and go to a routine to handle the data. This
-meant that a user could be reasonably certain that, given a particular baud rate and data rate, the
+meant that a user could be reasonably certain that, given a particular baud rate and data rate,
+the
 transfer of data could be achieved without any real need for flow control. The hardware interrupt
 ensured that the request would get serviced. Therefore data could be transferred without using
 handshaking and still arrive into the PC without data loss.
@@ -50,10 +53,13 @@ be periods when the USB request does not get scheduled and, if handshaking is no
 loss will occur. An example of scheduling delays can be seen if an open application is dragged
 around using the mouse.
 
-For a USB device, data transfer is done in packets. If data is to be sent from the PC, then a packet
+For a USB device, data transfer is done in packets. If data is to be sent from the PC, then a
+packet
 of data is built up by the device driver and sent to the USB scheduler. This scheduler puts the
-request onto the list of tasks for the USB host controller to perform. This will typically take at least
-1 millisecond to execute because it will not pick up the new request until the next 'USB Frame' (the
+request onto the list of tasks for the USB host controller to perform. This will typically take
+at least
+1 millisecond to execute because it will not pick up the new request until the next 'USB Frame'
+(the
 frame period is 1 millisecond). Therefore there is a sizable overhead (depending on your required
 throughput) associated with moving the data from the application to the USB device. If data were
 sent 'a byte at a time' by an application, this would severely limit the overall throughput of the
@@ -70,8 +76,10 @@ b) the requested data length is reached
 The device driver will request packet sizes between 64 Bytes and 4 Kbytes. The size of the packet
 will affect the performance and is dependent on the data rate. For very high speed, the largest
 packet size is needed. For 'real-time' applications that are transferring audio data at 115200 Baud
-for example, the smallest packet possible is desirable, otherwise the device will be holding up 4k of
-data at a time. This can give the effect of 'jerky' data transfer if the USB request size is too large
+for example, the smallest packet possible is desirable, otherwise the device will be holding up
+4k of
+data at a time. This can give the effect of 'jerky' data transfer if the USB request size is too
+large
 and the data rate too low (relatively).
 
 @*1 Small amounts of data or end of buffer conditions.
@@ -86,7 +94,8 @@ though it may be empty or have less than 64 bytes in it.
 
 3. An event character had been enabled and was detected in the incoming data stream.
 
-4. A timer integral to the chip has timed out. There is a timer (latency timer) in some chips that measures the time since data was last
+4. A timer integral to the chip has timed out. There is a timer (latency timer) in some
+chips that measures the time since data was last
 sent to the PC. The default value of the timer is set to 16 milliseconds.
 The value of the timer is adjustable from 1 to 255 milliseconds.
 Every time data is
@@ -102,7 +111,8 @@ the latency timer is 16 milliseconds, this means that it will take 16 millisecon
 individual character, over and above the transfer time on serial or parallel link.
 
 For large amounts of data, at high data rates, the timer will not be used. It may be used to send
-the last packet of a block, if the final packet size works out to be less than 64 bytes. The first 2
+the last packet of a block, if the final packet size works out to be less than 64 bytes. The
+first 2
 bytes of every packet are used as status bytes for the driver. This status is sent every 16
 milliseconds, even when no data is present in the device.
 
@@ -110,17 +120,20 @@ A worst case condition could occur when 62 bytes of data are received in 16 mill
 would not cause a timeout, but would send the 64 bytes (2 status + 62 user data bytes) back to
 USB every 16 milliseconds. When the USB driver receives the 64 bytes it would hold on
 to them and request another 'IN' transaction. This would be completed another 16 milliseconds
-later and so on until USB driver gets all of the 4K of data required. The overall time would be (4096 /
-64) * 16 milliseconds = 1.024 seconds between data packets being received by the application. In
+later and so on until USB driver gets all of the 4K of data required. The overall time would
+be (4096 / 64) * 16 milliseconds = 1.024 seconds between data packets being received by the
+application. In
 order to stop the data arriving in 4K packets, it should be requested in smaller amounts. A short
-packet (< 64 bytes) will of course cause the data to pass from USB driver back to the chip driver for
+packet (< 64 bytes) will of course cause the data to pass from USB driver back to the chip
+driver for
 use by the application.
 
 For application programmers it must be stressed that data should be sent or received using buffers
 and not individual characters.
 
 @* Effect of USB buffer size and the latency timer on data throughput.
-An effect that is not immediately obvious is the way the size of the USB total packet request has on
+An effect that is not immediately obvious is the way the size of the USB total packet request
+has on
 the smoothness of data flow. When a read request is sent to USB, the USB host controller will
 continue to read 64 byte packets until one of the following conditions is met:
 
@@ -130,8 +143,10 @@ continue to read 64 byte packets until one of the following conditions is met:
 
 3. It has been cancelled.
 
-While the host controller is waiting for one of the above conditions to occur, NO data is received by
-our driver and hence the user's application. The data, if there is any, is only finally transferred after
+While the host controller is waiting for one of the above conditions to occur, NO data is
+received by
+our driver and hence the user's application. The data, if there is any, is only finally
+transferred after
 one of the above conditions has occurred.
 
 Normally condition 3 will not occur so we will look at cases 1 and 2. If 64 byte packets are
@@ -139,11 +154,13 @@ continually sent back to the host, then it will continue to read the data to mat
 requested before it sends the block back to the driver. If a small amount of data is sent, or the
 data is sent slowly, then the latency timer will take over and send a short packet back to the host
 which will terminate the read request. The data that has been read so far is then passed on to the
-users application via the chip driver. This shows a relationship between the latency timer, the data
+users application via the chip driver. This shows a relationship between the latency timer,
+the data
 rate and when the data will become available to the user. A condition can occur where if data is
 passed into the chip at such a rate as to avoid the latency timer timing out, it can take a long
 time between receiving data blocks. This occurs because the host controller will see 64 byte
-packets at the point just before the end of the latency period and will therefore continue to read the
+packets at the point just before the end of the latency period and will therefore continue to
+read the
 data until it reaches the block size before it is passed back to the user's application.
 
 The rate that causes this will be:
@@ -158,7 +175,8 @@ For the default values: -
 
 Therefore if data is received at a rate of 3875 bytes per second (38.75 KBaud) or faster, then the
 data will be subject to delays based on the requested USB block length. If data is received at a
-slower rate, then there will be less than 62 bytes (64 including our 2 status bytes) available after 16
+slower rate, then there will be less than 62 bytes (64 including our 2 status bytes) available
+after 16
 milliseconds. Therefore a short packet will occur, thus terminating the USB request and passing
 the data back. At the limit condition of 38.75 KBaud it will take approximately 1.06 seconds
 between data buffers into the users application (assuming a 4Kbyte USB block request buffer size).
@@ -176,13 +194,17 @@ The size of the USB block requested can be adjusted in the chip.
 @*1 Event Characters.
 If the event character is enabled and it is detected in the data stream, then the contents of the
 devices buffer is sent immediately. The event character is not stripped out of the data stream by
-the device or by the drivers, it is up to the application to remove it. Event characters may be turned
+the device or by the drivers, it is up to the application to remove it. Event characters may
+be turned
 on and off depending on whether large amounts of random data or small command sequences are
-to be sent. The event character will not work if it is the first character in the buffer. It needs to be
-the second or higher. The reason for this being applications that use the Internet for example, will
+to be sent. The event character will not work if it is the first character in the buffer. It
+needs to be
+the second or higher. The reason for this being applications that use the Internet for example,
+will
 program the event character as '$7E'. All the data is then sent and received in packets that have
 '$7E' at the start and at the end of the packet. In order to maximise throughput and to avoid a
-packet with only the starting '$7E' in it, the event character does not trigger on the first position.
+packet with only the starting '$7E' in it, the event character does not trigger on the first
+position.
 
 @*1 Flushing the receive buffer using the modem status lines.
 Flow control can be used by some chips to flush
@@ -194,7 +216,8 @@ flush the buffer.
 
 @*1 Flow Control.
 Some chips use their own handshaking as an
-integral part of its design, by proper use of the TXE# line. Such chips can use RTS/CTS, DTR/DSR hardware or XOn/XOff software handshaking.
+integral part of its design, by proper use of the TXE# line. Such chips can use RTS/CTS,
+DTR/DSR hardware or XOn/XOff software handshaking.
 It is highly recommended that some form of handshaking be used.
 
 There are 4 methods of flow control that can be programmed for some devices.
@@ -210,10 +233,12 @@ cannot receive any more.
 4. XON/XOFF - flow control is done by sending or receiving special characters. One is XOn
 (transmit on) the other is XOff (transmit off). They are individually programmable to any value.
 
-It is strongly encouraged that flow control is used because it is impossible to ensure that the chip
+It is strongly encouraged that flow control is used because it is impossible to ensure that the
+chip
 driver will always be scheduled. The chip can buffer up to 384 bytes of data. Kernel can 'starve'
 the driver program of time if it is doing other things. The most obvious example of this is moving
-an application around the screen with the mouse by grabbing its task bar. This will result in a lot of
+an application around the screen with the mouse by grabbing its task bar. This will result in a lot
+of
 graphics activity and data loss will occur if receiving data at 115200 baud (as an example) with no
 handshaking. If the data rate is low or data loss is acceptable then flow control may be omitted.
 
@@ -383,10 +408,10 @@ typedef struct {
 } USB_Endpoint_Table_t;
 
 @ @<Initialize |Config| of |USB_ClassInfo_CDC_Device_t|@>= {@|
-  INTERFACE_ID_CDC_CCI,@|
-  {@,@, CDC_TX_EPADDR, CDC_TXRX_EPSIZE, @[.@]Banks=1 @,@,},@|
-  {@,@, CDC_RX_EPADDR, CDC_TXRX_EPSIZE, @[.@]Banks=1 @,@,},@|
-  {@,@, CDC_NOTIFICATION_EPADDR, CDC_NOTIFICATION_EPSIZE, @[.@]Banks=1 @,@,}@/
+  INTERFACE_ID_CDC_CCI, @|
+  {@, CDC_TX_EPADDR, CDC_TXRX_EPSIZE, @[.Banks@]=1 @,}, @|
+  {@, CDC_RX_EPADDR, CDC_TXRX_EPSIZE, @[.@]Banks=1 @,}, @|
+  {@, CDC_NOTIFICATION_EPADDR, CDC_NOTIFICATION_EPSIZE, @[.Banks@]=1 @,} @/
 }
 
 @ Configures the board hardware and chip peripherals for the demo's functionality.
