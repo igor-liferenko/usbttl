@@ -651,6 +651,57 @@ const USB_Descriptor_Device_t PROGMEM DeviceDescriptor = {@|
   FIXED_NUM_CONFIGURATIONS @/
 };
 
+@ Configuration descriptor structure. This descriptor, located in FLASH memory, describes
+the usage
+of the device in one of its supported configurations, including information about any
+device interfaces
+and endpoints.
+The descriptor is read out by the USB host during the enumeration process when selecting
+a configuration so that the host may correctly communicate with the USB device.
+
+@d CDC_NOTIFICATION_EPADDR (ENDPOINT_DIR_IN  | 2) /* endpoint address of the CDC
+  device-to-host notification IN endpoint */
+@d CDC_TX_EPADDR (ENDPOINT_DIR_IN  | 3) /* endpoint address of the CDC device-to-host
+  data IN endpoint */
+@d CDC_RX_EPADDR (ENDPOINT_DIR_OUT | 4) /* endpoint address of the CDC host-to-device
+  data OUT endpoint */
+@d CDC_NOTIFICATION_EPSIZE 8 /* size in bytes of the CDC device-to-host notification IN
+  endpoint */
+@d CDC_TXRX_EPSIZE 16 /* size in bytes of the CDC data IN and OUT endpoints */
+@s USB_Descriptor_Config_t int
+
+@<Global...@>=
+const USB_Descriptor_Config_t PROGMEM ConfigurationDescriptor = {@|
+  @<Initialize |Config| of |USB_Descriptor_Config_t|@>,@|
+  @<Initialize |CDC_CCI_Interface|@>,@|
+  @<Initialize |CDC_Functional_Header|@>,@|
+  @<Initialize |CDC_Functional_ACM|@>,@|
+  @<Initialize |CDC_Functional_Union|@>,@|
+  @<Initialize |CDC_Notification_Endpoint|@>,@|
+  @<Initialize |CDC_DCI_Interface|@>,@|
+  @<Initialize |CDC_DataOut_Endpoint|@>,@|
+  @<Initialize |CDC_DataIn_Endpoint|@>@/
+};
+
+@ Type define for the device configuration descriptor structure. This must be defined in
+the
+application code, as the configuration descriptor contains several sub-descriptors which
+vary between devices, and which describe the device's usage to the host.
+
+@s USB_Descriptor_Config_Header_t int
+@s USB_Descriptor_Interface_t int
+@s USB_CDC_Descriptor_FunctionalHeader_t int
+@s USB_CDC_Descriptor_FunctionalACM_t int
+@s USB_CDC_Descriptor_FunctionalUnion_t int
+@s USB_Descriptor_Endpoint_t int
+
+@<Type definitions@>=
+typedef struct {
+	USB_Descriptor_Config_Header_t Config; @+@t}\6{@>
+	@<CDC Command Interface@>@;
+	@<CDC Data Interface@>@;
+} USB_Descriptor_Config_t;
+
 @ Standard USB Configuration Descriptor.
 
 Type define for a standard Configuration Descriptor header. This structure uses LUFA-specific
@@ -685,56 +736,6 @@ typedef struct {
                                    macro. */
 } ATTR_PACKED USB_Descriptor_Config_Header_t;
 
-@ Configuration descriptor structure. This descriptor, located in FLASH memory, describes
-the usage
-of the device in one of its supported configurations, including information about any
-device interfaces
-and endpoints.
-The descriptor is read out by the USB host during the enumeration process when selecting
-a configuration so that the host may correctly communicate with the USB device.
-
-@d CDC_NOTIFICATION_EPADDR (ENDPOINT_DIR_IN  | 2) /* endpoint address of the CDC
-  device-to-host notification IN endpoint */
-@d CDC_TX_EPADDR (ENDPOINT_DIR_IN  | 3) /* endpoint address of the CDC device-to-host
-  data IN endpoint */
-@d CDC_RX_EPADDR (ENDPOINT_DIR_OUT | 4) /* endpoint address of the CDC host-to-device
-  data OUT endpoint */
-@d CDC_NOTIFICATION_EPSIZE 8 /* size in bytes of the CDC device-to-host notification IN
-  endpoint */
-@d CDC_TXRX_EPSIZE 16 /* size in bytes of the CDC data IN and OUT endpoints */
-@s USB_Descriptor_Config_t int
-
-@<Global...@>=
-const USB_Descriptor_Config_t PROGMEM ConfigurationDescriptor = {@|
-  @<Initialize |Config| of |USB_Descriptor_Config_t|@>,@|
-  @<Initialize |CDC_CCI_Interface|@>,@|
-  @<Initialize |CDC_Functional_Header|@>,@|
-  @<Initialize |CDC_Functional_ACM|@>,@|
-  @<Initialize |CDC_Functional_Union|@>,@|
-  @<Initialize |CDC_Notification_Endpoint|@>,@|
-  @<Initialize |CDC_DCI_Interface|@>,@|
-  @<Initialize |CDC_DataOut_Endpoint|@>,@|
-  @<Initialize |CDC_DataIn_Endpoint|@>};
-
-@ Type define for the device configuration descriptor structure. This must be defined in
-the
-application code, as the configuration descriptor contains several sub-descriptors which
-vary between devices, and which describe the device's usage to the host.
-
-@s USB_Descriptor_Config_Header_t int
-@s USB_Descriptor_Interface_t int
-@s USB_CDC_Descriptor_FunctionalHeader_t int
-@s USB_CDC_Descriptor_FunctionalACM_t int
-@s USB_CDC_Descriptor_FunctionalUnion_t int
-@s USB_Descriptor_Endpoint_t int
-
-@<Type definitions@>=
-typedef struct {
-	USB_Descriptor_Config_Header_t Config; @+@t}\6{@>
-	@<CDC Command Interface@>@;
-	@<CDC Data Interface@>@;
-} USB_Descriptor_Config_t;
-
 @ @<CDC Command Interface@>=
         USB_Descriptor_Interface_t               CDC_CCI_Interface;
         USB_CDC_Descriptor_FunctionalHeader_t    CDC_Functional_Header;
@@ -763,7 +764,7 @@ typedef struct {
   0,@|
   1,@|
   CDC_CSCP_CDCClass,@|
-  CDC_CSCP_ACMSubclass,@|
+  CDC_CSCP_ACM_SUBCLASS,@|
   CDC_CSCP_ATCommandProtocol,@|
   NO_DESCRIPTOR @/
 }
@@ -944,7 +945,7 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 	return Size;
 }
 
-@ Enum for the device interface descriptor IDs within the device. Each interface
+@ Device interface descriptor IDs within the device. Each interface
 descriptor
 should have a unique ID index associated with it, which can be used to refer to the
 interface from other descriptors.
@@ -955,7 +956,7 @@ enum {
   @! INTERFACE_ID_CDC_DCI = 1 @t\hskip4.2pt@>/* CDC DCI interface descriptor ID */
 };
 
-@ Enum for the device string descriptor IDs within the device. Each string descriptor
+@ Device string descriptor IDs within the device. Each string descriptor
 should
 have a unique ID index associated with it, which can be used to refer to the string from
 other descriptors.
@@ -966,6 +967,15 @@ enum {
     ID (must be zero) */
   @! STRING_ID_MANUFACTURER = 1, /* Manufacturer string ID */
   @! STRING_ID_PRODUCT = 2 @t\hskip31pt@>/* Product string ID */
+};
+
+@ Class, Subclass and Protocol values of device and interface
+descriptors relating to the CDC device class.
+
+@<Enums@>=
+enum {
+  @! CDC_CSCP_ACM_SUBCLASS = 0x02 /* descriptor subclass value indicating
+    that the device or interface belongs to the Abstract Control Model CDC subclass */
 };
 
 @ @<Header files@>=
