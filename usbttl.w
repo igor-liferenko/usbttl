@@ -1,7 +1,8 @@
 %NOTE: to test, use avr/check.w + see cweb/SERIAL_TODO
 
 %TODO: if you encounter initialization of structures via ".name=" notation, do
-%via @@[@@] like .Base + see cweb-git/TODO
+%via @@[@@] like .Base + see cweb-git/TODO ? Or just remove .Base, because CWEB documentation
+%is already sufficient.
 
 %NOTE: do not do via
 % USB_StdDescriptor_Config_Header_t
@@ -244,7 +245,6 @@ setup of all components and the main program loop.
 @c
 @<Header files@>@;
 @<Type definitions@>@;
-@<Enums@>@;
 @<Function prototypes@>@;
 @<Global variables@>@;
 
@@ -638,7 +638,7 @@ process begins.
 const USB_Descriptor_Device_t PROGMEM DeviceDescriptor = {@|
   {@, sizeof (USB_Descriptor_Device_t), DTYPE_Device @,}, @|
   VERSION_BCD(1,1,0), @|
-  CDC_CSCP_CDCClass, @|
+  CDC_CSCP_CDC_CLASS, @|
   CDC_CSCP_NoSpecificSubclass, @|
   CDC_CSCP_NoSpecificProtocol, @|
   FIXED_CONTROL_ENDPOINT_SIZE, @|
@@ -758,14 +758,20 @@ typedef struct {
   USB_CONFIG_POWER_MA(100)@/
 }
 
-@ @<Initialize |CDC_CCI_Interface|@>= {@|
+@ @d CDC_CSCP_CDC_CLASS 0x02 /* Class value indicating that the device or interface
+    belongs to the CDC class */
+@d CDC_CSCP_ACM_SUBCLASS 0x02 /* Subclass value indicating
+    that the device or interface belongs to the Abstract Control Model CDC subclass */
+@d CDC_CSCP_AT_COMMAND_PROTOCOL 0x01 /* Protocol value indicating that the device
+    or interface belongs to the AT Command protocol of the CDC class */
+@<Initialize |CDC_CCI_Interface|@>= {@|
   {@, sizeof (USB_Descriptor_Interface_t), DTYPE_Interface @,},@|
   INTERFACE_ID_CDC_CCI,@|
   0,@|
   1,@|
-  CDC_CSCP_CDCClass,@|
+  CDC_CSCP_CDC_CLASS,@|
   CDC_CSCP_ACM_SUBCLASS,@|
-  CDC_CSCP_ATCommandProtocol,@|
+  CDC_CSCP_AT_COMMAND_PROTOCOL,@|
   NO_DESCRIPTOR @/
 }
 
@@ -781,7 +787,9 @@ typedef struct {
   0x06 @/
 }
 
-@ @<Initialize |CDC_Functional_Union|@>= {@|
+@ @d INTERFACE_ID_CDC_CCI 0 /* CDC CCI interface descriptor ID */
+@d INTERFACE_ID_CDC_DCI 1 /* CDC DCI interface descriptor ID */
+@<Initialize |CDC_Functional_Union|@>= {@|
   {@, sizeof (USB_CDC_Descriptor_FunctionalUnion_t), DTYPE_CSInterface @,},@|
   CDC_DSUBTYPE_CSInterface_Union,@|
   INTERFACE_ID_CDC_CCI,@|
@@ -826,14 +834,20 @@ typedef struct {
   0xFF @/
 }
 
-@ @<Initialize |CDC_DCI_Interface|@>= {@|
+@ @d CDC_CSCP_NO_DATA_PROTOCOL 0x00 /* Protocol value indicating
+     that the device or interface belongs to no specific protocol of the CDC data class */
+@d CDC_CSCP_NO_DATA_SUBCLASS 0x00 /* Subclass value indicating
+    that the device or interface belongs to no specific subclass of the CDC data class */
+@d CDC_CSCP_CDC_DATA_CLASS 0x0A /* Class value indicating that the device or interface
+    belongs to the CDC Data class */
+@<Initialize |CDC_DCI_Interface|@>= {@|
   {@, sizeof (USB_Descriptor_Interface_t), DTYPE_Interface @,},@|
   INTERFACE_ID_CDC_DCI,@|
   0,@|
   2,@|
-  CDC_CSCP_CDCDataClass,@|
-  CDC_CSCP_NoDataSubclass,@|
-  CDC_CSCP_NoDataProtocol,@|
+  CDC_CSCP_CDC_DATA_CLASS,@|
+  CDC_CSCP_NO_DATA_SUBCLASS,@|
+  CDC_CSCP_NO_DATA_PROTOCOL,@|
   NO_DESCRIPTOR @/
 }
 
@@ -900,7 +914,11 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
                                     const void** const DescriptorAddress)
                                     ATTR_WARN_UNUSED_RESULT ATTR_NON_NULL_PTR_ARG(3);
 
-@ @c
+@ @dSTRING_ID_LANGUAGE 0 /* Supported Languages string descriptor
+    ID (must be zero) */
+@d STRING_ID_MANUFACTURER 1 /* Manufacturer string ID */
+@d STRING_ID_PRODUCT 2 /* Product string ID */
+@c
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
                                     const uint16_t wIndex,
                                     const void** const DescriptorAddress)
@@ -944,39 +962,6 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 	*DescriptorAddress = Address;
 	return Size;
 }
-
-@ Device interface descriptor IDs within the device. Each interface
-descriptor
-should have a unique ID index associated with it, which can be used to refer to the
-interface from other descriptors.
-
-@<Enums@>=
-enum {
-  @! INTERFACE_ID_CDC_CCI = 0, /* CDC CCI interface descriptor ID */
-  @! INTERFACE_ID_CDC_DCI = 1 @t\hskip4.2pt@>/* CDC DCI interface descriptor ID */
-};
-
-@ Device string descriptor IDs within the device. Each string descriptor
-should
-have a unique ID index associated with it, which can be used to refer to the string from
-other descriptors.
-
-@<Enums@>=
-enum {
-  @! STRING_ID_LANGUAGE = 0, @t\hskip21pt@>/* Supported Languages string descriptor
-    ID (must be zero) */
-  @! STRING_ID_MANUFACTURER = 1, /* Manufacturer string ID */
-  @! STRING_ID_PRODUCT = 2 @t\hskip31pt@>/* Product string ID */
-};
-
-@ Class, Subclass and Protocol values of device and interface
-descriptors relating to the CDC device class.
-
-@<Enums@>=
-enum {
-  @! CDC_CSCP_ACM_SUBCLASS = 0x02 /* descriptor subclass value indicating
-    that the device or interface belongs to the Abstract Control Model CDC subclass */
-};
 
 @ @<Header files@>=
 #include <avr/io.h>
