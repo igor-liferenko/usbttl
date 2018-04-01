@@ -1,5 +1,8 @@
 %NOTE: to test, use avr/check.w + see cweb/SERIAL_TODO
 
+%TODO: if you encounter initialization of structures via ".name=" notation, do
+%via @[@] like .Base + see cweb-git/TODO
+
 %NOTE: do not do via
 % USB_StdDescriptor_Config_Header_t
 %and
@@ -632,18 +635,18 @@ process begins.
 
 @<Global...@>=
 const USB_Descriptor_Device_t PROGMEM DeviceDescriptor = {@|
-  {@,@, sizeof @[@](USB_Descriptor_Device_t), DTYPE_Device @,@,},@|
-  VERSION_BCD(1,1,0),@|
-  CDC_CSCP_CDCClass,@|
-  CDC_CSCP_NoSpecificSubclass,@|
-  CDC_CSCP_NoSpecificProtocol,@|
-  FIXED_CONTROL_ENDPOINT_SIZE,@|
-  0x03EB,@|
-  0x204B,@|
-  VERSION_BCD(0,0,1),@|
-  STRING_ID_Manufacturer,@|
-  STRING_ID_Product,@|
-  USE_INTERNAL_SERIAL,@|
+  {@, sizeof (USB_Descriptor_Device_t), DTYPE_Device @,}, @|
+  VERSION_BCD(1,1,0), @|
+  CDC_CSCP_CDCClass, @|
+  CDC_CSCP_NoSpecificSubclass, @|
+  CDC_CSCP_NoSpecificProtocol, @|
+  FIXED_CONTROL_ENDPOINT_SIZE, @|
+  0x03EB, @|
+  0x204B, @|
+  VERSION_BCD(0,0,1), @|
+  STRING_ID_Manufacturer, @|
+  STRING_ID_Product, @|
+  USE_INTERNAL_SERIAL, @|
   FIXED_NUM_CONFIGURATIONS @/
 };
 
@@ -744,7 +747,7 @@ typedef struct {
         USB_Descriptor_Endpoint_t                CDC_DataIn_Endpoint;
 
 @ @<Initialize |Config| of |USB_Descriptor_Config_t|@>= {@|
-  {@,@, sizeof @[@](USB_Descriptor_Config_Header_t), @,@, DTYPE_Configuration @,@,},@|
+  {@, sizeof (USB_Descriptor_Config_Header_t), DTYPE_Configuration @,}, @|
   sizeof @[@](USB_Descriptor_Config_t),@|
   2,@|
   1,@|
@@ -754,7 +757,7 @@ typedef struct {
 }
 
 @ @<Initialize |CDC_CCI_Interface|@>= {@|
-  {@,@, sizeof (USB_Descriptor_Interface_t), DTYPE_Interface @,@,},@|
+  {@, sizeof (USB_Descriptor_Interface_t), DTYPE_Interface @,},@|
   INTERFACE_ID_CDC_CCI,@|
   0,@|
   1,@|
@@ -765,19 +768,19 @@ typedef struct {
 }
 
 @ @<Initialize |CDC_Functional_Header|@>= {@|
-  {@,@, sizeof (USB_CDC_Descriptor_FunctionalHeader_t), DTYPE_CSInterface @,@,},@|
+  {@, sizeof (USB_CDC_Descriptor_FunctionalHeader_t), DTYPE_CSInterface @,},@|
   CDC_DSUBTYPE_CSInterface_Header,@|
   VERSION_BCD(1,1,0) @/
 }
 
 @ @<Initialize |CDC_Functional_ACM|@>= {@|
-  {@,@, sizeof (USB_CDC_Descriptor_FunctionalACM_t), DTYPE_CSInterface @,@,},@|
+  {@, sizeof (USB_CDC_Descriptor_FunctionalACM_t), DTYPE_CSInterface @,},@|
   CDC_DSUBTYPE_CSInterface_ACM,@|
   0x06 @/
 }
 
 @ @<Initialize |CDC_Functional_Union|@>= {@|
-  {@,@, sizeof (USB_CDC_Descriptor_FunctionalUnion_t), DTYPE_CSInterface @,@,},@|
+  {@, sizeof (USB_CDC_Descriptor_FunctionalUnion_t), DTYPE_CSInterface @,},@|
   CDC_DSUBTYPE_CSInterface_Union,@|
   INTERFACE_ID_CDC_CCI,@|
   INTERFACE_ID_CDC_DCI @/
@@ -814,7 +817,7 @@ typedef struct {
 } ATTR_PACKED USB_Descriptor_Endpoint_t;
 
 @ @<Initialize |CDC_Notification_Endpoint|@>= {@|
-  {@,@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_Endpoint @,@,},@|
+  {@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_Endpoint @,},@|
   CDC_NOTIFICATION_EPADDR,@|
   (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),@|
   CDC_NOTIFICATION_EPSIZE,@|
@@ -822,7 +825,7 @@ typedef struct {
 }
 
 @ @<Initialize |CDC_DCI_Interface|@>= {@|
-  {@,@, sizeof (USB_Descriptor_Interface_t), DTYPE_Interface @,@,},@|
+  {@, sizeof (USB_Descriptor_Interface_t), DTYPE_Interface @,},@|
   INTERFACE_ID_CDC_DCI,@|
   0,@|
   2,@|
@@ -833,7 +836,7 @@ typedef struct {
 }
 
 @ @<Initialize |CDC_DataOut_Endpoint|@>= {@|
-  {@,@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_Endpoint @,@,},@|
+  {@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_Endpoint @,},@|
   CDC_RX_EPADDR,@|
   (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),@|
   CDC_TXRX_EPSIZE,@|
@@ -841,7 +844,7 @@ typedef struct {
 }
 
 @ @<Initialize |CDC_DataIn_Endpoint|@>= {@|
-  {@,@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_Endpoint @,@,},@|
+  {@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_Endpoint @,},@|
   CDC_TX_EPADDR,@|
   (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),@|
   CDC_TXRX_EPSIZE,@|
