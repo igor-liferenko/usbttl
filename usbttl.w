@@ -1,7 +1,7 @@
 %NOTE: to test, use avr/check.w + see cweb/SERIAL_TODO
 
 %TODO: if you encounter initialization of structures via ".name=" notation, do
-%via @[@] like .Base + see cweb-git/TODO
+%via @@[@@] like .Base + see cweb-git/TODO
 
 %NOTE: do not do via
 % USB_StdDescriptor_Config_Header_t
