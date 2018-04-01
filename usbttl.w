@@ -644,8 +644,8 @@ const USB_Descriptor_Device_t PROGMEM DeviceDescriptor = {@|
   0x03EB, @|
   0x204B, @|
   VERSION_BCD(0,0,1), @|
-  STRING_ID_Manufacturer, @|
-  STRING_ID_Product, @|
+  STRING_ID_MANUFACTURER, @|
+  STRING_ID_PRODUCT, @|
   USE_INTERNAL_SERIAL, @|
   FIXED_NUM_CONFIGURATIONS @/
 };
@@ -922,15 +922,15 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 		case DTYPE_String: @/
 			switch (DescriptorNumber)
 			{
-				case STRING_ID_Language: @/
+				case STRING_ID_LANGUAGE: @/
 					Address = &LanguageString;
 				Size    = pgm_read_byte(&LanguageString.Header.Size);
 					break;
-				case STRING_ID_Manufacturer: @/
+				case STRING_ID_MANUFACTURER: @/
 					Address = &ManufacturerString;
 				Size    = pgm_read_byte(&ManufacturerString.Header.Size);
 					break;
-				case STRING_ID_Product: @/
+				case STRING_ID_PRODUCT: @/
 					Address = &ProductString;
 				Size    = pgm_read_byte(&ProductString.Header.Size);
 					break;
@@ -961,9 +961,10 @@ other descriptors.
 
 @<Enums@>=
 enum {
-  STRING_ID_Language = 0, /* Supported Languages string descriptor ID (must be zero) */
-  STRING_ID_Manufacturer = 1, /* Manufacturer string ID */
-  STRING_ID_Product = 2, /* Product string ID */
+  @! STRING_ID_LANGUAGE = 0, @t\hskip21pt@>/* Supported Languages string descriptor
+    ID (must be zero) */
+  @! STRING_ID_MANUFACTURER = 1, /* Manufacturer string ID */
+  @! STRING_ID_PRODUCT = 2 @t\hskip31pt@>/* Product string ID */
 };
 
 @ @<Header files@>=
