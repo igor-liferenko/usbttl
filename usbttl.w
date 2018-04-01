@@ -682,12 +682,12 @@ const USB_Descriptor_Config_t PROGMEM ConfigurationDescriptor = {@|
 @<Initialize |CDC_Functional_Header|@>,@/
 @<Initialize |CDC_Functional_ACM|@>,@/
 @<Initialize |CDC_Functional_Union|@>,@/
-@<Initialize |CDC_Notification_Endpoint|@>,
+@<Initialize |CDC_Notification_Endpoint|@>
 
 @ @<Initialize CDC Data Interface@>=
 @<Initialize |CDC_DCI_Interface|@>,@/
 @<Initialize |CDC_DataOut_Endpoint|@>,@/
-@<Initialize |CDC_DataIn_Endpoint|@>,
+@<Initialize |CDC_DataIn_Endpoint|@>
 
 @ Type define for the device configuration descriptor structure. This must be defined in
 the
