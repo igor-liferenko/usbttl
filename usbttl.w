@@ -358,7 +358,7 @@ within a device can be differentiated from one another.
 
 @<Global...@>=
 USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface = {@|
-@<Initialize |Config| of |USB_ClassInfo_CDC_Device_t|@>@/
+@<Initialize header of |USB_ClassInfo_CDC_Device_t|@>@/
 };
 
 @ Class state structure. An instance of this structure should be made for each CDC interface
@@ -403,7 +403,7 @@ typedef struct {
   uint8_t Banks; /* number of hardware banks to use for the endpoint */
 } USB_Endpoint_Table_t;
 
-@ @<Initialize |Config| of |USB_ClassInfo_CDC_Device_t|@>= {@|
+@ @<Initialize header of |USB_ClassInfo_CDC_Device_t|@>= {@|
   INTERFACE_ID_CDC_CCI, @|
   {@, CDC_TX_EPADDR, CDC_TXRX_EPSIZE, @[.Banks@]=1 @,}, @|
   {@, CDC_RX_EPADDR, CDC_TXRX_EPSIZE, @[.Banks@]=1 @,}, @|
@@ -672,16 +672,22 @@ a configuration so that the host may correctly communicate with the USB device.
 
 @<Global...@>=
 const USB_Descriptor_Config_t PROGMEM ConfigurationDescriptor = {@|
-  @<Initialize |Config| of |USB_Descriptor_Config_t|@>,@|
-  @<Initialize |CDC_CCI_Interface|@>,@|
-  @<Initialize |CDC_Functional_Header|@>,@|
-  @<Initialize |CDC_Functional_ACM|@>,@|
-  @<Initialize |CDC_Functional_Union|@>,@|
-  @<Initialize |CDC_Notification_Endpoint|@>,@|
-  @<Initialize |CDC_DCI_Interface|@>,@|
-  @<Initialize |CDC_DataOut_Endpoint|@>,@|
-  @<Initialize |CDC_DataIn_Endpoint|@>@/
+  @<Initialize header of standard Configuration Descriptor@>,@|
+  @<Initialize CDC Command Interface@>,@|
+  @<Initialize CDC Data Interface@>@/
 };
+
+@ @<Initialize CDC Command Interface@>=
+@<Initialize |CDC_CCI_Interface|@>,@/
+@<Initialize |CDC_Functional_Header|@>,@/
+@<Initialize |CDC_Functional_ACM|@>,@/
+@<Initialize |CDC_Functional_Union|@>,@/
+@<Initialize |CDC_Notification_Endpoint|@>,
+
+@ @<Initialize CDC Data Interface@>=
+@<Initialize |CDC_DCI_Interface|@>,@/
+@<Initialize |CDC_DataOut_Endpoint|@>,@/
+@<Initialize |CDC_DataIn_Endpoint|@>,
 
 @ Type define for the device configuration descriptor structure. This must be defined in
 the
@@ -704,7 +710,11 @@ typedef struct {
 
 @ Standard USB Configuration Descriptor.
 
-Type define for a standard Configuration Descriptor header. This structure uses LUFA-specific
+Done as a type define instead of putting directly to |USB_Descriptor_Config_t|
+(as it is for header of |USB_ClassInfo_CDC_Device_t|) because it is used to calculate
+header size of standard Configuration Descriptor (via |sizeof|).
+
+This structure uses LUFA-specific
 element names
 to make each element's purpose clearer.
 
@@ -748,7 +758,7 @@ typedef struct {
         USB_Descriptor_Endpoint_t                CDC_DataOut_Endpoint;
         USB_Descriptor_Endpoint_t                CDC_DataIn_Endpoint;
 
-@ @<Initialize |Config| of |USB_Descriptor_Config_t|@>= {@|
+@ @<Initialize header of standard Configuration Descriptor@>= {@|
   {@, sizeof (USB_Descriptor_Config_Header_t), DTYPE_Configuration @,}, @|
   sizeof @[@](USB_Descriptor_Config_t),@|
   2,@|
