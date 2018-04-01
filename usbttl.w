@@ -434,6 +434,57 @@ wdt_disable();
 LEDs_Init();
 USB_Init();
 
+@ Event handler for the library USB Connection event.
+
+@<Function prototypes@>=
+void EVENT_USB_Device_Connect(void);
+
+@ LED mask for the library LED driver, to indicate that the USB interface is enumerating.
+
+@c
+void EVENT_USB_Device_Connect(void)
+{
+	LEDs_SetAllLEDs(LEDS_LED2 | LEDS_LED3);
+}
+
+@ Event handler for the library USB Disconnection event.
+
+@<Function prototypes@>=
+void EVENT_USB_Device_Disconnect(void);
+
+@ @c
+void EVENT_USB_Device_Disconnect(void)
+{
+  @<Indicate that USB device is disconnected@>@;
+}
+
+@ Event handler for the library USB Configuration Changed event.
+
+@<Function prototypes@>=
+void EVENT_USB_Device_ConfigurationChanged(void);
+
+@ @d LEDMASK_USB_READY (LEDS_LED2 | LEDS_LED4)
+@d LEDMASK_USB_ERROR (LEDS_LED1 | LEDS_LED3)
+
+@c
+void EVENT_USB_Device_ConfigurationChanged(void)
+{
+	bool ConfigSuccess = true;
+	ConfigSuccess &= CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface);
+	LEDs_SetAllLEDs(ConfigSuccess ? LEDMASK_USB_READY : LEDMASK_USB_ERROR);
+}
+
+@ Event handler for the library USB Control Request reception event.
+
+@<Function prototypes@>=
+void EVENT_USB_Device_ControlRequest(void);
+
+@ @c
+void EVENT_USB_Device_ControlRequest(void)
+{
+	CDC_Device_ProcessControlRequest(&VirtualSerial_CDC_Interface);
+}
+
 @ ISR to manage the reception of data from the serial port, placing received bytes into
 a circular buffer
 for later transmission to the host.
@@ -451,6 +502,75 @@ ISR(USART1_RX_vect, ISR_BLOCK)
  !(RingBuffer_IsFull(&USARTtoUSB_Buffer)))
 	  RingBuffer_Insert(&USARTtoUSB_Buffer, ReceivedByte);
 }
+
+@ Event handler for the CDC Class driver Line Encoding Changed event.
+
+@<Function prototypes@>=
+void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const
+ CDCInterfaceInfo);
+
+@ @c
+void EVENT_CDC_Device_LineEncodingChanged(CDCInterfaceInfo)
+USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo; /* pointer to the CDC
+                          class interface configuration structure being referenced */
+{
+	uint8_t ConfigMask = 0;
+
+	switch (CDCInterfaceInfo->State.LineEncoding.ParityType)
+	{
+		case CDC_PARITY_Odd:
+			ConfigMask = ((1 << UPM11) | (1 << UPM10)); @+
+@^see datasheet@>
+			break;
+		case CDC_PARITY_Even:
+			ConfigMask = (1 << UPM11); @+
+			break;
+	}
+
+  if (CDCInterfaceInfo->State.LineEncoding.CharFormat == CDC_LINEENCODING_TwoStopBits)
+	  ConfigMask |= (1 << USBS1);
+@^see datasheet@>
+
+	switch (CDCInterfaceInfo->State.LineEncoding.DataBits)
+	{
+		case 6:
+			ConfigMask |= (1 << UCSZ10); @+
+			break;
+		case 7:
+			ConfigMask |= (1 << UCSZ11); @+
+			break;
+		case 8:
+@^see datasheet@>
+			ConfigMask |= ((1 << UCSZ11) | (1 << UCSZ10)); @+
+			break;
+	}
+
+  PORTD |= (1 << 3); /* keep the TX line held high (idle) while the USART is
+                        reconfigured */
+
+        @<Turn off USART before reconfiguring it@>@;
+	@<Set the new baud rate before configuring the USART@>@;
+	@<Reconfigure the USART in double speed mode for a wider baud rate range...@>@;
+	PORTD &= ~(1 << 3); /* release the TX line after the USART has been reconfigured */
+}
+
+@ Must turn off USART before reconfiguring it, otherwise incorrect operation may occur.
+
+@<Turn off USART before reconfiguring it@>=
+UCSR1B = 0;
+UCSR1A = 0;
+UCSR1C = 0;
+@^see datasheet@>
+
+@ @<Set the new baud rate before configuring the USART@>=
+UBRR1  = SERIAL_2X_UBBRVAL(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS);
+
+@ @<Reconfigure the USART in double speed mode for a wider baud rate range at the
+    expense of accuracy@>=
+UCSR1C = ConfigMask;
+UCSR1A = (1 << U2X1);
+UCSR1B = ((1 << RXCIE1) | (1 << TXEN1) | (1 << RXEN1));
+@^see datasheet@>
 
 @* USB Device Descriptors. Used in USB device mode. Descriptors are special
 computer-readable structures which the host requests upon device enumeration, to determine
