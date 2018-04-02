@@ -382,9 +382,6 @@ typedef struct {
 @ Type define for an endpoint table entry, used to configure endpoints in groups via
 \hfil\break |Endpoint_ConfigureEndpointTable|.
 
-TODO: change order of elements and remove .Banks
-@^TODO@>
-
 @(/dev/null@>=
 typedef struct {
   uint8_t  Address; /* address of the endpoint to configure, or zero if
@@ -394,11 +391,14 @@ typedef struct {
   uint8_t Banks; /* number of hardware banks to use for the endpoint */
 } USB_Endpoint_Table_t;
 
-@ @<Initialize header of |USB_ClassInfo_CDC_Device_t|@>= {@|
+@ TODO: change order of elements and remove .Banks
+@^TODO@>
+
+@<Initialize header of |USB_ClassInfo_CDC_Device_t|@>= {@|
   INTERFACE_ID_CDC_CCI, @|
-  {@, CDC_TX_EPADDR, CDC_TXRX_EPSIZE, @[.Banks@]=1 @,}, @|
-  {@, CDC_RX_EPADDR, CDC_TXRX_EPSIZE, @[.Banks@]=1 @,}, @|
-  {@, CDC_NOTIFICATION_EPADDR, CDC_NOTIFICATION_EPSIZE, @[.Banks@]=1 @,} @/
+  {@, CDC_TX_EPADDR, CDC_TXRX_EPSIZE, @=.Banks@>=1 @,}, @|
+  {@, CDC_RX_EPADDR, CDC_TXRX_EPSIZE, @=.Banks@>=1 @,}, @|
+  {@, CDC_NOTIFICATION_EPADDR, CDC_NOTIFICATION_EPSIZE, @=.Banks@>=1 @,} @/
 }
 
 @ Configures the board hardware and chip peripherals for the demo's functionality.
