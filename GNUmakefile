@@ -4,4 +4,4 @@ all:
 	@make -f makefile
 
 flash: all
-	avrdude -c usbasp -p m32u4 -U flash:w:usbttl.hex
+	avrdude -c usbasp -p m32u4 -U flash:w:usb.hex
