@@ -766,6 +766,30 @@ typedef struct {
                                    macro. */
 } ATTR_PACKED USB_Descriptor_Config_Header_t;
 
+@ Type define for a standard USB Interface Descriptor.
+
+This structure uses
+LUFA-specific element names to make each element's purpose clearer.
+
+See \&{USB\_StdDescriptor\_Interface\_t} for the version of this type with standard element names.
+
+Note, that regardless of CPU architecture, these values should be stored as little endian.
+
+@(/dev/null@>=
+typedef struct {
+  USB_Descriptor_Device_Header_t Header; /* descriptor header, including type and size */
+  uint8_t InterfaceNumber; /* index of the interface in the current configuration */
+  uint8_t AlternateSetting; /* alternate setting for the interface number. The same
+    interface number can have multiple alternate settings
+    with different endpoint configurations, which can be
+    selected by the host */
+  uint8_t TotalEndpoints; /* total number of endpoints in the interface */
+  uint8_t Class; /* interface class ID */
+  uint8_t SubClass; /* interface subclass ID */
+  uint8_t Protocol; /* interface protocol ID */
+  uint8_t InterfaceStrIndex; /* index of the string descriptor describing the interface */
+} ATTR_PACKED USB_Descriptor_Interface_t;
+
 @ @<CDC Command Interface@>=
         USB_Descriptor_Interface_t               CDC_CCI_Interface;
         USB_CDC_Descriptor_FunctionalHeader_t    CDC_Functional_Header;
@@ -1026,6 +1050,12 @@ and when no "@@(/dev/null@@>" sections will remain, try to remove this section a
 compile and see if there will be any errors.
 And when I will do it, get rid of `\.{USB\_}' prefix in all type names.
 @^TODO@>
+
+-% USB_CDC_Descriptor_FunctionalHeader_t
+-% USB_CDC_Descriptor_FunctionalACM_t
+-% USB_CDC_Descriptor_FunctionalUnion_t
+-% USB_Descriptor_Device_Header_t
+
 
 @<Get rid of this@>=
 #include <LUFA/Drivers/USB/USB.h>
