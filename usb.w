@@ -14,9 +14,6 @@
 %TODO put here info from https://en.wikipedia.org/wiki/Circular_buffer
 
 \let\lheader\rheader
-@s uint8_t int
-@s int16_t int
-@s uint16_t int
 @s USB_Descriptor_String_t int
 
 \secpagedepth=1
@@ -365,8 +362,6 @@ information.
 @s USB_ClassInfo_CDC_Device_t int
 @s CDC_LineEncoding_t int
 @s USB_Endpoint_Table_t int
-@s uint8_t int
-@s uint16_t int
 
 @(/dev/null@>=
 typedef struct {
@@ -389,9 +384,6 @@ typedef struct {
 
 TODO: change order of elements and remove .Banks
 @^TODO@>
-
-@s uint8_t int
-@s uint16_t int
 
 @(/dev/null@>=
 typedef struct {
@@ -586,8 +578,6 @@ Note, that egardless of CPU architecture, these values should be stored as littl
 
 @s USB_Descriptor_Device_t int
 @s USB_Descriptor_Device_Header_t int
-@s uint8_t int
-@s uint16_t int
 
 @(/dev/null@>=
 typedef struct {
@@ -724,8 +714,6 @@ Note, that regardless of CPU architecture, these values should be stored as litt
 
 @s USB_Descriptor_Config_Header_t int
 @s USB_Descriptor_Device_Header_t int
-@s uint16_t int
-@s uint8_t int
 
 @(/dev/null@>=
 typedef struct {
@@ -816,8 +804,6 @@ Note, that regardless of CPU architecture, these values should be stored as litt
 
 @s USB_Descriptor_Device_Header_t int
 @s USB_Descriptor_Endpoint_t int
-@s uint8_t int
-@s uint16_t int
 
 @(/dev/null@>=
 typedef struct {
