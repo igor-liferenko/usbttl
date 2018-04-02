@@ -302,10 +302,12 @@ while (BytesToSend--) {
     transmission error occurred@>@;
 }
 
-@ @<Try to send the next byte of data to the host, abort if there is an error without
+@ @d ENDPOINT_READYWAIT_NO_ERROR 0 /* Endpoint is ready for next packet, no error */
+
+@<Try to send the next byte of data to the host, abort if there is an error without
     dequeuing@>=
 if (CDC_Device_SendByte(&VirtualSerial_CDC_Interface,
-    RingBuffer_Peek(&USARTtoUSB_Buffer)) != ENDPOINT_READYWAIT_NoError) break;
+    RingBuffer_Peek(&USARTtoUSB_Buffer)) != ENDPOINT_READYWAIT_NO_ERROR) break;
 
 @ @<Dequeue the already sent byte from the buffer now we have confirmed that no
     transmission error occurred@>=
@@ -380,7 +382,7 @@ typedef struct {
 } USB_ClassInfo_CDC_Device_t;
 
 @ Type define for an endpoint table entry, used to configure endpoints in groups via
-\hfil\break |Endpoint_ConfigureEndpointTable|.
+\hfil\break \\{Endpoint\_ConfigureEndpointTable}.
 
 @(/dev/null@>=
 typedef struct {
@@ -480,6 +482,9 @@ void EVENT_USB_Device_ControlRequest(void)
 a circular buffer
 for later transmission to the host.
 
+@d DEVICE_STATE_CONFIGURED 4 /* may be implemented by the user project. This state indicates
+  that the device has been enumerated by the host and is ready for USB communications to begin */
+
 FIXME: see arvtel.w how interrupt is done there, and articles on interrupts in avr/TIPS - what
 is ISR?
 @^FIXME@>
@@ -489,7 +494,7 @@ ISR(USART1_RX_vect, ISR_BLOCK)
 {
 	uint8_t ReceivedByte = UDR1;
 @^see datasheet@>
-	if ((USB_DeviceState == DEVICE_STATE_Configured) &&
+	if ((USB_DeviceState == DEVICE_STATE_CONFIGURED) &&
  !(RingBuffer_IsFull(&USARTtoUSB_Buffer)))
 	  RingBuffer_Insert(&USARTtoUSB_Buffer, ReceivedByte);
 }
@@ -500,7 +505,11 @@ ISR(USART1_RX_vect, ISR_BLOCK)
 void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const
  CDCInterfaceInfo);
 
-@ @c
+@ @d CDC_LINEENCODING_TWO_STOP_BITS 2 /* each frame contains two stop bits */
+@d CDC_PARITY_EVEN 2
+@d CDC_PARITY_ODD 1
+
+@c
 void EVENT_CDC_Device_LineEncodingChanged(CDCInterfaceInfo)
 USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo; /* pointer to the CDC
                           class interface configuration structure being referenced */
@@ -509,16 +518,16 @@ USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo; /* pointer to the CDC
 
 	switch (CDCInterfaceInfo->State.LineEncoding.ParityType)
 	{
-		case CDC_PARITY_Odd:
+		case CDC_PARITY_ODD:
 			ConfigMask = ((1 << UPM11) | (1 << UPM10)); @+
 @^see datasheet@>
 			break;
-		case CDC_PARITY_Even:
+		case CDC_PARITY_EVEN:
 			ConfigMask = (1 << UPM11); @+
 			break;
 	}
 
-  if (CDCInterfaceInfo->State.LineEncoding.CharFormat == CDC_LINEENCODING_TwoStopBits)
+  if (CDCInterfaceInfo->State.LineEncoding.CharFormat == CDC_LINEENCODING_TWO_STOP_BITSs)
 	  ConfigMask |= (1 << USBS1);
 @^see datasheet@>
 
@@ -571,7 +580,7 @@ the device's capabilities and functions.
 names to make each
 element's purpose clearer.
 
-See |USB_StdDescriptor_Device_t| for the version of this type with standard element
+See \&{USB\_StdDescriptor\_Device\_t} for the version of this type with standard element
 names.
 
 Note, that egardless of CPU architecture, these values should be stored as little endian.
@@ -630,7 +639,7 @@ process begins.
 
 @<Global...@>=
 const USB_Descriptor_Device_t PROGMEM DeviceDescriptor = {@|
-  {@, sizeof (USB_Descriptor_Device_t), DTYPE_Device @,}, @|
+  @<Initialize header of USB device descriptor@>, @|
   VERSION_BCD(1,1,0), @|
   CDC_CSCP_CDC_CLASS, @|
   CDC_CSCP_NO_SPECIFIC_SUBCLASS, @|
@@ -644,6 +653,11 @@ const USB_Descriptor_Device_t PROGMEM DeviceDescriptor = {@|
   USE_INTERNAL_SERIAL, @|
   FIXED_NUM_CONFIGURATIONS @/
 };
+
+@ @d DTYPE_DEVICE 0x01 /* indicates that the descriptor is a device descriptor */
+
+@<Initialize header of USB device descriptor@>=
+{@, sizeof (USB_Descriptor_Device_t), DTYPE_DEVICE @,}
 
 @ Configuration descriptor structure. This descriptor, located in FLASH memory, describes
 the usage
@@ -712,7 +726,7 @@ This structure uses LUFA-specific
 element names
 to make each element's purpose clearer.
 
-See |USB_StdDescriptor_Config_Header_t| for the version of this type with standard
+See \&{USB\_StdDescriptor\_Config\_Header\_t} for the version of this type with standard
 element names.
 
 Note, that regardless of CPU architecture, these values should be stored as little endian.
@@ -750,8 +764,10 @@ typedef struct {
         USB_Descriptor_Endpoint_t                CDC_DataOut_Endpoint;
         USB_Descriptor_Endpoint_t                CDC_DataIn_Endpoint;
 
-@ @<Initialize header of standard Configuration Descriptor@>= {@|
-  {@, sizeof (USB_Descriptor_Config_Header_t), DTYPE_Configuration @,}, @|
+@ @d DTYPE_CONFIGURATION 0x02 /* configuration descriptor */
+
+@<Initialize header of standard Configuration Descriptor@>= {@|
+  {@, sizeof (USB_Descriptor_Config_Header_t), DTYPE_CONFIGURATION @,}, @|
   sizeof @[@](USB_Descriptor_Config_t),@|
   2,@|
   1,@|
@@ -766,8 +782,10 @@ typedef struct {
     that the device or interface belongs to the Abstract Control Model CDC subclass */
 @d CDC_CSCP_AT_COMMAND_PROTOCOL 0x01 /* Protocol value indicating that the device
     or interface belongs to the AT Command protocol of the CDC class */
+@d DTYPE_INTERFACE 0x04 /* indicates that the descriptor is an interface descriptor */
+
 @<Initialize |CDC_CCI_Interface|@>= {@|
-  {@, sizeof (USB_Descriptor_Interface_t), DTYPE_Interface @,},@|
+  {@, sizeof (USB_Descriptor_Interface_t), DTYPE_INTERFACE @,},@|
   INTERFACE_ID_CDC_CCI,@|
   0,@|
   1,@|
@@ -779,9 +797,11 @@ typedef struct {
 
 @ @d CDC_DSUBTYPE_CS_INTERFACE_HEADER 0x00 /* CDC class-specific Header
   functional descriptor */
+@d DTYPE_CS_INTERFACE 0x24 /* indicates that the descriptor is a class
+  specific interface descriptor */
 
 @<Initialize |CDC_Functional_Header|@>= {@|
-  {@, sizeof (USB_CDC_Descriptor_FunctionalHeader_t), DTYPE_CSInterface @,},@|
+  {@, sizeof (USB_CDC_Descriptor_FunctionalHeader_t), DTYPE_CS_INTERFACE @,},@|
   CDC_DSUBTYPE_CS_INTERFACE_HEADER,@|
   VERSION_BCD(1,1,0) @/
 }
@@ -790,7 +810,7 @@ typedef struct {
   functional descriptor */
 
 @<Initialize |CDC_Functional_ACM|@>= {@|
-  {@, sizeof (USB_CDC_Descriptor_FunctionalACM_t), DTYPE_CSInterface @,},@|
+  {@, sizeof (USB_CDC_Descriptor_FunctionalACM_t), DTYPE_CS_INTERFACE @,},@|
   CDC_DSUBTYPE_CS_INTERFACE_ACM,@|
   0x06 @/
 }
@@ -800,7 +820,7 @@ typedef struct {
 @d CDC_DSUBTYPE_CS_INTERFACE_UNION 0x06 /* CDC class-specific Union functional descriptor */
 
 @<Initialize |CDC_Functional_Union|@>= {@|
-  {@, sizeof (USB_CDC_Descriptor_FunctionalUnion_t), DTYPE_CSInterface @,},@|
+  {@, sizeof (USB_CDC_Descriptor_FunctionalUnion_t), DTYPE_CS_INTERFACE @,},@|
   CDC_DSUBTYPE_CS_INTERFACE_UNION,@|
   INTERFACE_ID_CDC_CCI,@|
   INTERFACE_ID_CDC_DCI @/
@@ -811,7 +831,7 @@ typedef struct {
 Type define for a standard Endpoint Descriptor. This structure uses LUFA-specific element names
 to make each element's purpose clearer.
 
-See |USB_StdDescriptor_Endpoint_t| for the version of this type with standard element names.
+See \&{USB\_StdDescriptor\_Endpoint\_t} for the version of this type with standard element names.
 
 Note, that regardless of CPU architecture, these values should be stored as little endian.
 
@@ -834,8 +854,12 @@ typedef struct {
                                  or \.{ISOCHRONOUS} type. */
 } ATTR_PACKED USB_Descriptor_Endpoint_t;
 
-@ @<Initialize |CDC_Notification_Endpoint|@>= {@|
-  {@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_Endpoint @,},@|
+@ @d DTYPE_ENDPOINT 0x05 /* indicates that the descriptor is an endpoint descriptor */
+@d ENDPOINT_ATTR_NO_SYNC (0 << 2) /* indicate that the specified endpoint is not
+  synchronized */
+
+@<Initialize |CDC_Notification_Endpoint|@>= {@|
+  {@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_ENDPOINT @,},@|
   CDC_NOTIFICATION_EPADDR,@|
   (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),@|
   CDC_NOTIFICATION_EPSIZE,@|
@@ -849,7 +873,7 @@ typedef struct {
 @d CDC_CSCP_CDC_DATA_CLASS 0x0A /* Class value indicating that the device or interface
     belongs to the CDC Data class */
 @<Initialize |CDC_DCI_Interface|@>= {@|
-  {@, sizeof (USB_Descriptor_Interface_t), DTYPE_Interface @,},@|
+  {@, sizeof (USB_Descriptor_Interface_t), DTYPE_INTERFACE @,},@|
   INTERFACE_ID_CDC_DCI,@|
   0,@|
   2,@|
@@ -860,7 +884,7 @@ typedef struct {
 }
 
 @ @<Initialize |CDC_DataOut_Endpoint|@>= {@|
-  {@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_Endpoint @,},@|
+  {@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_ENDPOINT @,},@|
   CDC_RX_EPADDR,@|
   (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),@|
   CDC_TXRX_EPSIZE,@|
@@ -868,7 +892,7 @@ typedef struct {
 }
 
 @ @<Initialize |CDC_DataIn_Endpoint|@>= {@|
-  {@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_Endpoint @,},@|
+  {@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_ENDPOINT @,},@|
   CDC_TX_EPADDR,@|
   (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),@|
   CDC_TXRX_EPSIZE,@|
@@ -926,6 +950,8 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
     ID (must be zero) */
 @d STRING_ID_MANUFACTURER 1 /* Manufacturer string ID */
 @d STRING_ID_PRODUCT 2 /* Product string ID */
+@d DTYPE_STRING 0x03 /* indicates that the descriptor is a string descriptor */
+
 @c
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
                                     const uint16_t wIndex,
@@ -939,15 +965,15 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 
 	switch (DescriptorType)
 	{
-		case DTYPE_Device: @/
+		case DTYPE_DEVICE: @/
 			Address = &DeviceDescriptor;
 			Size    = sizeof (USB_Descriptor_Device_t);
 			break;
-		case DTYPE_Configuration: @/
+		case DTYPE_CONFIGURATION: @/
 			Address = &ConfigurationDescriptor;
 			Size    = sizeof (USB_Descriptor_Config_t);
 			break;
-		case DTYPE_String: @/
+		case DTYPE_STRING: @/
 			switch (DescriptorNumber)
 			{
 				case STRING_ID_LANGUAGE: @/
@@ -975,7 +1001,7 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/interrupt.h>
-#include <avr/power.h>
+#include <avr/power.h> /* |clock_prescale_set|, |clock_div_1| */
 #include <avr/pgmspace.h>
 @<Get rid of this@>@;
 
