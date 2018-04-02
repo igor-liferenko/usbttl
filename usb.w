@@ -623,13 +623,18 @@ number of device configurations.
 The descriptor is read out by the USB host when the enumeration
 process begins.
 
+@d CDC_CSCP_NO_SPECIFIC_SUBCLASS 0x00 /* Subclass value indicating that the device or interface
+  belongs to no specific subclass of the CDC class */
+@d CDC_CSCP_NO_SPECIFIC_PROTOCOL 0x00 /* Protocol value indicating that the device or interface
+   belongs to no specific protocol of the CDC class */
+
 @<Global...@>=
 const USB_Descriptor_Device_t PROGMEM DeviceDescriptor = {@|
   {@, sizeof (USB_Descriptor_Device_t), DTYPE_Device @,}, @|
   VERSION_BCD(1,1,0), @|
   CDC_CSCP_CDC_CLASS, @|
-  CDC_CSCP_NoSpecificSubclass, @|
-  CDC_CSCP_NoSpecificProtocol, @|
+  CDC_CSCP_NO_SPECIFIC_SUBCLASS, @|
+  CDC_CSCP_NO_SPECIFIC_PROTOCOL, @|
   FIXED_CONTROL_ENDPOINT_SIZE, @|
   0x03EB, @|
   0x204B, @|
@@ -772,23 +777,31 @@ typedef struct {
   NO_DESCRIPTOR @/
 }
 
-@ @<Initialize |CDC_Functional_Header|@>= {@|
+@ @d CDC_DSUBTYPE_CS_INTERFACE_HEADER 0x00 /* CDC class-specific Header
+  functional descriptor */
+
+@<Initialize |CDC_Functional_Header|@>= {@|
   {@, sizeof (USB_CDC_Descriptor_FunctionalHeader_t), DTYPE_CSInterface @,},@|
-  CDC_DSUBTYPE_CSInterface_Header,@|
+  CDC_DSUBTYPE_CS_INTERFACE_HEADER,@|
   VERSION_BCD(1,1,0) @/
 }
 
-@ @<Initialize |CDC_Functional_ACM|@>= {@|
+@ @d CDC_DSUBTYPE_CS_INTERFACE_ACM 0x02 /* CDC class-specific Abstract Control Model
+  functional descriptor */
+
+@<Initialize |CDC_Functional_ACM|@>= {@|
   {@, sizeof (USB_CDC_Descriptor_FunctionalACM_t), DTYPE_CSInterface @,},@|
-  CDC_DSUBTYPE_CSInterface_ACM,@|
+  CDC_DSUBTYPE_CS_INTERFACE_ACM,@|
   0x06 @/
 }
 
 @ @d INTERFACE_ID_CDC_CCI 0 /* CDC CCI interface descriptor ID */
 @d INTERFACE_ID_CDC_DCI 1 /* CDC DCI interface descriptor ID */
+@d CDC_DSUBTYPE_CS_INTERFACE_UNION 0x06 /* CDC class-specific Union functional descriptor */
+
 @<Initialize |CDC_Functional_Union|@>= {@|
   {@, sizeof (USB_CDC_Descriptor_FunctionalUnion_t), DTYPE_CSInterface @,},@|
-  CDC_DSUBTYPE_CSInterface_Union,@|
+  CDC_DSUBTYPE_CS_INTERFACE_UNION,@|
   INTERFACE_ID_CDC_CCI,@|
   INTERFACE_ID_CDC_DCI @/
 }
