@@ -378,7 +378,21 @@ typedef struct {
   } Config; /* Config data for the USB class interface within the device.
                All elements in this section must be set or the
                interface will fail to enumerate and operate correctly. */
-  /* skipped code which is not used in next section */
+  struct {
+    struct {
+      uint16_t HostToDevice; /* control line states from the host to device, as a set
+        of \.{CDC\_CONTROL\_LINE\_OUT\_*} masks. This value is updated each time
+        |CDC_Device_USBTask| is called */
+      uint16_t DeviceToHost; /* control line states from the device to host, as a set of
+        \.{CDC\_CONTROL\_LINE\_IN\_*} masks ---~to notify the host of changes to these values,
+        call the |CDC_Device_SendControlLineStateChange| function */
+    } ControlLineStates; /* current states of the virtual serial port's control lines
+      between the device and host */
+    CDC_LineEncoding_t LineEncoding; /* line encoding used in the virtual serial port, for
+      the device's information; this is generally only used if the virtual serial port data
+      is to be reconstructed on a physical UART */
+  } State; /* state data for the USB class interface within the device; all elements in this
+    section are reset to their defaults when the interface is enumerated */
 } USB_ClassInfo_CDC_Device_t;
 
 @ Type define for an endpoint table entry, used to configure endpoints in groups via
@@ -1010,7 +1024,6 @@ because it's just a microcontroller. This can be done gradually, step-by-step,
 by the following algorithm: replace all "@@(/dev/null@@>" sections by "@@<Header files@@>",
 and when no "@@(/dev/null@@>" sections will remain, try to remove this section and
 compile and see if there will be any errors.
-(first replace "skipped code which is not used in next section" with real code)
 And when I will do it, get rid of `\.{USB\_}' prefix in all type names.
 @^TODO@>
 
