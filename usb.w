@@ -730,9 +730,9 @@ vary between devices, and which describe the device's usage to the host.
 
 @s USB_Descriptor_Config_Header_t int
 @s USB_Descriptor_Interface_t int
-@s USB_CDC_Descriptor_FunctionalHeader_t int
-@s USB_CDC_Descriptor_FunctionalACM_t int
-@s USB_CDC_Descriptor_FunctionalUnion_t int
+@s USB_CDC_Descriptor_Func_Header_t int
+@s USB_CDC_Descriptor_Func_ACM_t int
+@s USB_CDC_Descriptor_Func_Union_t int
 @s USB_Descriptor_Endpoint_t int
 
 @<Type definitions@>=
@@ -820,7 +820,7 @@ typedef struct {
     must be |CDC_DSUBTYPE_CS_INTERFACE_HEADER| */
   uint16_t CDCSpecification; /* version number of the CDC specification implemented by the device,
     encoded in BCD format; see |VERSION_BCD| utility macro */
-} ATTR_PACKED USB_CDC_Descriptor_FunctionalHeader_t;
+} ATTR_PACKED USB_CDC_Descriptor_Func_Header_t;
 
 @ Type define for a CDC class-specific functional ACM descriptor. This indicates to the host
 that the CDC interface supports the CDC ACM subclass of the CDC specification.
@@ -839,7 +839,7 @@ typedef struct {
     must be |CDC_DSUBTYPE_CS_INTERFACE_ACM| */
   uint8_t Capabilities; /* capabilities of the ACM interface, given as a bit mask;
     refer to the CDC ACM specification */
-} ATTR_PACKED USB_CDC_Descriptor_FunctionalACM_t;
+} ATTR_PACKED USB_CDC_Descriptor_Func_ACM_t;
 
 @ Type define for a CDC class-specific functional Union descriptor. This indicates to the
 host that specific CDC control and data interfaces are related. See the CDC class
@@ -858,13 +858,13 @@ typedef struct {
     must be |CDC_DSUBTYPE_CS_INTERFACE_UNION| */
   uint8_t MasterInterfaceNumber; /* interface number of the CDC Control interface */
   uint8_t SlaveInterfaceNumber; /* interface number of the CDC Data interface */
-} ATTR_PACKED USB_CDC_Descriptor_FunctionalUnion_t;
+} ATTR_PACKED USB_CDC_Descriptor_Func_Union_t;
 
 @ @<CDC Command Interface@>=
         USB_Descriptor_Interface_t               CDC_CCI_Interface;
-        USB_CDC_Descriptor_FunctionalHeader_t    CDC_Functional_Header;
-        USB_CDC_Descriptor_FunctionalACM_t       CDC_Functional_ACM;
-        USB_CDC_Descriptor_FunctionalUnion_t     CDC_Functional_Union;
+        USB_CDC_Descriptor_Func_Header_t    CDC_Functional_Header;
+        USB_CDC_Descriptor_Func_ACM_t       CDC_Functional_ACM;
+        USB_CDC_Descriptor_Func_Union_t     CDC_Functional_Union;
         USB_Descriptor_Endpoint_t                CDC_NotificationEndpoint;
 
 @ @<CDC Data Interface@>=
@@ -909,7 +909,7 @@ typedef struct {
   specific interface descriptor */
 
 @<Initialize |CDC_Functional_Header|@>= {@|
-  {@, sizeof (USB_CDC_Descriptor_FunctionalHeader_t), DTYPE_CS_INTERFACE @,},@|
+  {@, sizeof (USB_CDC_Descriptor_Func_Header_t), DTYPE_CS_INTERFACE @,},@|
   CDC_DSUBTYPE_CS_INTERFACE_HEADER,@|
   VERSION_BCD(1,1,0) @/
 }
@@ -918,7 +918,7 @@ typedef struct {
   functional descriptor */
 
 @<Initialize |CDC_Functional_ACM|@>= {@|
-  {@, sizeof (USB_CDC_Descriptor_FunctionalACM_t), DTYPE_CS_INTERFACE @,},@|
+  {@, sizeof (USB_CDC_Descriptor_Func_ACM_t), DTYPE_CS_INTERFACE @,},@|
   CDC_DSUBTYPE_CS_INTERFACE_ACM,@|
   0x06 @/
 }
@@ -928,7 +928,7 @@ typedef struct {
 @d CDC_DSUBTYPE_CS_INTERFACE_UNION 0x06 /* CDC class-specific Union functional descriptor */
 
 @<Initialize |CDC_Functional_Union|@>= {@|
-  {@, sizeof (USB_CDC_Descriptor_FunctionalUnion_t), DTYPE_CS_INTERFACE @,},@|
+  {@, sizeof (USB_CDC_Descriptor_Func_Union_t), DTYPE_CS_INTERFACE @,},@|
   CDC_DSUBTYPE_CS_INTERFACE_UNION,@|
   INTERFACE_ID_CDC_CCI,@|
   INTERFACE_ID_CDC_DCI @/

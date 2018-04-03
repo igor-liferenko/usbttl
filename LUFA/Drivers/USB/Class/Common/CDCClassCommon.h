@@ -245,7 +245,7 @@
 			                                           *
 			                                           *   \see \ref VERSION_BCD() utility macro.
 			                                           */
-		} ATTR_PACKED USB_CDC_Descriptor_FunctionalHeader_t;
+		} ATTR_PACKED USB_CDC_Descriptor_Func_Header_t;
 
 		/** \brief CDC class-specific Functional Header Descriptor (USB-IF naming conventions).
 		 *
@@ -253,7 +253,7 @@
 		 *  contains one or more CDC functional data descriptors, which give the CDC interface's capabilities and configuration.
 		 *  See the CDC class specification for more details.
 		 *
-		 *  \see \ref USB_CDC_Descriptor_FunctionalHeader_t for the version of this type with non-standard LUFA specific
+		 *  \see \ref USB_CDC_Descriptor_Func_Header_t for the version of this type with non-standard LUFA specific
 		 *       element names.
 		 *
 		 *  \note Regardless of CPU architecture, these values should be stored as little endian.
@@ -292,14 +292,14 @@
 			                                       *   this should be set to a fixed value of \c 0x06 - for other capabilities, refer
 			                                       *   to the CDC ACM specification.
 			                                       */
-		} ATTR_PACKED USB_CDC_Descriptor_FunctionalACM_t;
+		} ATTR_PACKED USB_CDC_Descriptor_Func_ACM_t;
 
 		/** \brief CDC class-specific Functional ACM Descriptor (USB-IF naming conventions).
 		 *
 		 *  Type define for a CDC class-specific functional ACM descriptor. This indicates to the host that the CDC interface
 		 *  supports the CDC ACM subclass of the CDC specification. See the CDC class specification for more details.
 		 *
-		 *  \see \ref USB_CDC_Descriptor_FunctionalACM_t for the version of this type with non-standard LUFA specific
+		 *  \see \ref USB_CDC_Descriptor_Func_ACM_t for the version of this type with non-standard LUFA specific
 		 *       element names.
 		 *
 		 *  \note Regardless of CPU architecture, these values should be stored as little endian.
@@ -336,14 +336,14 @@
 			                                  */
 			uint8_t                 MasterInterfaceNumber; /**< Interface number of the CDC Control interface. */
 			uint8_t                 SlaveInterfaceNumber; /**< Interface number of the CDC Data interface. */
-		} ATTR_PACKED USB_CDC_Descriptor_FunctionalUnion_t;
+		} ATTR_PACKED USB_CDC_Descriptor_Func_Union_t;
 
 		/** \brief CDC class-specific Functional Union Descriptor (USB-IF naming conventions).
 		 *
 		 *  Type define for a CDC class-specific functional Union descriptor. This indicates to the host that specific
 		 *  CDC control and data interfaces are related. See the CDC class specification for more details.
 		 *
-		 *  \see \ref USB_CDC_Descriptor_FunctionalUnion_t for the version of this type with non-standard LUFA specific
+		 *  \see \ref USB_CDC_Descriptor_Func_Union_t for the version of this type with non-standard LUFA specific
 		 *       element names.
 		 *
 		 *  \note Regardless of CPU architecture, these values should be stored as little endian.
