@@ -590,6 +590,22 @@ UCSR1B = ((1 << RXCIE1) | (1 << TXEN1) | (1 << RXEN1));
 computer-readable structures which the host requests upon device enumeration, to determine
 the device's capabilities and functions.
 
+@ Type define for all standard USB descriptors' header, indicating the descriptor's
+length and type. This structure
+uses LUFA-specific element names to make each element's purpose clearer.
+
+See \&{USB\_StdDescriptor\_Device\_Header\_t} for the version of this type
+with standard element names.
+
+Note, that regardless of CPU architecture, these values should be stored as little endian.
+
+@(/dev/null@>=
+typedef struct {
+  uint8_t Size; /* size of the descriptor, in bytes */
+  uint8_t Type; /* type of the descriptor, either a value of \.{DTYPE\_*} or a value
+    given by the specific class */
+} ATTR_PACKED USB_Descriptor_Device_Header_t;
+
 @ Type define for a standard Device Descriptor. This structure uses LUFA-specific element
 names to make each
 element's purpose clearer.
@@ -1108,8 +1124,6 @@ and when no "@@(/dev/null@@>" sections will remain, try to remove this section a
 compile and see if there will be any errors.
 And when I will do it, get rid of `\.{USB\_}' prefix in all type names.
 @^TODO@>
-
--% USB_Descriptor_Device_Header_t
 
 @<Get rid of this@>=
 #include <LUFA/Drivers/USB/USB.h>
