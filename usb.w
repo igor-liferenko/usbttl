@@ -496,10 +496,6 @@ void EVENT_USB_Device_ControlRequest(void)
 a circular buffer
 for later transmission to the host.
 
-FIXME: see arvtel.w how interrupt is done there, and articles on interrupts in avr/TIPS - what
-is ISR?
-@^FIXME@>
-
 @d DEVICE_STATE_CONFIGURED 4 /* may be implemented by the user project. This state indicates
   that the device has been enumerated by the host and is ready for USB communications to begin */
 
