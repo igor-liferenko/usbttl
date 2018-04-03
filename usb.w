@@ -829,6 +829,25 @@ typedef struct {
     refer to the CDC ACM specification */
 } ATTR_PACKED USB_CDC_Descriptor_FunctionalACM_t;
 
+@ Type define for a CDC class-specific functional Union descriptor. This indicates to the
+host that specific CDC control and data interfaces are related. See the CDC class
+specification for more details.
+
+See \&{USB\_CDC\_StdDescriptor\_FunctionalUnion\_t} for the version of this type with
+standard element names.
+
+Note, that regardless of CPU architecture, these values should be stored as little endian.
+
+@(/dev/null@>=
+typedef struct {
+  USB_Descriptor_Device_Header_t Header; /* regular descriptor header containing the
+    descriptor's type and length */
+  uint8_t Subtype; /* Subtype value used to distinguish between CDC class-specific descriptors,
+    must be |CDC_DSUBTYPE_CS_INTERFACE_UNION| */
+  uint8_t MasterInterfaceNumber; /* interface number of the CDC Control interface */
+  uint8_t SlaveInterfaceNumber; /* interface number of the CDC Data interface */
+} ATTR_PACKED USB_CDC_Descriptor_FunctionalUnion_t;
+
 @ @<CDC Command Interface@>=
         USB_Descriptor_Interface_t               CDC_CCI_Interface;
         USB_CDC_Descriptor_FunctionalHeader_t    CDC_Functional_Header;
@@ -1090,7 +1109,6 @@ compile and see if there will be any errors.
 And when I will do it, get rid of `\.{USB\_}' prefix in all type names.
 @^TODO@>
 
--% USB_CDC_Descriptor_FunctionalUnion_t
 -% USB_Descriptor_Device_Header_t
 
 @<Get rid of this@>=
