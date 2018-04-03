@@ -590,7 +590,7 @@ the device's capabilities and functions.
 length and type. This structure
 uses LUFA-specific element names to make each element's purpose clearer.
 
-See \&{USB\_StdDescriptor\_Device\_Header\_t} for the version of this type
+See \&{USB\_StdDescriptor\_Header\_t} for the version of this type
 with standard element names.
 
 Note, that regardless of CPU architecture, these values should be stored as little endian.
@@ -600,7 +600,7 @@ typedef struct {
   uint8_t Size; /* size of the descriptor, in bytes */
   uint8_t Type; /* type of the descriptor, either a value of \.{DTYPE\_*} or a value
     given by the specific class */
-} ATTR_PACKED USB_Descriptor_Device_Header_t;
+} ATTR_PACKED USB_Descriptor_Header_t;
 
 @ Type define for a standard Device Descriptor. This structure uses LUFA-specific element
 names to make each
@@ -612,11 +612,11 @@ names.
 Note, that egardless of CPU architecture, these values should be stored as little endian.
 
 @s USB_Descriptor_Device_t int
-@s USB_Descriptor_Device_Header_t int
+@s USB_Descriptor_Header_t int
 
 @(/dev/null@>=
 typedef struct {
-  USB_Descriptor_Device_Header_t Header; /* Descriptor header, including type and size. */
+  USB_Descriptor_Header_t Header; /* Descriptor header, including type and size. */
   uint16_t USBSpecification; /* BCD of the supported USB specification;
 		                see |VERSION_BCD| utility macro */
   uint8_t  Class; /* USB device class. */
@@ -758,11 +758,11 @@ element names.
 Note, that regardless of CPU architecture, these values should be stored as little endian.
 
 @s USB_Descriptor_Config_Header_t int
-@s USB_Descriptor_Device_Header_t int
+@s USB_Descriptor_Header_t int
 
 @(/dev/null@>=
 typedef struct {
-  USB_Descriptor_Device_Header_t Header; /* Descriptor header, including type and size. */
+  USB_Descriptor_Header_t Header; /* Descriptor header, including type and size. */
   uint16_t TotalConfigurationSize; /* Size of the configuration descriptor header,
                                      and all sub descriptors inside the configuration. */
   uint8_t  TotalInterfaces; /* Total number of interfaces in the configuration. */
@@ -789,7 +789,7 @@ Note, that regardless of CPU architecture, these values should be stored as litt
 
 @(/dev/null@>=
 typedef struct {
-  USB_Descriptor_Device_Header_t Header; /* descriptor header, including type and size */
+  USB_Descriptor_Header_t Header; /* descriptor header, including type and size */
   uint8_t InterfaceNumber; /* index of the interface in the current configuration */
   uint8_t AlternateSetting; /* alternate setting for the interface number. The same
     interface number can have multiple alternate settings
@@ -814,7 +814,7 @@ Note, that regardless of CPU architecture, these values should be stored as litt
 
 @(/dev/null@>=
 typedef struct {
-  USB_Descriptor_Device_Header_t Header; /* regular descriptor header containing the
+  USB_Descriptor_Header_t Header; /* regular descriptor header containing the
     descriptor's type and length */
   uint8_t Subtype; /* Subtype value used to distinguish between CDC class-specific descriptors,
     must be |CDC_DSUBTYPE_CS_INTERFACE_HEADER| */
@@ -833,7 +833,7 @@ Note, that regardless of CPU architecture, these values should be stored as litt
 
 @(/dev/null@>=
 typedef struct {
-  USB_Descriptor_Device_Header_t Header; /* regular descriptor header containing the
+  USB_Descriptor_Header_t Header; /* regular descriptor header containing the
     descriptor's type and length */
   uint8_t Subtype; /* Subtype value used to distinguish between CDC class-specific descriptors,
     must be |CDC_DSUBTYPE_CS_INTERFACE_ACM| */
@@ -852,7 +852,7 @@ Note, that regardless of CPU architecture, these values should be stored as litt
 
 @(/dev/null@>=
 typedef struct {
-  USB_Descriptor_Device_Header_t Header; /* regular descriptor header containing the
+  USB_Descriptor_Header_t Header; /* regular descriptor header containing the
     descriptor's type and length */
   uint8_t Subtype; /* Subtype value used to distinguish between CDC class-specific descriptors,
     must be |CDC_DSUBTYPE_CS_INTERFACE_UNION| */
@@ -943,12 +943,12 @@ See \&{USB\_StdDescriptor\_Endpoint\_t} for the version of this type with standa
 
 Note, that regardless of CPU architecture, these values should be stored as little endian.
 
-@s USB_Descriptor_Device_Header_t int
+@s USB_Descriptor_Header_t int
 @s USB_Descriptor_Endpoint_t int
 
 @(/dev/null@>=
 typedef struct {
-  USB_Descriptor_Device_Header_t Header; /* Descriptor header, including type and size. */
+  USB_Descriptor_Header_t Header; /* Descriptor header, including type and size. */
 
   uint8_t  EndpointAddress; /* Logical address of the endpoint within the device for the current
                                configuration, including direction mask. */
