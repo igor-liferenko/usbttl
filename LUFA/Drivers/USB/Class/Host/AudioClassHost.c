@@ -119,7 +119,7 @@ uint8_t Audio_Host_ConfigurePipes(USB_ClassInfo_Audio_Host_t* const AudioInterfa
 
 static uint8_t DCOMP_Audio_Host_NextAudioControlInterface(void* CurrentDescriptor)
 {
-	USB_Descriptor_Device_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Device_Header_t);
+	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
 
 	if (Header->Type == DTYPE_Interface)
 	{
@@ -138,7 +138,7 @@ static uint8_t DCOMP_Audio_Host_NextAudioControlInterface(void* CurrentDescripto
 
 static uint8_t DCOMP_Audio_Host_NextAudioStreamInterface(void* CurrentDescriptor)
 {
-	USB_Descriptor_Device_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Device_Header_t);
+	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
 
 	if (Header->Type == DTYPE_Interface)
 	{
@@ -157,7 +157,7 @@ static uint8_t DCOMP_Audio_Host_NextAudioStreamInterface(void* CurrentDescriptor
 
 static uint8_t DCOMP_Audio_Host_NextAudioInterfaceDataEndpoint(void* CurrentDescriptor)
 {
-	USB_Descriptor_Device_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Device_Header_t);
+	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
 
 	if (Header->Type == DTYPE_Endpoint)
 	{

@@ -101,7 +101,7 @@ uint8_t PRNT_Host_ConfigurePipes(USB_ClassInfo_PRNT_Host_t* const PRNTInterfaceI
 
 static uint8_t DCOMP_PRNT_Host_NextPRNTInterface(void* CurrentDescriptor)
 {
-	USB_Descriptor_Device_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Device_Header_t);
+	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
 
 	if (Header->Type == DTYPE_Interface)
 	{
@@ -120,7 +120,7 @@ static uint8_t DCOMP_PRNT_Host_NextPRNTInterface(void* CurrentDescriptor)
 
 static uint8_t DCOMP_PRNT_Host_NextPRNTInterfaceEndpoint(void* CurrentDescriptor)
 {
-	USB_Descriptor_Device_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Device_Header_t);
+	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
 
 	if (Header->Type == DTYPE_Endpoint)
 	{

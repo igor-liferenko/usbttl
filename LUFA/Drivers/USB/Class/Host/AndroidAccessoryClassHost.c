@@ -111,7 +111,7 @@ uint8_t AOA_Host_ConfigurePipes(USB_ClassInfo_AOA_Host_t* const AOAInterfaceInfo
 
 static uint8_t DCOMP_AOA_Host_NextAndroidAccessoryInterface(void* const CurrentDescriptor)
 {
-	USB_Descriptor_Device_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Device_Header_t);
+	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
 
 	if (Header->Type == DTYPE_Interface)
 	{
@@ -130,7 +130,7 @@ static uint8_t DCOMP_AOA_Host_NextAndroidAccessoryInterface(void* const CurrentD
 
 static uint8_t DCOMP_AOA_Host_NextInterfaceBulkEndpoint(void* const CurrentDescriptor)
 {
-	USB_Descriptor_Device_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Device_Header_t);
+	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
 
 	if (Header->Type == DTYPE_Endpoint)
 	{

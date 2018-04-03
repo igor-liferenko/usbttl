@@ -220,7 +220,7 @@ static void USB_Device_GetInternalSerialDescriptor(void)
 {
 	struct
 	{
-		USB_Descriptor_Device_Header_t Header;
+		USB_Descriptor_Header_t Header;
 		uint16_t                UnicodeString[INTERNAL_SERIAL_LENGTH_BITS / 4];
 	} SignatureDescriptor;
 

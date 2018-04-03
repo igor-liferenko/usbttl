@@ -310,7 +310,7 @@
 		 */
 		typedef struct
 		{
-			USB_Descriptor_Device_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
+			USB_Descriptor_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
 			uint8_t                 Subtype; /**< Sub type value used to distinguish between audio class-specific descriptors,
 			                                  *   must be \ref AUDIO_DSUBTYPE_CSInterface_InputTerminal.
 			                                  */
@@ -372,7 +372,7 @@
 		 */
 		typedef struct
 		{
-			USB_Descriptor_Device_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
+			USB_Descriptor_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
 			uint8_t                 Subtype; /**< Sub type value used to distinguish between audio class-specific descriptors,
 			                                  *   must be \ref AUDIO_DSUBTYPE_CSInterface_OutputTerminal.
 			                                  */
@@ -430,7 +430,7 @@
 		 */
 		typedef struct
 		{
-			USB_Descriptor_Device_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
+			USB_Descriptor_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
 			uint8_t                 Subtype; /**< Sub type value used to distinguish between audio class-specific descriptors,
 			                                  *   a value from the \ref Audio_CSInterface_AS_SubTypes_t enum.
 			                                  */
@@ -489,7 +489,7 @@
 		 */
 		typedef struct
 		{
-			USB_Descriptor_Device_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
+			USB_Descriptor_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
 			uint8_t                 Subtype; /**< Sub type value used to distinguish between audio class-specific descriptors,
 			                                  *   must be \ref AUDIO_DSUBTYPE_CSInterface_Feature.
 			                                  */
@@ -545,7 +545,7 @@
 		 */
 		typedef struct
 		{
-			USB_Descriptor_Device_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
+			USB_Descriptor_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
 			uint8_t                 Subtype; /**< Sub type value used to distinguish between audio class-specific descriptors,
 			                                  *   a value from the \ref Audio_CSInterface_AS_SubTypes_t enum.
 			                                  */
@@ -598,7 +598,7 @@
 		 */
 		typedef struct
 		{
-			USB_Descriptor_Device_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
+			USB_Descriptor_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
 			uint8_t                 Subtype; /**< Sub type value used to distinguish between audio class-specific descriptors,
 			                                  *   must be \ref AUDIO_DSUBTYPE_CSInterface_FormatType.
 			                                  */
@@ -730,7 +730,7 @@
 		 */
 		typedef struct
 		{
-			USB_Descriptor_Device_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
+			USB_Descriptor_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
 			uint8_t                 Subtype; /**< Sub type value used to distinguish between audio class-specific descriptors,
 			                                  *   a value from the \ref Audio_CSEndpoint_SubTypes_t enum.
 			                                  */

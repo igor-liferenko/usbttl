@@ -122,7 +122,7 @@
 		#define CDC_FUNCTIONAL_DESCRIPTOR(DataSize)        \
 		     struct                                        \
 		     {                                             \
-		          USB_Descriptor_Device_Header_t Header;          \
+		          USB_Descriptor_Header_t Header;          \
 			      uint8_t                 SubType;         \
 		          uint8_t                 Data[DataSize];  \
 		     }
@@ -236,7 +236,7 @@
 		 */
 		typedef struct
 		{
-			USB_Descriptor_Device_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
+			USB_Descriptor_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
 			uint8_t                 Subtype; /**< Sub type value used to distinguish between CDC class-specific descriptors,
 			                                  *   must be \ref CDC_DSUBTYPE_CSInterface_Header.
 			                                  */
@@ -284,7 +284,7 @@
 		 */
 		typedef struct
 		{
-			USB_Descriptor_Device_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
+			USB_Descriptor_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
 			uint8_t                 Subtype; /**< Sub type value used to distinguish between CDC class-specific descriptors,
 			                                  *   must be \ref CDC_DSUBTYPE_CSInterface_ACM.
 			                                  */
@@ -330,7 +330,7 @@
 		 */
 		typedef struct
 		{
-			USB_Descriptor_Device_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
+			USB_Descriptor_Header_t Header; /**< Regular descriptor header containing the descriptor's type and length. */
 			uint8_t                 Subtype; /**< Sub type value used to distinguish between CDC class-specific descriptors,
 			                                  *   must be \ref CDC_DSUBTYPE_CSInterface_Union.
 			                                  */

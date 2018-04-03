@@ -122,7 +122,7 @@ uint8_t HID_Host_ConfigurePipes(USB_ClassInfo_HID_Host_t* const HIDInterfaceInfo
 
 static uint8_t DCOMP_HID_Host_NextHIDInterface(void* const CurrentDescriptor)
 {
-	USB_Descriptor_Device_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Device_Header_t);
+	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
 
 	if (Header->Type == DTYPE_Interface)
 	{
@@ -137,7 +137,7 @@ static uint8_t DCOMP_HID_Host_NextHIDInterface(void* const CurrentDescriptor)
 
 static uint8_t DCOMP_HID_Host_NextHIDDescriptor(void* const CurrentDescriptor)
 {
-	USB_Descriptor_Device_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Device_Header_t);
+	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
 
 	if (Header->Type == HID_DTYPE_HID)
 	  return DESCRIPTOR_SEARCH_Found;
@@ -149,7 +149,7 @@ static uint8_t DCOMP_HID_Host_NextHIDDescriptor(void* const CurrentDescriptor)
 
 static uint8_t DCOMP_HID_Host_NextHIDInterfaceEndpoint(void* const CurrentDescriptor)
 {
-	USB_Descriptor_Device_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Device_Header_t);
+	USB_Descriptor_Header_t* Header = DESCRIPTOR_PCAST(CurrentDescriptor, USB_Descriptor_Header_t);
 
 	if (Header->Type == DTYPE_Endpoint)
 	{
