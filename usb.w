@@ -790,6 +790,26 @@ typedef struct {
   uint8_t InterfaceStrIndex; /* index of the string descriptor describing the interface */
 } ATTR_PACKED USB_Descriptor_Interface_t;
 
+@ Type define for a CDC class-specific functional header descriptor.
+This indicates to the host that the device contains one or more CDC functional
+data descriptors, which give the CDC interface's capabilities and configuration.
+See the CDC class specification for more details.
+
+See \&{USB\_CDC\_StdDescriptor\_FunctionalHeader\_t} for the version of this type
+with standard element names.
+
+Note, that regardless of CPU architecture, these values should be stored as little endian.
+
+@(/dev/null@>=
+typedef struct {
+  USB_Descriptor_Device_Header_t Header; /* regular descriptor header containing the
+    descriptor's type and length */
+  uint8_t Subtype; /* Subtype value used to distinguish between CDC class-specific descriptors,
+    must be |CDC_DSUBTYPE_CS_INTERFACE_HEADER| */
+  uint16_t CDCSpecification; /* version number of the CDC specification implemented by the device,
+    encoded in BCD format; see |VERSION_BCD| utility macro */
+} ATTR_PACKED USB_CDC_Descriptor_FunctionalHeader_t;
+
 @ @<CDC Command Interface@>=
         USB_Descriptor_Interface_t               CDC_CCI_Interface;
         USB_CDC_Descriptor_FunctionalHeader_t    CDC_Functional_Header;
@@ -1051,11 +1071,9 @@ compile and see if there will be any errors.
 And when I will do it, get rid of `\.{USB\_}' prefix in all type names.
 @^TODO@>
 
--% USB_CDC_Descriptor_FunctionalHeader_t
 -% USB_CDC_Descriptor_FunctionalACM_t
 -% USB_CDC_Descriptor_FunctionalUnion_t
 -% USB_Descriptor_Device_Header_t
-
 
 @<Get rid of this@>=
 #include <LUFA/Drivers/USB/USB.h>
