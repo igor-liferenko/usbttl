@@ -1131,6 +1131,158 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 #include <avr/interrupt.h>
 #include <avr/power.h> /* |clock_prescale_set|, |clock_div_1| */
 #include <avr/pgmspace.h>
+
+#if 1==0
+
+#define __INCLUDE_FROM_COMMON_H
+
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include <stddef.h>
+
+#include "LUFA/Common/Architectures.h"
+#include "LUFA/Common/BoardTypes.h"
+#include "LUFA/Common/ArchitectureSpecific.h"
+#include "LUFA/Common/CompilerSpecific.h"
+#include "LUFA/Common/Attributes.h"
+
+#if defined(USE_LUFA_CONFIG_HEADER)
+	#include "LUFAConfig.h"
+#endif
+
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <avr/pgmspace.h>
+#include <avr/eeprom.h>
+#include <avr/boot.h>
+#include <math.h>
+#include <util/delay.h>
+
+typedef uint8_t uint_reg_t;
+
+#define ARCH_HAS_EEPROM_ADDRESS_SPACE
+#define ARCH_HAS_FLASH_ADDRESS_SPACE
+#define ARCH_HAS_MULTI_ADDRESS_SPACE
+#define ARCH_LITTLE_ENDIAN
+
+#include "LUFA/Common/Endianness.h"
+
+// Obsolete, retained for compatibility with user code
+#define MACROS                  do
+#define MACROE                  while (0)
+
+#define MAX(x, y)               (((x) > (y)) ? (x) : (y))
+#define MIN(x, y)               (((x) < (y)) ? (x) : (y))
+#define STRINGIFY(x)            #x
+#define STRINGIFY_EXPANDED(x)   STRINGIFY(x)
+#define CONCAT(x, y)            x ## y
+#define CONCAT_EXPANDED(x, y)   CONCAT(x, y)
+
+#if !defined(ISR)
+/* Macro for the definition of interrupt service routines, so that the compiler can
+ insert the required
+  prologue and epilogue code to properly manage the interrupt routine without affecting
+ the main thread's
+  state with unintentional side-effects.
+
+  Interrupt handlers written using this macro may still need to be registered with the
+ microcontroller's
+  Interrupt Controller (if present) before they will properly handle incoming interrupt events.
+
+NOTE: This macro is only supplied on some architectures, where the standard library does not
+ include a valid
+        definition. If an existing definition exists, the alternative definition here will be
+ ignored. */
+  #define ISR(Name, ...) void Name (void) __attribute__((__interrupt__)) __VA_ARGS__; \
+    void Name (void)
+#endif
+
+/* Function to reverse the individual bits in a byte - i.e. bit 7 is moved to bit 0,
+   bit 6 to bit 1,
+   etc.
+
+   Returns input data with the individual bits reversed (mirrored).
+*/
+inline uint8_t BitReverse(uint8_t Byte) ATTR_WARN_UNUSED_RESULT ATTR_CONST;
+inline uint8_t BitReverse(uint8_t Byte)
+{
+	Byte = (((Byte & 0xF0) >> 4) | ((Byte & 0x0F) << 4));
+	Byte = (((Byte & 0xCC) >> 2) | ((Byte & 0x33) << 2));
+	Byte = (((Byte & 0xAA) >> 1) | ((Byte & 0x55) << 1));
+	return Byte;
+}
+
+/* Function to perform a blocking delay for a specified number of milliseconds.
+ The actual delay will be
+  at a minimum the specified number of milliseconds, however due to loop overhead and
+ internal calculations
+  may be slightly higher. */
+static inline void Delay_MS(uint16_t Milliseconds) ATTR_ALWAYS_INLINE;
+static inline void Delay_MS(uint16_t Milliseconds)
+{
+	if (GCC_IS_COMPILE_CONST(Milliseconds))
+	{
+		_delay_ms(Milliseconds);
+	}
+	else
+	{
+		while (Milliseconds--)
+		  _delay_ms(1);
+	}
+}
+
+
+/* Retrieves a mask which contains the current state of the global interrupts for the device. This
+  value can be stored before altering the global interrupt enable state, before restoring the
+  flag(s) back to their previous values after a critical section using |SetGlobalInterruptMask|.
+
+  Returns mask containing the current Global Interrupt Enable Mask bit(s). */
+inline uint_reg_t GetGlobalInterruptMask(void) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
+inline uint_reg_t GetGlobalInterruptMask(void)
+{
+	GCC_MEMORY_BARRIER();
+
+	return SREG;
+}
+
+/* Sets the global interrupt enable state of the microcontroller to the mask passed into
+ the function.
+  This can be combined with |GetGlobalInterruptMask| to save and restore the Global
+ Interrupt Enable
+  Mask bit(s) of the device after a critical section has completed. */
+inline void SetGlobalInterruptMask(const uint_reg_t GlobalIntState) ATTR_ALWAYS_INLINE;
+inline void SetGlobalInterruptMask(const uint_reg_t GlobalIntState)
+{
+	GCC_MEMORY_BARRIER();
+
+	SREG = GlobalIntState;
+
+	GCC_MEMORY_BARRIER();
+}
+
+/* Enables global interrupt handling for the device, allowing interrupts to be handled. */
+inline void GlobalInterruptEnable(void) ATTR_ALWAYS_INLINE;
+inline void GlobalInterruptEnable(void)
+{
+	GCC_MEMORY_BARRIER();
+
+	sei();
+
+	GCC_MEMORY_BARRIER();
+}
+
+/* Disabled global interrupt handling for the device, preventing interrupts from being handled. */
+inline void GlobalInterruptDisable(void) ATTR_ALWAYS_INLINE;
+inline void GlobalInterruptDisable(void)
+{
+	GCC_MEMORY_BARRIER();
+	cli();
+
+	GCC_MEMORY_BARRIER();
+}
+#endif
+
 @<Get rid of this@>@;
 
 @ TODO: Do everything as one self-contained program. It is possible to do it,
