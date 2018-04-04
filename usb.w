@@ -1290,7 +1290,6 @@ because it's just a microcontroller. This can be done gradually, step-by-step,
 by the following algorithm: replace all "@@(/dev/null@@>" sections by "@@<Header files@@>",
 and when no "@@(/dev/null@@>" sections will remain, try to remove this section and
 compile and see if there will be any errors.
-And when I will do it, get rid of `\.{USB\_}' prefix in all type names.
 @^TODO@>
 
 @<Get rid of this@>=
