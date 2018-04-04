@@ -15,8 +15,3 @@ all:
 	avr-gcc obj/usb.o obj/HIDParser.o obj/Device_AVR8.o obj/EndpointStream_AVR8.o obj/Endpoint_AVR8.o obj/USBController_AVR8.o obj/USBInterrupt_AVR8.o obj/ConfigDescriptors.o obj/DeviceStandardReq.o obj/Events.o obj/USBTask.o obj/CDCClassDevice.o -o usb.elf -lm -Wl,-Map=usb.map,--cref -Wl,--gc-sections -Wl,--relax -mmcu=atmega32u4
 	avr-objcopy -O ihex -R .eeprom -R .fuse -R .lock -R .signature usb.elf usb.hex
 	@echo avrdude -c usbasp -p m32u4 -U flash:w:usb.hex
-	@#avr-objcopy -O ihex -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 --no-change-warnings usb.elf usb.eep || exit 0
-	@#avr-objcopy -O binary -R .eeprom -R .fuse -R .lock -R .signature usb.elf usb.bin
-	@#avr-objdump -h -d -S -z usb.elf > usb.lss
-	@#avr-nm -n usb.elf > usb.sym
-	@#avr-size --mcu=atmega32u4 --format=avr usb.elf
