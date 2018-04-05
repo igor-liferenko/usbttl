@@ -266,13 +266,53 @@ uint8_t Endpoint_Read_Stream_LE(void* const Buffer,
 	#define  TEMPLATE_TRANSFER_BYTE(BufferPtr)         Endpoint_Write_8(eeprom_read_byte(BufferPtr))
 	#include "Template/Template_Endpoint_RW.c"
 
-	#define  TEMPLATE_FUNC_NAME                        Endpoint_Write_EStream_BE
-	#define  TEMPLATE_BUFFER_TYPE                      const void*
-	#define  TEMPLATE_CLEAR_ENDPOINT()                 Endpoint_ClearIN()
-	#define  TEMPLATE_BUFFER_OFFSET(Length)            (Length - 1)
-	#define  TEMPLATE_BUFFER_MOVE(BufferPtr, Amount)   BufferPtr -= Amount
-	#define  TEMPLATE_TRANSFER_BYTE(BufferPtr)         Endpoint_Write_8(eeprom_read_byte(BufferPtr))
-	#include "Template/Template_Endpoint_RW.c"
+uint8_t Endpoint_Write_EStream_BE(const void* const Buffer,
+                            uint16_t Length,
+                            uint16_t* const BytesProcessed)
+{
+	uint8_t* DataStream      = ((uint8_t*)Buffer + (Length - 1));
+	uint16_t BytesInTransfer = 0;
+	uint8_t  ErrorCode;
+
+	if ((ErrorCode = Endpoint_WaitUntilReady()))
+	  return ErrorCode;
+
+	if (BytesProcessed != NULL)
+	{
+		Length -= *BytesProcessed;
+		DataStream -= *BytesProcessed;
+	}
+
+	while (Length)
+	{
+		if (!(Endpoint_IsReadWriteAllowed()))
+		{
+			Endpoint_ClearIN();
+
+			#if !defined(INTERRUPT_CONTROL_ENDPOINT)
+			USB_USBTask();
+			#endif
+
+			if (BytesProcessed != NULL)
+			{
+				*BytesProcessed += BytesInTransfer;
+				return ENDPOINT_RWSTREAM_IncompleteTransfer;
+			}
+
+			if ((ErrorCode = Endpoint_WaitUntilReady()))
+			  return ErrorCode;
+		}
+		else
+		{
+			Endpoint_Write_8(eeprom_read_byte(DataStream));
+			DataStream -= 1;
+			Length--;
+			BytesInTransfer++;
+		}
+	}
+
+	return ENDPOINT_RWSTREAM_NoError;
+}
 
 uint8_t Endpoint_Read_EStream_LE(void* const Buffer,
                             uint16_t Length,
