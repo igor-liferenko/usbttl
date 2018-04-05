@@ -87,16 +87,53 @@ uint8_t Endpoint_Null_Stream(uint16_t Length,
 	return ENDPOINT_RWSTREAM_NoError;
 }
 
-/* The following abuses the C preprocessor in order to copy-paste common code with slight alterations,
- * so that the code needs to be written once. It is a crude form of templating to reduce code maintenance. */
+uint8_t Endpoint_Write_Stream_LE(const void* const Buffer,
+                            uint16_t Length,
+                            uint16_t* const BytesProcessed)
+{
+	uint8_t* DataStream      = ((uint8_t*)Buffer + 0);
+	uint16_t BytesInTransfer = 0;
+	uint8_t  ErrorCode;
 
-#define  TEMPLATE_FUNC_NAME                        Endpoint_Write_Stream_LE
-#define  TEMPLATE_BUFFER_TYPE                      const void*
-#define  TEMPLATE_CLEAR_ENDPOINT()                 Endpoint_ClearIN()
-#define  TEMPLATE_BUFFER_OFFSET(Length)            0
-#define  TEMPLATE_BUFFER_MOVE(BufferPtr, Amount)   BufferPtr += Amount
-#define  TEMPLATE_TRANSFER_BYTE(BufferPtr)         Endpoint_Write_8(*BufferPtr)
-#include "Template/Template_Endpoint_RW.c"
+	if ((ErrorCode = Endpoint_WaitUntilReady()))
+	  return ErrorCode;
+
+	if (BytesProcessed != NULL)
+	{
+		Length -= *BytesProcessed;
+		DataStream += *BytesProcessed;
+	}
+
+	while (Length)
+	{
+		if (!(Endpoint_IsReadWriteAllowed()))
+		{
+			Endpoint_ClearIN();
+
+			#if !defined(INTERRUPT_CONTROL_ENDPOINT)
+			USB_USBTask();
+			#endif
+
+			if (BytesProcessed != NULL)
+			{
+				*BytesProcessed += BytesInTransfer;
+				return ENDPOINT_RWSTREAM_IncompleteTransfer;
+			}
+
+			if ((ErrorCode = Endpoint_WaitUntilReady()))
+			  return ErrorCode;
+		}
+		else
+		{
+			Endpoint_Write_8(*DataStream);
+			DataStream += 1;
+			Length--;
+			BytesInTransfer++;
+		}
+	}
+
+	return ENDPOINT_RWSTREAM_NoError;
+}
 
 #define  TEMPLATE_FUNC_NAME                        Endpoint_Write_Stream_BE
 #define  TEMPLATE_BUFFER_TYPE                      const void*
@@ -165,13 +202,54 @@ uint8_t Endpoint_Null_Stream(uint16_t Length,
 	#define  TEMPLATE_TRANSFER_BYTE(BufferPtr)         eeprom_update_byte(BufferPtr, Endpoint_Read_8())
 	#include "Template/Template_Endpoint_RW.c"
 
-	#define  TEMPLATE_FUNC_NAME                        Endpoint_Read_EStream_BE
-	#define  TEMPLATE_BUFFER_TYPE                      void*
-	#define  TEMPLATE_CLEAR_ENDPOINT()                 Endpoint_ClearOUT()
-	#define  TEMPLATE_BUFFER_OFFSET(Length)            (Length - 1)
-	#define  TEMPLATE_BUFFER_MOVE(BufferPtr, Amount)   BufferPtr -= Amount
-	#define  TEMPLATE_TRANSFER_BYTE(BufferPtr)         eeprom_update_byte(BufferPtr, Endpoint_Read_8())
-	#include "Template/Template_Endpoint_RW.c"
+uint8_t Endpoint_Read_EStream_BE(void* const Buffer,
+                            uint16_t Length,
+                            uint16_t* const BytesProcessed)
+{
+	uint8_t* DataStream      = ((uint8_t*)Buffer + (Length - 1));
+	uint16_t BytesInTransfer = 0;
+	uint8_t  ErrorCode;
+
+	if ((ErrorCode = Endpoint_WaitUntilReady()))
+	  return ErrorCode;
+
+	if (BytesProcessed != NULL)
+	{
+		Length -= *BytesProcessed;
+		DataStream -= *BytesProcessed;
+	}
+
+	while (Length)
+	{
+		if (!(Endpoint_IsReadWriteAllowed()))
+		{
+			Endpoint_ClearOUT();
+
+			#if !defined(INTERRUPT_CONTROL_ENDPOINT)
+			USB_USBTask();
+			#endif
+
+			if (BytesProcessed != NULL)
+			{
+				*BytesProcessed += BytesInTransfer;
+				return ENDPOINT_RWSTREAM_IncompleteTransfer;
+			}
+
+			if ((ErrorCode = Endpoint_WaitUntilReady()))
+			  return ErrorCode;
+		}
+		else
+		{
+			eeprom_update_byte(DataStream, Endpoint_Read_8());
+			DataStream -= 1;
+			Length--;
+			BytesInTransfer++;
+		}
+	}
+
+	return ENDPOINT_RWSTREAM_NoError;
+}
+
 #endif
 
 #endif
