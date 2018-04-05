@@ -1150,6 +1150,34 @@ void USB_Event_Stub(void)
 
 }
 
+@* Main USB service task management.
+
+@ @<Global...@>=
+volatile bool USB_IsInitialized;
+USB_Request_Header_t USB_ControlRequest;
+
+@ @c
+void USB_USBTask(void)
+{
+		USB_DeviceTask();
+}
+
+@ @c
+void USB_DeviceTask(void)
+{
+	if (USB_DeviceState == DEVICE_STATE_Unattached)
+	  return;
+
+	uint8_t PrevEndpoint = Endpoint_GetCurrentEndpoint();
+
+	Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
+
+	if (Endpoint_IsSETUPReceived())
+	  USB_Device_ProcessControlRequest();
+
+	Endpoint_SelectEndpoint(PrevEndpoint);
+}
+
 @ @<Header files@>=
 #include <avr/io.h>
 #include <avr/wdt.h>
