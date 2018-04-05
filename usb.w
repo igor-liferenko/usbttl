@@ -516,6 +516,16 @@ void EVENT_USB_Device_ControlRequest(void)
 a circular buffer
 for later transmission to the host.
 
+Macro for the definition of interrupt service routines, so that the compiler can
+ insert the required
+  prologue and epilogue code to properly manage the interrupt routine without affecting
+ the main thread's
+  state with unintentional side-effects.
+
+  Interrupt handlers written using this macro may still need to be registered with the
+ microcontroller's
+  Interrupt Controller (if present) before they will properly handle incoming interrupt events.
+
 @d DEVICE_STATE_CONFIGURED 4 /* may be implemented by the user project. This state indicates
   that the device has been enumerated by the host and is ready for USB communications to begin */
 
@@ -1178,25 +1188,6 @@ typedef uint8_t uint_reg_t;
 #define STRINGIFY_EXPANDED(x)   STRINGIFY(x)
 #define CONCAT(x, y)            x ## y
 #define CONCAT_EXPANDED(x, y)   CONCAT(x, y)
-
-#if !defined(ISR)
-/* Macro for the definition of interrupt service routines, so that the compiler can
- insert the required
-  prologue and epilogue code to properly manage the interrupt routine without affecting
- the main thread's
-  state with unintentional side-effects.
-
-  Interrupt handlers written using this macro may still need to be registered with the
- microcontroller's
-  Interrupt Controller (if present) before they will properly handle incoming interrupt events.
-
-NOTE: This macro is only supplied on some architectures, where the standard library does not
- include a valid
-        definition. If an existing definition exists, the alternative definition here will be
- ignored. */
-  #define ISR(Name, ...) void Name (void) __attribute__((__interrupt__)) __VA_ARGS__; \
-    void Name (void)
-#endif
 
 /* Function to reverse the individual bits in a byte - i.e. bit 7 is moved to bit 0,
    bit 6 to bit 1,
