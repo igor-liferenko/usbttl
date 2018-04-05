@@ -1135,6 +1135,21 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 	return Size;
 }
 
+@* USB Event management definitions.
+
+@ @<Function prototypes@>=
+void USB_Event_Stub(void) ATTR_CONST;
+void EVENT_USB_Device_Suspend(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
+void EVENT_USB_Device_WakeUp(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
+void EVENT_USB_Device_Reset(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
+void EVENT_USB_Device_StartOfFrame(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
+
+@ @c
+void USB_Event_Stub(void)
+{
+
+}
+
 @ @<Header files@>=
 #include <avr/io.h>
 #include <avr/wdt.h>
