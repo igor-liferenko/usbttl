@@ -277,27 +277,6 @@
 			void USB_ResetInterface(void);
 
 		/* Global Variables: */
-			#if defined(USB_CAN_BE_BOTH) || defined(__DOXYGEN__)
-				/** Indicates the mode that the USB interface is currently initialized to, a value from the
-				 *  \ref USB_Modes_t enum.
-				 *
-				 *  \attention This variable should be treated as read-only in the user application, and never manually
-				 *             changed in value.
-				 *
-				 *  \note When the controller is initialized into UID auto-detection mode, this variable will hold the
-				 *        currently selected USB mode (i.e. \ref USB_MODE_Device or \ref USB_MODE_Host). If the controller
-				 *        is fixed into a specific mode (either through the \c USB_DEVICE_ONLY or \c USB_HOST_ONLY compile time
-				 *        options, or a limitation of the USB controller in the chosen device model) this will evaluate to
-				 *        a constant of the appropriate value and will never evaluate to \ref USB_MODE_None even when the
-				 *        USB interface is not initialized.
-				 */
-				extern volatile uint8_t USB_CurrentMode;
-			#elif defined(USB_CAN_BE_HOST)
-				#define USB_CurrentMode USB_MODE_Host
-			#elif defined(USB_CAN_BE_DEVICE)
-				#define USB_CurrentMode USB_MODE_Device
-			#endif
-
 			#if !defined(USE_STATIC_OPTIONS) || defined(__DOXYGEN__)
 				/** Indicates the current USB options that the USB interface was initialized with when \ref USB_Init()
 				 *  was called. This value will be one of the \c USB_MODE_* masks defined elsewhere in this module.
