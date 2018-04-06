@@ -66,9 +66,6 @@
 #define __LUFA_PLATFORM_H__
 
 	/* Includes: */
-		#include "../Common/Common.h"
-
-	/* Includes: */
 		#if (ARCH == ARCH_UC3)
 			#include "UC3/ClockManagement.h"
 			#include "UC3/InterruptManagement.h"

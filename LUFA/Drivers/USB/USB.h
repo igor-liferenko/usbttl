@@ -379,7 +379,6 @@
 		#define __INCLUDE_FROM_USB_DRIVER
 
 	/* Includes: */
-		#include "../../Common/Common.h"
 		#include "Core/USBMode.h"
 
 	/* Includes: */

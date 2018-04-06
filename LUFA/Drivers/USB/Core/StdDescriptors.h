@@ -50,7 +50,6 @@
 #define __USBDESCRIPTORS_H__
 
 	/* Includes: */
-		#include "../../../Common/Common.h"
 		#include "USBMode.h"
 		#include "Events.h"
 

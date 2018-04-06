@@ -50,7 +50,6 @@
 #define __ENDPOINT_STREAM_AVR8_H__
 
 	/* Includes: */
-		#include "../../../../Common/Common.h"
 		#include "../USBMode.h"
 		#include "../USBTask.h"
 
