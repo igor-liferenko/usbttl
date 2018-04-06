@@ -993,7 +993,7 @@ typedef struct {
 } ATTR_PACKED USB_Descriptor_Endpoint_t;
 
 @ @d DTYPE_ENDPOINT 0x05 /* indicates that the descriptor is an endpoint descriptor */
-@d ENDPOINT_ATTR_NO_SYNC (0 << 2) /* indicate that the specified endpoint is not
+@d ENDPOINT_ATTR_NO_SYNCXXX (0 << 2) /* indicate that the specified endpoint is not
   synchronized */
 
 @<Initialize |CDC_Notification_Endpoint|@>= {@|
@@ -3323,14 +3323,12 @@ uint8_t Endpoint_Read_Control_EStream_BE(void* const Buffer, uint16_t Length)
 #include <avr/power.h> /* |clock_prescale_set|, |clock_div_1| */
 #include <avr/pgmspace.h>
 
-#if 1==0
-
-#define __INCLUDE_FROM_COMMON_H
-
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stddef.h>
+
+#define __INCLUDE_FROM_COMMON_H
 
 #include "LUFA/Common/Architectures.h"
 #include "LUFA/Common/BoardTypes.h"
@@ -3453,7 +3451,6 @@ inline void GlobalInterruptDisable(void)
 
 	GCC_MEMORY_BARRIER();
 }
-#endif
 
 @<Get rid of this@>@;
 
@@ -3469,5 +3466,4 @@ compile and see if there will be any errors.
 #include <LUFA/Drivers/Board/LEDs.h>
 #include <LUFA/Drivers/Peripheral/Serial.h>
 #include <LUFA/Drivers/Misc/RingBuffer.h>
-#include <LUFA/Drivers/USB/USB.h>
 #include <LUFA/Platform/Platform.h>
