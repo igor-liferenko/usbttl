@@ -351,30 +351,6 @@
 			                                     FILE* const Stream) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
 			#endif
 
-	/* Private Interface - For use in library only: */
-	#if !defined(__DOXYGEN__)
-		/* Function Prototypes: */
-			#if defined(__INCLUDE_FROM_CDC_DEVICE_C)
-				#if defined(FDEV_SETUP_STREAM)
-				static int CDC_Device_putchar(char c,
-				                              FILE* Stream) ATTR_NON_NULL_PTR_ARG(2);
-				static int CDC_Device_getchar(FILE* Stream) ATTR_NON_NULL_PTR_ARG(1);
-				static int CDC_Device_getchar_Blocking(FILE* Stream) ATTR_NON_NULL_PTR_ARG(1);
-				#endif
-
-				void CDC_Device_Event_Stub(void) ATTR_CONST;
-
-				void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
-				                                          ATTR_WEAK ATTR_NON_NULL_PTR_ARG(1) ATTR_ALIAS(CDC_Device_Event_Stub);
-				void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
-				                                             ATTR_WEAK ATTR_NON_NULL_PTR_ARG(1) ATTR_ALIAS(CDC_Device_Event_Stub);
-				void EVENT_CDC_Device_BreakSent(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
-				                                const uint8_t Duration) ATTR_WEAK ATTR_NON_NULL_PTR_ARG(1)
-				                                ATTR_ALIAS(CDC_Device_Event_Stub);
-			#endif
-
-	#endif
-
 	/* Disable C linkage for C++ Compilers: */
 		#if defined(__cplusplus)
 			}
