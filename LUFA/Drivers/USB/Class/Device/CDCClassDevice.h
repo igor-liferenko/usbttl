@@ -138,8 +138,9 @@
 			 *
 			 *  \return Boolean \c true if the endpoints were successfully configured, \c false otherwise.
 			 */
+#if 1==0
 			bool CDC_Device_ConfigureEndpoints(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) ATTR_NON_NULL_PTR_ARG(1);
-
+#endif
 			/** Processes incoming control requests from the host, that are directed to the given CDC class interface. This should be
 			 *  linked to the library \ref EVENT_USB_Device_ControlRequest() event.
 			 *
@@ -152,8 +153,9 @@
 			 *
 			 *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration and state.
 			 */
+#if 1==0
 			void CDC_Device_USBTask(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) ATTR_NON_NULL_PTR_ARG(1);
-
+#endif
 			/** CDC class driver event for a line encoding change on a CDC interface. This event fires each time the host requests a
 			 *  line encoding change (containing the serial parity, baud and other configuration information) and may be hooked in the
 			 *  user program by declaring a handler function with the same name and parameters listed here. The new line encoding
@@ -196,10 +198,11 @@
 			 *
 			 *  \return A value from the \ref Endpoint_Stream_RW_ErrorCodes_t enum.
 			 */
+#if 1==0
 			uint8_t CDC_Device_SendData(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 			                            const void* const Buffer,
 			                            const uint16_t Length) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
-
+#endif
 			/** Sends a given data buffer from PROGMEM space to the attached USB host, if connected. If a host is not connected when the
 			 *  function is called, the string is discarded. Bytes will be queued for transmission to the host until either the endpoint
 			 *  bank becomes full, or the \ref CDC_Device_Flush() function is called to flush the pending data to the host. This allows
@@ -214,10 +217,11 @@
 			 *
 			 *  \return A value from the \ref Endpoint_Stream_RW_ErrorCodes_t enum.
 			 */
+#if 1==0
 			uint8_t CDC_Device_SendData_P(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 			                            const void* const Buffer,
 			                            const uint16_t Length) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
-
+#endif
 			/** Sends a given null terminated string to the attached USB host, if connected. If a host is not connected when
 			 *  the function is called, the string is discarded. Bytes will be queued for transmission to the host until either
 			 *  the endpoint bank becomes full, or the \ref CDC_Device_Flush() function is called to flush the pending data to
@@ -231,9 +235,10 @@
 			 *
 			 *  \return A value from the \ref Endpoint_Stream_RW_ErrorCodes_t enum.
 			 */
+#if 1==0
 			uint8_t CDC_Device_SendString(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 			                              const char* const String) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
-
+#endif
 			/** Sends a given null terminated string from PROGMEM space to the attached USB host, if connected. If a host is not connected
 			 *  when the function is called, the string is discarded. Bytes will be queued for transmission to the host until either
 			 *  the endpoint bank becomes full, or the \ref CDC_Device_Flush() function is called to flush the pending data to
@@ -247,9 +252,10 @@
 			 *
 			 *  \return A value from the \ref Endpoint_Stream_RW_ErrorCodes_t enum.
 			 */
+#if 1==0
 			uint8_t CDC_Device_SendString_P(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 			                              const char* const String) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
-
+#endif
 			/** Sends a given byte to the attached USB host, if connected. If a host is not connected when the function is called, the
 			 *  byte is discarded. Bytes will be queued for transmission to the host until either the endpoint bank becomes full, or the
 			 *  \ref CDC_Device_Flush() function is called to flush the pending data to the host. This allows for multiple bytes to be
@@ -263,9 +269,10 @@
 			 *
 			 *  \return A value from the \ref Endpoint_WaitUntilReady_ErrorCodes_t enum.
 			 */
+#if 1==0
 			uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 			                            const uint8_t Data) ATTR_NON_NULL_PTR_ARG(1);
-
+#endif
 			/** Determines the number of bytes received by the CDC interface from the host, waiting to be read. This indicates the number
 			 *  of bytes in the OUT endpoint bank only, and thus the number of calls to \ref CDC_Device_ReceiveByte() which are guaranteed to
 			 *  succeed immediately. If multiple bytes are to be received, they should be buffered by the user application, as the endpoint
@@ -278,8 +285,9 @@
 			 *
 			 *  \return Total number of buffered bytes received from the host.
 			 */
+#if 1==0
 			uint16_t CDC_Device_BytesReceived(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) ATTR_NON_NULL_PTR_ARG(1);
-
+#endif
 			/** Reads a byte of data from the host. If no data is waiting to be read of if a USB host is not connected, the function
 			 *  returns a negative value. The \ref CDC_Device_BytesReceived() function may be queried in advance to determine how many
 			 *  bytes are currently buffered in the CDC interface's data receive endpoint bank, and thus how many repeated calls to this
@@ -292,8 +300,9 @@
 			 *
 			 *  \return Next received byte from the host, or a negative value if no data received.
 			 */
+#if 1==0
 			int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) ATTR_NON_NULL_PTR_ARG(1);
-
+#endif
 			/** Flushes any data waiting to be sent, ensuring that the send buffer is cleared.
 			 *
 			 *  \pre This function must only be called when the Device state machine is in the \ref DEVICE_STATE_Configured state or
@@ -303,8 +312,9 @@
 			 *
 			 *  \return A value from the \ref Endpoint_WaitUntilReady_ErrorCodes_t enum.
 			 */
+#if 1==0
 			uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) ATTR_NON_NULL_PTR_ARG(1);
-
+#endif
 			/** Sends a Serial Control Line State Change notification to the host. This should be called when the virtual serial
 			 *  control lines (DCD, DSR, etc.) have changed states, or to give BREAK notifications to the host. Line states persist
 			 *  until they are cleared via a second notification. This should be called each time the CDC class driver's
@@ -315,8 +325,9 @@
 			 *
 			 *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration and state.
 			 */
+#if 1==0
 			void CDC_Device_SendControlLineStateChange(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) ATTR_NON_NULL_PTR_ARG(1);
-
+#endif
 			#if defined(FDEV_SETUP_STREAM) || defined(__DOXYGEN__)
 			/** Creates a standard character stream for the given CDC Device instance so that it can be used with all the regular
 			 *  functions in the standard <stdio.h> library that accept a \c FILE stream as a destination (e.g. \c fprintf()). The created
@@ -336,9 +347,10 @@
 			 *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration and state.
 			 *  \param[in,out] Stream            Pointer to a FILE structure where the created stream should be placed.
 			 */
+#if 1==0
 			void CDC_Device_CreateStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 			                             FILE* const Stream) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
-
+#endif
 			/** Identical to \ref CDC_Device_CreateStream(), except that reads are blocking until the calling stream function terminates
 			 *  the transfer. While blocking, the USB and CDC service tasks are called repeatedly to maintain USB communications.
 			 *
@@ -347,8 +359,10 @@
 			 *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration and state.
 			 *  \param[in,out] Stream            Pointer to a FILE structure where the created stream should be placed.
 			 */
+#if 1==0
 			void CDC_Device_CreateBlockingStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 			                                     FILE* const Stream) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
+#endif
 			#endif
 
 	/* Disable C linkage for C++ Compilers: */
