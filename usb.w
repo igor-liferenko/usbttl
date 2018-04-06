@@ -386,6 +386,7 @@ information.
 @s USB_Endpoint_Table_t int
 
 @(/dev/null@>=
+/* zzz */
 typedef struct {
   struct {
     uint8_t ControlInterfaceNumber;
