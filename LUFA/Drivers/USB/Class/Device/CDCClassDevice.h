@@ -146,8 +146,9 @@
 			 *
 			 *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration and state.
 			 */
+#if 1==0
 			void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) ATTR_NON_NULL_PTR_ARG(1);
-
+#endif
 			/** General management task for a given CDC class interface, required for the correct operation of the interface. This should
 			 *  be called frequently in the main program loop, before the master USB management task \ref USB_USBTask().
 			 *
@@ -163,8 +164,9 @@
 			 *
 			 *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration and state.
 			 */
+#if 1==0
 			void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) ATTR_NON_NULL_PTR_ARG(1);
-
+#endif
 			/** CDC class driver event for a control line state change on a CDC interface. This event fires each time the host requests a
 			 *  control line state change (containing the virtual serial control line states, such as DTR) and may be hooked in the
 			 *  user program by declaring a handler function with the same name and parameters listed here. The new control line states
@@ -181,6 +183,7 @@
 			 *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration and state.
 			 *  \param[in]     Duration          Duration of the break that has been sent by the host, in milliseconds.
 			 */
+
 			void EVENT_CDC_Device_BreakSent(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 			                                const uint8_t Duration) ATTR_NON_NULL_PTR_ARG(1);
 
