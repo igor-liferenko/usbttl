@@ -3520,6 +3520,7 @@ and when no "@@(/dev/null@@>" sections will remain, try to remove this section a
 compile and see if there will be any errors.
 And move typedef to corresponding section - search @*-title from .h file from which you remove
 the typedef.
+And remove "@s ..." from /dev/null sections.
 HINT: use gcc-E.c to merge header files
 @^TODO@>
 
