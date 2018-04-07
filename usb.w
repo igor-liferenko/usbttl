@@ -3518,6 +3518,8 @@ because it's just a microcontroller. This can be done gradually, step-by-step,
 by the following algorithm: replace all "@@(/dev/null@@>" sections by "@@<Header files@@>",
 and when no "@@(/dev/null@@>" sections will remain, try to remove this section and
 compile and see if there will be any errors.
+And move typedef to corresponding section - search @*-title from .h file from which you remove
+the typedef.
 @^TODO@>
 
 @<Get rid of this@>=
