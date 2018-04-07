@@ -1,5 +1,4 @@
 # 1 "usb.c"
-# 1 "/home/user/usbttl//"
 # 1 "<built-in>"
 # 1 "<command-line>"
 # 1 "usb.c"
@@ -5031,12 +5030,11 @@ extern char *tmpnam (char *s);
    return *Buffer->Out;
   }
 # 3472 "usb.w" 2
-
 # 1 "./LUFA/Platform/Platform.h" 1
 # 69 "./LUFA/Platform/Platform.h"
 # 1 "./LUFA/Platform/../Common/Common.h" 1
 # 70 "./LUFA/Platform/Platform.h" 2
-# 3474 "usb.w" 2
+# 3473 "usb.w" 2
 # 3458 "usb.w"
 # 239 "usb.w"
 # 768 "usb.w"
