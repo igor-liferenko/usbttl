@@ -541,11 +541,7 @@ ISR(USART1_RX_vect, ISR_BLOCK)
 
 @ Event handler for the CDC Class driver Line Encoding Changed event.
 
-@<Function prototypes@>=
-void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const
- CDCInterfaceInfo);
-
-@ @d CDC_LINEENCODING_TWO_STOP_BITS 2 /* each frame contains two stop bits */
+@d CDC_LINEENCODING_TWO_STOP_BITS 2 /* each frame contains two stop bits */
 @d CDC_PARITY_EVEN 2
 @d CDC_PARITY_ODD 1
 
@@ -1644,6 +1640,8 @@ static int CDC_Device_getchar_Blocking(FILE* Stream) ATTR_NON_NULL_PTR_ARG(1);
 
 void CDC_Device_Event_Stub(void) ATTR_CONST;
 
+void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
+  ATTR_NON_NULL_PTR_ARG(1);
 void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
   ATTR_WEAK ATTR_NON_NULL_PTR_ARG(1) ATTR_ALIAS(CDC_Device_Event_Stub);
 void EVENT_CDC_Device_BreakSent(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
