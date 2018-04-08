@@ -29,107 +29,47 @@ typedef unsigned int uint64_t __attribute__((__mode__(__DI__)));
 # 146 "/usr/lib/avr/include/stdint.h" 3 4
 typedef int16_t intptr_t;
 
-
-
-
 typedef uint16_t uintptr_t;
 # 163 "/usr/lib/avr/include/stdint.h" 3 4
 typedef int8_t int_least8_t;
 
-
-
-
 typedef uint8_t uint_least8_t;
-
-
-
 
 typedef int16_t int_least16_t;
 
-
-
-
 typedef uint16_t uint_least16_t;
-
-
-
 
 typedef int32_t int_least32_t;
 
-
-
-
 typedef uint32_t uint_least32_t;
 
-
-
-
-
-
-
 typedef int64_t int_least64_t;
-
-
-
-
-
 
 typedef uint64_t uint_least64_t;
 # 217 "/usr/lib/avr/include/stdint.h" 3 4
 typedef int8_t int_fast8_t;
 
-
-
-
 typedef uint8_t uint_fast8_t;
-
-
-
 
 typedef int16_t int_fast16_t;
 
-
-
-
 typedef uint16_t uint_fast16_t;
-
-
-
 
 typedef int32_t int_fast32_t;
 
-
-
-
 typedef uint32_t uint_fast32_t;
 
-
-
-
-
-
-
 typedef int64_t int_fast64_t;
-
-
-
-
-
 
 typedef uint64_t uint_fast64_t;
 # 277 "/usr/lib/avr/include/stdint.h" 3 4
 typedef int64_t intmax_t;
-
-
-
 
 typedef uint64_t uintmax_t;
 # 10 "/usr/lib/gcc/avr/5.4.0/include/stdint.h" 2 3 4
 # 38 "/usr/lib/avr/include/inttypes.h" 2 3
 # 77 "/usr/lib/avr/include/inttypes.h" 3
 typedef int32_t int_farptr_t;
-
-
 
 typedef uint32_t uint_farptr_t;
 # 127 "/usr/lib/avr/include/avr/sfr_defs.h" 2 3
@@ -147,11 +87,6 @@ typedef uint32_t uint_farptr_t;
 # 1 "/usr/lib/avr/include/avr/version.h" 1 3
 # 632 "/usr/lib/avr/include/avr/io.h" 2 3
 
-
-
-
-
-
 # 1 "/usr/lib/avr/include/avr/fuse.h" 1 3
 # 239 "/usr/lib/avr/include/avr/fuse.h" 3
 typedef struct
@@ -161,7 +96,6 @@ typedef struct
     unsigned char extended;
 } __fuse_t;
 # 639 "/usr/lib/avr/include/avr/io.h" 2 3
-
 
 # 1 "/usr/lib/avr/include/avr/lock.h" 1 3
 # 642 "/usr/lib/avr/include/avr/io.h" 2 3
@@ -259,13 +193,7 @@ __attribute__ ((__always_inline__))
 __power_all_enable()
 {
 
-
-
-
-
     (*(volatile uint8_t *)(0x64)) &= (uint8_t)~(((1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<5)|(1<<6)|(1<<7)));
-
-
 
     (*(volatile uint8_t *)(0x65)) &= (uint8_t)~(((1<<0)|(1<<3)|(1<<7)));
 # 1234 "/usr/lib/avr/include/avr/power.h" 3
@@ -276,13 +204,7 @@ __attribute__ ((__always_inline__))
 __power_all_disable()
 {
 
-
-
-
-
     (*(volatile uint8_t *)(0x64)) |= (uint8_t)(((1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<5)|(1<<6)|(1<<7)));
-
-
 
     (*(volatile uint8_t *)(0x65)) |= (uint8_t)(((1<<0)|(1<<3)|(1<<7)));
 # 1283 "/usr/lib/avr/include/avr/power.h" 3
@@ -331,19 +253,9 @@ extern const void * memchr_P(const void *, int __val, size_t __len) __attribute_
 # 1172 "/usr/lib/avr/include/avr/pgmspace.h" 3
 extern int memcmp_P(const void *, const void *, size_t) __attribute__((__pure__));
 
-
-
-
-
-
 extern void *memccpy_P(void *, const void *, int __val, size_t);
 # 1188 "/usr/lib/avr/include/avr/pgmspace.h" 3
 extern void *memcpy_P(void *, const void *, size_t);
-
-
-
-
-
 
 extern void *memmem_P(const void *, size_t, const void *, size_t) __attribute__((__pure__));
 # 1207 "/usr/lib/avr/include/avr/pgmspace.h" 3
@@ -360,11 +272,6 @@ extern int strcmp_P(const char *, const char *) __attribute__((__pure__));
 extern char *strcpy_P(char *, const char *);
 # 1285 "/usr/lib/avr/include/avr/pgmspace.h" 3
 extern int strcasecmp_P(const char *, const char *) __attribute__((__pure__));
-
-
-
-
-
 
 extern char *strcasestr_P(const char *, const char *) __attribute__((__pure__));
 # 1305 "/usr/lib/avr/include/avr/pgmspace.h" 3
@@ -450,15 +357,7 @@ static __inline__ size_t strlen_P(const char *s) {
 # 125 "/usr/lib/avr/include/string.h" 3
 extern int ffs(int __val) __attribute__((__const__));
 
-
-
-
-
 extern int ffsl(long __val) __attribute__((__const__));
-
-
-
-
 
 __extension__ extern int ffsll(long long __val) __attribute__((__const__));
 # 150 "/usr/lib/avr/include/string.h" 3
@@ -532,8 +431,6 @@ extern char *strtok_r(char *, const char *, char **);
 # 606 "/usr/lib/avr/include/string.h" 3
 extern char *strupr(char *);
 
-
-
 extern int strcoll(const char *s1, const char *s2);
 extern char *strerror(int errnum);
 extern size_t strxfrm(char *dest, const char *src, size_t n);
@@ -556,7 +453,6 @@ typedef int wchar_t;
 # 1 "./LUFA/Drivers/USB/../../Common/Attributes.h" 1
 # 76 "./LUFA/Drivers/USB/../../Common/Common.h" 2
 
-
 # 1 "Config/LUFAConfig.h" 1
 # 79 "./LUFA/Drivers/USB/../../Common/Common.h" 2
 # 97 "./LUFA/Drivers/USB/../../Common/Common.h"
@@ -567,78 +463,31 @@ typedef int wchar_t;
 # 137 "/usr/lib/avr/include/avr/eeprom.h" 3
 uint8_t eeprom_read_byte (const uint8_t *__p) __attribute__((__pure__));
 
-
-
-
 uint16_t eeprom_read_word (const uint16_t *__p) __attribute__((__pure__));
-
-
-
 
 uint32_t eeprom_read_dword (const uint32_t *__p) __attribute__((__pure__));
 
-
-
-
 float eeprom_read_float (const float *__p) __attribute__((__pure__));
-
-
-
-
 
 void eeprom_read_block (void *__dst, const void *__src, size_t __n);
 
-
-
-
-
 void eeprom_write_byte (uint8_t *__p, uint8_t __value);
-
-
-
 
 void eeprom_write_word (uint16_t *__p, uint16_t __value);
 
-
-
-
 void eeprom_write_dword (uint32_t *__p, uint32_t __value);
-
-
-
 
 void eeprom_write_float (float *__p, float __value);
 
-
-
-
-
 void eeprom_write_block (const void *__src, void *__dst, size_t __n);
-
-
-
-
 
 void eeprom_update_byte (uint8_t *__p, uint8_t __value);
 
-
-
-
 void eeprom_update_word (uint16_t *__p, uint16_t __value);
-
-
-
 
 void eeprom_update_dword (uint32_t *__p, uint32_t __value);
 
-
-
-
 void eeprom_update_float (float *__p, float __value);
-
-
-
-
 
 void eeprom_update_block (const void *__src, void *__dst, size_t __n);
 # 98 "./LUFA/Drivers/USB/../../Common/Common.h" 2
@@ -651,164 +500,61 @@ void eeprom_update_block (const void *__src, void *__dst, size_t __n);
 # 127 "/usr/lib/avr/include/math.h" 3
 extern double cos(double __x) __attribute__((__const__));
 
-
-
-
-
 extern double sin(double __x) __attribute__((__const__));
-
-
-
-
 
 extern double tan(double __x) __attribute__((__const__));
 
-
-
-
-
-
 extern double fabs(double __x) __attribute__((__const__));
-
-
-
-
-
 
 extern double fmod(double __x, double __y) __attribute__((__const__));
 # 168 "/usr/lib/avr/include/math.h" 3
 extern double modf(double __x, double *__iptr);
 
-
 extern float modff (float __x, float *__iptr);
-
-
-
 
 extern double sqrt(double __x) __attribute__((__const__));
 
-
 extern float sqrtf (float) __attribute__((__const__));
-
-
-
 
 extern double cbrt(double __x) __attribute__((__const__));
 # 195 "/usr/lib/avr/include/math.h" 3
 extern double hypot (double __x, double __y) __attribute__((__const__));
 
-
-
-
-
-
-
 extern double square(double __x) __attribute__((__const__));
 
-
-
-
-
-
 extern double floor(double __x) __attribute__((__const__));
-
-
-
-
-
 
 extern double ceil(double __x) __attribute__((__const__));
 # 235 "/usr/lib/avr/include/math.h" 3
 extern double frexp(double __x, int *__pexp);
 
-
-
-
-
-
-
 extern double ldexp(double __x, int __exp) __attribute__((__const__));
-
-
-
-
 
 extern double exp(double __x) __attribute__((__const__));
 
-
-
-
-
 extern double cosh(double __x) __attribute__((__const__));
-
-
-
-
 
 extern double sinh(double __x) __attribute__((__const__));
 
-
-
-
-
 extern double tanh(double __x) __attribute__((__const__));
-
-
-
-
-
-
 
 extern double acos(double __x) __attribute__((__const__));
 
-
-
-
-
-
-
 extern double asin(double __x) __attribute__((__const__));
-
-
-
-
-
 
 extern double atan(double __x) __attribute__((__const__));
 # 299 "/usr/lib/avr/include/math.h" 3
 extern double atan2(double __y, double __x) __attribute__((__const__));
 
-
-
-
-
 extern double log(double __x) __attribute__((__const__));
-
-
-
-
 
 extern double log10(double __x) __attribute__((__const__));
 
-
-
-
-
 extern double pow(double __x, double __y) __attribute__((__const__));
-
-
-
-
-
 
 extern int isnan(double __x) __attribute__((__const__));
 # 334 "/usr/lib/avr/include/math.h" 3
 extern int isinf(double __x) __attribute__((__const__));
-
-
-
-
-
 
 __attribute__((__const__)) static inline int isfinite (double __x)
 {
@@ -823,11 +569,6 @@ __attribute__((__const__)) static inline int isfinite (double __x)
     return __exp != 0xff;
 }
 
-
-
-
-
-
 __attribute__((__const__)) static inline double copysign (double __x, double __y)
 {
     __asm__ (
@@ -840,35 +581,13 @@ __attribute__((__const__)) static inline double copysign (double __x, double __y
 # 377 "/usr/lib/avr/include/math.h" 3
 extern int signbit (double __x) __attribute__((__const__));
 
-
-
-
-
-
 extern double fdim (double __x, double __y) __attribute__((__const__));
 # 393 "/usr/lib/avr/include/math.h" 3
 extern double fma (double __x, double __y, double __z) __attribute__((__const__));
 
-
-
-
-
-
-
 extern double fmax (double __x, double __y) __attribute__((__const__));
 
-
-
-
-
-
-
 extern double fmin (double __x, double __y) __attribute__((__const__));
-
-
-
-
-
 
 extern double trunc (double __x) __attribute__((__const__));
 # 427 "/usr/lib/avr/include/math.h" 3
@@ -916,8 +635,6 @@ _delay_ms(double __ms)
 {
  double __tmp ;
 
-
-
  uint32_t __ticks_dc;
  extern void __builtin_avr_delay_cycles(unsigned long);
  __tmp = ((
@@ -928,7 +645,6 @@ _delay_ms(double __ms)
 # 184 "/usr/lib/avr/include/util/delay.h" 3
   __ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
 
-
  __builtin_avr_delay_cycles(__ticks_dc);
 # 210 "/usr/lib/avr/include/util/delay.h" 3
 }
@@ -937,8 +653,6 @@ void
 _delay_us(double __us)
 {
  double __tmp ;
-
-
 
  uint32_t __ticks_dc;
  extern void __builtin_avr_delay_cycles(unsigned long);
@@ -950,7 +664,6 @@ _delay_us(double __us)
 # 273 "/usr/lib/avr/include/util/delay.h" 3
   __ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
 
-
  __builtin_avr_delay_cycles(__ticks_dc);
 # 299 "/usr/lib/avr/include/util/delay.h" 3
 }
@@ -959,11 +672,6 @@ _delay_us(double __us)
    
 # 102 "./LUFA/Drivers/USB/../../Common/Common.h"
   typedef uint8_t uint_reg_t;
-
-
-
-
-
 
 # 1 "./LUFA/Drivers/USB/../../Common/Endianness.h" 1
 # 400 "./LUFA/Drivers/USB/../../Common/Endianness.h"
@@ -1046,12 +754,6 @@ _delay_us(double __us)
     return Byte;
    }
 
-
-
-
-
-
-
    static inline void Delay_MS(uint16_t Milliseconds) __attribute__ ((always_inline));
    static inline void Delay_MS(uint16_t Milliseconds)
    {
@@ -1073,16 +775,11 @@ _delay_us(double __us)
    {
     __asm__ __volatile__("" ::: "memory");;
 
-
     return 
 # 310 "./LUFA/Drivers/USB/../../Common/Common.h" 3
           (*(volatile uint8_t *)((0x3F) + 0x20))
 # 310 "./LUFA/Drivers/USB/../../Common/Common.h"
               ;
-
-
-
-
 
    }
 # 326 "./LUFA/Drivers/USB/../../Common/Common.h"
@@ -1090,7 +787,6 @@ _delay_us(double __us)
    static inline void SetGlobalInterruptMask(const uint_reg_t GlobalIntState)
    {
     __asm__ __volatile__("" ::: "memory");;
-
 
     
 # 332 "./LUFA/Drivers/USB/../../Common/Common.h" 3
@@ -1101,15 +797,10 @@ _delay_us(double __us)
     __asm__ __volatile__("" ::: "memory");;
    }
 
-
-
-
-
    static inline void GlobalInterruptEnable(void) __attribute__ ((always_inline));
    static inline void GlobalInterruptEnable(void)
    {
     __asm__ __volatile__("" ::: "memory");;
-
 
     
 # 355 "./LUFA/Drivers/USB/../../Common/Common.h" 3
@@ -1117,34 +808,19 @@ _delay_us(double __us)
 # 355 "./LUFA/Drivers/USB/../../Common/Common.h"
         ;
 
-
-
-
-
-
     __asm__ __volatile__("" ::: "memory");;
    }
-
-
-
-
 
    static inline void GlobalInterruptDisable(void) __attribute__ ((always_inline));
    static inline void GlobalInterruptDisable(void)
    {
     __asm__ __volatile__("" ::: "memory");;
 
-
     
 # 375 "./LUFA/Drivers/USB/../../Common/Common.h" 3
    __asm__ __volatile__ ("cli" ::: "memory")
 # 375 "./LUFA/Drivers/USB/../../Common/Common.h"
         ;
-
-
-
-
-
 
     __asm__ __volatile__("" ::: "memory");;
    }
@@ -1154,7 +830,6 @@ _delay_us(double __us)
 # 1 "./LUFA/Drivers/USB/Core/../../../Common/Common.h" 1
 # 70 "./LUFA/Drivers/USB/Core/USBMode.h" 2
 # 384 "./LUFA/Drivers/USB/USB.h" 2
-
 
 # 1 "./LUFA/Drivers/USB/Core/USBTask.h" 1
 # 46 "./LUFA/Drivers/USB/Core/USBTask.h"
@@ -1220,10 +895,6 @@ _delay_us(double __us)
 
     USB_INT_VBUSTI = 0,
 
-
-
-
-
     USB_INT_WAKEUPI = 2,
     USB_INT_SUSPI = 3,
     USB_INT_EORSTI = 4,
@@ -1231,7 +902,6 @@ _delay_us(double __us)
     USB_INT_RXSTPI = 6,
 # 84 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h"
    };
-
 
    static inline void USB_INT_Enable(const uint8_t Interrupt) __attribute__ ((always_inline));
    static inline void USB_INT_Enable(const uint8_t Interrupt)
@@ -1250,12 +920,6 @@ _delay_us(double __us)
 # 94 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h"
                            );
       break;
-
-
-
-
-
-
 
      case USB_INT_WAKEUPI:
       
@@ -1336,12 +1000,6 @@ _delay_us(double __us)
                             );
       break;
 
-
-
-
-
-
-
      case USB_INT_WAKEUPI:
       
 # 164 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h" 3
@@ -1420,12 +1078,6 @@ _delay_us(double __us)
 # 214 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h"
                             );
       break;
-
-
-
-
-
-
 
      case USB_INT_WAKEUPI:
       
@@ -1513,11 +1165,6 @@ _delay_us(double __us)
 # 274 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h"
                                   ));
 
-
-
-
-
-
      case USB_INT_WAKEUPI:
       return (
 # 282 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h" 3
@@ -1603,11 +1250,6 @@ _delay_us(double __us)
 # 320 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h"
                                   ));
 
-
-
-
-
-
      case USB_INT_WAKEUPI:
       return (
 # 328 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h" 3
@@ -1668,14 +1310,12 @@ _delay_us(double __us)
     }
    }
 
-
 # 1 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/../USBMode.h" 1
 # 361 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h" 2
 # 1 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/../Events.h" 1
 # 362 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h" 2
 # 1 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/../USBController.h" 1
 # 363 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/USBInterrupt_AVR8.h" 2
-
 
    void USB_INT_ClearAllInterrupts(void);
    void USB_INT_DisableAllInterrupts(void);
@@ -1704,35 +1344,25 @@ _delay_us(double __us)
     DTYPE_CSEndpoint = 0x25,
    };
 
-
    enum USB_Descriptor_ClassSubclassProtocol_t
    {
     USB_CSCP_NoDeviceClass = 0x00,
 
-
     USB_CSCP_NoDeviceSubclass = 0x00,
-
 
     USB_CSCP_NoDeviceProtocol = 0x00,
 
-
     USB_CSCP_VendorSpecificClass = 0xFF,
-
 
     USB_CSCP_VendorSpecificSubclass = 0xFF,
 
-
     USB_CSCP_VendorSpecificProtocol = 0xFF,
-
 
     USB_CSCP_IADDeviceClass = 0xEF,
 
-
     USB_CSCP_IADDeviceSubclass = 0x02,
 
-
     USB_CSCP_IADDeviceProtocol = 0x01,
-
 
    };
 # 257 "./LUFA/Drivers/USB/Core/AVR8/../StdDescriptors.h"
@@ -1741,14 +1371,12 @@ _delay_us(double __us)
     uint8_t Size;
     uint8_t Type;
 
-
    } __attribute__ ((packed)) USB_Descriptor_Header_t;
 # 274 "./LUFA/Drivers/USB/Core/AVR8/../StdDescriptors.h"
    typedef struct
    {
     uint8_t bLength;
     uint8_t bDescriptorType;
-
 
    } __attribute__ ((packed)) USB_StdDescriptor_Header_t;
 # 291 "./LUFA/Drivers/USB/Core/AVR8/../StdDescriptors.h"
@@ -1757,8 +1385,6 @@ _delay_us(double __us)
     USB_Descriptor_Header_t Header;
 
     uint16_t USBSpecification;
-
-
 
     uint8_t Class;
     uint8_t SubClass;
@@ -1770,22 +1396,13 @@ _delay_us(double __us)
     uint16_t ProductID;
     uint16_t ReleaseNumber;
 
-
-
     uint8_t ManufacturerStrIndex;
 
-
-
-
-
     uint8_t ProductStrIndex;
-
-
 
     uint8_t SerialNumStrIndex;
 # 333 "./LUFA/Drivers/USB/Core/AVR8/../StdDescriptors.h"
     uint8_t NumberOfConfigurations;
-
 
    } __attribute__ ((packed)) USB_Descriptor_Device_t;
 # 347 "./LUFA/Drivers/USB/Core/AVR8/../StdDescriptors.h"
@@ -1794,10 +1411,7 @@ _delay_us(double __us)
     uint8_t bLength;
     uint8_t bDescriptorType;
 
-
     uint16_t bcdUSB;
-
-
 
     uint8_t bDeviceClass;
     uint8_t bDeviceSubClass;
@@ -1807,22 +1421,13 @@ _delay_us(double __us)
     uint16_t idProduct;
     uint16_t bcdDevice;
 
-
-
     uint8_t iManufacturer;
 
-
-
-
-
     uint8_t iProduct;
-
-
 
     uint8_t iSerialNumber;
 # 389 "./LUFA/Drivers/USB/Core/AVR8/../StdDescriptors.h"
     uint8_t bNumConfigurations;
-
 
    } __attribute__ ((packed)) USB_StdDescriptor_Device_t;
 # 401 "./LUFA/Drivers/USB/Core/AVR8/../StdDescriptors.h"
@@ -1832,15 +1437,12 @@ _delay_us(double __us)
 
     uint16_t USBSpecification;
 
-
-
     uint8_t Class;
     uint8_t SubClass;
     uint8_t Protocol;
 
     uint8_t Endpoint0Size;
     uint8_t NumberOfConfigurations;
-
 
     uint8_t Reserved;
    } __attribute__ ((packed)) USB_Descriptor_DeviceQualifier_t;
@@ -1850,17 +1452,13 @@ _delay_us(double __us)
     uint8_t bLength;
     uint8_t bDescriptorType;
 
-
     uint16_t bcdUSB;
-
-
 
     uint8_t bDeviceClass;
     uint8_t bDeviceSubClass;
     uint8_t bDeviceProtocol;
     uint8_t bMaxPacketSize0;
     uint8_t bNumConfigurations;
-
 
     uint8_t bReserved;
    } __attribute__ ((packed)) USB_StdDescriptor_DeviceQualifier_t;
@@ -1871,7 +1469,6 @@ _delay_us(double __us)
 
     uint16_t TotalConfigurationSize;
 
-
     uint8_t TotalInterfaces;
 
     uint8_t ConfigurationNumber;
@@ -1879,11 +1476,7 @@ _delay_us(double __us)
 
     uint8_t ConfigAttributes;
 
-
-
     uint8_t MaxPowerConsumption;
-
-
 
    } __attribute__ ((packed)) USB_Descriptor_Config_Header_t;
 # 487 "./LUFA/Drivers/USB/Core/AVR8/../StdDescriptors.h"
@@ -1892,19 +1485,14 @@ _delay_us(double __us)
     uint8_t bLength;
     uint8_t bDescriptorType;
 
-
     uint16_t wTotalLength;
-
 
     uint8_t bNumInterfaces;
     uint8_t bConfigurationValue;
     uint8_t iConfiguration;
     uint8_t bmAttributes;
 
-
     uint8_t bMaxPower;
-
-
 
    } __attribute__ ((packed)) USB_StdDescriptor_Config_Header_t;
 # 517 "./LUFA/Drivers/USB/Core/AVR8/../StdDescriptors.h"
@@ -1914,9 +1502,6 @@ _delay_us(double __us)
 
     uint8_t InterfaceNumber;
     uint8_t AlternateSetting;
-
-
-
 
     uint8_t TotalEndpoints;
 
@@ -1932,19 +1517,14 @@ _delay_us(double __us)
     uint8_t bLength;
     uint8_t bDescriptorType;
 
-
     uint8_t bInterfaceNumber;
     uint8_t bAlternateSetting;
-
-
-
 
     uint8_t bNumEndpoints;
     uint8_t bInterfaceClass;
     uint8_t bInterfaceSubClass;
     uint8_t bInterfaceProtocol;
     uint8_t iInterface;
-
 
    } __attribute__ ((packed)) USB_StdDescriptor_Interface_t;
 # 581 "./LUFA/Drivers/USB/Core/AVR8/../StdDescriptors.h"
@@ -1961,7 +1541,6 @@ _delay_us(double __us)
 
     uint8_t IADStrIndex;
 
-
    } __attribute__ ((packed)) USB_Descriptor_Interface_Association_t;
 # 613 "./LUFA/Drivers/USB/Core/AVR8/../StdDescriptors.h"
    typedef struct
@@ -1969,14 +1548,12 @@ _delay_us(double __us)
     uint8_t bLength;
     uint8_t bDescriptorType;
 
-
     uint8_t bFirstInterface;
     uint8_t bInterfaceCount;
     uint8_t bFunctionClass;
     uint8_t bFunctionSubClass;
     uint8_t bFunctionProtocol;
     uint8_t iFunction;
-
 
    } __attribute__ ((packed)) USB_StdDescriptor_Interface_Association_t;
 # 638 "./LUFA/Drivers/USB/Core/AVR8/../StdDescriptors.h"
@@ -1986,15 +1563,11 @@ _delay_us(double __us)
 
     uint8_t EndpointAddress;
 
-
     uint8_t Attributes;
-
 
     uint16_t EndpointSize;
 
-
     uint8_t PollingIntervalMS;
-
 
    } __attribute__ ((packed)) USB_Descriptor_Endpoint_t;
 # 666 "./LUFA/Drivers/USB/Core/AVR8/../StdDescriptors.h"
@@ -2003,25 +1576,19 @@ _delay_us(double __us)
     uint8_t bLength;
     uint8_t bDescriptorType;
 
-
     uint8_t bEndpointAddress;
-
 
     uint8_t bmAttributes;
 
-
     uint16_t wMaxPacketSize;
 
-
     uint8_t bInterval;
-
 
    } __attribute__ ((packed)) USB_StdDescriptor_Endpoint_t;
 # 701 "./LUFA/Drivers/USB/Core/AVR8/../StdDescriptors.h"
    typedef struct
    {
     USB_Descriptor_Header_t Header;
-
 
     wchar_t UnicodeString[];
 # 721 "./LUFA/Drivers/USB/Core/AVR8/../StdDescriptors.h"
@@ -2031,7 +1598,6 @@ _delay_us(double __us)
    {
     uint8_t bLength;
     uint8_t bDescriptorType;
-
 
     uint16_t bString[];
 # 754 "./LUFA/Drivers/USB/Core/AVR8/../StdDescriptors.h"
@@ -2076,7 +1642,6 @@ _delay_us(double __us)
                              );
    }
 
-
    void Endpoint_ClearEndpoints(void);
    
 # 111 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h" 3 4
@@ -2091,17 +1656,11 @@ _delay_us(double __us)
     ENDPOINT_READYWAIT_NoError = 0,
     ENDPOINT_READYWAIT_EndpointStalled = 1,
 
-
     ENDPOINT_READYWAIT_DeviceDisconnected = 2,
-
 
     ENDPOINT_READYWAIT_BusSuspended = 3,
 
-
-
     ENDPOINT_READYWAIT_Timeout = 4,
-
-
 
    };
 # 196 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h"
@@ -2152,17 +1711,9 @@ _delay_us(double __us)
                                                                                    ) : 0) | Endpoint_BytesToEPSizeMask(Size)));
    }
 
-
-
-
-
-
-
    static inline uint16_t Endpoint_BytesInEndpoint(void) __attribute__ ((warn_unused_result)) __attribute__ ((always_inline));
    static inline uint16_t Endpoint_BytesInEndpoint(void)
    {
-
-
 
      return (((uint16_t)
 # 227 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h" 3
@@ -2174,13 +1725,7 @@ _delay_us(double __us)
 # 227 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h"
                                             );
 
-
-
    }
-
-
-
-
 
    static inline uint8_t Endpoint_GetEndpointDirection(void) __attribute__ ((warn_unused_result)) __attribute__ ((always_inline));
    static inline uint8_t Endpoint_GetEndpointDirection(void)
@@ -2196,12 +1741,6 @@ _delay_us(double __us)
                                 )) ? 0x80 : 0x00;
    }
 
-
-
-
-
-
-
    static inline uint8_t Endpoint_GetCurrentEndpoint(void) __attribute__ ((warn_unused_result)) __attribute__ ((always_inline));
    static inline uint8_t Endpoint_GetCurrentEndpoint(void)
    {
@@ -2211,8 +1750,6 @@ _delay_us(double __us)
              (*(volatile uint8_t *)(0xE9)) 
 # 253 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h"
                    & 0x0F) | Endpoint_GetEndpointDirection());
-
-
 
    }
 # 266 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h"
@@ -2227,11 +1764,6 @@ _delay_us(double __us)
           = (Address & 0x0F);
 
    }
-
-
-
-
-
 
    static inline void Endpoint_ResetEndpoint(const uint8_t Address) __attribute__ ((always_inline));
    static inline void Endpoint_ResetEndpoint(const uint8_t Address)
@@ -2248,11 +1780,6 @@ _delay_us(double __us)
          = 0;
    }
 
-
-
-
-
-
    static inline void Endpoint_EnableEndpoint(void) __attribute__ ((always_inline));
    static inline void Endpoint_EnableEndpoint(void)
    {
@@ -2267,9 +1794,6 @@ _delay_us(double __us)
                        );
    }
 
-
-
-
    static inline void Endpoint_DisableEndpoint(void) __attribute__ ((always_inline));
    static inline void Endpoint_DisableEndpoint(void)
    {
@@ -2283,10 +1807,6 @@ _delay_us(double __us)
 # 303 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h"
                         );
    }
-
-
-
-
 
    static inline 
 # 310 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h" 3 4
@@ -2387,10 +1907,6 @@ _delay_us(double __us)
                                                 );
    }
 
-
-
-
-
    static inline 
 # 367 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h" 3 4
                 _Bool 
@@ -2420,12 +1936,6 @@ _delay_us(double __us)
 # 370 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h"
                                                   );
    }
-
-
-
-
-
-
 
    static inline uint8_t Endpoint_GetEndpointInterrupts(void) __attribute__ ((warn_unused_result)) __attribute__ ((always_inline));
    static inline uint8_t Endpoint_GetEndpointInterrupts(void)
@@ -2459,12 +1969,6 @@ _delay_us(double __us)
                                                                                                      );
    }
 
-
-
-
-
-
-
    static inline 
 # 404 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h" 3 4
                 _Bool 
@@ -2495,12 +1999,6 @@ _delay_us(double __us)
                                                  );
    }
 
-
-
-
-
-
-
    static inline 
 # 416 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h" 3 4
                 _Bool 
@@ -2530,12 +2028,6 @@ _delay_us(double __us)
 # 419 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h"
                                                   );
    }
-
-
-
-
-
-
 
    static inline 
 # 428 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h" 3 4
@@ -2581,11 +2073,6 @@ _delay_us(double __us)
                           );
    }
 
-
-
-
-
-
    static inline void Endpoint_ClearIN(void) __attribute__ ((always_inline));
    static inline void Endpoint_ClearIN(void)
    {
@@ -2604,14 +2091,7 @@ _delay_us(double __us)
 # 456 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h"
                                             ));
 
-
-
    }
-
-
-
-
-
 
    static inline void Endpoint_ClearOUT(void) __attribute__ ((always_inline));
    static inline void Endpoint_ClearOUT(void)
@@ -2631,8 +2111,6 @@ _delay_us(double __us)
 # 471 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h"
                                              ));
 
-
-
    }
 # 488 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h"
    static inline void Endpoint_StallTransaction(void) __attribute__ ((always_inline));
@@ -2649,10 +2127,6 @@ _delay_us(double __us)
                           );
    }
 
-
-
-
-
    static inline void Endpoint_ClearStall(void) __attribute__ ((always_inline));
    static inline void Endpoint_ClearStall(void)
    {
@@ -2666,12 +2140,6 @@ _delay_us(double __us)
 # 501 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h"
                            );
    }
-
-
-
-
-
-
 
    static inline 
 # 510 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h" 3 4
@@ -2703,7 +2171,6 @@ _delay_us(double __us)
                                                    );
    }
 
-
    static inline void Endpoint_ResetDataToggle(void) __attribute__ ((always_inline));
    static inline void Endpoint_ResetDataToggle(void)
    {
@@ -2717,10 +2184,6 @@ _delay_us(double __us)
 # 520 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h"
                         );
    }
-
-
-
-
 
    static inline void Endpoint_SetEndpointDirection(const uint8_t DirectionMask) __attribute__ ((always_inline));
    static inline void Endpoint_SetEndpointDirection(const uint8_t DirectionMask)
@@ -2744,12 +2207,6 @@ _delay_us(double __us)
                                                                       ) : 0));
    }
 
-
-
-
-
-
-
    static inline uint8_t Endpoint_Read_8(void) __attribute__ ((warn_unused_result)) __attribute__ ((always_inline));
    static inline uint8_t Endpoint_Read_8(void)
    {
@@ -2760,12 +2217,6 @@ _delay_us(double __us)
                 ;
    }
 
-
-
-
-
-
-
    static inline void Endpoint_Write_8(const uint8_t Data) __attribute__ ((always_inline));
    static inline void Endpoint_Write_8(const uint8_t Data)
    {
@@ -2775,10 +2226,6 @@ _delay_us(double __us)
 # 554 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h"
           = Data;
    }
-
-
-
-
 
    static inline void Endpoint_Discard_8(void) __attribute__ ((always_inline));
    static inline void Endpoint_Discard_8(void)
@@ -2869,10 +2316,6 @@ _delay_us(double __us)
 # 640 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h"
           = (Data & 0xFF);
    }
-
-
-
-
 
    static inline void Endpoint_Discard_16(void) __attribute__ ((always_inline));
    static inline void Endpoint_Discard_16(void)
@@ -3009,10 +2452,6 @@ _delay_us(double __us)
           = (Data & 0xFF);
    }
 
-
-
-
-
    static inline void Endpoint_Discard_32(void) __attribute__ ((always_inline));
    static inline void Endpoint_Discard_32(void)
    {
@@ -3049,12 +2488,6 @@ _delay_us(double __us)
        Endpoint_ConfigureEndpointTable(const USB_Endpoint_Table_t* const Table,
                                         const uint8_t Entries);
 
-
-
-
-
-
-
    void Endpoint_ClearStatusStage(void);
 # 809 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Endpoint_AVR8.h"
    uint8_t Endpoint_WaitUntilReady(void);
@@ -3065,27 +2498,15 @@ _delay_us(double __us)
    {
     DEVICE_STATE_Unattached = 0,
 
-
     DEVICE_STATE_Powered = 1,
-
-
 
     DEVICE_STATE_Default = 2,
 
-
-
     DEVICE_STATE_Addressed = 3,
-
-
 
     DEVICE_STATE_Configured = 4,
 
-
-
     DEVICE_STATE_Suspended = 5,
-
-
-
 
    };
 # 133 "./LUFA/Drivers/USB/Core/AVR8/../Device.h"
@@ -3093,12 +2514,7 @@ _delay_us(double __us)
                                        const uint16_t wIndex,
                                        const void** const DescriptorAddress
 
-
-
-
                                        ) __attribute__ ((warn_unused_result)) __attribute__ ((nonnull (3)));
-
-
 
 # 1 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Device_AVR8.h" 1
 # 54 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Device_AVR8.h"
@@ -3109,12 +2525,6 @@ _delay_us(double __us)
 # 57 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Device_AVR8.h" 2
 # 154 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Device_AVR8.h"
    void USB_Device_SendRemoteWakeup(void);
-
-
-
-
-
-
 
    static inline uint16_t USB_Device_GetFrameNumber(void) __attribute__ ((always_inline)) __attribute__ ((warn_unused_result));
    static inline uint16_t USB_Device_GetFrameNumber(void)
@@ -3132,21 +2542,11 @@ _delay_us(double __us)
      USB_INT_Enable(USB_INT_SOFI);
     }
 
-
-
-
-
-
     static inline void USB_Device_DisableSOFEvents(void) __attribute__ ((always_inline));
     static inline void USB_Device_DisableSOFEvents(void)
     {
      USB_INT_Disable(USB_INT_SOFI);
     }
-
-
-
-
-
 
    static inline void USB_Device_SetLowSpeed(void) __attribute__ ((always_inline));
    static inline void USB_Device_SetLowSpeed(void)
@@ -3175,7 +2575,6 @@ _delay_us(double __us)
 # 206 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/Device_AVR8.h"
                       );
    }
-
 
    static inline void USB_Device_SetDeviceAddress(const uint8_t Address) __attribute__ ((always_inline));
    static inline void USB_Device_SetDeviceAddress(const uint8_t Address)
@@ -3233,7 +2632,6 @@ _delay_us(double __us)
                                ));
    }
 
-
    static inline void USB_Device_GetSerialString(uint16_t* const UnicodeString) __attribute__ ((nonnull (1)));
    static inline void USB_Device_GetSerialString(uint16_t* const UnicodeString)
    {
@@ -3289,63 +2687,35 @@ _delay_us(double __us)
    {
     REQ_GetStatus = 0,
 
-
-
     REQ_ClearFeature = 1,
-
-
 
     REQ_SetFeature = 3,
 
-
-
     REQ_SetAddress = 5,
-
-
 
     REQ_GetDescriptor = 6,
 
-
-
     REQ_SetDescriptor = 7,
-
 
     REQ_GetConfiguration = 8,
 
-
-
     REQ_SetConfiguration = 9,
-
-
 
     REQ_GetInterface = 10,
 
-
     REQ_SetInterface = 11,
-
 
     REQ_SynchFrame = 12,
 
-
    };
-
-
-
 
    enum USB_Feature_Selectors_t
    {
     FEATURE_SEL_EndpointHalt = 0x00,
 
-
-
-
     FEATURE_SEL_DeviceRemoteWakeup = 0x01,
 
-
-
-
     FEATURE_SEL_TestMode = 0x02,
-
 
    };
 # 50 "./LUFA/Drivers/USB/Core/AVR8/../DeviceStandardReq.h" 2
@@ -3358,7 +2728,6 @@ _delay_us(double __us)
     {
 
      MEMSPACE_FLASH = 0,
-
 
      MEMSPACE_EEPROM = 1,
 
@@ -3388,25 +2757,15 @@ _delay_us(double __us)
     ENDPOINT_RWSTREAM_NoError = 0,
     ENDPOINT_RWSTREAM_EndpointStalled = 1,
 
-
     ENDPOINT_RWSTREAM_DeviceDisconnected = 2,
-
 
     ENDPOINT_RWSTREAM_BusSuspended = 3,
 
-
-
     ENDPOINT_RWSTREAM_Timeout = 4,
-
-
 
     ENDPOINT_RWSTREAM_IncompleteTransfer = 5,
 
-
-
-
    };
-
 
    enum Endpoint_ControlStream_RW_ErrorCodes_t
    {
@@ -3414,14 +2773,9 @@ _delay_us(double __us)
     ENDPOINT_RWCSTREAM_HostAborted = 1,
     ENDPOINT_RWCSTREAM_DeviceDisconnected = 2,
 
-
     ENDPOINT_RWCSTREAM_BusSuspended = 3,
 
-
-
    };
-
-
 
 # 1 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/EndpointStream_AVR8.h" 1
 # 122 "./LUFA/Drivers/USB/Core/AVR8/../AVR8/EndpointStream_AVR8.h"
@@ -3533,11 +2887,6 @@ _delay_us(double __us)
                                                  );
     }
 
-
-
-
-
-
    static inline void USB_Detach(void) __attribute__ ((always_inline));
    static inline void USB_Detach(void)
    {
@@ -3568,28 +2917,11 @@ _delay_us(double __us)
 # 252 "./LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.h"
    void USB_Init(
 
-
-
-
-
-
-
                   void
-
-
-
-
 
                   );
 
-
-
-
-
    void USB_Disable(void);
-
-
-
 
    void USB_ResetInterface(void);
 # 306 "./LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.h"
@@ -3674,8 +3006,6 @@ _delay_us(double __us)
 # 329 "./LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.h"
                           );
 
-
-
    }
 
    static inline void USB_REG_Off(void) __attribute__ ((always_inline));
@@ -3692,10 +3022,7 @@ _delay_us(double __us)
 # 339 "./LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.h"
                           );
 
-
-
    }
-
 
    static inline void USB_OTGPAD_On(void) __attribute__ ((always_inline));
    static inline void USB_OTGPAD_On(void)
@@ -3724,7 +3051,6 @@ _delay_us(double __us)
 # 355 "./LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.h"
                            );
    }
-
 
    static inline void USB_CLK_Freeze(void) __attribute__ ((always_inline));
    static inline void USB_CLK_Freeze(void)
@@ -3813,7 +3139,6 @@ _delay_us(double __us)
 # 1 "./LUFA/Drivers/USB/Core/StdDescriptors.h" 1
 # 51 "./LUFA/Drivers/USB/Core/USBTask.h" 2
 
-
 # 1 "./LUFA/Drivers/USB/Core/DeviceStandardReq.h" 1
 # 54 "./LUFA/Drivers/USB/Core/USBTask.h" 2
 # 81 "./LUFA/Drivers/USB/Core/USBTask.h"
@@ -3835,25 +3160,19 @@ _delay_us(double __us)
 # 113 "./LUFA/Drivers/USB/Core/ConfigDescriptors.h"
    typedef uint8_t (* ConfigComparatorPtr_t)(void*);
 
-
-
    enum USB_Host_GetConfigDescriptor_ErrorCodes_t
    {
     HOST_GETCONFIG_Successful = 0,
     HOST_GETCONFIG_DeviceDisconnect = 1,
 
-
     HOST_GETCONFIG_PipeError = 2,
     HOST_GETCONFIG_SetupStalled = 3,
-
 
     HOST_GETCONFIG_SoftwareTimeOut = 4,
     HOST_GETCONFIG_BuffOverflow = 5,
 
-
     HOST_GETCONFIG_InvalidData = 6,
    };
-
 
    enum DSearch_Return_ErrorCodes_t
    {
@@ -3861,7 +3180,6 @@ _delay_us(double __us)
     DESCRIPTOR_SEARCH_Fail = 1,
     DESCRIPTOR_SEARCH_NotFound = 2,
    };
-
 
    enum DSearch_Comp_Return_ErrorCodes_t
    {
@@ -3917,7 +3235,6 @@ _delay_us(double __us)
 # 1 "./LUFA/Drivers/USB/Core/USBInterrupt.h" 1
 # 392 "./LUFA/Drivers/USB/USB.h" 2
 
-
 # 1 "./LUFA/Drivers/USB/Core/Device.h" 1
 # 395 "./LUFA/Drivers/USB/USB.h" 2
 # 1 "./LUFA/Drivers/USB/Core/Endpoint.h" 1
@@ -3927,16 +3244,10 @@ _delay_us(double __us)
 # 1 "./LUFA/Drivers/USB/Core/EndpointStream.h" 1
 # 398 "./LUFA/Drivers/USB/USB.h" 2
 
-
-
-
-
-
 # 1 "./LUFA/Drivers/USB/Class/CDCClass.h" 1
 # 68 "./LUFA/Drivers/USB/Class/CDCClass.h"
 # 1 "./LUFA/Drivers/USB/Class/../Core/USBMode.h" 1
 # 69 "./LUFA/Drivers/USB/Class/CDCClass.h" 2
-
 
 # 1 "./LUFA/Drivers/USB/Class/Device/CDCClassDevice.h" 1
 # 75 "./LUFA/Drivers/USB/Class/Device/CDCClassDevice.h"
@@ -3951,33 +3262,23 @@ _delay_us(double __us)
   {
    CDC_CSCP_CDCClass = 0x02,
 
-
    CDC_CSCP_NoSpecificSubclass = 0x00,
-
 
    CDC_CSCP_ACMSubclass = 0x02,
 
-
    CDC_CSCP_ATCommandProtocol = 0x01,
-
 
    CDC_CSCP_NoSpecificProtocol = 0x00,
 
-
    CDC_CSCP_VendorSpecificProtocol = 0xFF,
-
 
    CDC_CSCP_CDCDataClass = 0x0A,
 
-
    CDC_CSCP_NoDataSubclass = 0x00,
-
 
    CDC_CSCP_NoDataProtocol = 0x00,
 
-
   };
-
 
   enum CDC_ClassRequests_t
   {
@@ -3989,16 +3290,11 @@ _delay_us(double __us)
    CDC_REQ_SendBreak = 0x23,
   };
 
-
   enum CDC_ClassNotifications_t
   {
    CDC_NOTIF_SerialState = 0x20,
 
-
-
-
   };
-
 
   enum CDC_DescriptorSubtypes_t
   {
@@ -4021,14 +3317,12 @@ _delay_us(double __us)
    CDC_DSUBTYPE_CSInterface_ATM = 0x10,
   };
 
-
   enum CDC_LineEncodingFormats_t
   {
    CDC_LINEENCODING_OneStopBit = 0,
    CDC_LINEENCODING_OneAndAHalfStopBits = 1,
    CDC_LINEENCODING_TwoStopBits = 2,
   };
-
 
   enum CDC_LineEncodingParity_t
   {
@@ -4044,11 +3338,7 @@ _delay_us(double __us)
    USB_Descriptor_Header_t Header;
    uint8_t Subtype;
 
-
    uint16_t CDCSpecification;
-
-
-
 
   } __attribute__ ((packed)) USB_CDC_Descriptor_Func_Header_t;
 # 261 "./LUFA/Drivers/USB/Class/Device/../Common/CDCClassCommon.h"
@@ -4057,13 +3347,9 @@ _delay_us(double __us)
    uint8_t bFunctionLength;
    uint8_t bDescriptorType;
 
-
    uint8_t bDescriptorSubType;
 
-
    uint16_t bcdCDC;
-
-
 
   } __attribute__ ((packed)) USB_CDC_StdDescriptor_FunctionalHeader_t;
 # 285 "./LUFA/Drivers/USB/Class/Device/../Common/CDCClassCommon.h"
@@ -4072,10 +3358,7 @@ _delay_us(double __us)
    USB_Descriptor_Header_t Header;
    uint8_t Subtype;
 
-
    uint8_t Capabilities;
-
-
 
   } __attribute__ ((packed)) USB_CDC_Descriptor_Func_ACM_t;
 # 307 "./LUFA/Drivers/USB/Class/Device/../Common/CDCClassCommon.h"
@@ -4084,13 +3367,9 @@ _delay_us(double __us)
    uint8_t bFunctionLength;
    uint8_t bDescriptorType;
 
-
    uint8_t bDescriptorSubType;
 
-
    uint8_t bmCapabilities;
-
-
 
   } __attribute__ ((packed)) USB_CDC_StdDescriptor_FunctionalACM_t;
 # 331 "./LUFA/Drivers/USB/Class/Device/../Common/CDCClassCommon.h"
@@ -4098,7 +3377,6 @@ _delay_us(double __us)
   {
    USB_Descriptor_Header_t Header;
    uint8_t Subtype;
-
 
    uint8_t MasterInterfaceNumber;
    uint8_t SlaveInterfaceNumber;
@@ -4109,9 +3387,7 @@ _delay_us(double __us)
    uint8_t bFunctionLength;
    uint8_t bDescriptorType;
 
-
    uint8_t bDescriptorSubType;
-
 
    uint8_t bMasterInterface;
    uint8_t bSlaveInterface0;
@@ -4122,9 +3398,7 @@ _delay_us(double __us)
    uint32_t BaudRateBPS;
    uint8_t CharFormat;
 
-
    uint8_t ParityType;
-
 
    uint8_t DataBits;
   } __attribute__ ((packed)) CDC_LineEncoding_t;
@@ -4140,9 +3414,6 @@ typedef __builtin_va_list __gnuc_va_list;
 # 98 "/usr/lib/gcc/avr/5.4.0/include/stdarg.h" 3 4
 typedef __gnuc_va_list va_list;
 # 46 "/usr/lib/avr/include/stdio.h" 2 3
-
-
-
 
 # 1 "/usr/lib/gcc/avr/5.4.0/include/stddef.h" 1 3 4
 # 51 "/usr/lib/avr/include/stdio.h" 2 3
@@ -4169,133 +3440,54 @@ extern int fclose(FILE *__stream);
 # 610 "/usr/lib/avr/include/stdio.h" 3
 extern int vfprintf(FILE *__stream, const char *__fmt, va_list __ap);
 
-
-
-
-
 extern int vfprintf_P(FILE *__stream, const char *__fmt, va_list __ap);
-
-
-
-
-
 
 extern int fputc(int __c, FILE *__stream);
 
-
-
-
 extern int putc(int __c, FILE *__stream);
-
 
 extern int putchar(int __c);
 # 651 "/usr/lib/avr/include/stdio.h" 3
 extern int printf(const char *__fmt, ...);
 
-
-
-
-
 extern int printf_P(const char *__fmt, ...);
-
-
-
-
-
-
 
 extern int vprintf(const char *__fmt, va_list __ap);
 
-
-
-
-
 extern int sprintf(char *__s, const char *__fmt, ...);
-
-
-
-
 
 extern int sprintf_P(char *__s, const char *__fmt, ...);
 # 687 "/usr/lib/avr/include/stdio.h" 3
 extern int snprintf(char *__s, size_t __n, const char *__fmt, ...);
 
-
-
-
-
 extern int snprintf_P(char *__s, size_t __n, const char *__fmt, ...);
 
-
-
-
-
 extern int vsprintf(char *__s, const char *__fmt, va_list ap);
-
-
-
-
 
 extern int vsprintf_P(char *__s, const char *__fmt, va_list ap);
 # 715 "/usr/lib/avr/include/stdio.h" 3
 extern int vsnprintf(char *__s, size_t __n, const char *__fmt, va_list ap);
 
-
-
-
-
 extern int vsnprintf_P(char *__s, size_t __n, const char *__fmt, va_list ap);
-
-
-
 
 extern int fprintf(FILE *__stream, const char *__fmt, ...);
 
-
-
-
-
 extern int fprintf_P(FILE *__stream, const char *__fmt, ...);
-
-
-
-
-
 
 extern int fputs(const char *__str, FILE *__stream);
 
-
-
-
 extern int fputs_P(const char *__str, FILE *__stream);
 
-
-
-
-
 extern int puts(const char *__str);
-
-
-
 
 extern int puts_P(const char *__str);
 # 764 "/usr/lib/avr/include/stdio.h" 3
 extern size_t fwrite(const void *__ptr, size_t __size, size_t __nmemb,
          FILE *__stream);
 
-
-
-
-
-
-
 extern int fgetc(FILE *__stream);
 
-
-
-
 extern int getc(FILE *__stream);
-
 
 extern int getchar(void);
 # 812 "/usr/lib/avr/include/stdio.h" 3
@@ -4303,18 +3495,10 @@ extern int ungetc(int __c, FILE *__stream);
 # 824 "/usr/lib/avr/include/stdio.h" 3
 extern char *fgets(char *__str, int __size, FILE *__stream);
 
-
-
-
-
-
 extern char *gets(char *__str);
 # 842 "/usr/lib/avr/include/stdio.h" 3
 extern size_t fread(void *__ptr, size_t __size, size_t __nmemb,
         FILE *__stream);
-
-
-
 
 extern void clearerr(FILE *__stream);
 # 859 "/usr/lib/avr/include/stdio.h" 3
@@ -4322,61 +3506,21 @@ extern int feof(FILE *__stream);
 # 870 "/usr/lib/avr/include/stdio.h" 3
 extern int ferror(FILE *__stream);
 
-
-
-
-
-
 extern int vfscanf(FILE *__stream, const char *__fmt, va_list __ap);
-
-
-
 
 extern int vfscanf_P(FILE *__stream, const char *__fmt, va_list __ap);
 
-
-
-
-
-
-
 extern int fscanf(FILE *__stream, const char *__fmt, ...);
-
-
-
 
 extern int fscanf_P(FILE *__stream, const char *__fmt, ...);
 
-
-
-
-
-
 extern int scanf(const char *__fmt, ...);
-
-
-
 
 extern int scanf_P(const char *__fmt, ...);
 
-
-
-
-
-
-
 extern int vscanf(const char *__fmt, va_list __ap);
 
-
-
-
-
-
-
 extern int sscanf(const char *__buf, const char *__fmt, ...);
-
-
-
 
 extern int sscanf_P(const char *__buf, const char *__fmt, ...);
 # 940 "/usr/lib/avr/include/stdio.h" 3
@@ -4384,11 +3528,6 @@ static __inline__ int fflush(FILE *stream __attribute__((unused)))
 {
  return 0;
 }
-
-
-
-
-
 
 __extension__ typedef long long fpos_t;
 extern int fgetpos(FILE *stream, fpos_t *pos);
@@ -4422,26 +3561,19 @@ extern char *tmpnam (char *s);
      USB_Endpoint_Table_t NotificationEndpoint;
     } Config;
 
-
     struct
     {
      struct
      {
       uint16_t HostToDevice;
 
-
       uint16_t DeviceToHost;
-
-
 
      } ControlLineStates;
 
      CDC_LineEncoding_t LineEncoding;
 
-
-
     } State;
-
 
    } USB_ClassInfo_CDC_Device_t;
 # 141 "./LUFA/Drivers/USB/Class/Device/CDCClassDevice.h"
@@ -4451,29 +3583,13 @@ extern char *tmpnam (char *s);
 # 141 "./LUFA/Drivers/USB/Class/Device/CDCClassDevice.h"
        CDC_Device_ConfigureEndpoints(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) __attribute__ ((nonnull (1)));
 
-
-
-
-
-
    void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) __attribute__ ((nonnull (1)));
-
-
-
-
-
 
    void CDC_Device_USBTask(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) __attribute__ ((nonnull (1)));
 # 164 "./LUFA/Drivers/USB/Class/Device/CDCClassDevice.h"
    void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) __attribute__ ((nonnull (1)));
 # 174 "./LUFA/Drivers/USB/Class/Device/CDCClassDevice.h"
    void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) __attribute__ ((nonnull (1)));
-
-
-
-
-
-
 
    void EVENT_CDC_Device_BreakSent(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                                    const uint8_t Duration) __attribute__ ((nonnull (1)));
@@ -4619,8 +3735,6 @@ extern char *tmpnam (char *s);
 # 1 "./LUFA/Drivers/Peripheral/../../Common/Common.h" 1
 # 65 "./LUFA/Drivers/Peripheral/Serial.h" 2
 
-
-
 # 1 "./LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h" 1
 # 74 "./LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
 # 1 "./LUFA/Drivers/Peripheral/AVR8/../../../Common/Common.h" 1
@@ -4630,7 +3744,6 @@ extern char *tmpnam (char *s);
 # 92 "./LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
    extern FILE USARTSerialStream;
 
-
    int Serial_putchar(char DataByte,
                       FILE *Stream);
    int Serial_getchar(FILE *Stream);
@@ -4638,16 +3751,7 @@ extern char *tmpnam (char *s);
 # 126 "./LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
    void Serial_SendString_P(const char* FlashStringPtr) __attribute__ ((nonnull (1)));
 
-
-
-
-
    void Serial_SendString(const char* StringPtr) __attribute__ ((nonnull (1)));
-
-
-
-
-
 
    void Serial_SendData(const void* Buffer, uint16_t Length) __attribute__ ((nonnull (1)));
 # 155 "./LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
@@ -4722,7 +3826,6 @@ extern char *tmpnam (char *s);
          |= (1 << 2);
    }
 
-
    static inline void Serial_Disable(void);
    static inline void Serial_Disable(void)
    {
@@ -4760,10 +3863,6 @@ extern char *tmpnam (char *s);
          &= ~(1 << 2);
    }
 
-
-
-
-
    static inline 
 # 208 "./LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h" 3 4
                 _Bool 
@@ -4794,11 +3893,6 @@ extern char *tmpnam (char *s);
                                                 );
    }
 
-
-
-
-
-
    static inline 
 # 219 "./LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h" 3 4
                 _Bool 
@@ -4828,11 +3922,6 @@ extern char *tmpnam (char *s);
 # 222 "./LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
                                                  );
    }
-
-
-
-
-
 
    static inline 
 # 230 "./LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h" 3 4
@@ -4874,10 +3963,6 @@ extern char *tmpnam (char *s);
 # 247 "./LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
         = DataByte;
    }
-
-
-
-
 
    static inline int16_t Serial_ReceiveByte(void) __attribute__ ((always_inline));
    static inline int16_t Serial_ReceiveByte(void)
@@ -5018,12 +4103,6 @@ extern char *tmpnam (char *s);
    return Data;
   }
 
-
-
-
-
-
-
   static inline uint8_t RingBuffer_Peek(RingBuffer_t* const Buffer) __attribute__ ((warn_unused_result)) __attribute__ ((nonnull (1)));
   static inline uint8_t RingBuffer_Peek(RingBuffer_t* const Buffer)
   {
@@ -5100,10 +4179,6 @@ static int CDC_Device_getchar(FILE*Stream)__attribute__ ((nonnull (1)));
 static int CDC_Device_getchar_Blocking(FILE*Stream)__attribute__ ((nonnull (1)));
 
 void CDC_Device_Event_Stub(void)__attribute__ ((const));
-
-
-
-
 
 void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t*const CDCInterfaceInfo)
 __attribute__ ((weak)) __attribute__ ((nonnull (1)))__attribute__ ((alias( "CDC_Device_Event_Stub" )));
@@ -5308,7 +4383,6 @@ volatile
 USB_Request_Header_t USB_ControlRequest;
 # 242 "usb.w"
 
-
 int main(void)
 {
 SetupHardware();
@@ -5383,7 +4457,6 @@ void SetupHardware(void)
 {
 # 455 "usb.w"
 
-
 # 456 "usb.w" 3
 (*(volatile uint8_t *)((0x34) + 0x20))
 # 456 "usb.w"
@@ -5444,7 +4517,6 @@ CDC_Device_ProcessControlRequest(&VirtualSerial_CDC_Interface);
 }
 # 532 "usb.w"
 
-
 # 533 "usb.w" 3
 void __vector_25 (void) __attribute__ ((signal,used, externally_visible)) ; void __vector_25 (void)
 
@@ -5502,7 +4574,6 @@ ConfigMask|= (1<<
 # 571 "usb.w"
                      );
 
-
 switch(CDCInterfaceInfo->State.LineEncoding.DataBits)
 {
 case 6:
@@ -5533,13 +4604,11 @@ ConfigMask|= ((1<<
 break;
 }
 
-
 # 588 "usb.w" 3
 (*(volatile uint8_t *)((0x0B) + 0x20))
 # 588 "usb.w"
     |= (1<<3);
 # 599 "usb.w"
-
 
 # 600 "usb.w" 3
 (*(volatile uint8_t *)(0xC9))
@@ -5558,14 +4627,12 @@ break;
 # 591 "usb.w"
 # 605 "usb.w"
 
-
 # 606 "usb.w" 3
 (*(volatile uint16_t *)(0xCC))
 # 606 "usb.w"
     = ((((16000000UL / 8) + (CDCInterfaceInfo->State.LineEncoding.BaudRateBPS / 2)) / (CDCInterfaceInfo->State.LineEncoding.BaudRateBPS)) - 1);
 # 592 "usb.w"
 # 609 "usb.w"
-
 
 # 610 "usb.w" 3
 (*(volatile uint8_t *)(0xCA))
@@ -5598,7 +4665,6 @@ break;
 # 612 "usb.w"
                                         ));
 # 593 "usb.w"
-
 
 # 594 "usb.w" 3
 (*(volatile uint8_t *)((0x0B) + 0x20))
@@ -5789,9 +4855,6 @@ return DESCRIPTOR_SEARCH_COMP_EndOfDescriptor;
 void USB_INT_DisableAllInterrupts(void)
 {
 
-
-
-
 # 1265 "usb.w" 3
 (*(volatile uint8_t *)(0xD8))
 # 1265 "usb.w"
@@ -5800,9 +4863,6 @@ void USB_INT_DisableAllInterrupts(void)
              0
 # 1265 "usb.w"
                    );
-
-
-
 
 # 1269 "usb.w" 3
 (*(volatile uint8_t *)(0xE2))
@@ -5814,14 +4874,10 @@ void USB_INT_DisableAllInterrupts(void)
 void USB_INT_ClearAllInterrupts(void)
 {
 
-
 # 1276 "usb.w" 3
 (*(volatile uint8_t *)(0xDA))
 # 1276 "usb.w"
      = 0;
-
-
-
 
 # 1280 "usb.w" 3
 (*(volatile uint8_t *)(0xE1))
@@ -5830,13 +4886,11 @@ void USB_INT_ClearAllInterrupts(void)
 
 }
 
-
 # 1284 "usb.w" 3
 void __vector_10 (void) __attribute__ ((signal,used, externally_visible)) ; void __vector_10 (void)
 
 # 1285 "usb.w"
 {
-
 
 if(USB_INT_HasOccurred(USB_INT_SOFI)&&USB_INT_IsEnabled(USB_INT_SOFI))
 {
@@ -5844,8 +4898,6 @@ USB_INT_Clear(USB_INT_SOFI);
 
 EVENT_USB_Device_StartOfFrame();
 }
-
-
 
 if(USB_INT_HasOccurred(USB_INT_VBUSTI)&&USB_INT_IsEnabled(USB_INT_VBUSTI))
 {
@@ -5859,7 +4911,6 @@ USB_PLL_On();
 while(!(USB_PLL_IsReady()));
 }
 
-
 # 1309 "usb.w" 3
 (*(volatile uint8_t *)((0x1E) + 0x20))
 # 1309 "usb.w"
@@ -5871,7 +4922,6 @@ else
 if(!(((0 << 0) | (0 << 1) | (0 << 2))&(1 << 2)))
 USB_PLL_Off();
 
-
 # 1317 "usb.w" 3
 (*(volatile uint8_t *)((0x1E) + 0x20))
 # 1317 "usb.w"
@@ -5879,7 +4929,6 @@ USB_PLL_Off();
 EVENT_USB_Device_Disconnect();
 }
 }
-
 
 if(USB_INT_HasOccurred(USB_INT_SUSPI)&&USB_INT_IsEnabled(USB_INT_SUSPI))
 {
@@ -5890,11 +4939,6 @@ USB_CLK_Freeze();
 
 if(!(((0 << 0) | (0 << 1) | (0 << 2))&(1 << 2)))
 USB_PLL_Off();
-
-
-
-
-
 
 # 1337 "usb.w" 3
 (*(volatile uint8_t *)((0x1E) + 0x20))
@@ -5932,9 +4976,6 @@ else
 # 1360 "usb.w"
               = (USB_Device_IsAddressSet())?DEVICE_STATE_Addressed:DEVICE_STATE_Powered;
 
-
-
-
 EVENT_USB_Device_WakeUp();
 
 }
@@ -5942,7 +4983,6 @@ EVENT_USB_Device_WakeUp();
 if(USB_INT_HasOccurred(USB_INT_EORSTI)&&USB_INT_IsEnabled(USB_INT_EORSTI))
 {
 USB_INT_Clear(USB_INT_EORSTI);
-
 
 # 1373 "usb.w" 3
 (*(volatile uint8_t *)((0x1E) + 0x20))
@@ -5957,16 +4997,12 @@ USB_INT_Enable(USB_INT_WAKEUPI);
 Endpoint_ConfigureEndpoint(0,0x00,
 8,1);
 
-
 USB_INT_Enable(USB_INT_RXSTPI);
-
 
 EVENT_USB_Device_Reset();
 }
 
 }
-
-
 
 # 1393 "usb.w" 3
 void __vector_11 (void) __attribute__ ((signal,used, externally_visible)) ; void __vector_11 (void)
@@ -5990,8 +5026,6 @@ Endpoint_SelectEndpoint(PrevSelectedEndpoint);
 
 void USB_Init(void)
 {
-
-
 
 USB_OTGPAD_Off();
 
@@ -6099,7 +5133,6 @@ USB_Attach();
 }
 # 1500 "usb.w"
 
-
 # 1501 "usb.w" 3 4
 _Bool 
 # 1501 "usb.w"
@@ -6125,7 +5158,6 @@ return
 # 1513 "usb.w"
           ;
 }
-
 
 # 1516 "usb.w" 3 4
 _Bool 
@@ -6414,7 +5446,6 @@ break;
 }
 }
 
-
 # 1742 "usb.w" 3 4
 _Bool 
 # 1742 "usb.w"
@@ -6591,7 +5622,6 @@ Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataINEndpoint.Address);
 
 if(!(Endpoint_BytesInEndpoint()))
 return ENDPOINT_READYWAIT_NoError;
-
 
 # 1856 "usb.w" 3 4
 _Bool 
@@ -6858,12 +5888,10 @@ void CDC_Device_Event_Stub(void)
 
 uint8_t USB_Device_ConfigurationNumber;
 
-
 # 2013 "usb.w" 3 4
 _Bool 
 # 2013 "usb.w"
     USB_Device_CurrentlySelfPowered;
-
 
 # 2015 "usb.w" 3 4
 _Bool 
@@ -6937,7 +5965,6 @@ Endpoint_ClearStatusStage();
 while(!(Endpoint_IsINReady()));
 
 USB_Device_EnableDeviceAddress(DeviceAddress);
-
 
 # 2085 "usb.w" 3
 (*(volatile uint8_t *)((0x1E) + 0x20))
@@ -7232,10 +6259,6 @@ if(!(Endpoint_IsReadWriteAllowed()))
 {
 Endpoint_ClearIN();
 
-
-
-
-
 if(BytesProcessed!=
 # 2353 "usb.w" 3 4
                   ((void *)0)
@@ -7287,10 +6310,6 @@ while(Length)
 if(!(Endpoint_IsReadWriteAllowed()))
 {
 Endpoint_ClearIN();
-
-
-
-
 
 if(BytesProcessed!=
 # 2401 "usb.w" 3 4
@@ -7344,10 +6363,6 @@ if(!(Endpoint_IsReadWriteAllowed()))
 {
 Endpoint_ClearOUT();
 
-
-
-
-
 if(BytesProcessed!=
 # 2449 "usb.w" 3 4
                   ((void *)0)
@@ -7400,10 +6415,6 @@ if(!(Endpoint_IsReadWriteAllowed()))
 {
 Endpoint_ClearOUT();
 
-
-
-
-
 if(BytesProcessed!=
 # 2497 "usb.w" 3 4
                   ((void *)0)
@@ -7455,10 +6466,6 @@ while(Length)
 if(!(Endpoint_IsReadWriteAllowed()))
 {
 Endpoint_ClearIN();
-
-
-
-
 
 if(BytesProcessed!=
 # 2545 "usb.w" 3 4
@@ -7520,10 +6527,6 @@ if(!(Endpoint_IsReadWriteAllowed()))
 {
 Endpoint_ClearIN();
 
-
-
-
-
 if(BytesProcessed!=
 # 2593 "usb.w" 3 4
                   ((void *)0)
@@ -7584,10 +6587,6 @@ if(!(Endpoint_IsReadWriteAllowed()))
 {
 Endpoint_ClearIN();
 
-
-
-
-
 if(BytesProcessed!=
 # 2641 "usb.w" 3 4
                   ((void *)0)
@@ -7639,10 +6638,6 @@ while(Length)
 if(!(Endpoint_IsReadWriteAllowed()))
 {
 Endpoint_ClearIN();
-
-
-
-
 
 if(BytesProcessed!=
 # 2689 "usb.w" 3 4
@@ -7696,10 +6691,6 @@ if(!(Endpoint_IsReadWriteAllowed()))
 {
 Endpoint_ClearOUT();
 
-
-
-
-
 if(BytesProcessed!=
 # 2737 "usb.w" 3 4
                   ((void *)0)
@@ -7751,10 +6742,6 @@ while(Length)
 if(!(Endpoint_IsReadWriteAllowed()))
 {
 Endpoint_ClearOUT();
-
-
-
-
 
 if(BytesProcessed!=
 # 2785 "usb.w" 3 4
