@@ -3521,7 +3521,8 @@ compile and see if there will be any errors.
 And move typedef to corresponding section - search @*-title from .h file from which you remove
 the typedef.
 And remove "@s ..." from /dev/null sections.
-HINT: use gcc-E.c to merge header files + read https://gcc.gnu.org/onlinedocs/cpp/Preprocessor-Output.html
+HINT: use gcc-E.c to merge header files + read
+https://gcc.gnu.org/onlinedocs/cpp/Preprocessor-Output.html
 @^TODO@>
 
 @<Get rid of this@>=
