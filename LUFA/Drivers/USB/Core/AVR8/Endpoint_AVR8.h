@@ -73,6 +73,7 @@
 #define __ENDPOINT_AVR8_H__
 
 	/* Includes: */
+		#include "../../../../Common/Common.h"
 		#include "../USBTask.h"
 		#include "../USBInterrupt.h"
 

@@ -42,6 +42,7 @@
 #define __USBINTERRUPT_H__
 
 	/* Includes: */
+		#include "../../../Common/Common.h"
 		#include "USBMode.h"
 
 	/* Enable C linkage for C++ Compilers: */

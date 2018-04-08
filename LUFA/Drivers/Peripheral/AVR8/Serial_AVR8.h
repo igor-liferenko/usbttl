@@ -71,6 +71,7 @@
 #define __SERIAL_AVR8_H__
 
 	/* Includes: */
+		#include "../../../Common/Common.h"
 		#include "../../Misc/TerminalCodes.h"
 
 		#include <stdio.h>

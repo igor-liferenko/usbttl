@@ -61,6 +61,9 @@
 		#define __INCLUDE_FROM_SERIAL_H
 
 	/* Includes: */
+		#include "../../Common/Common.h"
+
+	/* Includes: */
 		#if (ARCH == ARCH_AVR8)
 			#include "AVR8/Serial_AVR8.h"
 		#elif (ARCH == ARCH_XMEGA)
