@@ -261,7 +261,7 @@ int main(void)
     }
     @<Load the next byte from the USART transmit buffer into the USART if transmit...@>@;
     CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
-    USB_USBTask();
+    USB_DeviceTask();
   }
 }
 
@@ -1149,16 +1149,6 @@ void EVENT_USB_Device_Reset(void)
 
 @* Main USB service task management.
 
-@ @<Global...@>=
-volatile bool USB_IsInitialized;
-USB_Request_Header_t USB_ControlRequest;
-
-@ @c
-void USB_USBTask(void)
-{
-		USB_DeviceTask();
-}
-
 @ @c
 void USB_DeviceTask(void)
 {
@@ -1980,7 +1970,7 @@ static int CDC_Device_getchar_Blocking(FILE* Stream)
 		  return _FDEV_EOF;
 
 		CDC_Device_USBTask((USB_ClassInfo_CDC_Device_t*)fdev_get_udata(Stream));
-		USB_USBTask();
+		USB_DeviceTask();
 	}
 
 	return ReceivedByte;
@@ -2342,7 +2332,7 @@ uint8_t Endpoint_Write_Stream_LE(const void* const Buffer,
 			Endpoint_ClearIN();
 
 			#if !defined(INTERRUPT_CONTROL_ENDPOINT)
-			USB_USBTask();
+			USB_DeviceTask();
 			#endif
 
 			if (BytesProcessed != NULL)
@@ -2390,7 +2380,7 @@ uint8_t Endpoint_Write_Stream_BE(const void* const Buffer,
 			Endpoint_ClearIN();
 
 			#if !defined(INTERRUPT_CONTROL_ENDPOINT)
-			USB_USBTask();
+			USB_DeviceTask();
 			#endif
 
 			if (BytesProcessed != NULL)
@@ -2438,7 +2428,7 @@ uint8_t Endpoint_Read_Stream_LE(void* const Buffer,
 			Endpoint_ClearOUT();
 
 			#if !defined(INTERRUPT_CONTROL_ENDPOINT)
-			USB_USBTask();
+			USB_DeviceTask();
 			#endif
 
 			if (BytesProcessed != NULL)
@@ -2486,7 +2476,7 @@ uint8_t Endpoint_Read_Stream_BE(void* const Buffer,
 			Endpoint_ClearOUT();
 
 			#if !defined(INTERRUPT_CONTROL_ENDPOINT)
-			USB_USBTask();
+			USB_DeviceTask();
 			#endif
 
 			if (BytesProcessed != NULL)
@@ -2534,7 +2524,7 @@ uint8_t Endpoint_Write_PStream_LE(const void* const Buffer,
 			Endpoint_ClearIN();
 
 			#if !defined(INTERRUPT_CONTROL_ENDPOINT)
-			USB_USBTask();
+			USB_DeviceTask();
 			#endif
 
 			if (BytesProcessed != NULL)
@@ -2582,7 +2572,7 @@ uint8_t Endpoint_Write_PStream_BE(const void* const Buffer,
 			Endpoint_ClearIN();
 
 			#if !defined(INTERRUPT_CONTROL_ENDPOINT)
-			USB_USBTask();
+			USB_DeviceTask();
 			#endif
 
 			if (BytesProcessed != NULL)
@@ -2630,7 +2620,7 @@ uint8_t Endpoint_Write_EStream_LE(const void* const Buffer,
 			Endpoint_ClearIN();
 
 			#if !defined(INTERRUPT_CONTROL_ENDPOINT)
-			USB_USBTask();
+			USB_DeviceTask();
 			#endif
 
 			if (BytesProcessed != NULL)
@@ -2678,7 +2668,7 @@ uint8_t Endpoint_Write_EStream_BE(const void* const Buffer,
 			Endpoint_ClearIN();
 
 			#if !defined(INTERRUPT_CONTROL_ENDPOINT)
-			USB_USBTask();
+			USB_DeviceTask();
 			#endif
 
 			if (BytesProcessed != NULL)
@@ -2726,7 +2716,7 @@ uint8_t Endpoint_Read_EStream_LE(void* const Buffer,
 			Endpoint_ClearOUT();
 
 			#if !defined(INTERRUPT_CONTROL_ENDPOINT)
-			USB_USBTask();
+			USB_DeviceTask();
 			#endif
 
 			if (BytesProcessed != NULL)
@@ -2774,7 +2764,7 @@ uint8_t Endpoint_Read_EStream_BE(void* const Buffer,
 			Endpoint_ClearOUT();
 
 			#if !defined(INTERRUPT_CONTROL_ENDPOINT)
-			USB_USBTask();
+			USB_DeviceTask();
 			#endif
 
 			if (BytesProcessed != NULL)
