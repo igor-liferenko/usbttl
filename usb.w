@@ -1465,10 +1465,10 @@ static void USB_Init_Device(void)
 
 	USB_Device_CurrentlySelfPowered = false;
 
-	if (USB_Options & USB_DEVICE_OPT_LOWSPEED)
-	  USB_Device_SetLowSpeed();
-	else
-	  USB_Device_SetFullSpeed();
+  if (USB_Options & USB_DEVICE_OPT_LOWSPEED)
+    @<Set low speed@>@;
+  else
+    @<Set full speed@>@;
 
 	USB_INT_Enable(USB_INT_VBUSTI);
 
@@ -1481,6 +1481,12 @@ static void USB_Init_Device(void)
 
 	USB_Attach();
 }
+
+@ @<Set low speed@>=
+UDCON |=  (1 << LSM);
+
+@ @<Set full speed@>=
+UDCON &= ~(1 << LSM);
 
 @* USB Endpoint definitions for the AVR8 microcontrollers.
 
@@ -1985,7 +1991,6 @@ void CDC_Device_Event_Stub(void)
 
 @ @<Function prototypes@>=
                                 static void USB_Device_SetAddress(void);
-                                static void USB_Device_SetConfiguration(void);
                                 static void USB_Device_GetConfiguration(void);
                                 static void USB_Device_GetDescriptor(void);
                                 static void USB_Device_GetStatus(void);
@@ -2057,7 +2062,7 @@ static void USB_Device_SetAddress(void)
 {
 	uint8_t DeviceAddress = (USB_ControlRequest.wValue & 0x7F);
 
-	USB_Device_SetDeviceAddress(DeviceAddress);
+  @<Set device address@>@;
 
 	Endpoint_ClearSETUP();
 
@@ -2065,12 +2070,22 @@ static void USB_Device_SetAddress(void)
 
 	while (!(Endpoint_IsINReady()));
 
-	USB_Device_EnableDeviceAddress(DeviceAddress);
+  @<Enable device address@>@;
 
 	USB_DeviceState = (DeviceAddress) ? DEVICE_STATE_Addressed : DEVICE_STATE_Default;
 }
 
-static void USB_Device_SetConfiguration(void)
+@ @<Set device address@>=
+UDADDR = (UDADDR & (1 << ADDEN)) | (DeviceAddress & 0x7F);
+
+@ @<Enable device address@>=
+UDADDR |= (1 << ADDEN);
+
+@ @<Function prototypes@>=
+void USB_Device_SetConfiguration(void);
+
+@ @c
+void USB_Device_SetConfiguration(void)
 {
   if ((uint8_t)USB_ControlRequest.wValue > FIXED_NUM_CONFIGURATIONS)
 	return;
