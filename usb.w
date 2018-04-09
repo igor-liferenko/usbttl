@@ -1133,17 +1133,18 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 
 @* USB Event management definitions.
 
-@ @<Function prototypes@>=
-void USB_Event_Stub(void) ATTR_CONST;
-void EVENT_USB_Device_Suspend(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-void EVENT_USB_Device_WakeUp(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-void EVENT_USB_Device_Reset(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-void EVENT_USB_Device_StartOfFrame(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-
 @ @c
-void USB_Event_Stub(void)
+void EVENT_USB_Device_Suspend(void)
 {
-
+}
+void EVENT_USB_Device_StartOfFrame(void)
+{
+}
+void EVENT_USB_Device_WakeUp(void)
+{
+}
+void EVENT_USB_Device_Reset(void)
+{
 }
 
 @* Main USB service task management.

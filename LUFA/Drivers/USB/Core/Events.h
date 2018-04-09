@@ -1,33 +1,3 @@
-/*
-             LUFA Library
-     Copyright (C) Dean Camera, 2017.
-
-  dean [at] fourwalledcubicle [dot] com
-           www.lufa-lib.org
-*/
-
-/*
-  Copyright 2017  Dean Camera (dean [at] fourwalledcubicle [dot] com)
-
-  Permission to use, copy, modify, distribute, and sell this
-  software and its documentation for any purpose is hereby granted
-  without fee, provided that the above copyright notice appear in
-  all copies and that both that the copyright notice and this
-  permission notice and warranty disclaimer appear in supporting
-  documentation, and that the name of the author not be used in
-  advertising or publicity pertaining to distribution of the
-  software without specific, written prior permission.
-
-  The author disclaims all warranties with regard to this
-  software, including all implied warranties of merchantability
-  and fitness.  In no event shall the author be liable for any
-  special, indirect or consequential damages or any damages
-  whatsoever resulting from loss of use, data or profits, whether
-  in an action of contract, negligence or other tortious action,
-  arising out of or in connection with the use or performance of
-  this software.
-*/
-
 /** \file
  *  \brief USB Event management definitions.
  *  \copydetails Group_Events
@@ -62,11 +32,6 @@
 		#include "../../../Common/Common.h"
 		#include "USBMode.h"
 
-	/* Enable C linkage for C++ Compilers: */
-		#if defined(__cplusplus)
-			extern "C" {
-		#endif
-
 	/* Preprocessor Checks: */
 		#if !defined(__INCLUDE_FROM_USB_DRIVER)
 			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
@@ -75,113 +40,6 @@
 	/* Public Interface - May be used in end-application: */
 		/* Pseudo-Functions for Doxygen: */
 		#if !defined(__INCLUDE_FROM_EVENTS_C) || defined(__DOXYGEN__)
-			/** Event for USB mode pin level change. This event fires when the USB interface is set to dual role
-			 *  mode, and the UID pin level has changed to indicate a new mode (device or host). This event fires
-			 *  before the mode is switched to the newly indicated mode but after the \ref EVENT_USB_Device_Disconnect
-			 *  event has fired (if disconnected before the role change).
-			 *
-			 *  \note This event only exists on microcontrollers that support dual role USB modes.
-			 *        \n\n
-			 *
-			 *  \note This event does not exist if the \c USB_DEVICE_ONLY or \c USB_HOST_ONLY tokens have been supplied
-			 *        to the compiler (see \ref Group_USBManagement documentation).
-			 */
-			void EVENT_USB_UIDChange(void);
-
-			/** Event for USB host error. This event fires when a hardware fault has occurred whilst the USB
-			 *  interface is in host mode.
-			 *
-			 *  \param[in] ErrorCode  Error code indicating the failure reason, a value in \ref USB_Host_ErrorCodes_t.
-			 *
-			 *  \note This event only exists on microcontrollers that supports USB host mode.
-			 *        \n\n
-			 *
-			 *  \note This event does not exist if the \c USB_DEVICE_ONLY token is supplied to the compiler (see
-			 *        \ref Group_USBManagement documentation).
-			 */
-			void EVENT_USB_Host_HostError(const uint8_t ErrorCode);
-
-			/** Event for USB device attachment. This event fires when a the USB interface is in host mode, and
-			 *  a USB device has been connected to the USB interface. This is interrupt driven, thus fires before
-			 *  the standard \ref EVENT_USB_Device_Connect() event and so can be used to programmatically start the USB
-			 *  management task to reduce CPU consumption.
-			 *
-			 *  \note This event only exists on microcontrollers that supports USB host mode.
-			 *        \n\n
-			 *
-			 *  \note This event does not exist if the \c USB_DEVICE_ONLY token is supplied to the compiler (see
-			 *        \ref Group_USBManagement documentation).
-			 *
-			 *  \see \ref USB_USBTask() for more information on the USB management task and reducing CPU usage.
-			 */
-			void EVENT_USB_Host_DeviceAttached(void);
-
-			/** Event for USB device removal. This event fires when a the USB interface is in host mode, and
-			 *  a USB device has been removed the USB interface whether or not it has been enumerated. This
-			 *  can be used to programmatically stop the USB management task to reduce CPU consumption.
-			 *
-			 *  \note This event only exists on microcontrollers that supports USB host mode.
-			 *        \n\n
-			 *
-			 *  \note This event does not exist if the \c USB_DEVICE_ONLY token is supplied to the compiler (see
-			 *        \ref Group_USBManagement documentation).
-			 *
-			 *  \see \ref USB_USBTask() for more information on the USB management task and reducing CPU usage.
-			 */
-			void EVENT_USB_Host_DeviceUnattached(void);
-
-			/** Event for USB device enumeration failure. This event fires when a the USB interface is
-			 *  in host mode, and an attached USB device has failed to enumerate completely.
-			 *
-			 *  \param[in] ErrorCode     Error code indicating the failure reason, a value in
-			 *                           \ref USB_Host_EnumerationErrorCodes_t.
-			 *
-			 *  \param[in] SubErrorCode  Sub error code indicating the reason for failure - for example, if the
-			 *                           ErrorCode parameter indicates a control error, this will give the error
-			 *                           code returned by the \ref USB_Host_SendControlRequest() function.
-			 *
-			 *  \note This event only exists on microcontrollers that supports USB host mode.
-			 *        \n\n
-			 *
-			 *  \note This event does not exist if the \c USB_DEVICE_ONLY token is supplied to the compiler (see
-			 *        \ref Group_USBManagement documentation).
-			 */
-			void EVENT_USB_Host_DeviceEnumerationFailed(const uint8_t ErrorCode,
-			                                            const uint8_t SubErrorCode);
-
-			/** Event for USB device enumeration completion. This event fires when a the USB interface is
-			 *  in host mode and an attached USB device has been completely enumerated and is ready to be
-			 *  controlled by the user application.
-			 *
-			 *  This event is time-critical; exceeding OS-specific delays within this event handler (typically of around
-			 *  1 second) when a transaction is waiting to be processed by the device will prevent break communications
-			 *  and cause the host to reset the USB bus.
-			 *
-			 *  \note This event only exists on microcontrollers that supports USB host mode.
-			 *        \n\n
-			 *
-			 *  \note This event does not exist if the \c USB_DEVICE_ONLY token is supplied to the compiler (see
-			 *        \ref Group_USBManagement documentation).
-			 */
-			void EVENT_USB_Host_DeviceEnumerationComplete(void);
-
-			/** Event for USB Start Of Frame detection, when enabled. This event fires at the start of each USB
-			 *  frame, once per millisecond, and is synchronized to the USB bus. This can be used as an accurate
-			 *  millisecond timer source when the USB bus is not suspended while in host mode.
-			 *
-			 *  This event is time-critical; it is run once per millisecond and thus long handlers will significantly
-			 *  degrade device performance. This event should only be enabled when needed to reduce device wake-ups.
-			 *
-			 *  \note This event is not normally active - it must be manually enabled and disabled via the
-			 *        \ref USB_Host_EnableSOFEvents() and \ref USB_Host_DisableSOFEvents() commands after enumeration of
-			 *        a USB device.
-			 *        \n\n
-			 *
-			 *  \note This event does not exist if the \c USB_DEVICE_ONLY token is supplied to the compiler (see
-			 *        \ref Group_USBManagement documentation).
-			 */
-			void EVENT_USB_Host_StartOfFrame(void);
-
 			/** Event for USB device connection. This event fires when the microcontroller is in USB Device mode
 			 *  and the device is connected to a USB host, beginning the enumeration process measured by a rising
 			 *  level on the microcontroller's VBUS sense pin.
@@ -202,7 +60,7 @@
 			 *
 			 *  \see \ref Group_USBManagement for more information on the USB management task and reducing CPU usage.
 			 */
-			void EVENT_USB_Device_Connect(void);
+			void EVENT_USB_Device_Connect(void) ATTR_CONST;
 
 			/** Event for USB device disconnection. This event fires when the microcontroller is in USB Device mode and the device is
 			 *  disconnected from a host, measured by a falling level on the microcontroller's VBUS sense pin.
@@ -220,7 +78,7 @@
 			 *
 			 *  \see \ref Group_USBManagement for more information on the USB management task and reducing CPU usage.
 			 */
-			void EVENT_USB_Device_Disconnect(void);
+			void EVENT_USB_Device_Disconnect(void) ATTR_CONST;
 
 			/** Event for control requests. This event fires when a the USB host issues a control request
 			 *  to the mandatory device control endpoint (of address 0). This may either be a standard
@@ -246,7 +104,7 @@
 			 *        request SETUP parameters into the \ref USB_ControlRequest structure which should then be used
 			 *        by the application to determine how to handle the issued request.
 			 */
-			void EVENT_USB_Device_ControlRequest(void);
+			void EVENT_USB_Device_ControlRequest(void) ATTR_CONST;
 
 			/** Event for USB configuration number changed. This event fires when a the USB host changes the
 			 *  selected configuration number while in device mode. This event should be hooked in device
@@ -260,7 +118,7 @@
 			 *  \note This event does not exist if the \c USB_HOST_ONLY token is supplied to the compiler (see
 			 *        \ref Group_USBManagement documentation).
 			 */
-			void EVENT_USB_Device_ConfigurationChanged(void);
+			void EVENT_USB_Device_ConfigurationChanged(void) ATTR_CONST;
 
 			/** Event for USB suspend. This event fires when a the USB host suspends the device by halting its
 			 *  transmission of Start Of Frame pulses to the device. This is generally hooked in order to move
@@ -278,7 +136,7 @@
 			 *
 			 *  \see \ref EVENT_USB_Device_WakeUp() event for accompanying Wake Up event.
 			 */
-			void EVENT_USB_Device_Suspend(void);
+			void EVENT_USB_Device_Suspend(void) ATTR_CONST;
 
 			/** Event for USB wake up. This event fires when a the USB interface is suspended while in device
 			 *  mode, and the host wakes up the device by supplying Start Of Frame pulses. This is generally
@@ -296,7 +154,7 @@
 			 *
 			 *  \see \ref EVENT_USB_Device_Suspend() event for accompanying Suspend event.
 			 */
-			void EVENT_USB_Device_WakeUp(void);
+			void EVENT_USB_Device_WakeUp(void) ATTR_CONST;
 
 			/** Event for USB interface reset. This event fires when the USB interface is in device mode, and
 			 *  a the USB host requests that the device reset its interface. This event fires after the control
@@ -308,7 +166,7 @@
 			 *  \note This event does not exist if the \c USB_HOST_ONLY token is supplied to the compiler (see
 			 *        \ref Group_USBManagement documentation).
 			 */
-			void EVENT_USB_Device_Reset(void);
+			void EVENT_USB_Device_Reset(void) ATTR_CONST;
 
 			/** Event for USB Start Of Frame detection, when enabled. This event fires at the start of each USB
 			 *  frame, once per millisecond, and is synchronized to the USB bus. This can be used as an accurate
@@ -324,48 +182,8 @@
 			 *  \note This event does not exist if the \c USB_HOST_ONLY token is supplied to the compiler (see
 			 *        \ref Group_USBManagement documentation).
 			 */
-			void EVENT_USB_Device_StartOfFrame(void);
+			void EVENT_USB_Device_StartOfFrame(void) ATTR_CONST;
 		#endif
-
-	/* Private Interface - For use in library only: */
-	#if !defined(__DOXYGEN__)
-		/* Function Prototypes: */
-			#if defined(__INCLUDE_FROM_EVENTS_C)
-				void USB_Event_Stub(void) ATTR_CONST;
-
-				#if defined(USB_CAN_BE_BOTH)
-					void EVENT_USB_UIDChange(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-				#endif
-
-				#if defined(USB_CAN_BE_HOST)
-					void EVENT_USB_Host_HostError(const uint8_t ErrorCode) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-					void EVENT_USB_Host_DeviceAttached(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-					void EVENT_USB_Host_DeviceUnattached(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-					void EVENT_USB_Host_DeviceEnumerationComplete(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-					void EVENT_USB_Host_DeviceEnumerationFailed(const uint8_t ErrorCode,
-                                                                const uint8_t SubErrorCode)
-					                                            ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-					void EVENT_USB_Host_StartOfFrame(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-				#endif
-
-				#if defined(USB_CAN_BE_DEVICE)
-					void EVENT_USB_Device_Connect(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-					void EVENT_USB_Device_Disconnect(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-					void EVENT_USB_Device_ControlRequest(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-					void EVENT_USB_Device_ConfigurationChanged(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-					void EVENT_USB_Device_Suspend(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-					void EVENT_USB_Device_WakeUp(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-					void EVENT_USB_Device_Reset(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-					void EVENT_USB_Device_StartOfFrame(void) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-				#endif
-			#endif
-	#endif
-
-	/* Disable C linkage for C++ Compilers: */
-		#if defined(__cplusplus)
-			}
-		#endif
-
 #endif
 
 /** @} */
