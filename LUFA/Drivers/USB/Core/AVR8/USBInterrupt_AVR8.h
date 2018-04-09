@@ -44,18 +44,13 @@
 	/* Includes: */
 		#include "../../../../Common/Common.h"
 
-	/* Enable C linkage for C++ Compilers: */
-		#if defined(__cplusplus)
-			extern "C" {
-		#endif
-
 	/* Preprocessor Checks: */
 		#if !defined(__INCLUDE_FROM_USB_DRIVER)
 			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
 		#endif
 
 	/* Private Interface - For use in library only: */
-	#if !defined(__DOXYGEN__)
+
 		/* Enums: */
 			enum USB_Interrupts_t
 			{
@@ -84,8 +79,8 @@
 			};
 
 		/* Inline Functions: */
-			static inline void USB_INT_Enable(const uint8_t Interrupt) ATTR_ALWAYS_INLINE;
-			static inline void USB_INT_Enable(const uint8_t Interrupt)
+			inline void USB_INT_Enable(const uint8_t Interrupt) ATTR_ALWAYS_INLINE;
+			inline void USB_INT_Enable(const uint8_t Interrupt)
 			{
 				switch (Interrupt)
 				{
@@ -144,8 +139,8 @@
 				}
 			}
 
-			static inline void USB_INT_Disable(const uint8_t Interrupt) ATTR_ALWAYS_INLINE;
-			static inline void USB_INT_Disable(const uint8_t Interrupt)
+			inline void USB_INT_Disable(const uint8_t Interrupt) ATTR_ALWAYS_INLINE;
+			inline void USB_INT_Disable(const uint8_t Interrupt)
 			{
 				switch (Interrupt)
 				{
@@ -204,8 +199,8 @@
 				}
 			}
 
-			static inline void USB_INT_Clear(const uint8_t Interrupt) ATTR_ALWAYS_INLINE;
-			static inline void USB_INT_Clear(const uint8_t Interrupt)
+			inline void USB_INT_Clear(const uint8_t Interrupt) ATTR_ALWAYS_INLINE;
+			inline void USB_INT_Clear(const uint8_t Interrupt)
 			{
 				switch (Interrupt)
 				{
@@ -264,8 +259,8 @@
 				}
 			}
 
-			static inline bool USB_INT_IsEnabled(const uint8_t Interrupt) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
-			static inline bool USB_INT_IsEnabled(const uint8_t Interrupt)
+			inline bool USB_INT_IsEnabled(const uint8_t Interrupt) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
+			inline bool USB_INT_IsEnabled(const uint8_t Interrupt)
 			{
 				switch (Interrupt)
 				{
@@ -310,8 +305,8 @@
 				}
 			}
 
-			static inline bool USB_INT_HasOccurred(const uint8_t Interrupt) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
-			static inline bool USB_INT_HasOccurred(const uint8_t Interrupt)
+			inline bool USB_INT_HasOccurred(const uint8_t Interrupt) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
+			inline bool USB_INT_HasOccurred(const uint8_t Interrupt)
 			{
 				switch (Interrupt)
 				{
@@ -364,12 +359,6 @@
 		/* Function Prototypes: */
 			void USB_INT_ClearAllInterrupts(void);
 			void USB_INT_DisableAllInterrupts(void);
-	#endif
-
-	/* Disable C linkage for C++ Compilers: */
-		#if defined(__cplusplus)
-			}
-		#endif
 
 #endif
 
