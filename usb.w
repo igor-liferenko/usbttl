@@ -1991,6 +1991,7 @@ void CDC_Device_Event_Stub(void)
 
 @ @<Function prototypes@>=
                                 static void USB_Device_SetAddress(void);
+                                static void USB_Device_SetConfiguration(void);
                                 static void USB_Device_GetConfiguration(void);
                                 static void USB_Device_GetDescriptor(void);
                                 static void USB_Device_GetStatus(void);
@@ -2080,9 +2081,6 @@ UDADDR = (UDADDR & (1 << ADDEN)) | (DeviceAddress & 0x7F);
 
 @ @<Enable device address@>=
 UDADDR |= (1 << ADDEN);
-
-@ @<Function prototypes@>=
-void USB_Device_SetConfiguration(void);
 
 @ @c
 void USB_Device_SetConfiguration(void)
