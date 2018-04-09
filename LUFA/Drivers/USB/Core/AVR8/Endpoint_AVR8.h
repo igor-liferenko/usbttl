@@ -1,33 +1,3 @@
-/*
-             LUFA Library
-     Copyright (C) Dean Camera, 2017.
-
-  dean [at] fourwalledcubicle [dot] com
-           www.lufa-lib.org
-*/
-
-/*
-  Copyright 2017  Dean Camera (dean [at] fourwalledcubicle [dot] com)
-
-  Permission to use, copy, modify, distribute, and sell this
-  software and its documentation for any purpose is hereby granted
-  without fee, provided that the above copyright notice appear in
-  all copies and that both that the copyright notice and this
-  permission notice and warranty disclaimer appear in supporting
-  documentation, and that the name of the author not be used in
-  advertising or publicity pertaining to distribution of the
-  software without specific, written prior permission.
-
-  The author disclaims all warranties with regard to this
-  software, including all implied warranties of merchantability
-  and fitness.  In no event shall the author be liable for any
-  special, indirect or consequential damages or any damages
-  whatsoever resulting from loss of use, data or profits, whether
-  in an action of contract, negligence or other tortious action,
-  arising out of or in connection with the use or performance of
-  this software.
-*/
-
 /** \file
  *  \brief USB Endpoint definitions for the AVR8 microcontrollers.
  *  \copydetails Group_EndpointManagement_AVR8
@@ -77,18 +47,12 @@
 		#include "../USBTask.h"
 		#include "../USBInterrupt.h"
 
-	/* Enable C linkage for C++ Compilers: */
-		#if defined(__cplusplus)
-			extern "C" {
-		#endif
-
 	/* Preprocessor Checks: */
 		#if !defined(__INCLUDE_FROM_USB_DRIVER)
 			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
 		#endif
 
 	/* Private Interface - For use in library only: */
-	#if !defined(__DOXYGEN__)
 		/* Inline Functions: */
 			static inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes) ATTR_WARN_UNUSED_RESULT ATTR_CONST
 			                                                                       ATTR_ALWAYS_INLINE;
@@ -112,30 +76,15 @@
 			                                    const uint8_t UECFG0XData,
 			                                    const uint8_t UECFG1XData);
 
-	#endif
 
 	/* Public Interface - May be used in end-application: */
 		/* Macros: */
-			#if (!defined(FIXED_CONTROL_ENDPOINT_SIZE) || defined(__DOXYGEN__))
-				/** Default size of the default control endpoint's bank, until altered by the control endpoint bank size
-				 *  value in the device descriptor. Not available if the \c FIXED_CONTROL_ENDPOINT_SIZE token is defined.
-				 */
-				#define ENDPOINT_CONTROLEP_DEFAULT_SIZE     8
-			#endif
 
-			#if !defined(CONTROL_ONLY_DEVICE) || defined(__DOXYGEN__)
-				#if defined(USB_SERIES_4_AVR) || defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR) || defined(__DOXYGEN__)
 					/** Total number of endpoints (including the default control endpoint at address 0) which may
 					 *  be used in the device. Different USB AVR models support different amounts of endpoints,
 					 *  this value reflects the maximum number of endpoints for the currently selected AVR model.
 					 */
 					#define ENDPOINT_TOTAL_ENDPOINTS        7
-				#else
-					#define ENDPOINT_TOTAL_ENDPOINTS        5
-				#endif
-			#else
-				#define ENDPOINT_TOTAL_ENDPOINTS            1
-			#endif
 
 		/* Enums: */
 			/** Enum for the possible error return codes of the \ref Endpoint_WaitUntilReady() function.
@@ -221,13 +170,7 @@
 			static inline uint16_t Endpoint_BytesInEndpoint(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
 			static inline uint16_t Endpoint_BytesInEndpoint(void)
 			{
-				#if (defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR))
-					return UEBCX;
-				#elif defined(USB_SERIES_4_AVR)
 					return (((uint16_t)UEBCHX << 8) | UEBCLX);
-				#elif defined(USB_SERIES_2_AVR)
-					return UEBCLX;
-				#endif
 			}
 
 			/** Determines the currently selected endpoint's direction.
@@ -249,11 +192,7 @@
 			static inline uint8_t Endpoint_GetCurrentEndpoint(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
 			static inline uint8_t Endpoint_GetCurrentEndpoint(void)
 			{
-				#if !defined(CONTROL_ONLY_DEVICE)
 					return ((UENUM & ENDPOINT_EPNUM_MASK) | Endpoint_GetEndpointDirection());
-				#else
-					return ENDPOINT_CONTROLEP;
-				#endif
 			}
 
 			/** Selects the given endpoint address.
@@ -266,9 +205,7 @@
 			static inline void Endpoint_SelectEndpoint(const uint8_t Address) ATTR_ALWAYS_INLINE;
 			static inline void Endpoint_SelectEndpoint(const uint8_t Address)
 			{
-				#if !defined(CONTROL_ONLY_DEVICE)
 					UENUM = (Address & ENDPOINT_EPNUM_MASK);
-				#endif
 			}
 
 			/** Resets the endpoint bank FIFO. This clears all the endpoint banks and resets the USB controller's
@@ -452,11 +389,7 @@
 			static inline void Endpoint_ClearIN(void) ATTR_ALWAYS_INLINE;
 			static inline void Endpoint_ClearIN(void)
 			{
-				#if !defined(CONTROL_ONLY_DEVICE)
-					UEINTX &= ~((1 << TXINI) | (1 << FIFOCON));
-				#else
-					UEINTX &= ~(1 << TXINI);
-				#endif
+				UEINTX &= ~((1 << TXINI) | (1 << FIFOCON));
 			}
 
 			/** Acknowledges an OUT packet to the host on the currently selected endpoint, freeing up the endpoint
@@ -467,11 +400,7 @@
 			static inline void Endpoint_ClearOUT(void) ATTR_ALWAYS_INLINE;
 			static inline void Endpoint_ClearOUT(void)
 			{
-				#if !defined(CONTROL_ONLY_DEVICE)
 					UEINTX &= ~((1 << RXOUTI) | (1 << FIFOCON));
-				#else
-					UEINTX &= ~(1 << RXOUTI);
-				#endif
 			}
 
 			/** Stalls the current endpoint, indicating to the host that a logical problem occurred with the
@@ -768,11 +697,8 @@
 			 *  \attention This variable should be treated as read-only in the user application, and never manually
 			 *             changed in value.
 			 */
-			#if (!defined(FIXED_CONTROL_ENDPOINT_SIZE) || defined(__DOXYGEN__))
-				extern uint8_t USB_Device_ControlEndpointSize;
-			#else
+
 				#define USB_Device_ControlEndpointSize FIXED_CONTROL_ENDPOINT_SIZE
-			#endif
 
 		/* Function Prototypes: */
 			/** Configures a table of endpoint descriptions, in sequence. This function can be used to configure multiple
@@ -807,11 +733,6 @@
 			 *  \return A value from the \ref Endpoint_WaitUntilReady_ErrorCodes_t enum.
 			 */
 			uint8_t Endpoint_WaitUntilReady(void);
-
-	/* Disable C linkage for C++ Compilers: */
-		#if defined(__cplusplus)
-			}
-		#endif
 
 #endif
 
