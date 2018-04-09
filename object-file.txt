@@ -1,13 +1,16 @@
 The following is produced during compilation of CDCClassDevice.o:
 
+/* Function Prototypes: */
 // 164 "LUFA/Drivers/USB/Class/Device/CDCClassDevice.h"
 void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) __attribute__ ((nonnull (1)));
+/* Private Interface - For use in library only: */
 // 350 "LUFA/Drivers/USB/Class/Device/CDCClassDevice.h"
 void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) __attribute__ ((weak)) __attribute__ ((nonnull (1))) __attribute__ ((alias( "CDC_Device_Event_Stub" )));
 
-
+/* Function Prototypes: */
 // 174 "LUFA/Drivers/USB/Class/Device/CDCClassDevice.h"
 void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) __attribute__ ((nonnull (1)));
+/* Private Interface - For use in library only: */
 // 350 "LUFA/Drivers/USB/Class/Device/CDCClassDevice.h"
 void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) __attribute__ ((weak)) __attribute__ ((nonnull (1))) __attribute__ ((alias( "CDC_Device_Event_Stub" )));
 
@@ -27,3 +30,9 @@ void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const C
 
 ------------------------------------------------------------------
 NOTE: everything above is without warnings
+
+
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<< try to make definition of EVENT_CDC_Device_LineEncodingChanged in usb.w in new style if there will be warning
+
+RULE: throw away /* Private Interface - For use in library only: */ from all .h files and use /* Function Prototypes: */ from those files, and functions which will be undifined, define via attr_alias
