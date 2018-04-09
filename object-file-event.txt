@@ -19,3 +19,5 @@ no occurrences of usb_event_stub
 
 ----------------------------------------------------
 All above compiles without warnings
+
+The RULE in object-file-cdc.txt remains valid.

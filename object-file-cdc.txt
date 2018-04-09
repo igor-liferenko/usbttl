@@ -35,4 +35,4 @@ NOTE: everything above is without warnings
 
 <<<<<<<<<<<<<<<<<<<<<<<<<<< try to make definition of EVENT_CDC_Device_LineEncodingChanged in usb.w in new style if there will be warning
 
-RULE: throw away /* Private Interface - For use in library only: */ from all .h files and use /* Function Prototypes: */ from those files, and functions which will be undifined, define via attr_alias
+RULE: throw away /* Private Interface - For use in library only: */ from all .h files and use /* Function Prototypes: */ from those files, and functions which will be undifined, define the same as is defined function which is referred to by attr_alias of the deleted function of the same name
