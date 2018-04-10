@@ -37,9 +37,6 @@
 			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
 		#endif
 
-	/* Public Interface - May be used in end-application: */
-		/* Pseudo-Functions for Doxygen: */
-		#if !defined(__INCLUDE_FROM_EVENTS_C) || defined(__DOXYGEN__)
 			/** Event for USB device connection. This event fires when the microcontroller is in USB Device mode
 			 *  and the device is connected to a USB host, beginning the enumeration process measured by a rising
 			 *  level on the microcontroller's VBUS sense pin.
@@ -104,7 +101,7 @@
 			 *        request SETUP parameters into the \ref USB_ControlRequest structure which should then be used
 			 *        by the application to determine how to handle the issued request.
 			 */
-			void EVENT_USB_Device_ControlRequest(void) ATTR_CONST;
+			void EVENT_USB_Device_ControlRequest(void);
 
 			/** Event for USB configuration number changed. This event fires when a the USB host changes the
 			 *  selected configuration number while in device mode. This event should be hooked in device
@@ -118,7 +115,7 @@
 			 *  \note This event does not exist if the \c USB_HOST_ONLY token is supplied to the compiler (see
 			 *        \ref Group_USBManagement documentation).
 			 */
-			void EVENT_USB_Device_ConfigurationChanged(void) ATTR_CONST;
+			void EVENT_USB_Device_ConfigurationChanged(void);
 
 			/** Event for USB suspend. This event fires when a the USB host suspends the device by halting its
 			 *  transmission of Start Of Frame pulses to the device. This is generally hooked in order to move
@@ -183,7 +180,6 @@
 			 *        \ref Group_USBManagement documentation).
 			 */
 			void EVENT_USB_Device_StartOfFrame(void) ATTR_CONST;
-		#endif
 #endif
 
 /** @} */

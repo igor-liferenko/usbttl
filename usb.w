@@ -487,10 +487,7 @@ void EVENT_USB_Device_Disconnect(void)
 
 @ Event handler for the library USB Configuration Changed event.
 
-@<Function prototypes@>=
-void EVENT_USB_Device_ConfigurationChanged(void);
-
-@ @d LEDMASK_USB_READY (LEDS_LED2 | LEDS_LED4)
+@d LEDMASK_USB_READY (LEDS_LED2 | LEDS_LED4)
 @d LEDMASK_USB_ERROR (LEDS_LED1 | LEDS_LED3)
 
 @c
@@ -503,10 +500,7 @@ void EVENT_USB_Device_ConfigurationChanged(void)
 
 @ Event handler for the library USB Control Request reception event.
 
-@<Function prototypes@>=
-void EVENT_USB_Device_ControlRequest(void);
-
-@ @c
+@c
 void EVENT_USB_Device_ControlRequest(void)
 {
 	CDC_Device_ProcessControlRequest(&VirtualSerial_CDC_Interface);
