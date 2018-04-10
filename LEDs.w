@@ -105,7 +105,7 @@
 		#define __INCLUDE_FROM_LEDS_H
 
 	/* Includes: */
-		#include "../../Common/Common.h"
+		#include "LUFA/Common/Common.h"
 
 		#if (BOARD == BOARD_NONE)
 			static inline void       LEDs_Init(void) {}

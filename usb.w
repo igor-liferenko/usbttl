@@ -3234,7 +3234,7 @@ uint8_t Endpoint_Read_Control_EStream_BE(void* const Buffer, uint16_t Length)
 #include <avr/power.h> /* |clock_prescale_set|, |clock_div_1| */
 #include <avr/pgmspace.h>
 @i USB.w
-#include <LUFA/Drivers/Board/LEDs.h>
+@i LEDs.w
 #include <LUFA/Drivers/Peripheral/Serial.h>
 #include <LUFA/Drivers/Misc/RingBuffer.h>
 #include <LUFA/Platform/Platform.h>
