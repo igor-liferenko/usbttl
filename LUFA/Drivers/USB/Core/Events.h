@@ -133,7 +133,7 @@
 			 *
 			 *  \see \ref EVENT_USB_Device_WakeUp() event for accompanying Wake Up event.
 			 */
-			void EVENT_USB_Device_Suspend(void);
+			void EVENT_USB_Device_Suspend(void) ATTR_CONST;
 
 			/** Event for USB wake up. This event fires when a the USB interface is suspended while in device
 			 *  mode, and the host wakes up the device by supplying Start Of Frame pulses. This is generally
@@ -151,7 +151,7 @@
 			 *
 			 *  \see \ref EVENT_USB_Device_Suspend() event for accompanying Suspend event.
 			 */
-			void EVENT_USB_Device_WakeUp(void);
+			void EVENT_USB_Device_WakeUp(void) ATTR_CONST;
 
 			/** Event for USB interface reset. This event fires when the USB interface is in device mode, and
 			 *  a the USB host requests that the device reset its interface. This event fires after the control
@@ -163,7 +163,7 @@
 			 *  \note This event does not exist if the \c USB_HOST_ONLY token is supplied to the compiler (see
 			 *        \ref Group_USBManagement documentation).
 			 */
-			void EVENT_USB_Device_Reset(void);
+			void EVENT_USB_Device_Reset(void) ATTR_CONST;
 
 			/** Event for USB Start Of Frame detection, when enabled. This event fires at the start of each USB
 			 *  frame, once per millisecond, and is synchronized to the USB bus. This can be used as an accurate
@@ -179,7 +179,7 @@
 			 *  \note This event does not exist if the \c USB_HOST_ONLY token is supplied to the compiler (see
 			 *        \ref Group_USBManagement documentation).
 			 */
-			void EVENT_USB_Device_StartOfFrame(void);
+			void EVENT_USB_Device_StartOfFrame(void) ATTR_CONST;
 #endif
 
 /** @} */
