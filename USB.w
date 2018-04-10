@@ -342,11 +342,9 @@
  *  class-specific functions.
  */
 
-	/* Includes: */
 		#include "LUFA/Common/Common.h"
 		#include "Core/USBMode.h"
 
-	/* Includes: */
 		#include "Core/USBTask.h"
 		#include "Core/Events.h"
 		#include "Core/StdDescriptors.h"
@@ -354,18 +352,9 @@
 		#include "Core/USBController.h"
 		#include "Core/USBInterrupt.h"
 
-		#if defined(USB_CAN_BE_DEVICE) || defined(__DOXYGEN__)
-			#include "Core/Device.h"
-			#include "Core/Endpoint.h"
-			#include "Core/DeviceStandardReq.h"
-			#include "Core/EndpointStream.h"
-		#endif
-
-		#if defined(USB_CAN_BE_BOTH) || defined(__DOXYGEN__)
-			#include "Core/OTG.h"
-		#endif
+		#include "Core/Device.h"
+		#include "Core/Endpoint.h"
+		#include "Core/DeviceStandardReq.h"
+		#include "Core/EndpointStream.h"
 
 		#include "Class/CDCClass.h"
-
-
-
