@@ -3233,20 +3233,12 @@ uint8_t Endpoint_Read_Control_EStream_BE(void* const Buffer, uint16_t Length)
 #include <avr/interrupt.h>
 #include <avr/power.h> /* |clock_prescale_set|, |clock_div_1| */
 #include <avr/pgmspace.h>
-
-@<Get rid of this@>@;
-
-@ TODO: Do everything as one self-contained program.
-And then remove /dev/null sections.
-And remove "@s ..." from /dev/null sections.
-HINT: use gcc-E.c to merge header files + read
-https://gcc.gnu.org/onlinedocs/cpp/Preprocessor-Output.html
-@^TODO@>
-
-@<Get rid of this@>=
-#include <LUFA/Drivers/USB/USB.h>
+@i USB.w
 #include <LUFA/Drivers/Board/LEDs.h>
 #include <LUFA/Drivers/Peripheral/Serial.h>
 #include <LUFA/Drivers/Misc/RingBuffer.h>
-#include <LUFA/Drivers/USB/USB.h>
 #include <LUFA/Platform/Platform.h>
+
+@ TODO: remove /dev/null sections.
+And remove "@s ..." from /dev/null sections.
+@^TODO@>
