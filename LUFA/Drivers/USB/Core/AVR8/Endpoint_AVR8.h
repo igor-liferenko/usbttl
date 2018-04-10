@@ -47,11 +47,6 @@
 		#include "../USBTask.h"
 		#include "../USBInterrupt.h"
 
-	/* Preprocessor Checks: */
-		#if !defined(__INCLUDE_FROM_USB_DRIVER)
-			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
-		#endif
-
 	/* Private Interface - For use in library only: */
 		/* Inline Functions: */
 			static inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes) ATTR_WARN_UNUSED_RESULT ATTR_CONST

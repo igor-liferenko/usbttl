@@ -23,11 +23,6 @@
 			#include "DeviceStandardReq.h"
 		#endif
 
-	/* Preprocessor Checks: */
-		#if !defined(__INCLUDE_FROM_USB_DRIVER)
-			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
-		#endif
-
 	/* Public Interface - May be used in end-application: */
 		/* Global Variables: */
 			/** Indicates if the USB interface is currently initialized but not necessarily connected to a host

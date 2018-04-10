@@ -24,11 +24,6 @@
 		#include "../USBMode.h"
 		#include "../USBTask.h"
 
-	/* Preprocessor Checks: */
-		#if !defined(__INCLUDE_FROM_USB_DRIVER)
-			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
-		#endif
-
 	/* Public Interface - May be used in end-application: */
 		/* Function Prototypes: */
 			/** \name Stream functions for null data */

@@ -342,11 +342,6 @@
  *  class-specific functions.
  */
 
-
-
-	/* Macros: */
-		#define __INCLUDE_FROM_USB_DRIVER
-
 	/* Includes: */
 		#include "LUFA/Common/Common.h"
 		#include "Core/USBMode.h"

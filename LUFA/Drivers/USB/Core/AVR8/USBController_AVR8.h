@@ -32,10 +32,6 @@
 			#include "../EndpointStream.h"
 
 
-	/* Preprocessor Checks and Defines: */
-		#if !defined(__INCLUDE_FROM_USB_DRIVER)
-			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
-		#endif
 
 		#define USB_PLL_PSC                (1 << PINDIV)
 

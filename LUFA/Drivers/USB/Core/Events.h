@@ -32,11 +32,6 @@
 		#include "../../../Common/Common.h"
 		#include "USBMode.h"
 
-	/* Preprocessor Checks: */
-		#if !defined(__INCLUDE_FROM_USB_DRIVER)
-			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
-		#endif
-
 			/** Event for USB device connection. This event fires when the microcontroller is in USB Device mode
 			 *  and the device is connected to a USB host, beginning the enumeration process measured by a rising
 			 *  level on the microcontroller's VBUS sense pin.

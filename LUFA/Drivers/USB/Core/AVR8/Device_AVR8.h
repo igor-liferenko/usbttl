@@ -25,11 +25,6 @@
 		#include "../USBInterrupt.h"
 		#include "../Endpoint.h"
 
-	/* Preprocessor Checks: */
-		#if !defined(__INCLUDE_FROM_USB_DRIVER)
-			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
-		#endif
-
 		#if (defined(USE_RAM_DESCRIPTORS) && defined(USE_EEPROM_DESCRIPTORS))
 			#error USE_RAM_DESCRIPTORS and USE_EEPROM_DESCRIPTORS are mutually exclusive.
 		#endif
