@@ -3237,7 +3237,7 @@ uint8_t Endpoint_Read_Control_EStream_BE(void* const Buffer, uint16_t Length)
 @i LEDs.w
 @i Serial.w
 @i RingBuffer.w
-#include <LUFA/Platform/Platform.h>
+@i Platform.w
 
 @ TODO: remove /dev/null sections.
 And remove "@s ..." from /dev/null sections.
