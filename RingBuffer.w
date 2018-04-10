@@ -63,9 +63,6 @@
 #ifndef __RING_BUFFER_H__
 #define __RING_BUFFER_H__
 
-	/* Includes: */
-		#include "LUFA/Common/Common.h"
-
 	/* Type Defines: */
 		/** \brief Ring Buffer Management Structure.
 		 *
