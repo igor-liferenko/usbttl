@@ -126,7 +126,6 @@
 			 *
 			 *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration and state.
 			 */
-//
 			void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) ATTR_NON_NULL_PTR_ARG(1);
 
 			/** CDC class driver event for a control line state change on a CDC interface. This event fires each time the host requests a
@@ -137,7 +136,6 @@
 			 *
 			 *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration and state.
 			 */
-//
 			void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) ATTR_CONST ATTR_NON_NULL_PTR_ARG(1);
 
 			/** CDC class driver event for a send break request sent to the device from the host. This is generally used to separate
@@ -146,7 +144,6 @@
 			 *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration and state.
 			 *  \param[in]     Duration          Duration of the break that has been sent by the host, in milliseconds.
 			 */
-//
 			void EVENT_CDC_Device_BreakSent(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 			                                const uint8_t Duration) ATTR_CONST ATTR_NON_NULL_PTR_ARG(1);
 
