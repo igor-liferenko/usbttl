@@ -463,10 +463,7 @@ USB_Init();
 
 @ Event handler for the library USB Connection event.
 
-@<Function prototypes@>=
-void EVENT_USB_Device_Connect(void);
-
-@ LED mask for the library LED driver, to indicate that the USB interface is enumerating.
+LED mask for the library LED driver, to indicate that the USB interface is enumerating.
 
 @c
 void EVENT_USB_Device_Connect(void)
@@ -476,10 +473,7 @@ void EVENT_USB_Device_Connect(void)
 
 @ Event handler for the library USB Disconnection event.
 
-@<Function prototypes@>=
-void EVENT_USB_Device_Disconnect(void);
-
-@ @c
+@c
 void EVENT_USB_Device_Disconnect(void)
 {
   @<Indicate that USB device is disconnected@>@;
