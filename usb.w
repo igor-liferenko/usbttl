@@ -528,15 +528,15 @@ ISR(USART1_RX_vect, ISR_BLOCK)
 }
 
 @ Event handler for the CDC Class driver Line Encoding Changed event.
+|CDCInterfaceInfo| is a pointer to the CDC
+class interface configuration structure.
 
 @d CDC_LINEENCODING_TWO_STOP_BITS 2 /* each frame contains two stop bits */
 @d CDC_PARITY_EVEN 2
 @d CDC_PARITY_ODD 1
 
 @c
-void EVENT_CDC_Device_LineEncodingChanged(CDCInterfaceInfo)
-USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo; /* pointer to the CDC
-                          class interface configuration structure being referenced */
+void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 	uint8_t ConfigMask = 0;
 
@@ -1540,20 +1540,6 @@ uint8_t Endpoint_WaitUntilReady(void)
 
 @* Device mode driver for the library USB CDC Class driver.
 
-@ @<Function prototypes@>=
-static int CDC_Device_putchar(char c, FILE* Stream) ATTR_NON_NULL_PTR_ARG(2);
-static int CDC_Device_getchar(FILE* Stream) ATTR_NON_NULL_PTR_ARG(1);
-static int CDC_Device_getchar_Blocking(FILE* Stream) ATTR_NON_NULL_PTR_ARG(1);
-
-void CDC_Device_Event_Stub(void) ATTR_CONST;
-
-void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
-  ATTR_NON_NULL_PTR_ARG(1);
-void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
-  ATTR_WEAK ATTR_NON_NULL_PTR_ARG(1) ATTR_ALIAS(CDC_Device_Event_Stub);
-void EVENT_CDC_Device_BreakSent(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
-  const uint8_t Duration) ATTR_WEAK ATTR_NON_NULL_PTR_ARG(1) ATTR_ALIAS(CDC_Device_Event_Stub);
-
 @ @c
 void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
@@ -1857,14 +1843,19 @@ void CDC_Device_CreateBlockingStream(USB_ClassInfo_CDC_Device_t* const CDCInterf
 	fdev_set_udata(Stream, CDCInterfaceInfo);
 }
 
-static int CDC_Device_putchar(char c,
-                              FILE* Stream)
+@ @<Function prototypes@>=
+int CDC_Device_putchar(char c, FILE* Stream) ATTR_NON_NULL_PTR_ARG(2);
+@ @c
+int CDC_Device_putchar(char c, FILE* Stream)
 {
 	return CDC_Device_SendByte((USB_ClassInfo_CDC_Device_t*)fdev_get_udata(Stream), c) ?
  _FDEV_ERR : 0;
 }
 
-static int CDC_Device_getchar(FILE* Stream)
+@ @<Function prototypes@>=
+int CDC_Device_getchar(FILE* Stream) ATTR_NON_NULL_PTR_ARG(1);
+@ @c
+int CDC_Device_getchar(FILE* Stream)
 {
 	int16_t ReceivedByte =
  CDC_Device_ReceiveByte((USB_ClassInfo_CDC_Device_t*)fdev_get_udata(Stream));
@@ -1875,7 +1866,10 @@ static int CDC_Device_getchar(FILE* Stream)
 	return ReceivedByte;
 }
 
-static int CDC_Device_getchar_Blocking(FILE* Stream)
+@ @<Function prototypes@>=
+int CDC_Device_getchar_Blocking(FILE* Stream) ATTR_NON_NULL_PTR_ARG(1);
+@ @c
+int CDC_Device_getchar_Blocking(FILE* Stream)
 {
 	int16_t ReceivedByte;
 
@@ -1892,9 +1886,12 @@ static int CDC_Device_getchar_Blocking(FILE* Stream)
 	return ReceivedByte;
 }
 
-void CDC_Device_Event_Stub(void)
+void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
+}
 
+void EVENT_CDC_Device_BreakSent(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo, const uint8_t Duration)
+{
 }
 
 @* USB device standard request management.

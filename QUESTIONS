@@ -1,6 +1,0 @@
-Why there is no definition for the following functions?
-
-  EVENT_CDC_Device_ControLineStateChanged
-  EVENT_CDC_Device_BreakSent
-
-maybe it has something to do with ATTR_ALIAS(CDC_Device_Event_Stub)

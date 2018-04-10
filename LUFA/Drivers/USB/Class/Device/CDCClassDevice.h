@@ -1,33 +1,3 @@
-/*
-             LUFA Library
-     Copyright (C) Dean Camera, 2017.
-
-  dean [at] fourwalledcubicle [dot] com
-           www.lufa-lib.org
-*/
-
-/*
-  Copyright 2017  Dean Camera (dean [at] fourwalledcubicle [dot] com)
-
-  Permission to use, copy, modify, distribute, and sell this
-  software and its documentation for any purpose is hereby granted
-  without fee, provided that the above copyright notice appear in
-  all copies and that both that the copyright notice and this
-  permission notice and warranty disclaimer appear in supporting
-  documentation, and that the name of the author not be used in
-  advertising or publicity pertaining to distribution of the
-  software without specific, written prior permission.
-
-  The author disclaims all warranties with regard to this
-  software, including all implied warranties of merchantability
-  and fitness.  In no event shall the author be liable for any
-  special, indirect or consequential damages or any damages
-  whatsoever resulting from loss of use, data or profits, whether
-  in an action of contract, negligence or other tortious action,
-  arising out of or in connection with the use or performance of
-  this software.
-*/
-
 /** \file
  *  \brief Device mode driver for the library USB CDC Class driver.
  *
@@ -76,11 +46,6 @@
 		#include "../Common/CDCClassCommon.h"
 
 		#include <stdio.h>
-
-	/* Enable C linkage for C++ Compilers: */
-		#if defined(__cplusplus)
-			extern "C" {
-		#endif
 
 	/* Preprocessor Checks: */
 		#if !defined(__INCLUDE_FROM_CDC_DRIVER)
@@ -161,6 +126,7 @@
 			 *
 			 *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration and state.
 			 */
+//
 			void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) ATTR_NON_NULL_PTR_ARG(1);
 
 			/** CDC class driver event for a control line state change on a CDC interface. This event fires each time the host requests a
@@ -171,7 +137,8 @@
 			 *
 			 *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration and state.
 			 */
-			void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) ATTR_NON_NULL_PTR_ARG(1);
+//
+			void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) ATTR_CONST ATTR_NON_NULL_PTR_ARG(1);
 
 			/** CDC class driver event for a send break request sent to the device from the host. This is generally used to separate
 			 *  data or to indicate a special condition to the receiving device.
@@ -179,8 +146,9 @@
 			 *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration and state.
 			 *  \param[in]     Duration          Duration of the break that has been sent by the host, in milliseconds.
 			 */
+//
 			void EVENT_CDC_Device_BreakSent(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
-			                                const uint8_t Duration) ATTR_NON_NULL_PTR_ARG(1);
+			                                const uint8_t Duration) ATTR_CONST ATTR_NON_NULL_PTR_ARG(1);
 
 			/** Sends a given data buffer to the attached USB host, if connected. If a host is not connected when the function is
 			 *  called, the string is discarded. Bytes will be queued for transmission to the host until either the endpoint bank
@@ -317,7 +285,6 @@
 			 */
 			void CDC_Device_SendControlLineStateChange(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo) ATTR_NON_NULL_PTR_ARG(1);
 
-			#if defined(FDEV_SETUP_STREAM) || defined(__DOXYGEN__)
 			/** Creates a standard character stream for the given CDC Device instance so that it can be used with all the regular
 			 *  functions in the standard <stdio.h> library that accept a \c FILE stream as a destination (e.g. \c fprintf()). The created
 			 *  stream is bidirectional and can be used for both input and output functions.
@@ -349,12 +316,6 @@
 			 */
 			void CDC_Device_CreateBlockingStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 			                                     FILE* const Stream) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
-			#endif
-
-	/* Disable C linkage for C++ Compilers: */
-		#if defined(__cplusplus)
-			}
-		#endif
 
 #endif
 
