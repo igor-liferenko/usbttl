@@ -57,7 +57,7 @@
 			 *
 			 *  \see \ref Group_USBManagement for more information on the USB management task and reducing CPU usage.
 			 */
-			void EVENT_USB_Device_Connect(void) ATTR_CONST;
+			void EVENT_USB_Device_Connect(void);
 
 			/** Event for USB device disconnection. This event fires when the microcontroller is in USB Device mode and the device is
 			 *  disconnected from a host, measured by a falling level on the microcontroller's VBUS sense pin.
@@ -75,7 +75,7 @@
 			 *
 			 *  \see \ref Group_USBManagement for more information on the USB management task and reducing CPU usage.
 			 */
-			void EVENT_USB_Device_Disconnect(void) ATTR_CONST;
+			void EVENT_USB_Device_Disconnect(void);
 
 			/** Event for control requests. This event fires when a the USB host issues a control request
 			 *  to the mandatory device control endpoint (of address 0). This may either be a standard
@@ -133,7 +133,7 @@
 			 *
 			 *  \see \ref EVENT_USB_Device_WakeUp() event for accompanying Wake Up event.
 			 */
-			void EVENT_USB_Device_Suspend(void) ATTR_CONST;
+			void EVENT_USB_Device_Suspend(void);
 
 			/** Event for USB wake up. This event fires when a the USB interface is suspended while in device
 			 *  mode, and the host wakes up the device by supplying Start Of Frame pulses. This is generally
@@ -151,7 +151,7 @@
 			 *
 			 *  \see \ref EVENT_USB_Device_Suspend() event for accompanying Suspend event.
 			 */
-			void EVENT_USB_Device_WakeUp(void) ATTR_CONST;
+			void EVENT_USB_Device_WakeUp(void);
 
 			/** Event for USB interface reset. This event fires when the USB interface is in device mode, and
 			 *  a the USB host requests that the device reset its interface. This event fires after the control
@@ -163,7 +163,7 @@
 			 *  \note This event does not exist if the \c USB_HOST_ONLY token is supplied to the compiler (see
 			 *        \ref Group_USBManagement documentation).
 			 */
-			void EVENT_USB_Device_Reset(void) ATTR_CONST;
+			void EVENT_USB_Device_Reset(void);
 
 			/** Event for USB Start Of Frame detection, when enabled. This event fires at the start of each USB
 			 *  frame, once per millisecond, and is synchronized to the USB bus. This can be used as an accurate
@@ -179,7 +179,7 @@
 			 *  \note This event does not exist if the \c USB_HOST_ONLY token is supplied to the compiler (see
 			 *        \ref Group_USBManagement documentation).
 			 */
-			void EVENT_USB_Device_StartOfFrame(void) ATTR_CONST;
+			void EVENT_USB_Device_StartOfFrame(void);
 #endif
 
 /** @} */
