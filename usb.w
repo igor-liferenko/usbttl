@@ -1980,6 +1980,8 @@ UDADDR = (UDADDR & (1 << ADDEN)) | (DeviceAddress & 0x7F);
 @ @<Enable device address@>=
 UDADDR |= (1 << ADDEN);
 
+@ @<Function prototypes@>=
+void USB_Device_SetConfiguration(void);
 @ @c
 void USB_Device_SetConfiguration(void)
 {
@@ -2013,6 +2015,8 @@ void USB_Device_GetConfiguration(void)
 	Endpoint_ClearStatusStage();
 }
 
+@ @<Function prototypes@>=
+void USB_Device_GetInternalSerialDescriptor(void);
 @ @c
 void USB_Device_GetInternalSerialDescriptor(void)
 {
