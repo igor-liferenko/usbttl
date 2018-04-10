@@ -3236,7 +3236,7 @@ uint8_t Endpoint_Read_Control_EStream_BE(void* const Buffer, uint16_t Length)
 @i USB.w
 @i LEDs.w
 @i Serial.w
-#include <LUFA/Drivers/Misc/RingBuffer.h>
+@i RingBuffer.w
 #include <LUFA/Platform/Platform.h>
 
 @ TODO: remove /dev/null sections.
