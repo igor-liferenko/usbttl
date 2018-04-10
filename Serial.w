@@ -54,23 +54,6 @@
  *        individual target module documentation for the API specific to your target processor.
  */
 
-#ifndef __SERIAL_H__
-#define __SERIAL_H__
+	#include "LUFA/Common/Common.h"
 
-	/* Macros: */
-		#define __INCLUDE_FROM_SERIAL_H
-
-	/* Includes: */
-		#include "../../Common/Common.h"
-
-	/* Includes: */
-		#if (ARCH == ARCH_AVR8)
-			#include "AVR8/Serial_AVR8.h"
-		#elif (ARCH == ARCH_XMEGA)
-			#include "XMEGA/Serial_XMEGA.h"
-		#else
-			#error The Serial peripheral driver is not currently available for your selected architecture.
-		#endif
-
-#endif
-
+	#include "LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"

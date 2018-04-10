@@ -3235,7 +3235,7 @@ uint8_t Endpoint_Read_Control_EStream_BE(void* const Buffer, uint16_t Length)
 #include <avr/pgmspace.h>
 @i USB.w
 @i LEDs.w
-#include <LUFA/Drivers/Peripheral/Serial.h>
+@i Serial.w
 #include <LUFA/Drivers/Misc/RingBuffer.h>
 #include <LUFA/Platform/Platform.h>
 
