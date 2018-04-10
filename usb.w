@@ -1899,22 +1899,7 @@ void CDC_Device_Event_Stub(void)
 
 @* USB device standard request management.
 
-@ @<Function prototypes@>=
-                                static void USB_Device_SetAddress(void);
-                                static void USB_Device_SetConfiguration(void);
-                                static void USB_Device_GetConfiguration(void);
-                                static void USB_Device_GetDescriptor(void);
-                                static void USB_Device_GetStatus(void);
-                                static void USB_Device_ClearSetFeature(void);
-                                static void USB_Device_GetInternalSerialDescriptor(void);
-
 @ @c
-uint8_t USB_Device_ConfigurationNumber;
-
-bool    USB_Device_CurrentlySelfPowered;
-
-bool    USB_Device_RemoteWakeupEnabled;
-
 void USB_Device_ProcessControlRequest(void)
 {
   uint8_t* RequestHeader = (uint8_t*)&USB_ControlRequest;
@@ -1969,7 +1954,10 @@ void USB_Device_ProcessControlRequest(void)
   }
 }
 
-static void USB_Device_SetAddress(void)
+@ @<Function prototypes@>=
+void USB_Device_SetAddress(void);
+@ @c
+void USB_Device_SetAddress(void)
 {
 	uint8_t DeviceAddress = (USB_ControlRequest.wValue & 0x7F);
 
@@ -2012,7 +2000,10 @@ void USB_Device_SetConfiguration(void)
   EVENT_USB_Device_ConfigurationChanged();
 }
 
-static void USB_Device_GetConfiguration(void)
+@ @<Function prototypes@>=
+void USB_Device_GetConfiguration(void);
+@ @c
+void USB_Device_GetConfiguration(void)
 {
 	Endpoint_ClearSETUP();
 
@@ -2022,7 +2013,8 @@ static void USB_Device_GetConfiguration(void)
 	Endpoint_ClearStatusStage();
 }
 
-static void USB_Device_GetInternalSerialDescriptor(void)
+@ @c
+void USB_Device_GetInternalSerialDescriptor(void)
 {
 	struct
 	{
@@ -2041,7 +2033,10 @@ static void USB_Device_GetInternalSerialDescriptor(void)
 	Endpoint_ClearOUT();
 }
 
-static void USB_Device_GetDescriptor(void)
+@ @<Function prototypes@>=
+void USB_Device_GetDescriptor(void);
+@ @c
+void USB_Device_GetDescriptor(void)
 {
 	const void* DescriptorPointer;
 	uint16_t DescriptorSize;
@@ -2063,7 +2058,10 @@ static void USB_Device_GetDescriptor(void)
 	Endpoint_ClearOUT();
 }
 
-static void USB_Device_GetStatus(void)
+@ @<Function prototypes@>=
+void USB_Device_GetStatus(void);
+@ @c
+void USB_Device_GetStatus(void)
 {
 	uint8_t CurrentStatus = 0;
 
@@ -2106,7 +2104,10 @@ static void USB_Device_GetStatus(void)
 	Endpoint_ClearStatusStage();
 }
 
-static void USB_Device_ClearSetFeature(void)
+@ @<Function prototypes@>=
+void USB_Device_ClearSetFeature(void);
+@ @c
+void USB_Device_ClearSetFeature(void)
 {
   switch (USB_ControlRequest.bmRequestType & CONTROL_REQTYPE_RECIPIENT)
   {

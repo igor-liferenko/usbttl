@@ -1,33 +1,3 @@
-/*
-             LUFA Library
-     Copyright (C) Dean Camera, 2017.
-
-  dean [at] fourwalledcubicle [dot] com
-           www.lufa-lib.org
-*/
-
-/*
-  Copyright 2017  Dean Camera (dean [at] fourwalledcubicle [dot] com)
-
-  Permission to use, copy, modify, distribute, and sell this
-  software and its documentation for any purpose is hereby granted
-  without fee, provided that the above copyright notice appear in
-  all copies and that both that the copyright notice and this
-  permission notice and warranty disclaimer appear in supporting
-  documentation, and that the name of the author not be used in
-  advertising or publicity pertaining to distribution of the
-  software without specific, written prior permission.
-
-  The author disclaims all warranties with regard to this
-  software, including all implied warranties of merchantability
-  and fitness.  In no event shall the author be liable for any
-  special, indirect or consequential damages or any damages
-  whatsoever resulting from loss of use, data or profits, whether
-  in an action of contract, negligence or other tortious action,
-  arising out of or in connection with the use or performance of
-  this software.
-*/
-
 /** \file
  *  \brief USB device standard request management.
  *
@@ -50,11 +20,6 @@
 		#include "USBTask.h"
 		#include "USBController.h"
 
-	/* Enable C linkage for C++ Compilers: */
-		#if defined(__cplusplus)
-			extern "C" {
-		#endif
-
 	/* Preprocessor Checks: */
 		#if !defined(__INCLUDE_FROM_USB_DRIVER)
 			#error Do not include this file directly. Include LUFA/Drivers/USB/USB.h instead.
@@ -62,7 +27,6 @@
 
 	/* Public Interface - May be used in end-application: */
 		/* Enums: */
-			#if defined(ARCH_HAS_MULTI_ADDRESS_SPACE) || defined(__DOXYGEN__)
 				/** Enum for the possible descriptor memory spaces, for the \c MemoryAddressSpace parameter of the
 				 *  \ref CALLBACK_USB_GetDescriptor() function. This can be used when none of the \c USE_*_DESCRIPTORS
 				 *  compile time options are used, to indicate in which memory space the descriptor is stored.
@@ -79,7 +43,6 @@
 					#endif
 					MEMSPACE_RAM      = 2, /**< Indicates the requested descriptor is located in RAM memory. */
 				};
-			#endif
 
 		/* Global Variables: */
 			/** Indicates the currently set configuration number of the device. USB devices may have several
@@ -91,9 +54,9 @@
 			 *
 			 *  \ingroup Group_Device
 			 */
-			extern uint8_t USB_Device_ConfigurationNumber;
+			uint8_t USB_Device_ConfigurationNumber;
 
-			#if !defined(NO_DEVICE_REMOTE_WAKEUP)
+
 				/** Indicates if the host is currently allowing the device to issue remote wakeup events. If this
 				 *  flag is cleared, the device should not issue remote wakeup events to the host.
 				 *
@@ -107,21 +70,18 @@
 				 *
 				 *  \ingroup Group_Device
 				 */
-				extern bool USB_Device_RemoteWakeupEnabled;
-			#endif
+				bool USB_Device_RemoteWakeupEnabled;
 
-			#if !defined(NO_DEVICE_SELF_POWER)
+
+
 				/** Indicates if the device is currently being powered by its own power supply, rather than being
 				 *  powered by the host's USB supply. This flag should remain cleared if the device does not
 				 *  support self powered mode, as indicated in the device descriptors.
 				 *
 				 *  \ingroup Group_Device
 				 */
-				extern bool USB_Device_CurrentlySelfPowered;
-			#endif
+				bool USB_Device_CurrentlySelfPowered;
 
-	/* Private Interface - For use in library only: */
-	#if !defined(__DOXYGEN__)
 		#if defined(USE_RAM_DESCRIPTORS) && defined(USE_EEPROM_DESCRIPTORS)
 			#error USE_RAM_DESCRIPTORS and USE_EEPROM_DESCRIPTORS are mutually exclusive.
 		#elif defined(USE_RAM_DESCRIPTORS) && defined(USE_FLASH_DESCRIPTORS)
@@ -132,15 +92,7 @@
 			#error Only one of the USE_*_DESCRIPTORS modes should be selected.
 		#endif
 
-		/* Function Prototypes: */
-			void USB_Device_ProcessControlRequest(void);
-
-	#endif
-
-	/* Disable C linkage for C++ Compilers: */
-		#if defined(__cplusplus)
-			}
-		#endif
+		void USB_Device_ProcessControlRequest(void);
 
 #endif
 

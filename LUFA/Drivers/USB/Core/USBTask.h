@@ -51,9 +51,9 @@
 			 */
 			 USB_Request_Header_t USB_ControlRequest;
 
-			#if defined(USB_CAN_BE_DEVICE) || defined(__DOXYGEN__)
+
 				#define USB_DeviceState            CONCAT_EXPANDED(GPIOR, DEVICE_STATE_AS_GPIOR)
-			#endif
+
 
 		/* Function Prototypes: */
 			/** This is the main USB management task. The USB driver requires this task to be executed
