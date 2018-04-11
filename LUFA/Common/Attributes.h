@@ -25,9 +25,6 @@
 #ifndef __LUFA_ATTR_H__
 #define __LUFA_ATTR_H__
 
-	/* Public Interface - May be used in end-application: */
-		/* Macros: */
-			#if (__GNUC__ >= 3) || defined(__DOXYGEN__)
 				/** Indicates to the compiler that the function can not ever return, so that any stack restoring or
 				 *  return code may be omitted by the compiler in the resulting binary.
 				 */
@@ -77,7 +74,6 @@
 				 *  identical name (in which case the weak reference is discarded at link time).
 				 */
 				#define ATTR_WEAK                    __attribute__ ((weak))
-			#endif
 
 			/** Forces the compiler to not automatically zero the given global variable on startup, so that the
 			 *  current RAM contents is retained. Under most conditions this value will be random due to the
