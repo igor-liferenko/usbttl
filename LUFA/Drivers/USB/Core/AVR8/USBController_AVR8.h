@@ -20,7 +20,6 @@
 
 	/* Includes: */
 		#include "../Events.h"
-		#include "../USBTask.h"
 		#include "../USBInterrupt.h"
 
 

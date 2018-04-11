@@ -8,17 +8,12 @@
  *        dispatch header located in LUFA/Drivers/USB/USB.h.
  */
 
-#ifndef __USBTASK_H__
-#define __USBTASK_H__
+		#include "LUFA/Drivers/USB/Core/USBController.h"
+		#include "LUFA/Drivers/USB/Core/Events.h"
+		#include "LUFA/Drivers/USB/Core/StdRequestType.h"
+		#include "LUFA/Drivers/USB/Core/StdDescriptors.h"
 
-		#include "USBController.h"
-		#include "Events.h"
-		#include "StdRequestType.h"
-		#include "StdDescriptors.h"
-
-		#if defined(USB_CAN_BE_DEVICE)
-			#include "DeviceStandardReq.h"
-		#endif
+		#include "LUFA/Drivers/USB/Core/DeviceStandardReq.h"
 
 	/* Public Interface - May be used in end-application: */
 		/* Global Variables: */
@@ -66,5 +61,3 @@
 			 *  \ingroup Group_USBManagement
 			 */
 			void USB_DeviceTask(void);
-#endif
-

@@ -15,7 +15,6 @@
 		#include "StdDescriptors.h"
 		#include "Events.h"
 		#include "StdRequestType.h"
-		#include "USBTask.h"
 		#include "USBController.h"
 
 	/* Public Interface - May be used in end-application: */

@@ -43,7 +43,6 @@
 #define __ENDPOINT_AVR8_H__
 
 	/* Includes: */
-		#include "../USBTask.h"
 		#include "../USBInterrupt.h"
 
 	/* Private Interface - For use in library only: */

@@ -19,11 +19,6 @@
 #ifndef __ENDPOINT_STREAM_AVR8_H__
 #define __ENDPOINT_STREAM_AVR8_H__
 
-	/* Includes: */
-		#include "../USBTask.h"
-
-	/* Public Interface - May be used in end-application: */
-		/* Function Prototypes: */
 			/** \name Stream functions for null data */
 			//@{
 
