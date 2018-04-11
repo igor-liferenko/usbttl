@@ -23,31 +23,23 @@
  *  @{
  */
 
-#ifndef __LEDS_USBKEY_H__
-#define __LEDS_USBKEY_H__
+/** LED mask for the first LED on the board. */
+#define LEDS_LED1        (1 << 4)
 
-	/* Includes: */
-		#include "../../../../Common/Common.h"
+/** LED mask for the second LED on the board. */
+#define LEDS_LED2        (1 << 5)
 
-	/* Public Interface - May be used in end-application: */
-		/* Macros: */
-			/** LED mask for the first LED on the board. */
-			#define LEDS_LED1        (1 << 4)
+/** LED mask for the third LED on the board. */
+#define LEDS_LED3        (1 << 7)
 
-			/** LED mask for the second LED on the board. */
-			#define LEDS_LED2        (1 << 5)
+/** LED mask for the fourth LED on the board. */
+#define LEDS_LED4        (1 << 6)
 
-			/** LED mask for the third LED on the board. */
-			#define LEDS_LED3        (1 << 7)
+/** LED mask for all the LEDs on the board. */
+#define LEDS_ALL_LEDS    (LEDS_LED1 | LEDS_LED2 | LEDS_LED3 | LEDS_LED4)
 
-			/** LED mask for the fourth LED on the board. */
-			#define LEDS_LED4        (1 << 6)
-
-			/** LED mask for all the LEDs on the board. */
-			#define LEDS_ALL_LEDS    (LEDS_LED1 | LEDS_LED2 | LEDS_LED3 | LEDS_LED4)
-
-			/** LED mask for none of the board LEDs. */
-			#define LEDS_NO_LEDS     0
+/** LED mask for none of the board LEDs. */
+#define LEDS_NO_LEDS     0
 
 		/* Inline Functions: */
 		#if !defined(__DOXYGEN__)
@@ -95,8 +87,3 @@
 				return (PORTD & LEDS_ALL_LEDS);
 			}
 		#endif
-
-#endif
-
-/** @} */
-

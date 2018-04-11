@@ -68,4 +68,4 @@
  *  @{
  */
 
-#include "AVR8/USBKEY/LEDs.h"
+@i USBKEY-LEDs.w
