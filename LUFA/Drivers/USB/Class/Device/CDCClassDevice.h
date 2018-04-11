@@ -46,11 +46,6 @@
 
 		#include <stdio.h>
 
-	/* Preprocessor Checks: */
-		#if !defined(__INCLUDE_FROM_CDC_DRIVER)
-			#error Do not include this file directly. Include LUFA/Drivers/USB.h instead.
-		#endif
-
 	/* Public Interface - May be used in end-application: */
 		/* Type Defines: */
 			/** \brief CDC Class Device Mode Configuration and State Structure.

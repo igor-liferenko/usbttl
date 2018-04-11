@@ -59,9 +59,6 @@
 #ifndef _CDC_CLASS_H_
 #define _CDC_CLASS_H_
 
-	/* Macros: */
-		#define __INCLUDE_FROM_CDC_DRIVER
-
-		#include "Device/CDCClassDevice.h"
+#include "Device/CDCClassDevice.h"
 
 #endif
