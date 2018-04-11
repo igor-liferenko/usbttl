@@ -24,9 +24,6 @@
 #ifndef __LUFA_COMPILERSPEC_H__
 #define __LUFA_COMPILERSPEC_H__
 
-	/* Public Interface - May be used in end-application: */
-		/* Macros: */
-			#if defined(__GNUC__) || defined(__DOXYGEN__)
 				/** Forces GCC to use pointer indirection (via the device's pointer register pairs) when accessing the given
 				 *  struct pointer. In some cases GCC will emit non-optimal assembly code when accessing a structure through
 				 *  a pointer, resulting in a larger binary. When this macro is used on a (non \c const) structure pointer before
@@ -50,12 +47,6 @@
 				 *  \return Boolean \c true if the given value is known to be a compile time constant, \c false otherwise.
 				 */
 				#define GCC_IS_COMPILE_CONST(x)               __builtin_constant_p(x)
-			#else
-				#define GCC_FORCE_POINTER_ACCESS(StructPtr)
-				#define GCC_MEMORY_BARRIER()
-				#define GCC_IS_COMPILE_CONST(x)               0
-			#endif
-
 #endif
 
 /** @} */
