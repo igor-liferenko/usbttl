@@ -658,7 +658,7 @@ typedef struct {
                             On unsupported devices, this will evaluate to |NO_DESCRIPTOR|
                         and will cause the host to generate a pseudo-unique value for the
                                    device upon insertion.
-                                                             
+
                             see ManufacturerStrIndex structure entry.
                                                              */
   uint8_t  NumberOfConfigurations; /* Total number of configurations supported by
