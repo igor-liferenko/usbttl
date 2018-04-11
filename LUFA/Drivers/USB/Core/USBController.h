@@ -18,8 +18,6 @@
 #ifndef __USBCONTROLLER_H__
 #define __USBCONTROLLER_H__
 
-		#include "USBMode.h"
-
 	/* Defines: */
 		/** \name Endpoint Direction Masks */
 		//@{

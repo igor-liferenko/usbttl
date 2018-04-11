@@ -19,9 +19,6 @@
 #ifndef __STDREQTYPE_H__
 #define __STDREQTYPE_H__
 
-#include "USBMode.h"
-
-	/* Public Interface - May be used in end-application: */
 		/* Macros: */
 			/** Mask for the request type parameter, to indicate the direction of the request data (Host to Device
 			 *  or Device to Host). The result of this mask should then be compared to the request direction masks.

@@ -42,10 +42,6 @@
 #ifndef __ENDPOINT_H__
 #define __ENDPOINT_H__
 
-	/* Includes: */
-		#include "USBMode.h"
-
-	/* Public Interface - May be used in end-application: */
 		/* Type Defines: */
 			/** Type define for a endpoint table entry, used to configure endpoints in groups via
 			 *  \ref Endpoint_ConfigureEndpointTable().

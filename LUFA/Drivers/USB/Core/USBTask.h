@@ -11,7 +11,6 @@
 #ifndef __USBTASK_H__
 #define __USBTASK_H__
 
-		#include "USBMode.h"
 		#include "USBController.h"
 		#include "Events.h"
 		#include "StdRequestType.h"

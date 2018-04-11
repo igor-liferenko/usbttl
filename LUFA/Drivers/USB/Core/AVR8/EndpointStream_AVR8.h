@@ -20,7 +20,6 @@
 #define __ENDPOINT_STREAM_AVR8_H__
 
 	/* Includes: */
-		#include "../USBMode.h"
 		#include "../USBTask.h"
 
 	/* Public Interface - May be used in end-application: */

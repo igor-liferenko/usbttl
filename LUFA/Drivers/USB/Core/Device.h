@@ -20,7 +20,6 @@
 #define __USBDEVICE_H__
 
 	/* Includes: */
-		#include "USBMode.h"
 		#include "StdDescriptors.h"
 		#include "USBInterrupt.h"
 		#include "Endpoint.h"

@@ -21,7 +21,6 @@
 #define __CONFIGDESCRIPTORS_H__
 
 	/* Includes: */
-		#include "USBMode.h"
 		#include "StdDescriptors.h"
 
 	/* Public Interface - May be used in end-application: */

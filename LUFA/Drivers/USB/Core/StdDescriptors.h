@@ -19,11 +19,7 @@
 #ifndef __USBDESCRIPTORS_H__
 #define __USBDESCRIPTORS_H__
 
-	/* Includes: */
-		#include "USBMode.h"
 		#include "Events.h"
-
-
 
 	/* Public Interface - May be used in end-application: */
 		/* Macros: */

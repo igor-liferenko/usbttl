@@ -54,7 +54,6 @@
  *  This module is designed to simplify the user code by exposing only the required interface needed to interface with
  *  Hosts or Devices using the USB CDC Class.
  *
- *  @{
  */
 
 #ifndef _CDC_CLASS_H_
@@ -63,18 +62,6 @@
 	/* Macros: */
 		#define __INCLUDE_FROM_CDC_DRIVER
 
-	/* Includes: */
-		#include "../Core/USBMode.h"
-
-		#if defined(USB_CAN_BE_DEVICE)
-			#include "Device/CDCClassDevice.h"
-		#endif
-
-		#if defined(USB_CAN_BE_HOST)
-			#include "Host/CDCClassHost.h"
-		#endif
+		#include "Device/CDCClassDevice.h"
 
 #endif
-
-/** @} */
-

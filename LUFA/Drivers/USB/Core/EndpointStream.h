@@ -19,10 +19,6 @@
 #ifndef __ENDPOINT_STREAM_H__
 #define __ENDPOINT_STREAM_H__
 
-		#include "USBMode.h"
-
-
-	/* Public Interface - May be used in end-application: */
 		/* Enums: */
 			/** Enum for the possible error return codes of the \c Endpoint_*_Stream_* functions. */
 			enum Endpoint_Stream_RW_ErrorCodes_t

@@ -312,7 +312,6 @@
 			}
 
 		/* Includes: */
-			#include "../USBMode.h"
 			#include "../Events.h"
 			#include "../USBController.h"
 

@@ -343,7 +343,7 @@
  */
 
 @i Common.w
-		#include "Core/USBMode.h"
+@i USBMode.w
 
 		#include "Core/USBTask.h"
 		#include "Core/Events.h"

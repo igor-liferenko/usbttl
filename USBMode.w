@@ -22,9 +22,6 @@
  *  @{
  */
 
-#ifndef __USBMODE_H__
-#define __USBMODE_H__
-
 	/* Public Interface - May be used in end-application: */
 	#if defined(__DOXYGEN__)
 		/** Indicates that the target AVR microcontroller belongs to the Series 2 AVR8 USB controller
@@ -228,10 +225,3 @@
 				#error The currently selected device, USB mode or architecture is not supported.
 			#endif
 	#endif
-
-
-
-#endif
-
-/** @} */
-

@@ -12,7 +12,6 @@
 #define __DEVICESTDREQ_H__
 
 	/* Includes: */
-		#include "USBMode.h"
 		#include "StdDescriptors.h"
 		#include "Events.h"
 		#include "StdRequestType.h"
