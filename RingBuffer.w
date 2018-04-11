@@ -60,9 +60,6 @@
  *  @{
  */
 
-#ifndef __RING_BUFFER_H__
-#define __RING_BUFFER_H__
-
 	/* Type Defines: */
 		/** \brief Ring Buffer Management Structure.
 		 *
@@ -258,8 +255,6 @@
 		{
 			return *Buffer->Out;
 		}
-
-#endif
 
 /** @} */
 
