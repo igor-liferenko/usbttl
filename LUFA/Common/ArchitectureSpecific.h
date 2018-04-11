@@ -21,10 +21,7 @@
 #ifndef __LUFA_ARCHSPEC_H__
 #define __LUFA_ARCHSPEC_H__
 
-	/* Public Interface - May be used in end-application: */
-		/* Macros: */
-			#if (ARCH == ARCH_AVR8) || (ARCH == ARCH_XMEGA) || defined(__DOXYGEN__)
-				#if (ARCH == ARCH_AVR8) || defined(__DOXYGEN__)
+
 					/** Re-enables the AVR's JTAG bus in software, until a system reset. This will re-enable JTAG debugging
 					 *  interface after is has been disabled in software via \ref JTAG_DISABLE().
 					 *
@@ -61,7 +58,6 @@
 					                                          "M" (_SFR_IO_ADDR(MCUCR))          \
 					                                        : "r0");                             \
 					                                    } while (0)
-				#endif
 
 				/** Defines a volatile \c NOP statement which cannot be optimized out by the compiler, and thus can always
 				 *  be set as a breakpoint in the resulting code. Useful for debugging purposes, where the optimizer
@@ -105,34 +101,6 @@
 				                                                            "Assertion \"%s\" failed.\r\n"),           \
 				                                                            __FILE__, __func__, __LINE__, #Condition); \
 				                                        } while (0)
-
-				#if !defined(pgm_read_ptr) || defined(__DOXYGEN__)
-					/** Reads a pointer out of PROGMEM space on the AVR8 architecture. This is a wrapper for the avr-libc
-					 *  \c pgm_read_word() macro with a \c void* cast, so that its value can be assigned directly to a
-					 *  pointer variable or used in pointer arithmetic without further casting in C.
-					 *
-					 *  \note This macro is not available for all architectures.
-					 *
-					 *  \param[in] Address  Address of the pointer to read.
-					 *
-					 *  \return Pointer retrieved from PROGMEM space.
-					 */
-					#define pgm_read_ptr(Address)       (void*)pgm_read_word(Address)
-				#endif
-			#elif (ARCH == ARCH_UC3)
-				#define JTAG_DEBUG_POINT()              __asm__ __volatile__ ("nop" ::)
-				#define JTAG_DEBUG_BREAK()              __asm__ __volatile__ ("breakpoint" ::)
-				#define JTAG_ASSERT(Condition)          do {                                                    \
-				                                            if (!(Condition))                                   \
-				                                              JTAG_DEBUG_BREAK();                               \
-				                                        } while (0)
-				#define STDOUT_ASSERT(Condition)        do {                                                    \
-				                                            if (!(Condition))                                   \
-				                                              printf("%s: Function \"%s\", Line %d: "           \
-				                                                     "Assertion \"%s\" failed.\r\n",            \
-				                                                     __FILE__, __func__, __LINE__, #Condition); \
-				                                        } while (0)
-			#endif
 
 #endif
 
