@@ -21,8 +21,6 @@
 #ifndef __LUFA_BOARDTYPES_H__
 #define __LUFA_BOARDTYPES_H__
 
-	/* Public Interface - May be used in end-application: */
-		/* Macros: */
 			/** Selects the user-defined board drivers, which should be placed in the user project's folder
 			 *  under a directory named \c /Board/. Each board driver should be named identically to the LUFA
 			 *  master board driver (i.e., driver in the \c LUFA/Drivers/Board directory) so that the library
@@ -211,13 +209,7 @@
 			/** Selects the Atmel Xplained-MINI specific board drivers, including the driver for the board LEDs. */
 			#define BOARD_XPLAINED_MINI        60
 
-			#if !defined(__DOXYGEN__)
 				#define BOARD_                 BOARD_NONE
-
-				#if !defined(BOARD)
-					#define BOARD              BOARD_NONE
-				#endif
-			#endif
 
 #endif
 
