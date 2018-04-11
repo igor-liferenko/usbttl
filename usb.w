@@ -3241,4 +3241,5 @@ uint8_t Endpoint_Read_Control_EStream_BE(void* const Buffer, uint16_t Length)
 
 @ TODO: remove /dev/null sections.
 And remove "@s ..." from /dev/null sections.
+And remove all "static" keywords.
 @^TODO@>
