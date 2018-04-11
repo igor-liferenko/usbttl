@@ -24,8 +24,6 @@
 #ifndef __LUFA_ARCHITECTURES_H__
 #define __LUFA_ARCHITECTURES_H__
 
-	/* Public Interface - May be used in end-application: */
-		/* Macros: */
 			/** Selects the Atmel 8-bit AVR (AT90USB* and ATMEGA*U* chips) architecture. */
 			#define ARCH_AVR8           0
 
@@ -35,13 +33,7 @@
 			/** Selects the Atmel XMEGA AVR (ATXMEGA* chips) architecture. */
 			#define ARCH_XMEGA          2
 
-			#if !defined(__DOXYGEN__)
 				#define ARCH_           ARCH_AVR8
-
-				#if !defined(ARCH)
-					#define ARCH        ARCH_AVR8
-				#endif
-			#endif
 
 #endif
 
