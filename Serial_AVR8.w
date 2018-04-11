@@ -40,7 +40,6 @@
 @i TerminalCodes.w
 
 	/* Private Interface - For use in library only: */
-	#if !defined(__DOXYGEN__)
 		/* External Variables: */
 			extern FILE USARTSerialStream;
 
@@ -49,7 +48,6 @@
 			                   FILE *Stream);
 			int Serial_getchar(FILE *Stream);
 			int Serial_getchar_Blocking(FILE *Stream);
-	#endif
 
 	/* Public Interface - May be used in end-application: */
 		/* Macros: */

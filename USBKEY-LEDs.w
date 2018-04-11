@@ -42,7 +42,6 @@
 #define LEDS_NO_LEDS     0
 
 		/* Inline Functions: */
-		#if !defined(__DOXYGEN__)
 			static inline void LEDs_Init(void)
 			{
 				DDRD  |=  LEDS_ALL_LEDS;
@@ -86,4 +85,3 @@
 			{
 				return (PORTD & LEDS_ALL_LEDS);
 			}
-		#endif
