@@ -26,9 +26,6 @@
  *  Macros and functions to create and control global interrupts within the device.
  */
 
-	/* Macros: */
-		#define __INCLUDE_FROM_COMMON_H
-
 	/* Includes: */
 		#include <stdint.h>
 		#include <stdbool.h>
