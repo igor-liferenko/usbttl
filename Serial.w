@@ -24,4 +24,4 @@
  *        individual target module documentation for the API specific to your target processor.
  */
 
-	#include "LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h"
+@i Serial_AVR8.w

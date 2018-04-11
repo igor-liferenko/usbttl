@@ -37,12 +37,8 @@
  *  @{
  */
 
-#ifndef __SERIAL_AVR8_H__
-#define __SERIAL_AVR8_H__
-
 	/* Includes: */
-		#include "../../../Common/Common.h"
-		#include "../../Misc/TerminalCodes.h"
+		#include "LUFA/Drivers/Misc/TerminalCodes.h"
 
 		#include <stdio.h>
 
@@ -219,8 +215,3 @@
 
 				return UDR1;
 			}
-
-#endif
-
-/** @} */
-
