@@ -37,10 +37,7 @@
  *  @{
  */
 
-	/* Includes: */
-		#include "LUFA/Drivers/Misc/TerminalCodes.h"
-
-		#include <stdio.h>
+@i TerminalCodes.w
 
 	/* Private Interface - For use in library only: */
 	#if !defined(__DOXYGEN__)

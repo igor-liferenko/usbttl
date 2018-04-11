@@ -3233,6 +3233,7 @@ uint8_t Endpoint_Read_Control_EStream_BE(void* const Buffer, uint16_t Length)
 #include <avr/interrupt.h>
 #include <avr/power.h> /* |clock_prescale_set|, |clock_div_1| */
 #include <avr/pgmspace.h>
+#include <stdio.h>
 @i USB.w
 @i LEDs.w
 @i Serial.w
