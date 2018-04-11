@@ -26,9 +26,6 @@
  *  Macros and functions to create and control global interrupts within the device.
  */
 
-#ifndef __LUFA_COMMON_H__
-#define __LUFA_COMMON_H__
-
 	/* Macros: */
 		#define __INCLUDE_FROM_COMMON_H
 
@@ -38,13 +35,13 @@
 		#include <string.h>
 		#include <stddef.h>
 
-		#include "Architectures.h"
-		#include "BoardTypes.h"
-		#include "ArchitectureSpecific.h"
-		#include "CompilerSpecific.h"
-		#include "Attributes.h"
+		#include "LUFA/Common/Architectures.h"
+		#include "LUFA/Common/BoardTypes.h"
+		#include "LUFA/Common/ArchitectureSpecific.h"
+		#include "LUFA/Common/CompilerSpecific.h"
+		#include "LUFA/Common/Attributes.h"
 
-		#include "LUFAConfig.h"
+		#include "Config/LUFAConfig.h"
 
 	/* Architecture specific utility includes: */
 
@@ -63,7 +60,7 @@
 			#define ARCH_HAS_MULTI_ADDRESS_SPACE
 			#define ARCH_LITTLE_ENDIAN
 
-			#include "Endianness.h"
+			#include "LUFA/Common/Endianness.h"
 
 			/** Convenience macro to determine the larger of two values.
 			 *
@@ -223,8 +220,3 @@
 
 				GCC_MEMORY_BARRIER();
 			}
-
-#endif
-
-/** @} */
-

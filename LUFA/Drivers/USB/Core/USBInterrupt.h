@@ -11,9 +11,7 @@
 #ifndef __USBINTERRUPT_H__
 #define __USBINTERRUPT_H__
 
-	/* Includes: */
-		#include "../../../Common/Common.h"
-		#include "USBMode.h"
+#include "USBMode.h"
 
 	/* Architecture Includes: */
 			#include "AVR8/USBInterrupt_AVR8.h"

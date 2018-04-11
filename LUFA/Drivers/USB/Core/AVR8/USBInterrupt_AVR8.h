@@ -11,13 +11,6 @@
 #ifndef __USBINTERRUPT_AVR8_H__
 #define __USBINTERRUPT_AVR8_H__
 
-	/* Includes: */
-		#include "../../../../Common/Common.h"
-
-
-
-	/* Private Interface - For use in library only: */
-
 		/* Enums: */
 			enum USB_Interrupts_t
 			{

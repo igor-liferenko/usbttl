@@ -28,9 +28,7 @@
 #ifndef __USBEVENTS_H__
 #define __USBEVENTS_H__
 
-	/* Includes: */
-		#include "../../../Common/Common.h"
-		#include "USBMode.h"
+#include "USBMode.h"
 
 			/** Event for USB device connection. This event fires when the microcontroller is in USB Device mode
 			 *  and the device is connected to a USB host, beginning the enumeration process measured by a rising

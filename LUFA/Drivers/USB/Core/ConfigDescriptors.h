@@ -21,7 +21,6 @@
 #define __CONFIGDESCRIPTORS_H__
 
 	/* Includes: */
-		#include "../../../Common/Common.h"
 		#include "USBMode.h"
 		#include "StdDescriptors.h"
 

@@ -342,7 +342,7 @@
  *  class-specific functions.
  */
 
-		#include "LUFA/Common/Common.h"
+@i Common.w
 		#include "Core/USBMode.h"
 
 		#include "Core/USBTask.h"

@@ -43,7 +43,6 @@
 #define __ENDPOINT_H__
 
 	/* Includes: */
-		#include "../../../Common/Common.h"
 		#include "USBMode.h"
 
 	/* Public Interface - May be used in end-application: */

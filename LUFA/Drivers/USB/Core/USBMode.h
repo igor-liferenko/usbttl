@@ -25,10 +25,6 @@
 #ifndef __USBMODE_H__
 #define __USBMODE_H__
 
-
-	/* Includes: */
-		#include "../../../Common/Common.h"
-
 	/* Public Interface - May be used in end-application: */
 	#if defined(__DOXYGEN__)
 		/** Indicates that the target AVR microcontroller belongs to the Series 2 AVR8 USB controller

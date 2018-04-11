@@ -19,8 +19,6 @@
 #ifndef __ENDPOINT_STREAM_H__
 #define __ENDPOINT_STREAM_H__
 
-	/* Includes: */
-		#include "../../../Common/Common.h"
 		#include "USBMode.h"
 
 
