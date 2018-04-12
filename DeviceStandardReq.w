@@ -8,7 +8,7 @@
  *        dispatch header located in LUFA/Drivers/USB/USB.h.
  */
 
-#include "LUFA/Drivers/USB/Core/StdRequestType.h"
+@i StdRequestType.w
 
 		/* Enums: */
 				/** Enum for the possible descriptor memory spaces, for the \c MemoryAddressSpace parameter of the

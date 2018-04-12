@@ -16,97 +16,90 @@
  *  @{
  */
 
-#ifndef __STDREQTYPE_H__
-#define __STDREQTYPE_H__
+/** Mask for the request type parameter, to indicate the direction of the request data (Host to Device
+ *  or Device to Host). The result of this mask should then be compared to the request direction masks.
+ *
+ *  \see \c REQDIR_* macros for masks indicating the request data direction.
+ */
+#define CONTROL_REQTYPE_DIRECTION  0x80
 
-		/* Macros: */
-			/** Mask for the request type parameter, to indicate the direction of the request data (Host to Device
-			 *  or Device to Host). The result of this mask should then be compared to the request direction masks.
-			 *
-			 *  \see \c REQDIR_* macros for masks indicating the request data direction.
-			 */
-			#define CONTROL_REQTYPE_DIRECTION  0x80
+/** Mask for the request type parameter, to indicate the type of request (Device, Class or Vendor
+ *  Specific). The result of this mask should then be compared to the request type masks.
+ *
+ *  \see \c REQTYPE_* macros for masks indicating the request type.
+ */
+#define CONTROL_REQTYPE_TYPE       0x60
 
-			/** Mask for the request type parameter, to indicate the type of request (Device, Class or Vendor
-			 *  Specific). The result of this mask should then be compared to the request type masks.
-			 *
-			 *  \see \c REQTYPE_* macros for masks indicating the request type.
-			 */
-			#define CONTROL_REQTYPE_TYPE       0x60
+/** Mask for the request type parameter, to indicate the recipient of the request (Device, Interface
+ *  Endpoint or Other). The result of this mask should then be compared to the request recipient
+ *  masks.
+ *
+ *  \see \c REQREC_* macros for masks indicating the request recipient.
+ */
+#define CONTROL_REQTYPE_RECIPIENT  0x1F
 
-			/** Mask for the request type parameter, to indicate the recipient of the request (Device, Interface
-			 *  Endpoint or Other). The result of this mask should then be compared to the request recipient
-			 *  masks.
-			 *
-			 *  \see \c REQREC_* macros for masks indicating the request recipient.
-			 */
-			#define CONTROL_REQTYPE_RECIPIENT  0x1F
+/** \name Control Request Data Direction Masks */
 
-			/** \name Control Request Data Direction Masks */
-			//@{
-			/** Request data direction mask, indicating that the request data will flow from host to device.
-			 *
-			 *  \see \ref CONTROL_REQTYPE_DIRECTION macro.
-			 */
-			#define REQDIR_HOSTTODEVICE        (0 << 7)
+/** Request data direction mask, indicating that the request data will flow from host to device.
+ *
+ *  \see \ref CONTROL_REQTYPE_DIRECTION macro.
+ */
+#define REQDIR_HOSTTODEVICE        (0 << 7)
 
-			/** Request data direction mask, indicating that the request data will flow from device to host.
-			 *
-			 *  \see \ref CONTROL_REQTYPE_DIRECTION macro.
-			 */
-			#define REQDIR_DEVICETOHOST        (1 << 7)
-			//@}
+/** Request data direction mask, indicating that the request data will flow from device to host.
+ *
+ *  \see \ref CONTROL_REQTYPE_DIRECTION macro.
+ */
+#define REQDIR_DEVICETOHOST        (1 << 7)
 
-			/** \name Control Request Type Masks */
-			//@{
-			/** Request type mask, indicating that the request is a standard request.
-			 *
-			 *  \see \ref CONTROL_REQTYPE_TYPE macro.
-			 */
-			#define REQTYPE_STANDARD           (0 << 5)
+/** \name Control Request Type Masks */
 
-			/** Request type mask, indicating that the request is a class-specific request.
-			 *
-			 *  \see \ref CONTROL_REQTYPE_TYPE macro.
-			 */
-			#define REQTYPE_CLASS              (1 << 5)
+/** Request type mask, indicating that the request is a standard request.
+ *
+ *  \see \ref CONTROL_REQTYPE_TYPE macro.
+ */
+#define REQTYPE_STANDARD           (0 << 5)
 
-			/** Request type mask, indicating that the request is a vendor specific request.
-			 *
-			 *  \see \ref CONTROL_REQTYPE_TYPE macro.
-			 */
-			#define REQTYPE_VENDOR             (2 << 5)
-			//@}
+/** Request type mask, indicating that the request is a class-specific request.
+ *
+ *  \see \ref CONTROL_REQTYPE_TYPE macro.
+ */
+#define REQTYPE_CLASS              (1 << 5)
 
-			/** \name Control Request Recipient Masks */
-			//@{
-			/** Request recipient mask, indicating that the request is to be issued to the device as a whole.
-			 *
-			 *  \see \ref CONTROL_REQTYPE_RECIPIENT macro.
-			 */
-			#define REQREC_DEVICE              (0 << 0)
+/** Request type mask, indicating that the request is a vendor specific request.
+ *
+ *  \see \ref CONTROL_REQTYPE_TYPE macro.
+ */
+#define REQTYPE_VENDOR             (2 << 5)
 
-			/** Request recipient mask, indicating that the request is to be issued to an interface in the
-			 *  currently selected configuration.
-			 *
-			 *  \see \ref CONTROL_REQTYPE_RECIPIENT macro.
-			 */
-			#define REQREC_INTERFACE           (1 << 0)
+/** \name Control Request Recipient Masks */
 
-			/** Request recipient mask, indicating that the request is to be issued to an endpoint in the
-			 *  currently selected configuration.
-			 *
-			 *  \see \ref CONTROL_REQTYPE_RECIPIENT macro.
-			 */
-			#define REQREC_ENDPOINT            (2 << 0)
+/** Request recipient mask, indicating that the request is to be issued to the device as a whole.
+ *
+ *  \see \ref CONTROL_REQTYPE_RECIPIENT macro.
+ */
+#define REQREC_DEVICE              (0 << 0)
 
-			/** Request recipient mask, indicating that the request is to be issued to an unspecified element
-			 *  in the currently selected configuration.
-			 *
-			 *  \see \ref CONTROL_REQTYPE_RECIPIENT macro.
-			 */
-			#define REQREC_OTHER               (3 << 0)
-			//@}
+/** Request recipient mask, indicating that the request is to be issued to an interface in the
+ *  currently selected configuration.
+ *
+ *  \see \ref CONTROL_REQTYPE_RECIPIENT macro.
+ */
+#define REQREC_INTERFACE           (1 << 0)
+
+/** Request recipient mask, indicating that the request is to be issued to an endpoint in the
+ *  currently selected configuration.
+ *
+ *  \see \ref CONTROL_REQTYPE_RECIPIENT macro.
+ */
+#define REQREC_ENDPOINT            (2 << 0)
+
+/** Request recipient mask, indicating that the request is to be issued to an unspecified element
+ *  in the currently selected configuration.
+ *
+ *  \see \ref CONTROL_REQTYPE_RECIPIENT macro.
+ */
+#define REQREC_OTHER               (3 << 0)
 
 		/* Type Defines: */
 			/** \brief Standard USB Control Request
@@ -195,14 +188,8 @@
 			                                            */
 			};
 
-	/* Private Interface - For use in library only: */
 		#if !defined(__DOXYGEN__)
-			/* Macros: */
-				#define FEATURE_SELFPOWERED_ENABLED     (1 << 0)
-				#define FEATURE_REMOTE_WAKEUP_ENABLED   (1 << 1)
+#define FEATURE_SELFPOWERED_ENABLED     (1 << 0)
+#define FEATURE_REMOTE_WAKEUP_ENABLED   (1 << 1)
 		#endif
-
-#endif
-
-/** @} */
 

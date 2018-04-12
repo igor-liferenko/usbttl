@@ -8,8 +8,6 @@
  *        dispatch header located in LUFA/Drivers/USB/USB.h.
  */
 
-		#include "LUFA/Drivers/USB/Core/StdRequestType.h"
-
 	/* Public Interface - May be used in end-application: */
 		/* Global Variables: */
 			/** Indicates if the USB interface is currently initialized but not necessarily connected to a host
