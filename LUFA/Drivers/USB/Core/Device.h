@@ -19,7 +19,6 @@
 #ifndef __USBDEVICE_H__
 #define __USBDEVICE_H__
 
-		#include "USBInterrupt.h"
 		#include "Endpoint.h"
 
 

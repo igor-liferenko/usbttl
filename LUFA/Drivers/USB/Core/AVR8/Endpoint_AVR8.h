@@ -42,10 +42,6 @@
 #ifndef __ENDPOINT_AVR8_H__
 #define __ENDPOINT_AVR8_H__
 
-	/* Includes: */
-		#include "../USBInterrupt.h"
-
-	/* Private Interface - For use in library only: */
 		/* Inline Functions: */
 			static inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes) ATTR_WARN_UNUSED_RESULT ATTR_CONST
 			                                                                       ATTR_ALWAYS_INLINE;

@@ -8,10 +8,4 @@
  *        dispatch header located in LUFA/Drivers/USB/USB.h.
  */
 
-#ifndef __USBINTERRUPT_H__
-#define __USBINTERRUPT_H__
-
-	/* Architecture Includes: */
-			#include "AVR8/USBInterrupt_AVR8.h"
-#endif
-
+#include "LUFA/Drivers/USB/Core/AVR8/USBInterrupt_AVR8.h"

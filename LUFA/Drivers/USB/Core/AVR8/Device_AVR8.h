@@ -18,8 +18,6 @@
 #ifndef __USBDEVICE_AVR8_H__
 #define __USBDEVICE_AVR8_H__
 
-	/* Includes: */
-		#include "../USBInterrupt.h"
 		#include "../Endpoint.h"
 
 		#if (defined(USE_RAM_DESCRIPTORS) && defined(USE_EEPROM_DESCRIPTORS))
