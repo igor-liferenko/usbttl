@@ -15,59 +15,53 @@
  *  @{
  */
 
-#ifndef __USBCONTROLLER_AVR8_H__
-#define __USBCONTROLLER_AVR8_H__
+#define USB_PLL_PSC                (1 << PINDIV)
 
-		#define USB_PLL_PSC                (1 << PINDIV)
+/** \name USB Controller Option Masks */
 
-	/* Public Interface - May be used in end-application: */
-		/* Macros: */
-			/** \name USB Controller Option Masks */
-			//@{
-			/** Regulator disable option mask for \ref USB_Init(). This indicates that the internal 3.3V USB data pad
-			 *  regulator should be disabled and the AVR's VCC level used for the data pads.
-			 *
-			 *  \note See USB AVR data sheet for more information on the internal pad regulator.
-			 */
-			#define USB_OPT_REG_DISABLED               (1 << 1)
+/** Regulator disable option mask for \ref USB_Init(). This indicates that the internal 3.3V USB data pad
+ *  regulator should be disabled and the AVR's VCC level used for the data pads.
+ *
+ *  \note See USB AVR data sheet for more information on the internal pad regulator.
+ */
+#define USB_OPT_REG_DISABLED               (1 << 1)
 
-			/** Regulator enable option mask for \ref USB_Init(). This indicates that the internal 3.3V USB data pad
-			 *  regulator should be enabled to regulate the data pin voltages from the VBUS level down to a level within
-			 *  the range allowable by the USB standard.
-			 *
-			 *  \note See USB AVR data sheet for more information on the internal pad regulator.
-			 */
-			#define USB_OPT_REG_ENABLED                (0 << 1)
+/** Regulator enable option mask for \ref USB_Init(). This indicates that the internal 3.3V USB data pad
+ *  regulator should be enabled to regulate the data pin voltages from the VBUS level down to a level within
+ *  the range allowable by the USB standard.
+ *
+ *  \note See USB AVR data sheet for more information on the internal pad regulator.
+ */
+#define USB_OPT_REG_ENABLED                (0 << 1)
 
-			/** Option mask for \ref USB_Init() to keep regulator enabled at all times. Indicates that \ref USB_Disable()
-			 *  should not disable the regulator as it would otherwise. Has no effect if regulator is disabled using
-			 *  \ref USB_OPT_REG_DISABLED.
-			 *
-			 *  \note See USB AVR data sheet for more information on the internal pad regulator.
-			 */
-			#define USB_OPT_REG_KEEP_ENABLED           (1 << 3)
+/** Option mask for \ref USB_Init() to keep regulator enabled at all times. Indicates that \ref USB_Disable()
+ *  should not disable the regulator as it would otherwise. Has no effect if regulator is disabled using
+ *  \ref USB_OPT_REG_DISABLED.
+ *
+ *  \note See USB AVR data sheet for more information on the internal pad regulator.
+ */
+#define USB_OPT_REG_KEEP_ENABLED           (1 << 3)
 
-			/** Manual PLL control option mask for \ref USB_Init(). This indicates to the library that the user application
-			 *  will take full responsibility for controlling the AVR's PLL (used to generate the high frequency clock
-			 *  that the USB controller requires) and ensuring that it is locked at the correct frequency for USB operations.
-			 */
-			#define USB_OPT_MANUAL_PLL                 (1 << 2)
+/** Manual PLL control option mask for \ref USB_Init(). This indicates to the library that the user application
+ *  will take full responsibility for controlling the AVR's PLL (used to generate the high frequency clock
+ *  that the USB controller requires) and ensuring that it is locked at the correct frequency for USB operations.
+ */
+#define USB_OPT_MANUAL_PLL                 (1 << 2)
 
-			/** Automatic PLL control option mask for \ref USB_Init(). This indicates to the library that the library should
-			 *  take full responsibility for controlling the AVR's PLL (used to generate the high frequency clock
-			 *  that the USB controller requires) and ensuring that it is locked at the correct frequency for USB operations.
-			 */
-			#define USB_OPT_AUTO_PLL                   (0 << 2)
-			//@}
+/** Automatic PLL control option mask for \ref USB_Init(). This indicates to the library that the library should
+ *  take full responsibility for controlling the AVR's PLL (used to generate the high frequency clock
+ *  that the USB controller requires) and ensuring that it is locked at the correct frequency for USB operations.
+ */
+#define USB_OPT_AUTO_PLL                   (0 << 2)
 
-				/** Constant for the maximum software timeout period of the USB data stream transfer functions
-				 *  (both control and standard) when in either device or host mode. If the next packet of a stream
-				 *  is not received or acknowledged within this time period, the stream function will fail.
-				 *
-				 *  This value may be overridden in the user project makefile as the value of the
-				 *  \ref USB_STREAM_TIMEOUT_MS token, and passed to the compiler using the -D switch.
-				 */
-				#define USB_STREAM_TIMEOUT_MS       100
+/** Constant for the maximum software timeout period of the USB data stream transfer functions
+ *  (both control and standard) when in either device or host mode. If the next packet of a stream
+ *  is not received or acknowledged within this time period, the stream function will fail.
+ *
+ *  This value may be overridden in the user project makefile as the value of the
+ *  \ref USB_STREAM_TIMEOUT_MS token, and passed to the compiler using the -D switch.
+ */
+#define USB_STREAM_TIMEOUT_MS       100
 
 		/* Inline Functions: */
 
@@ -242,8 +236,4 @@
 				USBCON &= ~(1 << USBE);
 				USBCON |=  (1 << USBE);
 			}
-
-#endif
-
-/** @} */
 

@@ -86,4 +86,4 @@
 @i Device.w
 @i DeviceStandardReq.w
 @i EndpointStream.w
-#include "LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.h"
+@i USBController_AVR8.w
