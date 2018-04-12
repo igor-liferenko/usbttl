@@ -22,9 +22,6 @@
  *  @{
  */
 
-#ifndef __LUFA_ATTR_H__
-#define __LUFA_ATTR_H__
-
 				/** Indicates to the compiler that the function can not ever return, so that any stack restoring or
 				 *  return code may be omitted by the compiler in the resulting binary.
 				 */
@@ -105,7 +102,3 @@
 			 *  \param[in] Bytes  Minimum number of bytes the item should be aligned to.
 			 */
 			#define ATTR_ALIGNED(Bytes)              __attribute__ ((aligned(Bytes)))
-#endif
-
-/** @} */
-

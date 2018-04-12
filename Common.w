@@ -30,7 +30,7 @@
 @i BoardTypes.w
 @i ArchitectureSpecific.w
 @i CompilerSpecific.w
-		#include "LUFA/Common/Attributes.h"
+@i Attributes.w
 		#include "Config/LUFAConfig.h"
 
 			typedef uint8_t uint_reg_t;
