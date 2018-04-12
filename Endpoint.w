@@ -62,4 +62,4 @@
 			 */
 			#define ENDPOINT_CONTROLEP                      0
 
-		#include "LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.h"
+@i Endpoint_AVR8.w

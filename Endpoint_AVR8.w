@@ -39,9 +39,6 @@
  *  @{
  */
 
-#ifndef __ENDPOINT_AVR8_H__
-#define __ENDPOINT_AVR8_H__
-
 		/* Inline Functions: */
 			static inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes) ATTR_WARN_UNUSED_RESULT ATTR_CONST
 			                                                                       ATTR_ALWAYS_INLINE;
@@ -722,8 +719,4 @@
 			 *  \return A value from the \ref Endpoint_WaitUntilReady_ErrorCodes_t enum.
 			 */
 			uint8_t Endpoint_WaitUntilReady(void);
-
-#endif
-
-/** @} */
 
