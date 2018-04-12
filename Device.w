@@ -16,7 +16,7 @@
  *  @{
  */
 
-		#include "LUFA/Drivers/USB/Core/Endpoint.h"
+@i Endpoint.w
 
 
 	/* Public Interface - May be used in end-application: */

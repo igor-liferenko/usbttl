@@ -39,9 +39,6 @@
  *  @{
  */
 
-#ifndef __ENDPOINT_H__
-#define __ENDPOINT_H__
-
 		/* Type Defines: */
 			/** Type define for a endpoint table entry, used to configure endpoints in groups via
 			 *  \ref Endpoint_ConfigureEndpointTable().
@@ -65,16 +62,4 @@
 			 */
 			#define ENDPOINT_CONTROLEP                      0
 
-	/* Architecture Includes: */
-		#if (ARCH == ARCH_AVR8)
-			#include "AVR8/Endpoint_AVR8.h"
-		#elif (ARCH == ARCH_UC3)
-			#include "UC3/Endpoint_UC3.h"
-		#elif (ARCH == ARCH_XMEGA)
-			#include "XMEGA/Endpoint_XMEGA.h"
-		#endif
-
-#endif
-
-/** @} */
-
+		#include "LUFA/Drivers/USB/Core/AVR8/Endpoint_AVR8.h"
