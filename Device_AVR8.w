@@ -15,9 +15,6 @@
  *  @{
  */
 
-#ifndef __USBDEVICE_AVR8_H__
-#define __USBDEVICE_AVR8_H__
-
 		#if (defined(USE_RAM_DESCRIPTORS) && defined(USE_EEPROM_DESCRIPTORS))
 			#error USE_RAM_DESCRIPTORS and USE_EEPROM_DESCRIPTORS are mutually exclusive.
 		#endif
@@ -36,46 +33,43 @@
 			//@{
 
 
-				/** Mask for the Options parameter of the \ref USB_Init() function. This indicates that the
-				 *  USB interface should be initialized in low speed (1.5Mb/s) mode.
-				 *
-				 *  \note Low Speed mode is not available on all USB AVR models.
-				 *        \n
-				 *
-				 *  \note Restrictions apply on the number, size and type of endpoints which can be used
-				 *        when running in low speed mode - please refer to the USB 2.0 specification.
-				 */
-				#define USB_DEVICE_OPT_LOWSPEED            (1 << 0)
+/** Mask for the Options parameter of the \ref USB_Init() function. This indicates that the
+ *  USB interface should be initialized in low speed (1.5Mb/s) mode.
+ *
+ *  \note Low Speed mode is not available on all USB AVR models.
+ *        \n
+ *
+ *  \note Restrictions apply on the number, size and type of endpoints which can be used
+ *        when running in low speed mode - please refer to the USB 2.0 specification.
+ */
+#define USB_DEVICE_OPT_LOWSPEED            (1 << 0)
 
 
-			/** Mask for the Options parameter of the \ref USB_Init() function. This indicates that the
-			 *  USB interface should be initialized in full speed (12Mb/s) mode.
-			 */
-			#define USB_DEVICE_OPT_FULLSPEED               (0 << 0)
-			//@}
+/** Mask for the Options parameter of the \ref USB_Init() function. This indicates that the
+ *  USB interface should be initialized in full speed (12Mb/s) mode.
+ */
+#define USB_DEVICE_OPT_FULLSPEED               (0 << 0)
 
+/** String descriptor index for the device's unique serial number string descriptor within the device.
+ *  This unique serial number is used by the host to associate resources to the device (such as drivers or COM port
+ *  number allocations) to a device regardless of the port it is plugged in to on the host. Some microcontrollers contain
+ *  a unique serial number internally, and setting the device descriptors serial number string index to this value
+ *  will cause it to use the internal serial number.
+ *
+ *  On unsupported devices, this will evaluate to \ref NO_DESCRIPTOR and so will force the host to create a pseudo-serial
+ *  number for the device.
+ */
+#define USE_INTERNAL_SERIAL            0xDC
 
+/** Length of the device's unique internal serial number, in bits, if present on the selected microcontroller
+ *  model.
+ */
+#define INTERNAL_SERIAL_LENGTH_BITS    80
 
-				/** String descriptor index for the device's unique serial number string descriptor within the device.
-				 *  This unique serial number is used by the host to associate resources to the device (such as drivers or COM port
-				 *  number allocations) to a device regardless of the port it is plugged in to on the host. Some microcontrollers contain
-				 *  a unique serial number internally, and setting the device descriptors serial number string index to this value
-				 *  will cause it to use the internal serial number.
-				 *
-				 *  On unsupported devices, this will evaluate to \ref NO_DESCRIPTOR and so will force the host to create a pseudo-serial
-				 *  number for the device.
-				 */
-				#define USE_INTERNAL_SERIAL            0xDC
-
-				/** Length of the device's unique internal serial number, in bits, if present on the selected microcontroller
-				 *  model.
-				 */
-				#define INTERNAL_SERIAL_LENGTH_BITS    80
-
-				/** Start address of the internal serial number, in the appropriate address space, if present on the selected microcontroller
-				 *  model.
-				 */
-				#define INTERNAL_SERIAL_START_ADDRESS  0x0E
+/** Start address of the internal serial number, in the appropriate address space, if present on the selected microcontroller
+ *  model.
+ */
+#define INTERNAL_SERIAL_START_ADDRESS  0x0E
 
 
 /* Returns the current USB frame number, when in device mode. Every millisecond the USB bus is active (i.e. enumerated to a host)
@@ -142,8 +136,4 @@ inline void USB_Device_GetSerialString(uint16_t* const UnicodeString)
 
 	SetGlobalInterruptMask(CurrentGlobalInt);
 }
-
-#endif
-
-/** @} */
 

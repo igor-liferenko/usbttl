@@ -92,4 +92,4 @@
 			#endif
 			                                    ) ATTR_WARN_UNUSED_RESULT ATTR_NON_NULL_PTR_ARG(3);
 
-		#include "LUFA/Drivers/USB/Core/AVR8/Device_AVR8.h"
+@i Device_AVR8.w
