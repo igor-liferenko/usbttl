@@ -38,11 +38,8 @@
  *  @{
  */
 
-#ifndef _CDC_CLASS_DEVICE_H_
-#define _CDC_CLASS_DEVICE_H_
-
 	/* Includes: */
-		#include "../Common/CDCClassCommon.h"
+		#include "LUFA/Drivers/USB/Class/Common/CDCClassCommon.h"
 
 		#include <stdio.h>
 
@@ -307,8 +304,4 @@
 			 */
 			void CDC_Device_CreateBlockingStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 			                                     FILE* const Stream) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
-
-#endif
-
-/** @} */
 

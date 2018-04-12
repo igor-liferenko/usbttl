@@ -26,4 +26,4 @@
  *
  */
 
-#include "LUFA/Drivers/USB/Class/Device/CDCClassDevice.h"
+@i CDCClassDevice.w
