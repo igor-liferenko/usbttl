@@ -56,4 +56,4 @@
 				                                            */
 			};
 
-#include "LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.h"
+@i EndpointStream_AVR8.w

@@ -16,8 +16,6 @@
  *  @{
  */
 
-#ifndef __ENDPOINT_STREAM_AVR8_H__
-#define __ENDPOINT_STREAM_AVR8_H__
 
 			/** \name Stream functions for null data */
 			//@{
@@ -599,8 +597,4 @@
 			uint8_t Endpoint_Write_Control_PStream_BE(const void* const Buffer,
 			                                          uint16_t Length) ATTR_NON_NULL_PTR_ARG(1);
 			//@}
-
-#endif
-
-/** @} */
 
