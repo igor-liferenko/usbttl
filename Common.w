@@ -31,7 +31,7 @@
 @i ArchitectureSpecific.w
 @i CompilerSpecific.w
 @i Attributes.w
-		#include "Config/LUFAConfig.h"
+@i LUFAConfig.w
 
 			typedef uint8_t uint_reg_t;
 
