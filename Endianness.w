@@ -23,9 +23,6 @@
  *  @{
  */
 
-#ifndef __LUFA_ENDIANNESS_H__
-#define __LUFA_ENDIANNESS_H__
-
 		#if !(defined(ARCH_BIG_ENDIAN) || defined(ARCH_LITTLE_ENDIAN))
 			#error ARCH_BIG_ENDIAN or ARCH_LITTLE_ENDIAN not set for the specified architecture.
 		#endif
@@ -441,8 +438,4 @@
 					Length -= 2;
 				}
 			}
-
-#endif
-
-/** @} */
 

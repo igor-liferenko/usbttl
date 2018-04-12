@@ -40,7 +40,7 @@
 			#define ARCH_HAS_MULTI_ADDRESS_SPACE
 			#define ARCH_LITTLE_ENDIAN
 
-			#include "LUFA/Common/Endianness.h"
+@i Endianness.w
 
 			/** Convenience macro to determine the larger of two values.
 			 *
