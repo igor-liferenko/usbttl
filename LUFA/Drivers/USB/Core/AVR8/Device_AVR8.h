@@ -19,7 +19,6 @@
 #define __USBDEVICE_AVR8_H__
 
 	/* Includes: */
-		#include "../USBController.h"
 		#include "../USBInterrupt.h"
 		#include "../Endpoint.h"
 

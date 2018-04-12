@@ -12,9 +12,7 @@
 #define __DEVICESTDREQ_H__
 
 		#include "StdRequestType.h"
-		#include "USBController.h"
 
-	/* Public Interface - May be used in end-application: */
 		/* Enums: */
 				/** Enum for the possible descriptor memory spaces, for the \c MemoryAddressSpace parameter of the
 				 *  \ref CALLBACK_USB_GetDescriptor() function. This can be used when none of the \c USE_*_DESCRIPTORS

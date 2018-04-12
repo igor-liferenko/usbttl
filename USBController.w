@@ -15,10 +15,6 @@
  *  @{
  */
 
-#ifndef __USBCONTROLLER_H__
-#define __USBCONTROLLER_H__
-
-	/* Defines: */
 		/** \name Endpoint Direction Masks */
 		//@{
 		/** Endpoint direction mask, for masking against endpoint addresses to retrieve the endpoint's
@@ -87,16 +83,4 @@
 		#define EP_TYPE_INTERRUPT                  0x03
 		//@}
 
-	/* Architecture Includes: */
-		#if (ARCH == ARCH_AVR8)
-			#include "AVR8/USBController_AVR8.h"
-		#elif (ARCH == ARCH_UC3)
-			#include "UC3/USBController_UC3.h"
-		#elif (ARCH == ARCH_XMEGA)
-			#include "XMEGA/USBController_XMEGA.h"
-		#endif
-
-#endif
-
-/** @} */
-
+		#include "LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.h"

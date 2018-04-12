@@ -311,10 +311,6 @@
 				}
 			}
 
-		/* Includes: */
-			#include "../USBController.h"
-
-		/* Function Prototypes: */
 			void USB_INT_ClearAllInterrupts(void);
 			void USB_INT_DisableAllInterrupts(void);
 

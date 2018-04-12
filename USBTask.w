@@ -8,7 +8,6 @@
  *        dispatch header located in LUFA/Drivers/USB/USB.h.
  */
 
-		#include "LUFA/Drivers/USB/Core/USBController.h"
 		#include "LUFA/Drivers/USB/Core/StdRequestType.h"
 		#include "LUFA/Drivers/USB/Core/DeviceStandardReq.h"
 

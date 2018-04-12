@@ -345,11 +345,11 @@
 @i Common.w
 @i USBMode.w
 
+@i USBController.w
 @i USBTask.w
 @i Events.w
 @i StdDescriptors.w
 @i ConfigDescriptors.w
-		#include "Core/USBController.h"
 		#include "Core/USBInterrupt.h"
 
 		#include "Core/Device.h"
