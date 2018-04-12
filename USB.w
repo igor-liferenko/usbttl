@@ -352,7 +352,7 @@
 @i StdDescriptors.w
 @i ConfigDescriptors.w
 
-		#include "Core/Device.h"
+
 		#include "Core/Endpoint.h"
 		#include "Core/DeviceStandardReq.h"
 		#include "Core/EndpointStream.h"

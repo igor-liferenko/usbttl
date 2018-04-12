@@ -16,10 +16,7 @@
  *  @{
  */
 
-#ifndef __USBDEVICE_H__
-#define __USBDEVICE_H__
-
-		#include "Endpoint.h"
+		#include "LUFA/Drivers/USB/Core/Endpoint.h"
 
 
 	/* Public Interface - May be used in end-application: */
@@ -95,16 +92,4 @@
 			#endif
 			                                    ) ATTR_WARN_UNUSED_RESULT ATTR_NON_NULL_PTR_ARG(3);
 
-	/* Architecture Includes: */
-		#if (ARCH == ARCH_AVR8)
-			#include "AVR8/Device_AVR8.h"
-		#elif (ARCH == ARCH_UC3)
-			#include "UC3/Device_UC3.h"
-		#elif (ARCH == ARCH_XMEGA)
-			#include "XMEGA/Device_XMEGA.h"
-		#endif
-
-#endif
-
-/** @} */
-
+		#include "LUFA/Drivers/USB/Core/AVR8/Device_AVR8.h"

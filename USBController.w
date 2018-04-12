@@ -83,4 +83,5 @@
 		#define EP_TYPE_INTERRUPT                  0x03
 		//@}
 
+@i Device.w
 		#include "LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.h"
