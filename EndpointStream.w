@@ -16,9 +16,6 @@
  *  @{
  */
 
-#ifndef __ENDPOINT_STREAM_H__
-#define __ENDPOINT_STREAM_H__
-
 		/* Enums: */
 			/** Enum for the possible error return codes of the \c Endpoint_*_Stream_* functions. */
 			enum Endpoint_Stream_RW_ErrorCodes_t
@@ -59,16 +56,4 @@
 				                                            */
 			};
 
-	/* Architecture Includes: */
-		#if (ARCH == ARCH_AVR8)
-			#include "AVR8/EndpointStream_AVR8.h"
-		#elif (ARCH == ARCH_UC3)
-			#include "UC3/EndpointStream_UC3.h"
-		#elif (ARCH == ARCH_XMEGA)
-			#include "XMEGA/EndpointStream_XMEGA.h"
-		#endif
-
-#endif
-
-/** @} */
-
+#include "LUFA/Drivers/USB/Core/AVR8/EndpointStream_AVR8.h"

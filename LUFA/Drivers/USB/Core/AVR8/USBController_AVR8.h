@@ -18,10 +18,6 @@
 #ifndef __USBCONTROLLER_AVR8_H__
 #define __USBCONTROLLER_AVR8_H__
 
-			#include "../EndpointStream.h"
-
-
-
 		#define USB_PLL_PSC                (1 << PINDIV)
 
 	/* Public Interface - May be used in end-application: */

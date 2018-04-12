@@ -352,6 +352,4 @@
 @i StdDescriptors.w
 @i ConfigDescriptors.w
 
-		#include "Core/EndpointStream.h"
-
 		#include "Class/CDCClass.h"
