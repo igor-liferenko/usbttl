@@ -13,7 +13,6 @@
 
 	/* Includes: */
 		#include "StdDescriptors.h"
-		#include "Events.h"
 		#include "StdRequestType.h"
 		#include "USBController.h"
 

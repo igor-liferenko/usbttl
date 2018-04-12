@@ -9,7 +9,6 @@
  */
 
 		#include "LUFA/Drivers/USB/Core/USBController.h"
-		#include "LUFA/Drivers/USB/Core/Events.h"
 		#include "LUFA/Drivers/USB/Core/StdRequestType.h"
 		#include "LUFA/Drivers/USB/Core/StdDescriptors.h"
 

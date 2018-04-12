@@ -312,7 +312,6 @@
 			}
 
 		/* Includes: */
-			#include "../Events.h"
 			#include "../USBController.h"
 
 		/* Function Prototypes: */

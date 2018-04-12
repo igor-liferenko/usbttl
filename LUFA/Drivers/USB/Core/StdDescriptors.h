@@ -19,8 +19,6 @@
 #ifndef __USBDESCRIPTORS_H__
 #define __USBDESCRIPTORS_H__
 
-		#include "Events.h"
-
 	/* Public Interface - May be used in end-application: */
 		/* Macros: */
 			/** Indicates that a given descriptor does not exist in the device. This can be used inside descriptors
