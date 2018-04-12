@@ -20,11 +20,6 @@
 #ifndef __CONFIGDESCRIPTORS_H__
 #define __CONFIGDESCRIPTORS_H__
 
-	/* Includes: */
-		#include "StdDescriptors.h"
-
-	/* Public Interface - May be used in end-application: */
-		/* Macros: */
 			/** Casts a pointer to a descriptor inside the configuration descriptor into a pointer to the given
 			 *  descriptor type.
 			 *

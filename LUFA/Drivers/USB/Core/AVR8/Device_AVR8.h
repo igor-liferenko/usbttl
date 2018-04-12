@@ -20,7 +20,6 @@
 
 	/* Includes: */
 		#include "../USBController.h"
-		#include "../StdDescriptors.h"
 		#include "../USBInterrupt.h"
 		#include "../Endpoint.h"
 

@@ -10,8 +10,6 @@
 
 		#include "LUFA/Drivers/USB/Core/USBController.h"
 		#include "LUFA/Drivers/USB/Core/StdRequestType.h"
-		#include "LUFA/Drivers/USB/Core/StdDescriptors.h"
-
 		#include "LUFA/Drivers/USB/Core/DeviceStandardReq.h"
 
 	/* Public Interface - May be used in end-application: */

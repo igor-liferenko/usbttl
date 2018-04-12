@@ -19,8 +19,6 @@
 #ifndef __USBDEVICE_H__
 #define __USBDEVICE_H__
 
-	/* Includes: */
-		#include "StdDescriptors.h"
 		#include "USBInterrupt.h"
 		#include "Endpoint.h"
 

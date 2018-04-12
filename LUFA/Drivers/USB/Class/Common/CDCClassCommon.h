@@ -20,10 +20,6 @@
 #ifndef _CDC_CLASS_COMMON_H_
 #define _CDC_CLASS_COMMON_H_
 
-	/* Includes: */
-		#include "../../Core/StdDescriptors.h"
-
-	/* Macros: */
 		/** \name Virtual Control Line Masks */
 		//@{
 		/** Mask for the DTR handshake line for use with the \ref CDC_REQ_SetControlLineState class-specific request

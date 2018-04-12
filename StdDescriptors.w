@@ -16,139 +16,131 @@
  *  @{
  */
 
-#ifndef __USBDESCRIPTORS_H__
-#define __USBDESCRIPTORS_H__
+/** Indicates that a given descriptor does not exist in the device. This can be used inside descriptors
+ *  for string descriptor indexes, or may be use as a return value for GetDescriptor when the specified
+ *  descriptor does not exist.
+ */
+#define NO_DESCRIPTOR                     0
 
-	/* Public Interface - May be used in end-application: */
-		/* Macros: */
-			/** Indicates that a given descriptor does not exist in the device. This can be used inside descriptors
-			 *  for string descriptor indexes, or may be use as a return value for GetDescriptor when the specified
-			 *  descriptor does not exist.
-			 */
-			#define NO_DESCRIPTOR                     0
+/** Macro to calculate the power value for the configuration descriptor, from a given number of milliamperes.
+ *
+ *  \param[in] mA  Maximum number of milliamps the device consumes when the given configuration is selected.
+ */
+#define USB_CONFIG_POWER_MA(mA)           ((mA) >> 1)
 
-			/** Macro to calculate the power value for the configuration descriptor, from a given number of milliamperes.
-			 *
-			 *  \param[in] mA  Maximum number of milliamps the device consumes when the given configuration is selected.
-			 */
-			#define USB_CONFIG_POWER_MA(mA)           ((mA) >> 1)
+/** Macro to calculate the Unicode length of a string with a given number of Unicode characters.
+ *  Should be used in string descriptor's headers for giving the string descriptor's byte length.
+ *
+ *  \param[in] UnicodeChars  Number of Unicode characters in the string text.
+ */
+#define USB_STRING_LEN(UnicodeChars)      (sizeof(USB_Descriptor_Header_t) + ((UnicodeChars) << 1))
 
-			/** Macro to calculate the Unicode length of a string with a given number of Unicode characters.
-			 *  Should be used in string descriptor's headers for giving the string descriptor's byte length.
-			 *
-			 *  \param[in] UnicodeChars  Number of Unicode characters in the string text.
-			 */
-			#define USB_STRING_LEN(UnicodeChars)      (sizeof(USB_Descriptor_Header_t) + ((UnicodeChars) << 1))
+/** Convenience macro to easily create \ref USB_Descriptor_String_t instances from a wide character string.
+ *
+ *  \note This macro is for little-endian systems only.
+ *
+ *  \param[in] String  String to initialize a USB String Descriptor structure with.
+ */
+#define USB_STRING_DESCRIPTOR(String)     { .Header = {.Size = sizeof(USB_Descriptor_Header_t) + (sizeof(String) - 2), .Type = DTYPE_String}, .UnicodeString = String }
 
-			/** Convenience macro to easily create \ref USB_Descriptor_String_t instances from a wide character string.
-			 *
-			 *  \note This macro is for little-endian systems only.
-			 *
-			 *  \param[in] String  String to initialize a USB String Descriptor structure with.
-			 */
-			#define USB_STRING_DESCRIPTOR(String)     { .Header = {.Size = sizeof(USB_Descriptor_Header_t) + (sizeof(String) - 2), .Type = DTYPE_String}, .UnicodeString = String }
+/** Convenience macro to easily create \ref USB_Descriptor_String_t instances from an array of characters.
+ *
+ *  \param[in] ...  Characters to initialize a USB String Descriptor structure with.
+ */
+#define USB_STRING_DESCRIPTOR_ARRAY(...)  { .Header = {.Size = sizeof(USB_Descriptor_Header_t) + sizeof((uint16_t){__VA_ARGS__}), .Type = DTYPE_String}, .UnicodeString = {__VA_ARGS__} }
 
-			/** Convenience macro to easily create \ref USB_Descriptor_String_t instances from an array of characters.
-			 *
-			 *  \param[in] ...  Characters to initialize a USB String Descriptor structure with.
-			 */
-			#define USB_STRING_DESCRIPTOR_ARRAY(...)  { .Header = {.Size = sizeof(USB_Descriptor_Header_t) + sizeof((uint16_t){__VA_ARGS__}), .Type = DTYPE_String}, .UnicodeString = {__VA_ARGS__} }
+/** Macro to encode a given major/minor/revision version number into Binary Coded Decimal format for descriptor
+ *  fields requiring BCD encoding, such as the USB version number in the standard device descriptor.
+ *
+ *  \note This value is automatically converted into Little Endian, suitable for direct use inside device
+ *        descriptors on all architectures without endianness conversion macros.
+ *
+ *  \param[in]  Major     Major version number to encode.
+ *  \param[in]  Minor     Minor version number to encode.
+ *  \param[in]  Revision  Revision version number to encode.
+ */
+#define VERSION_BCD(Major, Minor, Revision) \
+                                          CPU_TO_LE16( ((Major & 0xFF) << 8) | \
+                                                       ((Minor & 0x0F) << 4) | \
+                                                       (Revision & 0x0F) )
 
-			/** Macro to encode a given major/minor/revision version number into Binary Coded Decimal format for descriptor
-			 *  fields requiring BCD encoding, such as the USB version number in the standard device descriptor.
-			 *
-			 *  \note This value is automatically converted into Little Endian, suitable for direct use inside device
-			 *        descriptors on all architectures without endianness conversion macros.
-			 *
-			 *  \param[in]  Major     Major version number to encode.
-			 *  \param[in]  Minor     Minor version number to encode.
-			 *  \param[in]  Revision  Revision version number to encode.
-			 */
-			#define VERSION_BCD(Major, Minor, Revision) \
-			                                          CPU_TO_LE16( ((Major & 0xFF) << 8) | \
-			                                                       ((Minor & 0x0F) << 4) | \
-			                                                       (Revision & 0x0F) )
+/** String language ID for the English language. Should be used in \ref USB_Descriptor_String_t descriptors
+ *  to indicate that the English language is supported by the device in its string descriptors.
+ */
+#define LANGUAGE_ID_ENG                   0x0409
 
-			/** String language ID for the English language. Should be used in \ref USB_Descriptor_String_t descriptors
-			 *  to indicate that the English language is supported by the device in its string descriptors.
-			 */
-			#define LANGUAGE_ID_ENG                   0x0409
+/** \name USB Configuration Descriptor Attribute Masks */
 
-			/** \name USB Configuration Descriptor Attribute Masks */
-			//@{
-			/** Mask for the reserved bit in the Configuration Descriptor's \c ConfigAttributes field, which must be set on all
-			 *  devices for historical purposes.
-			 */
-			#define USB_CONFIG_ATTR_RESERVED          0x80
+/** Mask for the reserved bit in the Configuration Descriptor's \c ConfigAttributes field, which must be set on all
+ *  devices for historical purposes.
+ */
+#define USB_CONFIG_ATTR_RESERVED          0x80
 
-			/** Can be masked with other configuration descriptor attributes for a \ref USB_Descriptor_Config_Header_t
-			 *  descriptor's \c ConfigAttributes value to indicate that the specified configuration can draw its power
-			 *  from the device's own power source.
-			 */
-			#define USB_CONFIG_ATTR_SELFPOWERED       0x40
+/** Can be masked with other configuration descriptor attributes for a \ref USB_Descriptor_Config_Header_t
+ *  descriptor's \c ConfigAttributes value to indicate that the specified configuration can draw its power
+ *  from the device's own power source.
+ */
+#define USB_CONFIG_ATTR_SELFPOWERED       0x40
 
-			/** Can be masked with other configuration descriptor attributes for a \ref USB_Descriptor_Config_Header_t
-			 *  descriptor's \c ConfigAttributes value to indicate that the specified configuration supports the
-			 *  remote wakeup feature of the USB standard, allowing a suspended USB device to wake up the host upon
-			 *  request.
-			 */
-			#define USB_CONFIG_ATTR_REMOTEWAKEUP      0x20
-			//@}
+/** Can be masked with other configuration descriptor attributes for a \ref USB_Descriptor_Config_Header_t
+ *  descriptor's \c ConfigAttributes value to indicate that the specified configuration supports the
+ *  remote wakeup feature of the USB standard, allowing a suspended USB device to wake up the host upon
+ *  request.
+ */
+#define USB_CONFIG_ATTR_REMOTEWAKEUP      0x20
 
-			/** \name Endpoint Descriptor Attribute Masks */
-			//@{
-			/** Can be masked with other endpoint descriptor attributes for a \ref USB_Descriptor_Endpoint_t descriptor's
-			 *  \c Attributes value to indicate that the specified endpoint is not synchronized.
-			 *
-			 *  \see The USB specification for more details on the possible Endpoint attributes.
-			 */
-			#define ENDPOINT_ATTR_NO_SYNC             (0 << 2)
+/** \name Endpoint Descriptor Attribute Masks */
 
-			/** Can be masked with other endpoint descriptor attributes for a \ref USB_Descriptor_Endpoint_t descriptor's
-			 *  \c Attributes value to indicate that the specified endpoint is asynchronous.
-			 *
-			 *  \see The USB specification for more details on the possible Endpoint attributes.
-			 */
-			#define ENDPOINT_ATTR_ASYNC               (1 << 2)
+/** Can be masked with other endpoint descriptor attributes for a \ref USB_Descriptor_Endpoint_t descriptor's
+ *  \c Attributes value to indicate that the specified endpoint is not synchronized.
+ *
+ *  \see The USB specification for more details on the possible Endpoint attributes.
+ */
+#define ENDPOINT_ATTR_NO_SYNC             (0 << 2)
 
-			/** Can be masked with other endpoint descriptor attributes for a \ref USB_Descriptor_Endpoint_t descriptor's
-			 *  \c Attributes value to indicate that the specified endpoint is adaptive.
-			 *
-			 *  \see The USB specification for more details on the possible Endpoint attributes.
-			 */
-			#define ENDPOINT_ATTR_ADAPTIVE            (2 << 2)
+/** Can be masked with other endpoint descriptor attributes for a \ref USB_Descriptor_Endpoint_t descriptor's
+ *  \c Attributes value to indicate that the specified endpoint is asynchronous.
+ *
+ *  \see The USB specification for more details on the possible Endpoint attributes.
+ */
+#define ENDPOINT_ATTR_ASYNC               (1 << 2)
 
-			/** Can be masked with other endpoint descriptor attributes for a \ref USB_Descriptor_Endpoint_t descriptor's
-			 *  \c Attributes value to indicate that the specified endpoint is synchronized.
-			 *
-			 *  \see The USB specification for more details on the possible Endpoint attributes.
-			 */
-			#define ENDPOINT_ATTR_SYNC                (3 << 2)
-			//@}
+/** Can be masked with other endpoint descriptor attributes for a \ref USB_Descriptor_Endpoint_t descriptor's
+ *  \c Attributes value to indicate that the specified endpoint is adaptive.
+ *
+ *  \see The USB specification for more details on the possible Endpoint attributes.
+ */
+#define ENDPOINT_ATTR_ADAPTIVE            (2 << 2)
 
-			/** \name Endpoint Descriptor Usage Masks */
-			//@{
-			/** Can be masked with other endpoint descriptor attributes for a \ref USB_Descriptor_Endpoint_t descriptor's
-			 *  \c Attributes value to indicate that the specified endpoint is used for data transfers.
-			 *
-			 *  \see The USB specification for more details on the possible Endpoint usage attributes.
-			 */
-			#define ENDPOINT_USAGE_DATA               (0 << 4)
+/** Can be masked with other endpoint descriptor attributes for a \ref USB_Descriptor_Endpoint_t descriptor's
+ *  \c Attributes value to indicate that the specified endpoint is synchronized.
+ *
+ *  \see The USB specification for more details on the possible Endpoint attributes.
+ */
+#define ENDPOINT_ATTR_SYNC                (3 << 2)
 
-			/** Can be masked with other endpoint descriptor attributes for a \ref USB_Descriptor_Endpoint_t descriptor's
-			 *  \c Attributes value to indicate that the specified endpoint is used for feedback.
-			 *
-			 *  \see The USB specification for more details on the possible Endpoint usage attributes.
-			 */
-			#define ENDPOINT_USAGE_FEEDBACK           (1 << 4)
+/** \name Endpoint Descriptor Usage Masks */
 
-			/** Can be masked with other endpoint descriptor attributes for a \ref USB_Descriptor_Endpoint_t descriptor's
-			 *  \c Attributes value to indicate that the specified endpoint is used for implicit feedback.
-			 *
-			 *  \see The USB specification for more details on the possible Endpoint usage attributes.
-			 */
-			#define ENDPOINT_USAGE_IMPLICIT_FEEDBACK  (2 << 4)
-			//@}
+/** Can be masked with other endpoint descriptor attributes for a \ref USB_Descriptor_Endpoint_t descriptor's
+ *  \c Attributes value to indicate that the specified endpoint is used for data transfers.
+ *
+ *  \see The USB specification for more details on the possible Endpoint usage attributes.
+ */
+#define ENDPOINT_USAGE_DATA               (0 << 4)
+
+/** Can be masked with other endpoint descriptor attributes for a \ref USB_Descriptor_Endpoint_t descriptor's
+ *  \c Attributes value to indicate that the specified endpoint is used for feedback.
+ *
+ *  \see The USB specification for more details on the possible Endpoint usage attributes.
+ */
+#define ENDPOINT_USAGE_FEEDBACK           (1 << 4)
+
+/** Can be masked with other endpoint descriptor attributes for a \ref USB_Descriptor_Endpoint_t descriptor's
+ *  \c Attributes value to indicate that the specified endpoint is used for implicit feedback.
+ *
+ *  \see The USB specification for more details on the possible Endpoint usage attributes.
+ */
+#define ENDPOINT_USAGE_IMPLICIT_FEEDBACK  (2 << 4)
 
 		/* Enums: */
 			/** Enum for the possible standard descriptor types, as given in each descriptor's header. */
@@ -707,11 +699,3 @@
 				                     *   of an explicit array of ASCII characters.
 				                     */
 			} ATTR_PACKED USB_StdDescriptor_String_t;
-
-
-
-
-#endif
-
-/** @} */
-

@@ -11,8 +11,6 @@
 #ifndef __DEVICESTDREQ_H__
 #define __DEVICESTDREQ_H__
 
-	/* Includes: */
-		#include "StdDescriptors.h"
 		#include "StdRequestType.h"
 		#include "USBController.h"
 
