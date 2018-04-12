@@ -26,29 +26,12 @@
  *  Macros and functions to create and control global interrupts within the device.
  */
 
-	/* Includes: */
-		#include <stdint.h>
-		#include <stdbool.h>
-		#include <string.h>
-		#include <stddef.h>
-
-		#include "LUFA/Common/Architectures.h"
+@i Architectures.w
 		#include "LUFA/Common/BoardTypes.h"
 		#include "LUFA/Common/ArchitectureSpecific.h"
 		#include "LUFA/Common/CompilerSpecific.h"
 		#include "LUFA/Common/Attributes.h"
-
 		#include "Config/LUFAConfig.h"
-
-	/* Architecture specific utility includes: */
-
-			#include <avr/io.h>
-			#include <avr/interrupt.h>
-			#include <avr/pgmspace.h>
-			#include <avr/eeprom.h>
-			#include <avr/boot.h>
-			#include <math.h>
-			#include <util/delay.h>
 
 			typedef uint8_t uint_reg_t;
 

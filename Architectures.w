@@ -21,9 +21,6 @@
  *  @{
  */
 
-#ifndef __LUFA_ARCHITECTURES_H__
-#define __LUFA_ARCHITECTURES_H__
-
 			/** Selects the Atmel 8-bit AVR (AT90USB* and ATMEGA*U* chips) architecture. */
 			#define ARCH_AVR8           0
 
@@ -34,8 +31,3 @@
 			#define ARCH_XMEGA          2
 
 				#define ARCH_           ARCH_AVR8
-
-#endif
-
-/** @} */
-
