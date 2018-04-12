@@ -18,9 +18,6 @@
  *  @{
  */
 
-#ifndef __LUFA_BOARDTYPES_H__
-#define __LUFA_BOARDTYPES_H__
-
 			/** Selects the user-defined board drivers, which should be placed in the user project's folder
 			 *  under a directory named \c /Board/. Each board driver should be named identically to the LUFA
 			 *  master board driver (i.e., driver in the \c LUFA/Drivers/Board directory) so that the library
@@ -210,8 +207,3 @@
 			#define BOARD_XPLAINED_MINI        60
 
 				#define BOARD_                 BOARD_NONE
-
-#endif
-
-/** @} */
-
