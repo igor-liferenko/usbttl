@@ -18,10 +18,6 @@
  *  @{
  */
 
-#ifndef __LUFA_ARCHSPEC_H__
-#define __LUFA_ARCHSPEC_H__
-
-
 					/** Re-enables the AVR's JTAG bus in software, until a system reset. This will re-enable JTAG debugging
 					 *  interface after is has been disabled in software via \ref JTAG_DISABLE().
 					 *
@@ -101,8 +97,4 @@
 				                                                            "Assertion \"%s\" failed.\r\n"),           \
 				                                                            __FILE__, __func__, __LINE__, #Condition); \
 				                                        } while (0)
-
-#endif
-
-/** @} */
 
