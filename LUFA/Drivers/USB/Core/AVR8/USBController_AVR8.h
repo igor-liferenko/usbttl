@@ -18,7 +18,6 @@
 #ifndef __USBCONTROLLER_AVR8_H__
 #define __USBCONTROLLER_AVR8_H__
 
-			#include "../DeviceStandardReq.h"
 			#include "../EndpointStream.h"
 
 

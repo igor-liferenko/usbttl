@@ -352,8 +352,6 @@
 @i StdDescriptors.w
 @i ConfigDescriptors.w
 
-
-		#include "Core/DeviceStandardReq.h"
 		#include "Core/EndpointStream.h"
 
 		#include "Class/CDCClass.h"

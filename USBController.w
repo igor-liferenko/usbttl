@@ -84,4 +84,5 @@
 		//@}
 
 @i Device.w
+@i DeviceStandardReq.w
 #include "LUFA/Drivers/USB/Core/AVR8/USBController_AVR8.h"

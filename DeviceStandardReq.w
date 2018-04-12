@@ -8,10 +8,7 @@
  *        dispatch header located in LUFA/Drivers/USB/USB.h.
  */
 
-#ifndef __DEVICESTDREQ_H__
-#define __DEVICESTDREQ_H__
-
-		#include "StdRequestType.h"
+#include "LUFA/Drivers/USB/Core/StdRequestType.h"
 
 		/* Enums: */
 				/** Enum for the possible descriptor memory spaces, for the \c MemoryAddressSpace parameter of the
@@ -80,6 +77,3 @@
 		#endif
 
 		void USB_Device_ProcessControlRequest(void);
-
-#endif
-
