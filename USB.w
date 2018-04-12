@@ -352,4 +352,4 @@
 @i StdDescriptors.w
 @i ConfigDescriptors.w
 
-		#include "Class/CDCClass.h"
+@i CDCClass.w
