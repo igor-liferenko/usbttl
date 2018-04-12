@@ -38,8 +38,7 @@
  *  @{
  */
 
-	/* Includes: */
-		#include "LUFA/Drivers/USB/Class/Common/CDCClassCommon.h"
+@i CDCClassCommon.w
 
 		#include <stdio.h>
 

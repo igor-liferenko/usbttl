@@ -17,56 +17,52 @@
  *  @{
  */
 
-#ifndef _CDC_CLASS_COMMON_H_
-#define _CDC_CLASS_COMMON_H_
+/** \name Virtual Control Line Masks */
 
-		/** \name Virtual Control Line Masks */
-		//@{
-		/** Mask for the DTR handshake line for use with the \ref CDC_REQ_SetControlLineState class-specific request
-		 *  from the host, to indicate that the DTR line state should be high.
-		 */
-		#define CDC_CONTROL_LINE_OUT_DTR         (1 << 0)
+/** Mask for the DTR handshake line for use with the \ref CDC_REQ_SetControlLineState class-specific request
+ *  from the host, to indicate that the DTR line state should be high.
+ */
+#define CDC_CONTROL_LINE_OUT_DTR         (1 << 0)
 
-		/** Mask for the RTS handshake line for use with the \ref CDC_REQ_SetControlLineState class-specific request
-		 *  from the host, to indicate that the RTS line state should be high.
-		 */
-		#define CDC_CONTROL_LINE_OUT_RTS         (1 << 1)
+/** Mask for the RTS handshake line for use with the \ref CDC_REQ_SetControlLineState class-specific request
+ *  from the host, to indicate that the RTS line state should be high.
+ */
+#define CDC_CONTROL_LINE_OUT_RTS         (1 << 1)
 
-		/** Mask for the DCD handshake line for use with the \ref CDC_NOTIF_SerialState class-specific notification
-		 *  from the device to the host, to indicate that the DCD line state is currently high.
-		 */
-		#define CDC_CONTROL_LINE_IN_DCD          (1 << 0)
+/** Mask for the DCD handshake line for use with the \ref CDC_NOTIF_SerialState class-specific notification
+ *  from the device to the host, to indicate that the DCD line state is currently high.
+ */
+#define CDC_CONTROL_LINE_IN_DCD          (1 << 0)
 
-		/** Mask for the DSR handshake line for use with the \ref CDC_NOTIF_SerialState class-specific notification
-		 *  from the device to the host, to indicate that the DSR line state is currently high.
-		 */
-		#define CDC_CONTROL_LINE_IN_DSR          (1 << 1)
+/** Mask for the DSR handshake line for use with the \ref CDC_NOTIF_SerialState class-specific notification
+ *  from the device to the host, to indicate that the DSR line state is currently high.
+ */
+#define CDC_CONTROL_LINE_IN_DSR          (1 << 1)
 
-		/** Mask for the BREAK handshake line for use with the \ref CDC_NOTIF_SerialState class-specific notification
-		 *  from the device to the host, to indicate that the BREAK line state is currently high.
-		 */
-		#define CDC_CONTROL_LINE_IN_BREAK        (1 << 2)
+/** Mask for the BREAK handshake line for use with the \ref CDC_NOTIF_SerialState class-specific notification
+ *  from the device to the host, to indicate that the BREAK line state is currently high.
+ */
+#define CDC_CONTROL_LINE_IN_BREAK        (1 << 2)
 
-		/** Mask for the RING handshake line for use with the \ref CDC_NOTIF_SerialState class-specific notification
-		 *  from the device to the host, to indicate that the RING line state is currently high.
-		 */
-		#define CDC_CONTROL_LINE_IN_RING         (1 << 3)
+/** Mask for the RING handshake line for use with the \ref CDC_NOTIF_SerialState class-specific notification
+ *  from the device to the host, to indicate that the RING line state is currently high.
+ */
+#define CDC_CONTROL_LINE_IN_RING         (1 << 3)
 
-		/** Mask for use with the \ref CDC_NOTIF_SerialState class-specific notification from the device to the host,
-		 *  to indicate that a framing error has occurred on the virtual serial port.
-		 */
-		#define CDC_CONTROL_LINE_IN_FRAMEERROR   (1 << 4)
+/** Mask for use with the \ref CDC_NOTIF_SerialState class-specific notification from the device to the host,
+ *  to indicate that a framing error has occurred on the virtual serial port.
+ */
+#define CDC_CONTROL_LINE_IN_FRAMEERROR   (1 << 4)
 
-		/** Mask for use with the \ref CDC_NOTIF_SerialState class-specific notification from the device to the host,
-		 *  to indicate that a parity error has occurred on the virtual serial port.
-		 */
-		#define CDC_CONTROL_LINE_IN_PARITYERROR  (1 << 5)
+/** Mask for use with the \ref CDC_NOTIF_SerialState class-specific notification from the device to the host,
+ *  to indicate that a parity error has occurred on the virtual serial port.
+ */
+#define CDC_CONTROL_LINE_IN_PARITYERROR  (1 << 5)
 
-		/** Mask for use with the \ref CDC_NOTIF_SerialState class-specific notification from the device to the host,
-		 *  to indicate that a data overrun error has occurred on the virtual serial port.
-		 */
-		#define CDC_CONTROL_LINE_IN_OVERRUNERROR (1 << 6)
-		//@}
+/** Mask for use with the \ref CDC_NOTIF_SerialState class-specific notification from the device to the host,
+ *  to indicate that a data overrun error has occurred on the virtual serial port.
+ */
+#define CDC_CONTROL_LINE_IN_OVERRUNERROR (1 << 6)
 
 		/** Macro to define a CDC class-specific functional descriptor. CDC functional descriptors have a
 		 *  uniform structure but variable sized data payloads, thus cannot be represented accurately by
@@ -335,8 +331,4 @@
 								  */
 			uint8_t  DataBits; /**< Bits of data per character of the virtual serial port. */
 		} ATTR_PACKED CDC_LineEncoding_t;
-
-#endif
-
-/** @} */
 
