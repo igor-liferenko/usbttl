@@ -8,9 +8,6 @@
  *        dispatch header located in LUFA/Drivers/USB/USB.h.
  */
 
-#ifndef __USBINTERRUPT_AVR8_H__
-#define __USBINTERRUPT_AVR8_H__
-
 		/* Enums: */
 			enum USB_Interrupts_t
 			{
@@ -313,6 +310,4 @@
 
 			void USB_INT_ClearAllInterrupts(void);
 			void USB_INT_DisableAllInterrupts(void);
-
-#endif
 
