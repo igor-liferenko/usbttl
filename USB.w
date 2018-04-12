@@ -348,7 +348,7 @@
 @i USBTask.w
 @i Events.w
 @i StdDescriptors.w
-		#include "Core/ConfigDescriptors.h"
+@i ConfigDescriptors.w
 		#include "Core/USBController.h"
 		#include "Core/USBInterrupt.h"
 

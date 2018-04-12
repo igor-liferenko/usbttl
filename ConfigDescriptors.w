@@ -17,9 +17,6 @@
  *  @{
  */
 
-#ifndef __CONFIGDESCRIPTORS_H__
-#define __CONFIGDESCRIPTORS_H__
-
 			/** Casts a pointer to a descriptor inside the configuration descriptor into a pointer to the given
 			 *  descriptor type.
 			 *
@@ -100,7 +97,3 @@
 				DESCRIPTOR_SEARCH_COMP_Fail            = 1, /**< Comparator function returned \ref DESCRIPTOR_SEARCH_Fail. */
 				DESCRIPTOR_SEARCH_COMP_EndOfDescriptor = 2, /**< End of configuration descriptor reached before match found. */
 			};
-#endif
-
-/** @} */
-
