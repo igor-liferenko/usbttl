@@ -3228,12 +3228,23 @@ uint8_t Endpoint_Read_Control_EStream_BE(void* const Buffer, uint16_t Length)
 
 
 @ @<Header files@>=
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include <stddef.h>
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/interrupt.h>
 #include <avr/power.h> /* |clock_prescale_set|, |clock_div_1| */
 #include <avr/pgmspace.h>
-#include <stdio.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <avr/pgmspace.h>
+#include <avr/eeprom.h>
+#include <avr/boot.h>
+#include <math.h>
+#include <util/delay.h>
 @i USB.w
 @i LEDs.w
 @i Serial.w
