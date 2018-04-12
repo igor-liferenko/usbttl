@@ -29,7 +29,7 @@
 @i Architectures.w
 @i BoardTypes.w
 @i ArchitectureSpecific.w
-		#include "LUFA/Common/CompilerSpecific.h"
+@i CompilerSpecific.w
 		#include "LUFA/Common/Attributes.h"
 		#include "Config/LUFAConfig.h"
 
