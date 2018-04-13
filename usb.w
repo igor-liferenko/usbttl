@@ -2988,3 +2988,13 @@ uint8_t Endpoint_Read_Control_EStream_BE(void* const Buffer, uint16_t Length)
 @<Header files@>=
 @i USB.w
 
+@* Hardware Architecture defines.
+Architecture macros for selecting the desired target microcontroller architecture. 
+The target architecture is selected in the value of \.{ARCH} via the \.{-D} compiler switch
+to GCC. 
+
+We use the Atmel 8-bit AVR (AT90USB* and ATMEGA*U* chips) architecture.
+
+@<Header files@>=
+#define ARCH_AVR8           0
+#define ARCH_           ARCH_AVR8
