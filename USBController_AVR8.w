@@ -1,5 +1,6 @@
 /** USB Controller definitions for the AVR8 microcontrollers.
- *  Functions, macros, variables, enums and types related to the setup and management of the USB interface.
+ *  Functions, macros, variables, enums and types related to the setup and management of
+ the USB interface.
  */
 
 #define USB_PLL_PSC                (1 << PINDIV)
@@ -113,7 +114,8 @@ inline void USB_Attach(void)
  *  Calling this function when the USB interface is already initialized will cause a complete USB
  *  interface reset and re-enumeration.
  *
- *  \param[in] Mode     Mask indicating what mode the USB interface is to be initialized to, a value
+ *  \param[in] Mode     Mask indicating what mode the USB interface is to be initialized to,
+ a value
  *                      from the \ref USB_Modes_t enum.
  *                      \note This parameter does not exist on devices with only one supported USB
  *                            mode (device or host).
