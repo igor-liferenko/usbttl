@@ -68,4 +68,3 @@
  *  @{
  */
 
-@i USBKEY-LEDs.w

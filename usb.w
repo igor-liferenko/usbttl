@@ -3001,13 +3001,17 @@ typedef uint8_t uint_reg_t;
 @i Common.w
 @i USBMode.w
 @i USBInterrupt.w
+@i USBInterrupt_AVR8.w
 @i USBController.w
+@i USBController_AVR8.w
 @i Endpoint.w
+@i Endpoint_AVR8.w
 @i Device.w
+@i Device_AVR8.w
 @i StdRequestType.w
 @i DeviceStandardReq.w
 @i EndpointStream.w
-@i USBController_AVR8.w
+@i EndpointStream_AVR8.w
 @i USBTask.w
 @i Events.w
 @i StdDescriptors.w
@@ -3022,8 +3026,10 @@ Note: the CDC class can instead be implemented manually via the low-level LUFA A
 @i CDCClassCommon.w
 @i CDCClassDevice.w
 @i LEDs.w
+@i USBKEY-LEDs.w
 @i TerminalCodes.w
 @i Serial.w
+@i Serial_AVR8.w
 @i RingBuffer.w
 @i Platform.w
 @h

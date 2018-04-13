@@ -8,4 +8,3 @@
  *        dispatch header located in LUFA/Drivers/USB/USB.h.
  */
 
-@i USBInterrupt_AVR8.w

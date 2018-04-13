@@ -62,4 +62,3 @@
 			 */
 			#define ENDPOINT_CONTROLEP                      0
 
-@i Endpoint_AVR8.w

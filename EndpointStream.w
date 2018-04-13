@@ -56,4 +56,3 @@
 				                                            */
 			};
 
-@i EndpointStream_AVR8.w
