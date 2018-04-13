@@ -376,57 +376,6 @@ USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface = {@|
 @<Initialize header of |USB_ClassInfo_CDC_Device_t|@>@/
 };
 
-@ Class state structure. An instance of this structure should be made for each CDC interface
-within the user application, and passed to each of the CDC class driver functions as the
-|CDCInterfaceInfo| parameter. This stores each CDC interface's configuration and state
-information.
-
-@s USB_ClassInfo_CDC_Device_t int
-@s CDC_LineEncoding_t int
-@s USB_Endpoint_Table_t int
-
-@(/dev/null@>=
-typedef struct {
-  struct {
-    uint8_t ControlInterfaceNumber;
-      /* Interface number of the CDC control interface within the device. */
-
-    USB_Endpoint_Table_t DataINEndpoint; /* Data IN endpoint configuration table. */
-    USB_Endpoint_Table_t DataOUTEndpoint; /* Data OUT endpoint configuration table. */
-    USB_Endpoint_Table_t NotificationEndpoint;
-      /* Notification IN Endpoint configuration table. */
-  } Config; /* Config data for the USB class interface within the device.
-               All elements in this section must be set or the
-               interface will fail to enumerate and operate correctly. */
-  struct {
-    struct {
-      uint16_t HostToDevice; /* control line states from the host to device, as a set
-        of \.{CDC\_CONTROL\_LINE\_OUT\_*} masks. This value is updated each time
-        |CDC_Device_USBTask| is called */
-      uint16_t DeviceToHost; /* control line states from the device to host, as a set of
-        \.{CDC\_CONTROL\_LINE\_IN\_*} masks ---~to notify the host of changes to these values,
-        call the |CDC_Device_SendControlLineStateChange| function */
-    } ControlLineStates; /* current states of the virtual serial port's control lines
-      between the device and host */
-    CDC_LineEncoding_t LineEncoding; /* line encoding used in the virtual serial port, for
-      the device's information; this is generally only used if the virtual serial port data
-      is to be reconstructed on a physical UART */
-  } State; /* state data for the USB class interface within the device; all elements in this
-    section are reset to their defaults when the interface is enumerated */
-} USB_ClassInfo_CDC_Device_t;
-
-@ Type define for an endpoint table entry, used to configure endpoints in groups via
-\hfil\break \\{Endpoint\_ConfigureEndpointTable}.
-
-@(/dev/null@>=
-typedef struct {
-  uint8_t  Address; /* address of the endpoint to configure, or zero if
-     the table entry is to be unused */
-  uint16_t Size; /* size of the endpoint bank, in bytes */
-  uint8_t Type; /* type of the endpoint, a \.{EP\_TYPE\_*} mask */
-  uint8_t Banks; /* number of hardware banks to use for the endpoint */
-} USB_Endpoint_Table_t;
-
 @ TODO: change order of elements and remove .Banks
 @^TODO@>
 
@@ -600,71 +549,6 @@ UCSR1B = ((1 << RXCIE1) | (1 << TXEN1) | (1 << RXEN1));
 computer-readable structures which the host requests upon device enumeration, to determine
 the device's capabilities and functions.
 
-@ Type define for all standard USB descriptors' header, indicating the descriptor's
-length and type. This structure
-uses LUFA-specific element names to make each element's purpose clearer.
-
-See \&{USB\_StdDescriptor\_Header\_t} for the version of this type
-with standard element names.
-
-Note, that regardless of CPU architecture, these values should be stored as little endian.
-
-@(/dev/null@>=
-typedef struct {
-  uint8_t Size; /* size of the descriptor, in bytes */
-  uint8_t Type; /* type of the descriptor, either a value of \.{DTYPE\_*} or a value
-    given by the specific class */
-} ATTR_PACKED USB_Descriptor_Header_t;
-
-@ Type define for a standard Device Descriptor. This structure uses LUFA-specific element
-names to make each
-element's purpose clearer.
-
-See \&{USB\_StdDescriptor\_Device\_t} for the version of this type with standard element
-names.
-
-Note, that egardless of CPU architecture, these values should be stored as little endian.
-
-@s USB_Descriptor_Device_t int
-@s USB_Descriptor_Header_t int
-
-@(/dev/null@>=
-typedef struct {
-  USB_Descriptor_Header_t Header; /* Descriptor header, including type and size. */
-  uint16_t USBSpecification; /* BCD of the supported USB specification;
-		                see |VERSION_BCD| utility macro */
-  uint8_t  Class; /* USB device class. */
-  uint8_t  SubClass; /* USB device subclass. */
-  uint8_t  Protocol; /* USB device protocol. */
-
-  uint8_t  Endpoint0Size; /* Size of the control (address 0) endpoint's bank in bytes. */
-
-  uint16_t VendorID; /* Vendor ID for the USB product. */
-  uint16_t ProductID; /* Unique product ID for the USB product. */
-  uint16_t ReleaseNumber; /* Product release (version) number.
-                            see |VERSION_BCD| utility macro. */
-  uint8_t  ManufacturerStrIndex; /* String index for the manufacturer's name. The
-                                          host will request this string via a separate
-                                           control request for the string descriptor.
-                                  Note: If no string supplied, use |NO_DESCRIPTOR|.
-                                                                */
-  uint8_t  ProductStrIndex; /* String index for the product name/details.
-                             see ManufacturerStrIndex structure entry. */
-  uint8_t  SerialNumStrIndex; /* String index for the product's globally unique hexadecimal
-                                        serial number, in uppercase Unicode ASCII.
-                note On some microcontroller models, there is an embedded serial number
-                              in the chip which can be used for the device serial number.
-                             To use this serial number, set this to |USE_INTERNAL_SERIAL|.
-                            On unsupported devices, this will evaluate to |NO_DESCRIPTOR|
-                        and will cause the host to generate a pseudo-unique value for the
-                                   device upon insertion.
-
-                            see ManufacturerStrIndex structure entry.
-                                                             */
-  uint8_t  NumberOfConfigurations; /* Total number of configurations supported by
-                                      the device. */
-} ATTR_PACKED USB_Descriptor_Device_t;
-
 @ Device descriptor structure. This descriptor, located in FLASH memory, describes the
 overall
 device characteristics, including the supported USB version, control endpoint size and the
@@ -756,124 +640,6 @@ typedef struct {
 	@<CDC Data Interface@>@;
 } USB_Descriptor_Config_t;
 
-@ Standard USB Configuration Descriptor.
-
-Done as a type define instead of putting directly to |USB_Descriptor_Config_t|
-(as it is for header of |USB_ClassInfo_CDC_Device_t|) because it is used to calculate
-header size of standard Configuration Descriptor (via |sizeof|).
-
-This structure uses LUFA-specific
-element names
-to make each element's purpose clearer.
-
-See \&{USB\_StdDescriptor\_Config\_Header\_t} for the version of this type with standard
-element names.
-
-Note, that regardless of CPU architecture, these values should be stored as little endian.
-
-@s USB_Descriptor_Config_Header_t int
-@s USB_Descriptor_Header_t int
-
-@(/dev/null@>=
-typedef struct {
-  USB_Descriptor_Header_t Header; /* Descriptor header, including type and size. */
-  uint16_t TotalConfigurationSize; /* Size of the configuration descriptor header,
-                                     and all sub descriptors inside the configuration. */
-  uint8_t  TotalInterfaces; /* Total number of interfaces in the configuration. */
-  uint8_t  ConfigurationNumber; /* Configuration index of the current configuration. */
-  uint8_t  ConfigurationStrIndex; /* Index of a string descriptor describing the configuration. */
-  uint8_t  ConfigAttributes; /* Configuration attributes, comprised of a mask of
-                                \.{USB\_CONFIG\_ATTR\_*}
-                                masks. On all devices, this should include
-                                |USB_CONFIG_ATTR_RESERVED|
-                                at a minimum. */
-  uint8_t  MaxPowerConsumption; /* Maximum power consumption of the device while in the
-                                   current configuration, calculated by the |USB_CONFIG_POWER_MA|
-                                   macro. */
-} ATTR_PACKED USB_Descriptor_Config_Header_t;
-
-@ Type define for a standard USB Interface Descriptor.
-
-This structure uses
-LUFA-specific element names to make each element's purpose clearer.
-
-See \&{USB\_StdDescriptor\_Interface\_t} for the version of this type with standard element names.
-
-Note, that regardless of CPU architecture, these values should be stored as little endian.
-
-@(/dev/null@>=
-typedef struct {
-  USB_Descriptor_Header_t Header; /* descriptor header, including type and size */
-  uint8_t InterfaceNumber; /* index of the interface in the current configuration */
-  uint8_t AlternateSetting; /* alternate setting for the interface number. The same
-    interface number can have multiple alternate settings
-    with different endpoint configurations, which can be
-    selected by the host */
-  uint8_t TotalEndpoints; /* total number of endpoints in the interface */
-  uint8_t Class; /* interface class ID */
-  uint8_t SubClass; /* interface subclass ID */
-  uint8_t Protocol; /* interface protocol ID */
-  uint8_t InterfaceStrIndex; /* index of the string descriptor describing the interface */
-} ATTR_PACKED USB_Descriptor_Interface_t;
-
-@ Type define for a CDC class-specific functional header descriptor.
-This indicates to the host that the device contains one or more CDC functional
-data descriptors, which give the CDC interface's capabilities and configuration.
-See the CDC class specification for more details.
-
-See \&{USB\_CDC\_StdDescriptor\_FunctionalHeader\_t} for the version of this type
-with standard element names.
-
-Note, that regardless of CPU architecture, these values should be stored as little endian.
-
-@(/dev/null@>=
-typedef struct {
-  USB_Descriptor_Header_t Header; /* regular descriptor header containing the
-    descriptor's type and length */
-  uint8_t Subtype; /* Subtype value used to distinguish between CDC class-specific descriptors,
-    must be |CDC_DSUBTYPE_CS_INTERFACE_HEADER| */
-  uint16_t CDCSpecification; /* version number of the CDC specification implemented by the device,
-    encoded in BCD format; see |VERSION_BCD| utility macro */
-} ATTR_PACKED USB_CDC_Descriptor_Func_Header_t;
-
-@ Type define for a CDC class-specific functional ACM descriptor. This indicates to the host
-that the CDC interface supports the CDC ACM subclass of the CDC specification.
-See the CDC class specification for more details.
-
-See \&{USB\_CDC\_StdDescriptor\_FunctionalACM\_t} for the version of this type with
-standard element names.
-
-Note, that regardless of CPU architecture, these values should be stored as little endian.
-
-@(/dev/null@>=
-typedef struct {
-  USB_Descriptor_Header_t Header; /* regular descriptor header containing the
-    descriptor's type and length */
-  uint8_t Subtype; /* Subtype value used to distinguish between CDC class-specific descriptors,
-    must be |CDC_DSUBTYPE_CS_INTERFACE_ACM| */
-  uint8_t Capabilities; /* capabilities of the ACM interface, given as a bit mask;
-    refer to the CDC ACM specification */
-} ATTR_PACKED USB_CDC_Descriptor_Func_ACM_t;
-
-@ Type define for a CDC class-specific functional Union descriptor. This indicates to the
-host that specific CDC control and data interfaces are related. See the CDC class
-specification for more details.
-
-See \&{USB\_CDC\_StdDescriptor\_FunctionalUnion\_t} for the version of this type with
-standard element names.
-
-Note, that regardless of CPU architecture, these values should be stored as little endian.
-
-@(/dev/null@>=
-typedef struct {
-  USB_Descriptor_Header_t Header; /* regular descriptor header containing the
-    descriptor's type and length */
-  uint8_t Subtype; /* Subtype value used to distinguish between CDC class-specific descriptors,
-    must be |CDC_DSUBTYPE_CS_INTERFACE_UNION| */
-  uint8_t MasterInterfaceNumber; /* interface number of the CDC Control interface */
-  uint8_t SlaveInterfaceNumber; /* interface number of the CDC Data interface */
-} ATTR_PACKED USB_CDC_Descriptor_Func_Union_t;
-
 @ @<CDC Command Interface@>=
         USB_Descriptor_Interface_t               CDC_CCI_Interface;
         USB_CDC_Descriptor_Func_Header_t    CDC_Functional_Header;
@@ -947,34 +713,6 @@ typedef struct {
   INTERFACE_ID_CDC_CCI,@|
   INTERFACE_ID_CDC_DCI @/
 }
-
-@ Standard USB Endpoint Descriptor.
-
-Type define for a standard Endpoint Descriptor. This structure uses LUFA-specific element names
-to make each element's purpose clearer.
-
-See \&{USB\_StdDescriptor\_Endpoint\_t} for the version of this type with standard element names.
-
-Note, that regardless of CPU architecture, these values should be stored as little endian.
-
-@s USB_Descriptor_Header_t int
-@s USB_Descriptor_Endpoint_t int
-
-@(/dev/null@>=
-typedef struct {
-  USB_Descriptor_Header_t Header; /* Descriptor header, including type and size. */
-
-  uint8_t  EndpointAddress; /* Logical address of the endpoint within the device for the current
-                               configuration, including direction mask. */
-  uint8_t  Attributes; /* Endpoint attributes, comprised of a mask of the endpoint type
-                          (\.{EP\_TYPE\_*})
-                          and attributes (\.{ENDPOINT\_ATTR\_*}) masks. */
-  uint16_t EndpointSize; /* Size of the endpoint bank, in bytes. This indicates the maximum packet
-                            size that the endpoint can receive at a time. */
-  uint8_t  PollingIntervalMS; /* Polling interval in milliseconds for the endpoint if it is an
-                                 \.{INTERRUPT}
-                                 or \.{ISOCHRONOUS} type. */
-} ATTR_PACKED USB_Descriptor_Endpoint_t;
 
 @ @d DTYPE_ENDPOINT 0x05 /* indicates that the descriptor is an endpoint descriptor */
 @d ENDPOINT_ATTR_NO_SYNCXXX (0 << 2) /* indicate that the specified endpoint is not
@@ -3252,8 +2990,3 @@ uint8_t Endpoint_Read_Control_EStream_BE(void* const Buffer, uint16_t Length)
 @i RingBuffer.w
 @i Platform.w
 @h
-
-@ TODO: remove /dev/null sections.
-And remove "@s ..." from /dev/null sections.
-And remove all "static" keywords.
-@^TODO@>
