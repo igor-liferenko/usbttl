@@ -359,12 +359,13 @@ typedef uint8_t uint_reg_t;
 @i Common.w
 @i USBMode.w
 @i USBInterrupt.w
+@i USBController.w
 @i Endpoint.w
 @i Device.w
 @i StdRequestType.w
 @i DeviceStandardReq.w
 @i EndpointStream.w
-@i USBController.w
+@i USBController_AVR8.w
 @i USBTask.w
 @i Events.w
 @i StdDescriptors.w
