@@ -83,7 +83,4 @@
 		#define EP_TYPE_INTERRUPT                  0x03
 		//@}
 
-@i Device.w
-@i DeviceStandardReq.w
-@i EndpointStream.w
 @i USBController_AVR8.w

@@ -16,9 +16,6 @@
  *  @{
  */
 
-@i Endpoint.w
-
-
 	/* Public Interface - May be used in end-application: */
 		/* Enums: */
 			/** Enum for the various states of the USB Device state machine. Only some states are

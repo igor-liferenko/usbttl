@@ -38,8 +38,6 @@
  *  @{
  */
 
-@i CDCClassCommon.w
-
 		#include <stdio.h>
 
 	/* Public Interface - May be used in end-application: */

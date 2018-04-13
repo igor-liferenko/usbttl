@@ -37,8 +37,6 @@
  *  @{
  */
 
-@i TerminalCodes.w
-
 	/* Private Interface - For use in library only: */
 		/* External Variables: */
 			extern FILE USARTSerialStream;

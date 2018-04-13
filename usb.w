@@ -3247,6 +3247,7 @@ uint8_t Endpoint_Read_Control_EStream_BE(void* const Buffer, uint16_t Length)
 #include <util/delay.h>
 @i USB.w
 @i LEDs.w
+@i TerminalCodes.w
 @i Serial.w
 @i RingBuffer.w
 @i Platform.w
