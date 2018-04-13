@@ -1,40 +1,24 @@
-/** \file
- *  \brief Architecture specific definitions relating to specific processor architectures.
- *
- *  \copydetails Group_ArchitectureSpecific
- *
- *  \note Do not include this file directly, rather include the Common.h header file instead to gain this file's
- *        functionality.
+/* Architecture specific macros, functions and other definitions, which relate to
+ specific architectures.
  */
 
-/** \ingroup Group_Common
- *  \defgroup Group_ArchitectureSpecific Architecture Specific Definitions
- *  \brief Architecture specific definitions relating to specific processor architectures.
+/** Re-enables the AVR's JTAG bus in software, until a system reset. This will re-enable JTAG debugging
+ *  interface after is has been disabled in software via \ref JTAG_DISABLE().
  *
- *  Architecture specific macros, functions and other definitions, which relate to specific architectures. This
- *  definitions may or may not be available in some form on other architectures, and thus should be protected by
- *  preprocessor checks in portable code to prevent compile errors.
- *
- *  @{
+ *  \note This macro is not available for all architectures.
  */
-
-					/** Re-enables the AVR's JTAG bus in software, until a system reset. This will re-enable JTAG debugging
-					 *  interface after is has been disabled in software via \ref JTAG_DISABLE().
-					 *
-					 *  \note This macro is not available for all architectures.
-					 */
-					#define JTAG_ENABLE()               do {                                     \
-					                                        __asm__ __volatile__ (               \
-					                                        "in __tmp_reg__,__SREG__" "\n\t"     \
-					                                        "cli" "\n\t"                         \
-					                                        "out %1, %0" "\n\t"                  \
-					                                        "out __SREG__, __tmp_reg__" "\n\t"   \
-					                                        "out %1, %0" "\n\t"                  \
-					                                        :                                    \
-					                                        : "r" (MCUCR & ~(1 << JTD)),         \
-					                                          "M" (_SFR_IO_ADDR(MCUCR))          \
-					                                        : "r0");                             \
-					                                    } while (0)
+#define JTAG_ENABLE()               do {                                     \
+                                        __asm__ __volatile__ (               \
+                                        "in __tmp_reg__,__SREG__" "\n\t"     \
+                                        "cli" "\n\t"                         \
+                                        "out %1, %0" "\n\t"                  \
+                                        "out __SREG__, __tmp_reg__" "\n\t"   \
+                                        "out %1, %0" "\n\t"                  \
+                                        :                                    \
+                                        : "r" (MCUCR & ~(1 << JTD)),         \
+                                          "M" (_SFR_IO_ADDR(MCUCR))          \
+                                        : "r0");                             \
+                                    } while (0)
 
 					/** Disables the AVR's JTAG bus in software, until a system reset. This will override the current JTAG
 					 *  status as set by the JTAGEN fuse, disabling JTAG debugging and reverting the JTAG pins back to GPIO
