@@ -3030,9 +3030,6 @@ typedef uint8_t uint_reg_t;
 @* USBMode.
 @<Header files@>=
 @i USBMode.w
-@* USBInterrupt.
-@<Header files@>=
-@i USBInterrupt.w
 @* USBInterrupt AVR8.
 @<Header files@>=
 @i USBInterrupt_AVR8.w
