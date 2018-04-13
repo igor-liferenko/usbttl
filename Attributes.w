@@ -24,7 +24,8 @@
  */
 #define ATTR_WARN_UNUSED_RESULT      __attribute__ ((warn_unused_result))
 
-/** Indicates that the specified parameters of the function are pointers which should never be \c NULL.
+/** Indicates that the specified parameters of the function are pointers which should never
+ be \c NULL.
  *  When applied as a 1-based comma separated list the compiler will emit a warning if
  the specified
  *  parameters are known at compiler time to be \c NULL at the point of calling the function.
@@ -74,8 +75,10 @@
  */
 #define ATTR_NO_INIT                     __attribute__ ((section (".noinit")))
 
-/** Places the function in one of the initialization sections, which execute before the main function
- *  of the application. Refer to the avr-libc manual for more information on the initialization sections.
+/** Places the function in one of the initialization sections, which execute before the main
+ function
+ *  of the application. Refer to the avr-libc manual for more information on the initialization
+ sections.
  *
  *  \param[in] SectionIndex  Initialization section number where the function should be placed.
  */
