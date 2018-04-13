@@ -1,23 +1,19 @@
-/** \file
- *  \brief USB Controller Interrupt definitions for the AVR8 microcontrollers.
+/** USB Controller Interrupt definitions for the AVR8 microcontrollers.
  *
- *  This file contains definitions required for the correct handling of low level USB service routine interrupts
+ *  This file contains definitions required for the correct handling of low level USB
+ service routine interrupts
  *  from the USB controller.
- *
- *  \note This file should not be included directly. It is automatically included as needed by the USB driver
- *        dispatch header located in LUFA/Drivers/USB/USB.h.
  */
 
-		/* Enums: */
-			enum USB_Interrupts_t
-			{
-				USB_INT_VBUSTI  = 0,
-				USB_INT_WAKEUPI = 2,
-				USB_INT_SUSPI   = 3,
-				USB_INT_EORSTI  = 4,
-				USB_INT_SOFI    = 5,
-				USB_INT_RXSTPI  = 6,
-			};
+enum USB_Interrupts_t
+{
+	USB_INT_VBUSTI  = 0,
+	USB_INT_WAKEUPI = 2,
+	USB_INT_SUSPI   = 3,
+	USB_INT_EORSTI  = 4,
+	USB_INT_SOFI    = 5,
+	USB_INT_RXSTPI  = 6,
+};
 
 inline void USB_INT_Enable(const uint8_t Interrupt) ATTR_ALWAYS_INLINE;
 inline void USB_INT_Enable(const uint8_t Interrupt)
