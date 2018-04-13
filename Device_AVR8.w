@@ -1,82 +1,69 @@
-/** \file
- *  \brief USB Device definitions for the AVR8 microcontrollers.
- *  \copydetails Group_Device_AVR8
- *
- *  \note This file should not be included directly. It is automatically included as needed by the USB driver
- *        dispatch header located in LUFA/Drivers/USB/USB.h.
+/** USB Device definitions for the AVR8 microcontrollers.
  */
 
-/** \ingroup Group_Device
- *  \defgroup Group_Device_AVR8 Device Management (AVR8)
- *  \brief USB Device definitions for the AVR8 microcontrollers.
+/** USB Device definitions for the AVR8 microcontrollers.
  *
  *  Architecture specific USB Device definitions for the Atmel 8-bit AVR microcontrollers.
  *
- *  @{
  */
 
-		#if (defined(USE_RAM_DESCRIPTORS) && defined(USE_EEPROM_DESCRIPTORS))
-			#error USE_RAM_DESCRIPTORS and USE_EEPROM_DESCRIPTORS are mutually exclusive.
-		#endif
+@*4 USB Device Mode Option Masks.
 
-		#if (defined(USE_FLASH_DESCRIPTORS) && defined(USE_EEPROM_DESCRIPTORS))
-			#error USE_FLASH_DESCRIPTORS and USE_EEPROM_DESCRIPTORS are mutually exclusive.
-		#endif
+@ Mask for the Options parameter of the \ref USB_Init() function. This indicates that the
+USB interface should be initialized in low speed (1.5Mb/s) mode.
 
-		#if (defined(USE_FLASH_DESCRIPTORS) && defined(USE_RAM_DESCRIPTORS))
-			#error USE_FLASH_DESCRIPTORS and USE_RAM_DESCRIPTORS are mutually exclusive.
-		#endif
+\note Low Speed mode is not available on all USB AVR models.
+        \n
 
-	/* Public Interface - May be used in end-application: */
-		/* Macros: */
-			/** \name USB Device Mode Option Masks */
-			//@{
+\note Restrictions apply on the number, size and type of endpoints which can be used
+        when running in low speed mode - please refer to the USB 2.0 specification.
 
-
-/** Mask for the Options parameter of the \ref USB_Init() function. This indicates that the
- *  USB interface should be initialized in low speed (1.5Mb/s) mode.
- *
- *  \note Low Speed mode is not available on all USB AVR models.
- *        \n
- *
- *  \note Restrictions apply on the number, size and type of endpoints which can be used
- *        when running in low speed mode - please refer to the USB 2.0 specification.
- */
+@<Header files@>=
 #define USB_DEVICE_OPT_LOWSPEED            (1 << 0)
 
-
-/** Mask for the Options parameter of the \ref USB_Init() function. This indicates that the
- *  USB interface should be initialized in full speed (12Mb/s) mode.
- */
+@ Mask for the Options parameter of the \ref USB_Init() function. This indicates that the
+USB interface should be initialized in full speed (12Mb/s) mode.
+@<Header files@>=
 #define USB_DEVICE_OPT_FULLSPEED               (0 << 0)
 
-/** String descriptor index for the device's unique serial number string descriptor within the device.
- *  This unique serial number is used by the host to associate resources to the device (such as drivers or COM port
- *  number allocations) to a device regardless of the port it is plugged in to on the host. Some microcontrollers contain
- *  a unique serial number internally, and setting the device descriptors serial number string index to this value
- *  will cause it to use the internal serial number.
- *
- *  On unsupported devices, this will evaluate to \ref NO_DESCRIPTOR and so will force the host to create a pseudo-serial
- *  number for the device.
- */
+@ String descriptor index for the device's unique serial number string descriptor within
+ the device.
+This unique serial number is used by the host to associate resources to the device (such as
+ drivers or COM port
+number allocations) to a device regardless of the port it is plugged in to on the host. Some
+ microcontrollers contain
+a unique serial number internally, and setting the device descriptors serial number string index
+ to this value
+will cause it to use the internal serial number.
+
+On unsupported devices, this will evaluate to \ref NO_DESCRIPTOR and so will force the host to
+ create a pseudo-serial
+number for the device.
+
+@<Header files@>=
 #define USE_INTERNAL_SERIAL            0xDC
 
-/** Length of the device's unique internal serial number, in bits, if present on the selected microcontroller
- *  model.
- */
+@ Length of the device's unique internal serial number, in bits, if present on the selected
+ microcontroller
+model.
+
+@<Header files@>=
 #define INTERNAL_SERIAL_LENGTH_BITS    80
 
-/** Start address of the internal serial number, in the appropriate address space, if present on the selected microcontroller
- *  model.
- */
+@ Start address of the internal serial number, in the appropriate address space, if present on
+ the selected microcontroller
+model.
+
+@<Header files@>=
 #define INTERNAL_SERIAL_START_ADDRESS  0x0E
 
+@ Returns the current USB frame number, when in device mode. Every millisecond the USB bus
+ is active (i.e. enumerated to a host)
+the frame number is incremented by one.
 
-/* Returns the current USB frame number, when in device mode. Every millisecond the USB bus is active (i.e. enumerated to a host)
-  the frame number is incremented by one.
+\return Current USB frame number from the USB controller.
 
-  \return Current USB frame number from the USB controller.
-*/
+@<Header files@>=
 inline uint16_t USB_Device_GetFrameNumber(void) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
 inline uint16_t USB_Device_GetFrameNumber(void)
 {
@@ -84,7 +71,8 @@ inline uint16_t USB_Device_GetFrameNumber(void)
 }
 
 /* Enables the device mode Start Of Frame events. When enabled, this causes the
-  \ref EVENT_USB_Device_StartOfFrame() event to fire once per millisecond, synchronized to the USB bus,
+  \ref EVENT_USB_Device_StartOfFrame() event to fire once per millisecond, synchronized to the
+ USB bus,
   at the start of each USB frame when enumerated in device mode.
 
   \note This function is not available when the \c NO_SOF_EVENTS compile time token is defined.
@@ -120,7 +108,8 @@ inline void USB_Device_GetSerialString(uint16_t* const UnicodeString)
 
 	uint8_t SigReadAddress = INTERNAL_SERIAL_START_ADDRESS;
 
-	for (uint8_t SerialCharNum = 0; SerialCharNum < (INTERNAL_SERIAL_LENGTH_BITS / 4); SerialCharNum++) {
+  for (uint8_t SerialCharNum = 0; SerialCharNum < (INTERNAL_SERIAL_LENGTH_BITS / 4);
+    SerialCharNum++) {
 		uint8_t SerialByte = boot_signature_byte_get(SigReadAddress);
 
 		if (SerialCharNum & 0x01) {
@@ -136,4 +125,3 @@ inline void USB_Device_GetSerialString(uint16_t* const UnicodeString)
 
 	SetGlobalInterruptMask(CurrentGlobalInt);
 }
-
