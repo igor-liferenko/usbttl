@@ -342,40 +342,4 @@
  *  class-specific functions.
  */
 
-@i Architectures.w
-@i BoardTypes.w
-@i ArchitectureSpecific.w
-@i CompilerSpecific.w
-@i Attributes.w
-@i LUFAConfig.w
 
-typedef uint8_t uint_reg_t;
-#define ARCH_HAS_EEPROM_ADDRESS_SPACE
-#define ARCH_HAS_FLASH_ADDRESS_SPACE
-#define ARCH_HAS_MULTI_ADDRESS_SPACE
-#define ARCH_LITTLE_ENDIAN
-
-@i Endianness.w
-@i Common.w
-@i USBMode.w
-@i USBInterrupt.w
-@i USBController.w
-@i Endpoint.w
-@i Device.w
-@i StdRequestType.w
-@i DeviceStandardReq.w
-@i EndpointStream.w
-@i USBController_AVR8.w
-@i USBTask.w
-@i Events.w
-@i StdDescriptors.w
-@i ConfigDescriptors.w
-
-@** CDC Class Driver module. This module contains an
-implementation of the USB CDC-ACM class Virtual Serial
-Ports, for Device USB mode.
-Note: the CDC class can instead be implemented manually via the low-level LUFA APIs.
-
-@<Header files@>=
-@i CDCClassCommon.w
-@i CDCClassDevice.w
