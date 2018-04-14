@@ -1,0 +1,1 @@
+after you convert to cweave, rm "-w" from avr-gcc and eliminate all warnings
