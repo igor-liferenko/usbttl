@@ -1,23 +1,16 @@
-/** \file
- *  \brief ANSI terminal special escape code macros.
+/** ANSI terminal special escape code macros.
  *
- *  ANSI terminal compatible escape sequences. These escape sequences are designed to be concatenated with existing
+ *  ANSI terminal compatible escape sequences. These escape sequences are designed to be
+ concatenated with existing
  *  strings to modify their display on a compatible terminal application.
  */
 
-/** \ingroup Group_MiscDrivers
- *  \defgroup Group_Terminal ANSI Terminal Escape Codes - LUFA/Drivers/Misc/TerminalCodes.h
- *  \brief ANSI terminal special escape code macros.
+/** Escape code macros for ANSI compliant text terminals.
  *
- *  \section Sec_Terminal_Dependencies Module Source Dependencies
- *  The following files must be built with any user project that uses this module:
- *    - None
- *
- *  \section Sec_Terminal_ModDescription Module Description
- *  Escape code macros for ANSI compliant text terminals.
- *
- *  \note If desired, the macro \c DISABLE_TERMINAL_CODES can be defined in the project makefile and passed to the GCC
- *        compiler via the -D switch to disable the terminal codes without modifying the source, for use with non
+ *  \note If desired, the macro \c DISABLE_TERMINAL_CODES can be defined in the project
+ makefile and passed to the GCC
+ *        compiler via the -D switch to disable the terminal codes without modifying the
+ source, for use with non
  *        compatible terminals (any terminal codes then equate to empty strings).
  *
  *  \section Sec_Terminal_ExampleUsage Example Usage
@@ -31,7 +24,6 @@
  *             ESC_RESET ESC_FG_BLUE ESC_BG_YELLOW "Normal Blue-on-Yellow String");
  *  \endcode
  *
- *  @{
  */
 
 /** Creates an ANSI escape sequence with the specified payload.
@@ -54,7 +46,8 @@
 /** Turns on inverse so that any following text is printed to the terminal in inverted colours. */
 #define ESC_INVERSE_ON                  ANSI_ESCAPE_SEQUENCE("7m")
 
-/** Turns on strike-through so that any following text is printed to the terminal with a line through the
+/** Turns on strike-through so that any following text is printed to the terminal with a
+ line through the
  *  center.
  */
 #define ESC_STRIKETHROUGH_ON            ANSI_ESCAPE_SEQUENCE("9m")
@@ -68,10 +61,12 @@
 /** Turns off underline so that any following text is printed to the terminal non underlined. */
 #define ESC_UNDERLINE_OFF               ANSI_ESCAPE_SEQUENCE("24m")
 
-/** Turns off inverse so that any following text is printed to the terminal in non inverted colours. */
+/** Turns off inverse so that any following text is printed to the terminal in non inverted
+ colours. */
 #define ESC_INVERSE_OFF                 ANSI_ESCAPE_SEQUENCE("27m")
 
-/** Turns off strike-through so that any following text is printed to the terminal without a line through
+/** Turns off strike-through so that any following text is printed to the terminal without
+ a line through
  *  the center.
  */
 #define ESC_STRIKETHROUGH_OFF           ANSI_ESCAPE_SEQUENCE("29m")
@@ -99,7 +94,7 @@
 #define ESC_FG_CYAN                     ANSI_ESCAPE_SEQUENCE("36m")
 
 /** Sets the foreground (text) colour to white. */
-			#define ESC_FG_WHITE                    ANSI_ESCAPE_SEQUENCE("37m")
+#define ESC_FG_WHITE                    ANSI_ESCAPE_SEQUENCE("37m")
 
 /** Sets the foreground (text) colour to the terminal's default. */
 #define ESC_FG_DEFAULT                  ANSI_ESCAPE_SEQUENCE("39m")
@@ -133,7 +128,8 @@
 
 /** \name Cursor Positioning Control Sequences */
 
-/** Saves the current cursor position so that it may be restored with \ref ESC_CURSOR_POS_RESTORE. */
+/** Saves the current cursor position so that it may be restored with
+ \ref ESC_CURSOR_POS_RESTORE. */
 #define ESC_CURSOR_POS_SAVE             ANSI_ESCAPE_SEQUENCE("s")
 
 /** Restores the cursor position to the last position saved with \ref ESC_CURSOR_POS_SAVE. */
