@@ -3833,7 +3833,8 @@ void USB_INT_ClearAllInterrupts(void);
 void USB_INT_DisableAllInterrupts(void);
 @* USBController.
 USB Controller definitions for general USB controller management.
-Functions, macros, variables, enums and types related to the setup and management of the USB interface.
+Functions, macros, variables, enums and types related to the setup and management of the USB
+ interface.
 @*4 Endpoint Direction Masks.
 
 @ Endpoint direction mask, for masking against endpoint addresses to retrieve the endpoint's
