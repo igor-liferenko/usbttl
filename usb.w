@@ -2588,7 +2588,4 @@ Note: the CDC class can instead be implemented manually via the low-level LUFA A
 @** RingBuffer.
 @<Header files@>=
 @i RingBuffer.w
-@** Platform.
-@<Header files@>=
-@i Platform.w
 @h
