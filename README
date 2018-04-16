@@ -1,4 +1,0 @@
-cp -r LUFA ~/usbttl/
-cp -r Projects/USBtoSerial/* ~/usbttl/
-cd ~/usbttl/
-rm asf.xml doxyfile LUFA\ USBtoSerial.inf USBtoSerial.txt
