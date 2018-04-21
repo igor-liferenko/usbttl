@@ -356,14 +356,11 @@ USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface = {@|
 @<Initialize header of |USB_ClassInfo_CDC_Device_t|@>@/
 };
 
-@ TODO: change order of elements and remove .Banks
-@^TODO@>
-
-@<Initialize header of |USB_ClassInfo_CDC_Device_t|@>= {@|
+@ @<Initialize header of |USB_ClassInfo_CDC_Device_t|@>= {@|
   INTERFACE_ID_CDC_CCI, @|
-  {@, CDC_TX_EPADDR, CDC_TXRX_EPSIZE, @=.Banks@>=1 @,}, @|
-  {@, CDC_RX_EPADDR, CDC_TXRX_EPSIZE, @=.Banks@>=1 @,}, @|
-  {@, CDC_NOTIFICATION_EPADDR, CDC_NOTIFICATION_EPSIZE, @=.Banks@>=1 @,} @/
+  {@, CDC_TX_EPADDR, CDC_TXRX_EPSIZE, 1 @,}, @|
+  {@, CDC_RX_EPADDR, CDC_TXRX_EPSIZE, 1 @,}, @|
+  {@, CDC_NOTIFICATION_EPADDR, CDC_NOTIFICATION_EPSIZE, 1 @,} @/
 }
 
 @ Configures the board hardware and chip peripherals for the demo's functionality.
@@ -4174,8 +4171,8 @@ typedef struct
 	uint8_t  Address; /**< Address of the endpoint to configure, or zero if the table
  entry is to be unused. */
 	uint16_t Size; /**< Size of the endpoint bank, in bytes. */
-	uint8_t  Type; /**< Type of the endpoint, a \c EP_TYPE_* mask. */
 	uint8_t  Banks; /**< Number of hardware banks to use for the endpoint. */
+        uint8_t  Type; /**< Type of the endpoint, a \c EP_TYPE_* mask. */
 } USB_Endpoint_Table_t;
 
 /** Endpoint number mask, for masking against endpoint addresses to retrieve the endpoint's
