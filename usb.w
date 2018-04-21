@@ -3588,8 +3588,9 @@ inline uint8_t BitReverse(uint8_t Byte)
  *
  *  \param[in] Milliseconds  Number of milliseconds to delay
  */
-inline void Delay_MS(uint16_t Milliseconds) ATTR_ALWAYS_INLINE;
-inline void Delay_MS(uint16_t Milliseconds)
+/* see https://stackoverflow.com/questions/35003070/ for explanation of "static" */
+static inline void Delay_MS(uint16_t Milliseconds) ATTR_ALWAYS_INLINE;
+static inline void Delay_MS(uint16_t Milliseconds)
 {
 	if (GCC_IS_COMPILE_CONST(Milliseconds))
 	{
