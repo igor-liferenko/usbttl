@@ -14,9 +14,8 @@
 %TODO put here info from https://en.wikipedia.org/wiki/Circular_buffer
 
 \let\lheader\rheader
-@s USB_Descriptor_String_t int
 
-\secpagedepth=1
+\secpagedepth=1 % begin new page only on **
 
 @* Data throughput, latency and handshaking issues.
 The Universal Serial Bus may be new to some users and developers. Here are
@@ -2465,18 +2464,9 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 #include <util/delay.h>
 
 @** USB.
-@<Header files@>=
-/** \file
- *  \brief Master include file for the library USB functionality.
- *
- *  Master include file for the library USB functionality.
- *
- *  This file should be included in all user projects making use of the USB portions of the
- library, instead of
- *  the individual USB driver submodule headers.
- */
+The USB functionality.
 
-/** \defgroup Group_USB USB Core - LUFA/Drivers/USB/USB.h
+@ /** \defgroup Group_USB USB Core - LUFA/Drivers/USB/USB.h
  *
  *  \brief Core driver for the microcontroller hardware USB module
  *
@@ -2530,7 +2520,7 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
  *  of USB management functions found \ref Group_USBManagement.
  */
 
-/** \defgroup Group_USBClassDrivers USB Class Drivers
+@ /** \defgroup Group_USBClassDrivers USB Class Drivers
  *
  *  \brief Drivers for the various standardized USB device classes
  *
@@ -2637,10 +2627,12 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
  *  for the endpoint size/number of the associated logical USB interface, plus any
  class-specific configuration parameters.
  *
- *  The following is an example of a properly initialized instance of the Audio Class
+
+@ The following is an example of a properly initialized instance of the Audio Class
  Driver structure:
  *
  *  \code
+@(/dev/null@>=
  *  USB_ClassInfo_Audio_Device_t My_Audio_Interface =
  *  {
  *      .Config =
@@ -2660,7 +2652,8 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
  device's descriptors that are
  *  sent to the host.
  *
- *  To initialize the Class driver instance, the driver's
+
+@ *  To initialize the Class driver instance, the driver's
  <tt><i>{Class Name}</i>_Device_ConfigureEndpoints()</tt> function
  *  should be called in response to the \ref EVENT_USB_Device_ConfigurationChanged() event.
  This function will return a
@@ -2688,7 +2681,7 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
  purpose to maintain each
  *  instance. Again, this function uses the address of the instance to operate on, and thus
  needs to be called for each
- *  separate instance, just like the main USB maintenance routine \ref USB_USBTask():
+ *  separate instance, just like the main USB maintenance routine |USB_DeviceTask|:
  *
  *  \code
  *  int main(void)
@@ -2703,7 +2696,7 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
  *            Create_And_Process_Samples();
  *
  *          Audio_Device_USBTask(&My_Audio_Interface);
- *          USB_USBTask();
+ *          USB_DeviceTask();
  *      }
  *  }
  *  \endcode
@@ -2740,162 +2733,6 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
  on the
  *  class-specific functions.
  *
- *  \subsection Sec_USB_ClassDriverHost Host Mode Class Drivers
- *  Implementing a Host Mode Class Driver in a user application requires a number of steps
- to be followed. Firstly,
- *  the module configuration and state structure must be added to the project source. These
- structures are named in a
- *  similar manner between classes, that of <tt>USB_ClassInfo_<b>{Class Name}</b>_Host_t</tt>,
- and are used to hold the
- *  complete state and configuration for each class instance. Multiple class instances is
- where the power of the class
- *  drivers lie; multiple interfaces of the same class simply require more instances of the
- Class Driver's \c USB_ClassInfo_*
- *  structure.
- *
- *  Inside the \c USB_ClassInfo_* structure lies two sections, a \c Config section, and a
- \c State section. The \c Config
- *  section contains the instance's configuration parameters, and
- <b>must have all fields set by the user application</b>
- *  before the class driver is used. Each Device mode Class driver typically contains a
- set of configuration parameters
- *  for the endpoint size/number of the associated logical USB interface, plus any
- class-specific configuration parameters.
- *
- *  The following is an example of a properly initialized instance of the MIDI Host Class
- Driver structure:
- *
- *  \code
- *  USB_ClassInfo_MIDI_Host_t My_MIDI_Interface =
- *  {
- *      .Config =
- *          {
- *              .DataINPipe             =
- *                  {
- *                      .Address        = (PIPE_DIR_IN  | 1),
- *                      .Size           = 64,
- *                      .Banks          = 1,
- *                  },
- *              .DataOUTPipe            =
- *                  {
- *                      .Address        = (PIPE_DIR_OUT | 2),
- *                      .Size           = 64,
- *                      .Banks          = 1,
- *                  },
- *          },
- *  };
- *  \endcode
- *
- *  To initialize the Class driver instance, the driver's
- <tt><b>{Class Name}</b>_Host_ConfigurePipes()</tt> function
- *  should be called in response to the \c EVENT_USB_Host_DeviceEnumerationComplete()
- event firing. This function will
- *  will return an error code from the class driver's
- <tt><b>{Class Name}</b>_EnumerationFailure_ErrorCodes_t</tt> enum
- *  to indicate if the driver successfully initialized the instance and bound it to an
- interface in the attached device.
- *  Like all the class driver functions, this function takes in the address of the specific
- instance you wish to initialize -
- *  in this manner, multiple separate instances of the same class type can be initialized.
- A fragment of a Class Driver
- *  based Host mode application may look like the following:
- *
- *  \code
- *  void EVENT_USB_Host_DeviceEnumerationComplete(void)
- *  {
- *      LEDs_SetAllLEDs(LEDMASK_USB_ENUMERATING);
- *
- *      uint16_t ConfigDescriptorSize;
- *      uint8_t  ConfigDescriptorData[512];
- *
- *      if (USB_Host_GetDeviceConfigDescriptor(1, &ConfigDescriptorSize, ConfigDescriptorData,
- *                                    sizeof(ConfigDescriptorData)) != HOST_GETCONFIG_Successful)
- *      {
- *          LEDs_SetAllLEDs(LEDMASK_USB_ERROR);
- *          return;
- *      }
- *
- *      if (MIDI_Host_ConfigurePipes(&Keyboard_MIDI_Interface,
- *                         ConfigDescriptorSize, ConfigDescriptorData) != MIDI_ENUMERROR_NoError)
- *      {
- *          LEDs_SetAllLEDs(LEDMASK_USB_ERROR);
- *          return;
- *      }
- *
- *      if (USB_Host_SetDeviceConfiguration(1) != HOST_SENDCONTROL_Successful)
- *      {
- *          LEDs_SetAllLEDs(LEDMASK_USB_ERROR);
- *          return;
- *      }
- *
- *      LEDs_SetAllLEDs(LEDMASK_USB_READY);
- *  }
- *  \endcode
- *
- *  Note that the function also requires the device's configuration descriptor so that it
- can determine which interface
- *  in the device to bind to - this can be retrieved as shown in the above fragment using the
- *  \ref USB_Host_GetDeviceConfigDescriptor() function. If the device does not implement the
- interface the class driver
- *  is looking for, if all the matching interfaces are already bound to class driver
- instances or if an error occurs while
- *  binding to a device interface (for example, a device endpoint bank larger that the
- maximum supported bank size is used)
- *  the configuration will fail.
- *
- *  To complete the device enumeration after binding the host mode Class Drivers to the
- attached device, a call to
- *  \c USB_Host_SetDeviceConfiguration() must be made. If the device configuration is not
- set within the
- *  \c EVENT_USB_Host_DeviceEnumerationComplete() event, the host still will assume the
- device enumeration has failed.
- *
- *  Once initialized, it is important to maintain the class driver's state by repeatedly
- calling the Class Driver's
- *  <tt><b>{Class Name}</b>_Host_USBTask()</tt> function in the main program loop. The exact
- implementation of this
- *  function varies between class drivers, and can be used for any internal class driver
- purpose to maintain each
- *  instance. Again, this function uses the address of the instance to operate on, and thus
- needs to be called for each
- *  separate instance, just like the main USB maintenance routine \ref USB_USBTask():
- *
- *  \code
- *  int main(void)
- *  {
- *      SetupHardware();
- *
- *      LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
- *
- *      for (;;)
- *      {
- *          if (USB_HostState != HOST_STATE_Configured)
- *              Create_And_Process_Samples();
- *
- *          MIDI_Host_USBTask(&My_Audio_Interface);
- *          USB_USBTask();
- *      }
- *  }
- *  \endcode
- *
- *  Each class driver may also define a set of callback functions (which are prefixed
- by \c CALLBACK_*
- *  in the function's name) which <b>must</b> also be added to the user application - refer to each
- *  individual class driver's documentation for mandatory callbacks. In addition,
- each class driver may
- *  also define a set of events (identifiable by their prefix of \c EVENT_* in the
- function's name), which
- *  the user application <b>may</b> choose to implement, or ignore if not needed.
- *
- *  The individual Host Mode Class Driver documentation contains more information on the
- non-standardized,
- *  class-specific functions which the user application can then use on the driver instances,
- such as data
- *  read and write routines. See each driver's individual documentation for more information on the
- *  class-specific functions.
- */
-
-
 
 @* Hardware Architecture defines.
 Architecture macros for selecting the desired target microcontroller architecture.
@@ -7558,7 +7395,7 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 /** General management task for a given CDC class interface, required for the correct operation
  of the interface. This should
  *  be called frequently in the main program loop, before the master USB management task
- \ref USB_USBTask().
+|USB_DeviceTask|.
  *
  *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration
  and state.
