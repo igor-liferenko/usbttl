@@ -2529,9 +2529,9 @@ of configuration parameters
 for the endpoint size/number of the associated logical USB interface, plus any
 class-specific configuration parameters.
 
-@ The following is an example of a properly initialized |Config| of the Audio Class
+@ The following is an example of a properly initialized instance (i.e., setting \\{Config}
+field) of the Audio Class
 Driver structure:
-
 @(/dev/null@>=
 USB_ClassInfo_Audio_Device_t My_Audio_Interface = {
           {
