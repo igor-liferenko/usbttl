@@ -3305,29 +3305,6 @@ inline uint8_t BitReverse(uint8_t Byte)
 	return Byte;
 }
 
-/** Function to perform a blocking delay for a specified number of milliseconds.
- The actual delay will be
- *  at a minimum the specified number of milliseconds, however due to loop overhead and
- internal calculations
- *  may be slightly higher.
- *
- *  \param[in] Milliseconds  Number of milliseconds to delay
- */
-/* see https://stackoverflow.com/questions/35003070/ for explanation of "static" */
-static inline void Delay_MS(uint16_t Milliseconds) ATTR_ALWAYS_INLINE;
-static inline void Delay_MS(uint16_t Milliseconds)
-{
-	if (GCC_IS_COMPILE_CONST(Milliseconds))
-	{
-		_delay_ms(Milliseconds);
-	}
-	else
-	{
-		while (Milliseconds--)
-		  _delay_ms(1);
-	}
-}
-
 /** Retrieves a mask which contains the current state of the global interrupts for the device. This
  *  value can be stored before altering the global interrupt enable state, before restoring the
  *  flag(s) back to their previous values after a critical section using
