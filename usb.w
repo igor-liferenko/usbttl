@@ -2640,29 +2640,13 @@ We use the Atmel 8-bit AVR (AT90USB* and ATMEGA*U* chips) architecture.
  *  Board macros for indicating the chosen physical board hardware to the library.
  These macros should be used when
  *  defining the \c BOARD token to the chosen hardware via the \c -D switch in the
- project makefile. If a custom
- *  board is used, the \ref BOARD_NONE or \ref BOARD_USER values should be selected.
+ project makefile.
  *
  */
 
-/** Selects the user-defined board drivers, which should be placed in the user project's folder
- *  under a directory named \c /Board/. Each board driver should be named identically to the LUFA
- *  master board driver (i.e., driver in the \c LUFA/Drivers/Board directory) so that the library
- *  can correctly identify it.
- */
-#define BOARD_USER                 0
-
-/** Disables board drivers when operation will not be adversely affected (e.g. LEDs) - use
- of board drivers
- *  such as the Joystick driver, where the removal would adversely affect the code's
- operation is still disallowed. */
-#define BOARD_NONE                 1
-
-/** Selects the USBKEY specific board drivers, including Temperature, Button, Dataflash,
- Joystick and LED drivers. */
+/** Selects the USBKEY specific LED drivers. */
 #define BOARD_USBKEY               2
 
-#define BOARD_                 BOARD_NONE
 @* ArchitectureSpecific.
 @<Header files@>=
 /* Architecture specific macros, functions and other definitions, which relate to
@@ -7537,70 +7521,34 @@ void CDC_Device_CreateStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
  */
 void CDC_Device_CreateBlockingStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                            FILE* const Stream) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
-@** LEDs.
-@<Header files@>=
-/** LED board hardware driver.
- *
- *  This file is the master dispatch header file for the board-specific LED driver,
- for boards containing user
- *  controllable LEDs.
- *
- */
 
-/** \section Sec_LEDs_ModDescription Module Description
- *  Hardware LEDs driver. This provides an easy to use driver for the hardware LEDs present
- on many boards. It
- *  provides an interface to configure, test and change the status of all the board LEDs.
- *
- *  If the \c BOARD value is set to \c BOARD_USER, this will include the \c /Board/LEDs.h
- file in the user project
- *  directory. Otherwise, it will include the appropriate built-in board driver header file.
- If the BOARD value
- *  is set to \c BOARD_NONE, this driver is silently disabled.
- *
- *  For possible \c BOARD makefile values, see \ref Group_BoardTypes.
- *
- *  \note To make code as compatible as possible, it is assumed that all boards carry a minimum
- of four LEDs. If
- *        a board contains less than four LEDs, the remaining LED masks are defined to 0 so as
- to have no effect.
- *        If other behavior is desired, either alias the remaining LED masks to existing LED
- masks via the -D
- *        switch in the project makefile, or alias them to nothing in the makefile to cause
- compilation errors when
- *        a non-existing LED is referenced in application code. Note that this means that
- it is possible to make
- *        compatible code for a board with no LEDs by making a board LED driver (see
- \ref Page_WritingBoardDrivers)
- *        which contains only stub functions and defines no LEDs.
- *
- *  \section Sec_LEDs_ExampleUsage Example Usage
- *  The following snippet is an example of how this module may be used within a typical
- *  application.
- *
- *  \code
- *      // Initialize the board LED driver before first use
- *      LEDs_Init();
- *
- *      // Turn on each of the four LEDs in turn
- *      LEDs_SetAllLEDs(LEDS_LED1);
- *      Delay_MS(500);
- *      LEDs_SetAllLEDs(LEDS_LED2);
- *      Delay_MS(500);
- *      LEDs_SetAllLEDs(LEDS_LED3);
- *      Delay_MS(500);
- *      LEDs_SetAllLEDs(LEDS_LED4);
- *      Delay_MS(500);
- *
- *      // Turn on all LEDs
- *      LEDs_SetAllLEDs(LEDS_ALL_LEDS);
- *      Delay_MS(1000);
- *
- *      // Turn on LED 1, turn off LED 2, leaving LEDs 3 and 4 in their current state
- *      LEDs_ChangeLEDs((LEDS_LED1 | LEDS_LED2), LEDS_LED1);
- *  \endcode
- *
- */
+@** LEDs.
+LED board hardware driver for user controllable LEDs.
+
+Hardware LEDs driver. This provides an easy to use driver for the hardware LEDs. It
+provides an interface to configure, test and change the status of all the board LEDs.
+
+It will include the appropriate built-in board driver header file.
+
+Following is an example of how this module may be used within a typical
+application.
+
+@(/dev/null@>=
+// Initialize the board LED driver before first use
+LEDs_Init();
+
+// Turn on each of the four LEDs in turn
+LEDs_SetAllLEDs(LEDS_LED1);
+LEDs_SetAllLEDs(LEDS_LED2);
+LEDs_SetAllLEDs(LEDS_LED3);
+LEDs_SetAllLEDs(LEDS_LED4);
+
+// Turn on all LEDs
+LEDs_SetAllLEDs(LEDS_ALL_LEDS);
+
+// Turn on LED 1, turn off LED 2, leaving LEDs 3 and 4 in their current state
+LEDs_ChangeLEDs((LEDS_LED1 | LEDS_LED2), LEDS_LED1);
+
 @* USBKEY LEDs.
 @<Header files@>=
 /** Board specific LED driver header for the Atmel USBKEY.
