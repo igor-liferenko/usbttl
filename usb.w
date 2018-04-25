@@ -742,9 +742,19 @@ integers, which indicate
 via the language ID table available at USB.org what languages the device supports for its
 string descriptors.
 
+String language ID for the English language is used
+to indicate that the English language is supported by the device in its string descriptors.
+
+@d LANGUAGE_ID_ENG 0x0409
+
 @<Global...@>=
-const USB_Descriptor_String_t PROGMEM LanguageString =
-  USB_STRING_DESCRIPTOR_ARRAY(LANGUAGE_ID_ENG);
+const USB_Descriptor_String_t PROGMEM LanguageString = { 
+  { 
+    sizeof (USB_Descriptor_Header_t) + sizeof ((uint16_t){LANGUAGE_ID_ENG}),
+    DTYPE_String
+  },
+  {LANGUAGE_ID_ENG}
+};
 
 @ Manufacturer descriptor string. This is a Unicode string containing the manufacturer's
 details in human readable
@@ -5892,9 +5902,13 @@ Parameter is string to initialize a USB String Descriptor structure with.
  *
  *  \param[in] ...  Characters to initialize a USB String Descriptor structure with.
  */
-#define USB_STRING_DESCRIPTOR_ARRAY(...) \
-  { .Header = {.Size = sizeof(USB_Descriptor_Header_t) + sizeof((uint16_t){__VA_ARGS__}), \
-  .Type = DTYPE_String}, .UnicodeString = {__VA_ARGS__} }
+#define USB_STRING_DESCRIPTOR_ARRAY(...) { \
+  { \
+    sizeof (USB_Descriptor_Header_t) + sizeof ((uint16_t){__VA_ARGS__}), \
+    DTYPE_String \
+  }, \
+  {__VA_ARGS__} \
+}
 
 /** Macro to encode a given major/minor/revision version number into Binary Coded Decimal
  format for descriptor
@@ -5913,12 +5927,6 @@ Parameter is string to initialize a USB String Descriptor structure with.
                                           CPU_TO_LE16( ((Major & 0xFF) << 8) | \
                                                        ((Minor & 0x0F) << 4) | \
                                                        (Revision & 0x0F) )
-
-/** String language ID for the English language. Should be used in
- \ref USB_Descriptor_String_t descriptors
- *  to indicate that the English language is supported by the device in its string descriptors.
- */
-#define LANGUAGE_ID_ENG                   0x0409
 
 /** \name USB Configuration Descriptor Attribute Masks */
 
