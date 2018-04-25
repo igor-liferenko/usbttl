@@ -691,8 +691,6 @@ typedef struct {
 }
 
 @ @d DTYPE_ENDPOINT 0x05 /* indicates that the descriptor is an endpoint descriptor */
-@d ENDPOINT_ATTR_NO_SYNCXXX (0 << 2) /* indicate that the specified endpoint is not
-  synchronized */
 
 @<Initialize |CDC_Notification_Endpoint|@>= {@|
   {@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_ENDPOINT @,},@|
@@ -5074,12 +5072,6 @@ uint8_t USB_Device_ConfigurationNumber;
  manually
  *             changed in value.
  *
- *  \note To reduce FLASH usage of the compiled applications where Remote Wakeup is not supported,
- *        this global and the underlying management code can be disabled by defining the
- *        \c NO_DEVICE_REMOTE_WAKEUP token in the project makefile and passing it to the
- compiler via
- *        the -D switch.
- *
  *  \ingroup Group_Device
  */
 bool USB_Device_RemoteWakeupEnabled;
@@ -5928,77 +5920,29 @@ descriptor's |ConfigAttributes| value to indicate that the specified configurati
 can draw its power from the device's own power source.
 
 @<Header files@>=
-#define USB_CONFIG_ATTR_SELFPOWERED       0x40
+#define USB_CONFIG_ATTR_SELFPOWERED 0x40
 
-@ Can be masked with other configuration descriptor attributes for a
- \ref USB_Descriptor_Config_Header_t
- *  descriptor's \c ConfigAttributes value to indicate that the specified configuration
- supports the
- *  remote wakeup feature of the USB standard, allowing a suspended USB device to wake
- up the host upon
- *  request.
- */
-#define USB_CONFIG_ATTR_REMOTEWAKEUP      0x20
+@*1 Endpoint Descriptor Attribute Masks.
 
-/** \name Endpoint Descriptor Attribute Masks */
+@ Can be masked with other endpoint descriptor attributes for a
+|USB_Descriptor_Endpoint_t| descriptor's
+|Attributes| value to indicate that the specified endpoint is not synchronized.
 
-/** Can be masked with other endpoint descriptor attributes for a
- \ref USB_Descriptor_Endpoint_t descriptor's
- *  \c Attributes value to indicate that the specified endpoint is not synchronized.
- *
- *  \see The USB specification for more details on the possible Endpoint attributes.
- */
-#define ENDPOINT_ATTR_NO_SYNC             (0 << 2)
+See the USB specification for more details on the possible Endpoint attributes.
 
-/** Can be masked with other endpoint descriptor attributes for a
- \ref USB_Descriptor_Endpoint_t descriptor's
- *  \c Attributes value to indicate that the specified endpoint is asynchronous.
- *
- *  \see The USB specification for more details on the possible Endpoint attributes.
- */
-#define ENDPOINT_ATTR_ASYNC               (1 << 2)
+@<Header files@>=
+#define ENDPOINT_ATTR_NO_SYNC (0 << 2)
 
-/** Can be masked with other endpoint descriptor attributes for a
- \ref USB_Descriptor_Endpoint_t descriptor's
- *  \c Attributes value to indicate that the specified endpoint is adaptive.
- *
- *  \see The USB specification for more details on the possible Endpoint attributes.
- */
-#define ENDPOINT_ATTR_ADAPTIVE            (2 << 2)
+@*1 Endpoint Descriptor Usage Masks.
 
-/** Can be masked with other endpoint descriptor attributes for a
- \ref USB_Descriptor_Endpoint_t descriptor's
- *  \c Attributes value to indicate that the specified endpoint is synchronized.
- *
- *  \see The USB specification for more details on the possible Endpoint attributes.
- */
-#define ENDPOINT_ATTR_SYNC                (3 << 2)
+@ Can be masked with other endpoint descriptor attributes for a
+|USB_Descriptor_Endpoint_t| descriptor's
+|Attributes| value to indicate that the specified endpoint is used for data transfers.
 
-/** \name Endpoint Descriptor Usage Masks */
+See the USB specification for more details on the possible Endpoint usage attributes.
 
-/** Can be masked with other endpoint descriptor attributes for a
- \ref USB_Descriptor_Endpoint_t descriptor's
- *  \c Attributes value to indicate that the specified endpoint is used for data transfers.
- *
- *  \see The USB specification for more details on the possible Endpoint usage attributes.
- */
+@<Header files@>=
 #define ENDPOINT_USAGE_DATA               (0 << 4)
-
-/** Can be masked with other endpoint descriptor attributes for a
- \ref USB_Descriptor_Endpoint_t descriptor's
- *  \c Attributes value to indicate that the specified endpoint is used for feedback.
- *
- *  \see The USB specification for more details on the possible Endpoint usage attributes.
- */
-#define ENDPOINT_USAGE_FEEDBACK           (1 << 4)
-
-/** Can be masked with other endpoint descriptor attributes for a
- \ref USB_Descriptor_Endpoint_t descriptor's
- *  \c Attributes value to indicate that the specified endpoint is used for implicit feedback.
- *
- *  \see The USB specification for more details on the possible Endpoint usage attributes.
- */
-#define ENDPOINT_USAGE_IMPLICIT_FEEDBACK  (2 << 4)
 
 /** Enum for the possible standard descriptor types, as given in each descriptor's header. */
 enum USB_DescriptorTypes_t
