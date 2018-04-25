@@ -5845,57 +5845,48 @@ void EVENT_USB_Device_Reset(void) ATTR_CONST;
  */
 void EVENT_USB_Device_StartOfFrame(void) ATTR_CONST;
 @* StdDescriptors.
+Common standard USB Descriptor definitions.
+Standard USB device descriptor defines and retrieval routines. This contains
+structures and macros for the easy creation of standard USB descriptors.
+
+@ Indicates that a given descriptor does not exist in the device. This can be used inside
+descriptors for string descriptor indexes, or may be use as a return value for GetDescriptor when
+the specified descriptor does not exist.
+
 @<Header files@>=
-/** \file
- *  \brief Common standard USB Descriptor definitions for all architectures.
- *  \copydetails Group_StdDescriptors
- *
- */
+#define NO_DESCRIPTOR 0
 
-/** \ingroup Group_USB
- *  \defgroup Group_StdDescriptors USB Descriptors
- *  \brief Standard USB Descriptor definitions.
- *
- *  Standard USB device descriptor defines and retrieval routines, for USB devices. This contains
- *  structures and macros for the easy creation of standard USB descriptors in USB device projects.
- *
- *  @{
- */
+@ Macro to calculate the power value for the configuration descriptor, from a given number
+of milliamperes.
+Parameter is maximum number of milliamps the device consumes when the given
+configuration is selected.
 
-/** Indicates that a given descriptor does not exist in the device. This can be used inside
- descriptors
- *  for string descriptor indexes, or may be use as a return value for GetDescriptor when
- the specified
- *  descriptor does not exist.
- */
-#define NO_DESCRIPTOR                     0
+@<Header files@>=
+#define USB_CONFIG_POWER_MA(mA) ((mA) >> 1)
 
-/** Macro to calculate the power value for the configuration descriptor, from a given number
- of milliamperes.
- *
- *  \param[in] mA  Maximum number of milliamps the device consumes when the given
- configuration is selected.
- */
-#define USB_CONFIG_POWER_MA(mA)           ((mA) >> 1)
+@ Macro to calculate the Unicode length of a string with a given number of Unicode characters.
+Should be used in string descriptor's headers for giving the string descriptor's byte length.
 
-/** Macro to calculate the Unicode length of a string with a given number of Unicode characters.
- *  Should be used in string descriptor's headers for giving the string descriptor's byte length.
- *
- *  \param[in] UnicodeChars  Number of Unicode characters in the string text.
- */
-#define USB_STRING_LEN(UnicodeChars)      (sizeof(USB_Descriptor_Header_t) + ((UnicodeChars) << 1))
+Parameter is number of Unicode characters in the string text.
 
-/** Convenience macro to easily create \ref USB_Descriptor_String_t instances from a wide
- character string.
- *
- *  \note This macro is for little-endian systems only.
- *
- *  \param[in] String  String to initialize a USB String Descriptor structure with.
- */
-#define USB_STRING_DESCRIPTOR(String) \
-  { .Header = {.Size = sizeof(USB_Descriptor_Header_t) + (sizeof(String) - 2), \
-  .Type = DTYPE_String}, .UnicodeString = String }
+@<Header files@>=
+#define USB_STRING_LEN(UnicodeChars) (sizeof (USB_Descriptor_Header_t) + ((UnicodeChars) << 1))
 
+@ Convenience macro to easily create |USB_Descriptor_String_t| instances from a wide
+character string.
+
+Parameter is string to initialize a USB String Descriptor structure with.
+
+@<Header files@>=
+#define USB_STRING_DESCRIPTOR(String) { \
+  { \
+    sizeof (USB_Descriptor_Header_t) + ( sizeof (String) - 2 ), \
+    DTYPE_String \
+  }, \
+  String \
+}
+
+@ @<Header files@>=
 /** Convenience macro to easily create \ref USB_Descriptor_String_t instances from an
  array of characters.
  *
