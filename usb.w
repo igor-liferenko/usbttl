@@ -748,8 +748,8 @@ to indicate that the English language is supported by the device in its string d
 @d LANGUAGE_ID_ENG 0x0409
 
 @<Global...@>=
-const USB_Descriptor_String_t PROGMEM LanguageString = { 
-  { 
+const USB_Descriptor_String_t PROGMEM LanguageString = {
+  {
     sizeof (USB_Descriptor_Header_t) + sizeof ((uint16_t){LANGUAGE_ID_ENG}),
     DTYPE_String
   },
@@ -5860,7 +5860,8 @@ Standard USB device descriptor defines and retrieval routines. This contains
 structures and macros for the easy creation of standard USB descriptors.
 
 @ Indicates that a given descriptor does not exist in the device. This can be used inside
-descriptors for string descriptor indexes, or may be use as a return value for GetDescriptor when
+descriptors for string descriptor indexes, or may be use as a return value for
+|CALLBACK_USB_GetDescriptor| when
 the specified descriptor does not exist.
 
 @<Header files@>=
@@ -5896,55 +5897,40 @@ Parameter is string to initialize a USB String Descriptor structure with.
   String \
 }
 
-@ @<Header files@>=
-/** Convenience macro to easily create \ref USB_Descriptor_String_t instances from an
- array of characters.
- *
- *  \param[in] ...  Characters to initialize a USB String Descriptor structure with.
- */
-#define USB_STRING_DESCRIPTOR_ARRAY(...) { \
-  { \
-    sizeof (USB_Descriptor_Header_t) + sizeof ((uint16_t){__VA_ARGS__}), \
-    DTYPE_String \
-  }, \
-  {__VA_ARGS__} \
-}
+@ Macro to encode a given major/minor/revision version number into Binary Coded Decimal
+format for descriptor
+fields requiring BCD encoding, such as the USB version number in the standard device
+descriptor.
 
-/** Macro to encode a given major/minor/revision version number into Binary Coded Decimal
- format for descriptor
- *  fields requiring BCD encoding, such as the USB version number in the standard device
- descriptor.
- *
- *  \note This value is automatically converted into Little Endian, suitable for direct use
- inside device
- *        descriptors on all architectures without endianness conversion macros.
- *
- *  \param[in]  Major     Major version number to encode.
- *  \param[in]  Minor     Minor version number to encode.
- *  \param[in]  Revision  Revision version number to encode.
- */
+Note, that this value is automatically converted into Little Endian, suitable for direct use
+inside device descriptors without endianness conversion macros.
+
+Parameters are: major version number to encode, minor version number to encode,
+revision version number to encode.
+
+@<Header files@>=
 #define VERSION_BCD(Major, Minor, Revision) \
                                           CPU_TO_LE16( ((Major & 0xFF) << 8) | \
                                                        ((Minor & 0x0F) << 4) | \
                                                        (Revision & 0x0F) )
 
-/** \name USB Configuration Descriptor Attribute Masks */
+@*1 USB Configuration Descriptor Attribute Masks.
 
-/** Mask for the reserved bit in the Configuration Descriptor's \c ConfigAttributes field,
- which must be set on all
- *  devices for historical purposes.
- */
+@ Mask for the reserved bit in the Configuration Descriptor's |ConfigAttributes| field,
+which must be set on all devices for historical purposes.
+
+@<Header files@>=
 #define USB_CONFIG_ATTR_RESERVED          0x80
 
-/** Can be masked with other configuration descriptor attributes for a
- \ref USB_Descriptor_Config_Header_t
- *  descriptor's \c ConfigAttributes value to indicate that the specified configuration
- can draw its power
- *  from the device's own power source.
- */
+@ Can be masked with other configuration descriptor attributes for a
+|USB_Descriptor_Config_Header_t|
+descriptor's |ConfigAttributes| value to indicate that the specified configuration
+can draw its power from the device's own power source.
+
+@<Header files@>=
 #define USB_CONFIG_ATTR_SELFPOWERED       0x40
 
-/** Can be masked with other configuration descriptor attributes for a
+@ Can be masked with other configuration descriptor attributes for a
  \ref USB_Descriptor_Config_Header_t
  *  descriptor's \c ConfigAttributes value to indicate that the specified configuration
  supports the
