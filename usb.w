@@ -1107,6 +1107,7 @@ bool Endpoint_ConfigureEndpointTable(const USB_Endpoint_Table_t* const Table,
 	return true;
 }
 
+@ @c
 bool Endpoint_ConfigureEndpoint_Prv(const uint8_t Number,
                                     const uint8_t UECFG0XData,
                                     const uint8_t UECFG1XData)
@@ -1151,6 +1152,7 @@ bool Endpoint_ConfigureEndpoint_Prv(const uint8_t Number,
 	return true;
 }
 
+@ @c
 void Endpoint_ClearEndpoints(void)
 {
 	UEINT = 0;
@@ -1165,6 +1167,7 @@ void Endpoint_ClearEndpoints(void)
 	}
 }
 
+@ @c
 void Endpoint_ClearStatusStage(void)
 {
 	if (USB_ControlRequest.bmRequestType & REQDIR_DEVICETOHOST)
@@ -1189,6 +1192,7 @@ void Endpoint_ClearStatusStage(void)
 	}
 }
 
+@ @c
 uint8_t Endpoint_WaitUntilReady(void)
 {
 	uint8_t  TimeoutMSRem = USB_STREAM_TIMEOUT_MS;
@@ -1317,6 +1321,7 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 	}
 }
 
+@ @c
 bool CDC_Device_ConfigureEndpoints(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 	memset(&CDCInterfaceInfo->State, 0x00, sizeof(CDCInterfaceInfo->State));
@@ -1337,6 +1342,7 @@ bool CDC_Device_ConfigureEndpoints(USB_ClassInfo_CDC_Device_t* const CDCInterfac
 	return true;
 }
 
+@ @c
 void CDC_DeviceTask(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 	if ((USB_DeviceState != DEVICE_STATE_Configured) ||
@@ -1349,6 +1355,7 @@ void CDC_DeviceTask(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 	  CDC_Device_Flush(CDCInterfaceInfo);
 }
 
+@ @c
 uint8_t CDC_Device_SendString(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                               const char* const String)
 {
@@ -1360,6 +1367,7 @@ uint8_t CDC_Device_SendString(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo
 	return Endpoint_Write_Stream_LE(String, strlen(String), NULL);
 }
 
+@ @c
 uint8_t CDC_Device_SendString_P(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                               const char* const String)
 {
@@ -1371,6 +1379,7 @@ uint8_t CDC_Device_SendString_P(USB_ClassInfo_CDC_Device_t* const CDCInterfaceIn
 	return Endpoint_Write_PStream_LE(String, strlen_P(String), NULL);
 }
 
+@ @c
 uint8_t CDC_Device_SendData(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                             const void* const Buffer,
                             const uint16_t Length)
@@ -1383,6 +1392,7 @@ uint8_t CDC_Device_SendData(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 	return Endpoint_Write_Stream_LE(Buffer, Length, NULL);
 }
 
+@ @c
 uint8_t CDC_Device_SendData_P(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                             const void* const Buffer,
                             const uint16_t Length)
@@ -1395,6 +1405,7 @@ uint8_t CDC_Device_SendData_P(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo
 	return Endpoint_Write_PStream_LE(Buffer, Length, NULL);
 }
 
+@ @c
 uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                             const uint8_t Data)
 {
@@ -1418,6 +1429,7 @@ uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 	return ENDPOINT_READYWAIT_NoError;
 }
 
+@ @c
 uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 	if ((USB_DeviceState != DEVICE_STATE_Configured) ||
@@ -1446,6 +1458,7 @@ uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 	return ENDPOINT_READYWAIT_NoError;
 }
 
+@ @c
 uint16_t CDC_Device_BytesReceived(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 	if ((USB_DeviceState != DEVICE_STATE_Configured) ||
@@ -1472,6 +1485,7 @@ uint16_t CDC_Device_BytesReceived(USB_ClassInfo_CDC_Device_t* const CDCInterface
 	}
 }
 
+@ @c
 int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 	if ((USB_DeviceState != DEVICE_STATE_Configured) ||
@@ -1494,6 +1508,7 @@ int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInf
 	return ReceivedByte;
 }
 
+@ @c
 void CDC_Device_SendControlLineStateChange(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 	if ((USB_DeviceState != DEVICE_STATE_Configured) ||
@@ -1519,6 +1534,7 @@ void CDC_Device_SendControlLineStateChange(USB_ClassInfo_CDC_Device_t* const CDC
 	Endpoint_ClearIN();
 }
 
+@ @c
 void CDC_Device_CreateStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                              FILE* const Stream)
 {
@@ -1526,6 +1542,7 @@ void CDC_Device_CreateStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 	fdev_set_udata(Stream, CDCInterfaceInfo);
 }
 
+@ @c
 void CDC_Device_CreateBlockingStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                                      FILE* const Stream)
 {
@@ -1536,6 +1553,7 @@ void CDC_Device_CreateBlockingStream(USB_ClassInfo_CDC_Device_t* const CDCInterf
 
 @ @<Function prototypes@>=
 int CDC_Device_putchar(char c, FILE* Stream) ATTR_NON_NULL_PTR_ARG(2);
+
 @ @c
 int CDC_Device_putchar(char c, FILE* Stream)
 {
@@ -1545,6 +1563,7 @@ int CDC_Device_putchar(char c, FILE* Stream)
 
 @ @<Function prototypes@>=
 int CDC_Device_getchar(FILE* Stream) ATTR_NON_NULL_PTR_ARG(1);
+
 @ @c
 int CDC_Device_getchar(FILE* Stream)
 {
@@ -1559,6 +1578,7 @@ int CDC_Device_getchar(FILE* Stream)
 
 @ @<Function prototypes@>=
 int CDC_Device_getchar_Blocking(FILE* Stream) ATTR_NON_NULL_PTR_ARG(1);
+
 @ @c
 int CDC_Device_getchar_Blocking(FILE* Stream)
 {
@@ -1577,10 +1597,12 @@ int CDC_Device_getchar_Blocking(FILE* Stream)
 	return ReceivedByte;
 }
 
+@ @c
 void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 }
 
+@ @c
 void EVENT_CDC_Device_BreakSent(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
   const uint8_t Duration)
 {
@@ -1645,6 +1667,7 @@ void USB_Device_ProcessControlRequest(void)
 
 @ @<Function prototypes@>=
 void USB_Device_SetAddress(void);
+
 @ @c
 void USB_Device_SetAddress(void)
 {
@@ -1671,6 +1694,7 @@ UDADDR |= (1 << ADDEN);
 
 @ @<Function prototypes@>=
 void USB_Device_SetConfiguration(void);
+
 @ @c
 void USB_Device_SetConfiguration(void)
 {
@@ -1693,6 +1717,7 @@ void USB_Device_SetConfiguration(void)
 
 @ @<Function prototypes@>=
 void USB_Device_GetConfiguration(void);
+
 @ @c
 void USB_Device_GetConfiguration(void)
 {
@@ -1706,6 +1731,7 @@ void USB_Device_GetConfiguration(void)
 
 @ @<Function prototypes@>=
 void USB_Device_GetInternalSerialDescriptor(void);
+
 @ @c
 void USB_Device_GetInternalSerialDescriptor(void)
 {
@@ -1728,6 +1754,7 @@ void USB_Device_GetInternalSerialDescriptor(void)
 
 @ @<Function prototypes@>=
 void USB_Device_GetDescriptor(void);
+
 @ @c
 void USB_Device_GetDescriptor(void)
 {
@@ -1753,6 +1780,7 @@ void USB_Device_GetDescriptor(void)
 
 @ @<Function prototypes@>=
 void USB_Device_GetStatus(void);
+
 @ @c
 void USB_Device_GetStatus(void)
 {
@@ -1799,6 +1827,7 @@ void USB_Device_GetStatus(void)
 
 @ @<Function prototypes@>=
 void USB_Device_ClearSetFeature(void);
+
 @ @c
 void USB_Device_ClearSetFeature(void)
 {
@@ -1886,6 +1915,7 @@ uint8_t Endpoint_Discard_Stream(uint16_t Length,
 	return ENDPOINT_RWSTREAM_NoError;
 }
 
+@ @c
 uint8_t Endpoint_Null_Stream(uint16_t Length,
                              uint16_t* const BytesProcessed)
 {
@@ -1925,6 +1955,7 @@ uint8_t Endpoint_Null_Stream(uint16_t Length,
 	return ENDPOINT_RWSTREAM_NoError;
 }
 
+@ @c
 uint8_t Endpoint_Write_Stream_LE(const void* const Buffer,
                             uint16_t Length,
                             uint16_t* const BytesProcessed)
@@ -1973,6 +2004,7 @@ uint8_t Endpoint_Write_Stream_LE(const void* const Buffer,
 	return ENDPOINT_RWSTREAM_NoError;
 }
 
+@ @c
 uint8_t Endpoint_Write_Stream_BE(const void* const Buffer,
                             uint16_t Length,
                             uint16_t* const BytesProcessed)
@@ -2021,6 +2053,7 @@ uint8_t Endpoint_Write_Stream_BE(const void* const Buffer,
 	return ENDPOINT_RWSTREAM_NoError;
 }
 
+@ @c
 uint8_t Endpoint_Read_Stream_LE(void* const Buffer,
                             uint16_t Length,
                             uint16_t* const BytesProcessed)
@@ -2044,10 +2077,6 @@ uint8_t Endpoint_Read_Stream_LE(void* const Buffer,
 		{
 			Endpoint_ClearOUT();
 
-			#if !defined(INTERRUPT_CONTROL_ENDPOINT)
-			USB_DeviceTask();
-			#endif
-
 			if (BytesProcessed != NULL)
 			{
 				*BytesProcessed += BytesInTransfer;
@@ -2069,6 +2098,7 @@ uint8_t Endpoint_Read_Stream_LE(void* const Buffer,
 	return ENDPOINT_RWSTREAM_NoError;
 }
 
+@ @c
 uint8_t Endpoint_Read_Stream_BE(void* const Buffer,
                             uint16_t Length,
                             uint16_t* const BytesProcessed)
@@ -2117,6 +2147,7 @@ uint8_t Endpoint_Read_Stream_BE(void* const Buffer,
 	return ENDPOINT_RWSTREAM_NoError;
 }
 
+@ @c
 uint8_t Endpoint_Write_PStream_LE(const void* const Buffer,
                             uint16_t Length,
                             uint16_t* const BytesProcessed)
@@ -2165,6 +2196,7 @@ uint8_t Endpoint_Write_PStream_LE(const void* const Buffer,
 	return ENDPOINT_RWSTREAM_NoError;
 }
 
+@ @c
 uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
                             uint16_t Length)
 {
@@ -2221,6 +2253,7 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 	return ENDPOINT_RWCSTREAM_NoError;
 }
 
+@ @c
 uint8_t Endpoint_Write_Control_Stream_BE(const void* const Buffer,
                             uint16_t Length)
 {
@@ -2277,6 +2310,7 @@ uint8_t Endpoint_Write_Control_Stream_BE(const void* const Buffer,
 	return ENDPOINT_RWCSTREAM_NoError;
 }
 
+@ @c
 uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer, uint16_t Length)
 {
 	uint8_t* DataStream = ((uint8_t*)Buffer + 0);
@@ -2321,6 +2355,7 @@ uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer, uint16_t Length)
 	return ENDPOINT_RWCSTREAM_NoError;
 }
 
+@ @c
 uint8_t Endpoint_Read_Control_Stream_BE(void* const Buffer, uint16_t Length)
 {
 	uint8_t* DataStream = ((uint8_t*)Buffer + (Length - 1));
@@ -2365,6 +2400,7 @@ uint8_t Endpoint_Read_Control_Stream_BE(void* const Buffer, uint16_t Length)
 	return ENDPOINT_RWCSTREAM_NoError;
 }
 
+@ @c
 uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
                             uint16_t Length)
 {
