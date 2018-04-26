@@ -1005,11 +1005,6 @@ static void USB_Init_Device(void);
 @ @c
 void USB_Init(void)
 {
-	/* Workaround for AVR8 bootloaders that fail to turn off the OTG pad before running
-	 * the loaded application. This causes VBUS detection to fail unless we first force
-	 * it off to reset it. */
-	USB_OTGPAD_Off();
-
 	if (!(USB_Options & USB_OPT_REG_DISABLED))
 	  USB_REG_On();
 	else
@@ -1037,7 +1032,7 @@ void USB_Disable(void)
 	if (!(USB_Options & USB_OPT_REG_KEEP_ENABLED))
 	  USB_REG_Off();
 
-	USB_OTGPAD_Off();
+        USBCON &= ~(1 << OTGPADE); /* turn off the OTG pad */
 
 	USB_IsInitialized = false;
 }
@@ -1056,7 +1051,7 @@ void USB_ResetInterface(void)
 
 	USB_Init_Device();
 
-	USB_OTGPAD_On();
+	USBCON |=  (1 << OTGPADE); /* turn on the OTG pad */
 }
 
 static void USB_Init_Device(void)
@@ -3764,18 +3759,6 @@ inline void USB_REG_Off(void) ATTR_ALWAYS_INLINE;
 inline void USB_REG_Off(void)
 {
 	UHWCON &= ~(1 << UVREGE);
-}
-
-inline void USB_OTGPAD_On(void) ATTR_ALWAYS_INLINE;
-inline void USB_OTGPAD_On(void)
-{
-	USBCON |=  (1 << OTGPADE);
-}
-
-inline void USB_OTGPAD_Off(void) ATTR_ALWAYS_INLINE;
-inline void USB_OTGPAD_Off(void)
-{
-	USBCON &= ~(1 << OTGPADE);
 }
 
 inline void USB_CLK_Freeze(void) ATTR_ALWAYS_INLINE;
