@@ -7554,127 +7554,72 @@ inline uint8_t LEDs_GetLEDs(void)
 }
 
 @** Serial.
-@<Header files@>=
-/** Hardware Serial USART driver.
- *
- *  This is for the USART driver.
- *
- */
+Hardware Serial USART Driver.
 
-/** Hardware Serial USART driver.
- *
- This provides an easy to use driver for the setup and transfer
- *  of data over the selected architecture and microcontroller model's USART port.
- *
- */
+On-chip serial USART driver for the 8-bit AVR microcontrollers.
+This provides an easy to use driver for the setup and transfer
+of data over the USART port.
 
-@* Serial AVR8.
-@<Header files@>=
-/** Serial USART Peripheral Driver (AVR8)
- *
- *  On-chip serial USART driver for the 8-bit AVR microcontrollers.
- *
- */
+@ The following snippet is an example of how this module may be used within a typical
+application.
 
-/** The following snippet is an example of how this module may be used within a typical
- *  application.
- *
- *  \code
- *      // Initialize the serial USART driver before first use, with 9600 baud
- (and no double-speed mode)
- *      Serial_Init(9600, false);
- *
- *      // Send a string through the USART
- *      Serial_SendString("Test String\r\n");
- *
- *      // Send a raw byte through the USART
- *      Serial_SendByte(0xDC);
- *
- *      // Receive a byte through the USART (or -1 if no data received)
- *      int16_t DataByte = Serial_ReceiveByte();
- *  \endcode
- *
- */
+@(/dev/null@>=
+// Initialize the serial USART driver before first use, with 9600 baud (and no double-speed mode)
+Serial_Init(9600, false);
 
+// Send a string through the USART
+Serial_SendString("Test String\r\n");
+
+// Send a raw byte through the USART
+Serial_SendByte(0xDC);
+
+// Receive a byte through the USART (or -1 if no data received)
+int16_t DataByte = Serial_ReceiveByte();
+
+@ @<Header files@>=
 int Serial_putchar(char DataByte, FILE *Stream);
 int Serial_getchar(FILE *Stream);
 int Serial_getchar_Blocking(FILE *Stream);
 
-/** Macro for calculating the baud value from a given baud rate when the \c U2X
- (double speed) bit is
- *  not set.
- *
- *  \param[in] Baud  Target serial UART baud rate.
- *
- *  \return Closest UBRR register value for the given UART frequency.
- */
-#define SERIAL_UBBRVAL(Baud)    ((((F_CPU / 16) + (Baud / 2)) / (Baud)) - 1)
+@ Macro for calculating the baud value from a given baud rate when the \.{U2X}
+(double speed) bit is not set.
 
-/** Macro for calculating the baud value from a given baud rate when the \c U2X
- (double speed) bit is
- *  set.
- *
- *  \param[in] Baud  Target serial UART baud rate.
- *
- *  \return Closest UBRR register value for the given UART frequency.
- */
+Returns closest UBRR register value for the given UART frequency.
+
+@<Header files@>=
+#define SERIAL_UBBRVAL(Baud) ((((F_CPU / 16) + (Baud / 2)) / (Baud)) - 1)
+
+@ Macro for calculating the baud value from a given baud rate when the \c U2X
+(double speed) bit is set.
+
+Returns closest UBRR register value for the given UART frequency.
+
+@<Header files@>=
 #define SERIAL_2X_UBBRVAL(Baud) ((((F_CPU / 8) + (Baud / 2)) / (Baud)) - 1)
 
-/** Transmits a given NUL terminated string located in program space (FLASH) through the USART.
- *
- *  \param[in] FlashStringPtr  Pointer to a string located in program space.
- */
+@ Transmits a given NUL terminated string located in program space (FLASH) through the USART.
+
+|FlashStringPtr| is a pointer to a string located in program space.
+
+@<Header files@>=
 void Serial_SendString_P(const char* FlashStringPtr) ATTR_NON_NULL_PTR_ARG(1);
 
-/** Transmits a given NUL terminated string located in SRAM memory through the USART.
- *
- *  \param[in] StringPtr  Pointer to a string located in SRAM space.
- */
+@ Transmits a given NUL terminated string located in SRAM memory through the USART.
+
+|StringPtr| is a pointer to a string located in SRAM space.
+
+@<Header files@>=
 void Serial_SendString(const char* StringPtr) ATTR_NON_NULL_PTR_ARG(1);
 
-/** Transmits a given buffer located in SRAM memory through the USART.
- *
- *  \param[in] Buffer  Pointer to a buffer containing the data to send.
- *  \param[in] Length  Length of the data to send, in bytes.
- */
+@ Transmits a given buffer located in SRAM memory through the USART.
+
+|Buffer| is a pointer to a buffer containing the data to send.
+|Length| is length of the data to send, in bytes.
+
+@<Header files@>=
 void Serial_SendData(const void* Buffer, uint16_t Length) ATTR_NON_NULL_PTR_ARG(1);
 
-/** Creates a standard character stream from the USART so that it can be used with all the
- regular functions
- *  in the avr-libc \c <stdio.h> library that accept a \c FILE stream as a destination
- (e.g. \c fprintf). The created
- *  stream is bidirectional and can be used for both input and output functions.
- *
- *  Reading data from this stream is non-blocking, i.e. in most instances, complete strings
- cannot be read in by a single
- *  fetch, as the endpoint will not be ready at some point in the transmission, aborting the
- transfer. However, this may
- *  be used when the read data is processed byte-per-bye (via \c getc()) or when the user
- application will implement its own
- *  line buffering.
- *
- *  \param[in,out] Stream  Pointer to a FILE structure where the created stream should be
- placed, if \c NULL, \c stdout
- *                         and \c stdin will be configured to use the USART.
- *
- *  \pre The USART must first be configured via a call to \ref Serial_Init() before the stream
- is used.
- */
-void Serial_CreateStream(FILE* Stream);
-
-/** Identical to \ref Serial_CreateStream(), except that reads are blocking until the calling
- stream function terminates
- *  the transfer.
- *
- *  \param[in,out] Stream  Pointer to a FILE structure where the created stream should be
- placed, if \c NULL, \c stdout
- *                         and \c stdin will be configured to use the USART.
- *
- *  \pre The USART must first be configured via a call to \ref Serial_Init() before the stream
- is used.
- */
-void Serial_CreateBlockingStream(FILE* Stream);
-
+@ @<Header files@>=
 /** Initializes the USART, ready for serial data transmission and reception. This initializes
  the interface to
  *  standard 8-bit, no parity, 1 stop bit settings suitable for most applications.
