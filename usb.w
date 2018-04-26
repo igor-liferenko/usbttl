@@ -999,9 +999,6 @@ ISR(USB_COM_vect, ISR_BLOCK)
 
 @* USB Controller definitions for the AVR8 microcontrollers.
 
-@ @<Function prototypes@>=
-static void USB_Init_Device(void);
-
 @ @c
 void USB_Init(void)
 {
@@ -1018,6 +1015,7 @@ void USB_Init(void)
 	USB_ResetInterface();
 }
 
+@ @c
 void USB_Disable(void)
 {
 	USB_INT_DisableAllInterrupts();
@@ -1032,11 +1030,12 @@ void USB_Disable(void)
 	if (!(USB_Options & USB_OPT_REG_KEEP_ENABLED))
 	  USB_REG_Off();
 
-        USBCON &= ~(1 << OTGPADE); /* turn off the OTG pad */
+        USBCON &= ~(1 << OTGPADE); /* disable VBUS pad */
 
 	USB_IsInitialized = false;
 }
 
+@ @c
 void USB_ResetInterface(void)
 {
 	USB_INT_DisableAllInterrupts();
@@ -1051,10 +1050,14 @@ void USB_ResetInterface(void)
 
 	USB_Init_Device();
 
-	USBCON |=  (1 << OTGPADE); /* turn on the OTG pad */
+	USBCON |=  (1 << OTGPADE); /* enable VBUS pad */
 }
 
-static void USB_Init_Device(void)
+@ @<Function prototypes@>=
+void USB_Init_Device(void);
+
+@ @c
+void USB_Init_Device(void)
 {
 	USB_DeviceState                 = DEVICE_STATE_Unattached;
 	USB_Device_ConfigurationNumber  = 0;
