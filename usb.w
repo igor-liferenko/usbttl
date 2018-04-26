@@ -512,7 +512,7 @@ UCSR1C = 0;
 @^see datasheet@>
 
 @ @<Set the new baud rate before configuring the USART@>=
-UBRR1  = SERIAL_2X_UBBRVAL(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS);
+UBRR1 = SERIAL_2X_UBBRVAL(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS);
 
 @ @<Reconfigure the USART in double speed mode for a wider baud rate range at the
     expense of accuracy@>=
@@ -880,41 +880,25 @@ void USB_DeviceTask(void)
 @ @c
 void USB_INT_DisableAllInterrupts(void)
 {
-	#if defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR)
-	USBCON &= ~((1 << VBUSTE) | (1 << IDTE));
-	#elif defined(USB_SERIES_4_AVR)
 	USBCON &= ~(1 << VBUSTE);
-	#endif
-
-	#if defined(USB_CAN_BE_DEVICE)
 	UDIEN   = 0;
-	#endif
 }
 
 void USB_INT_ClearAllInterrupts(void)
 {
-	#if defined(USB_SERIES_4_AVR) || defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR)
 	USBINT = 0;
-	#endif
-
-	#if defined(USB_CAN_BE_DEVICE)
 	UDINT  = 0;
-	#endif
 }
 
 ISR(USB_GEN_vect, ISR_BLOCK)
 {
-	#if defined(USB_CAN_BE_DEVICE)
-	#if !defined(NO_SOF_EVENTS)
 	if (USB_INT_HasOccurred(USB_INT_SOFI) && USB_INT_IsEnabled(USB_INT_SOFI))
 	{
 		USB_INT_Clear(USB_INT_SOFI);
 
 		EVENT_USB_Device_StartOfFrame();
 	}
-	#endif
 
-	#if defined(USB_SERIES_4_AVR) || defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR)
 	if (USB_INT_HasOccurred(USB_INT_VBUSTI) && USB_INT_IsEnabled(USB_INT_VBUSTI))
 	{
 		USB_INT_Clear(USB_INT_VBUSTI);
@@ -939,7 +923,6 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 			EVENT_USB_Device_Disconnect();
 		}
 	}
-	#endif
 
 	if (USB_INT_HasOccurred(USB_INT_SUSPI) && USB_INT_IsEnabled(USB_INT_SUSPI))
 	{
@@ -951,13 +934,8 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 		if (!(USB_Options & USB_OPT_MANUAL_PLL))
 		  USB_PLL_Off();
 
-		#if defined(USB_SERIES_2_AVR) && !defined(NO_LIMITED_CONTROLLER_CONNECT)
-		USB_DeviceState = DEVICE_STATE_Unattached;
-		EVENT_USB_Device_Disconnect();
-		#else
 		USB_DeviceState = DEVICE_STATE_Suspended;
 		EVENT_USB_Device_Suspend();
-		#endif
 	}
 
 	if (USB_INT_HasOccurred(USB_INT_WAKEUPI) && USB_INT_IsEnabled(USB_INT_WAKEUPI))
@@ -980,11 +958,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 		else
 		  USB_DeviceState = (USB_Device_IsAddressSet()) ? DEVICE_STATE_Addressed : DEVICE_STATE_Powered;
 
-		#if defined(USB_SERIES_2_AVR) && !defined(NO_LIMITED_CONTROLLER_CONNECT)
-		EVENT_USB_Device_Connect();
-		#else
 		EVENT_USB_Device_WakeUp();
-		#endif
 	}
 
 	if (USB_INT_HasOccurred(USB_INT_EORSTI) && USB_INT_IsEnabled(USB_INT_EORSTI))
@@ -1001,13 +975,10 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 		Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
 		                           USB_Device_ControlEndpointSize, 1);
 
-		#if defined(INTERRUPT_CONTROL_ENDPOINT)
 		USB_INT_Enable(USB_INT_RXSTPI);
-		#endif
 
 		EVENT_USB_Device_Reset();
 	}
-	#endif
 }
 
 ISR(USB_COM_vect, ISR_BLOCK)
