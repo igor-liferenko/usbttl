@@ -8002,14 +8002,13 @@ printf("Buffer Length: %d, Buffer Data: \r\n", BufferCount);
 while (BufferCount--)
   putc(RingBuffer_Remove(&Buffer));
 
-@ @<Header files@>=
-/** \brief Ring Buffer Management Structure.
- *
- *  Type define for a new ring buffer object. Buffers should be initialized via a call to
- *  \ref RingBuffer_InitBuffer() before use.
- */
-typedef struct
-{
+@ Ring Buffer Management Structure.
+
+Type define for a new ring buffer object. Buffers should be initialized via a call to
+|RingBuffer_InitBuffer| before use.
+
+@<Header files@>=
+typedef struct {
 	uint8_t* In; /**< Current storage location in the circular buffer. */
 	uint8_t* Out; /**< Current retrieval location in the circular buffer. */
 	uint8_t* Start; /**< Pointer to the start of the buffer's underlying storage array. */
@@ -8018,15 +8017,15 @@ typedef struct
 	uint16_t Count; /**< Number of bytes currently stored in the buffer. */
 } RingBuffer_t;
 
-/** Initializes a ring buffer ready for use. Buffers must be initialized via this function
- *  before any operations are called upon them. Already initialized buffers may be reset
- *  by re-initializing them using this function.
- *
- *  \param[out] Buffer   Pointer to a ring buffer structure to initialize.
- *  \param[out] DataPtr  Pointer to a global array that will hold the data stored into the ring
- buffer.
- *  \param[out] Size     Maximum number of bytes that can be stored in the underlying data array.
- */
+@ Initializes a ring buffer ready for use. Buffers must be initialized via this function
+before any operations are called upon them. Already initialized buffers may be reset
+by re-initializing them using this function.
+
+|Buffer| is a pointer to a ring buffer structure to initialize. \par
+|DataPtr| is a pointer to a global array that will hold the data stored into the ring buffer. \par
+|Size| is a maximum number of bytes that can be stored in the underlying data array. \par
+
+@<Header files@>=
 inline void RingBuffer_InitBuffer(RingBuffer_t* Buffer, uint8_t* const DataPtr,
                      const uint16_t Size) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
 inline void RingBuffer_InitBuffer(RingBuffer_t* Buffer,
@@ -8048,23 +8047,23 @@ inline void RingBuffer_InitBuffer(RingBuffer_t* Buffer,
 	SetGlobalInterruptMask(CurrentGlobalInt);
 }
 
-/** Retrieves the current number of bytes stored in a particular buffer. This value is computed
- *  by entering an atomic lock on the buffer, so that the buffer cannot be modified while the
- *  computation takes place. This value should be cached when reading out the contents of the
- buffer,
- *  so that as small a time as possible is spent in an atomic lock.
- *
- *  \note The value returned by this function is guaranteed to only be the minimum number of bytes
- *        stored in the given buffer; this value may change as other threads write new data, thus
- *        the returned number should be used only to determine how many successive reads may safely
- *        be performed on the buffer.
- *
- *  \param[in] Buffer  Pointer to a ring buffer structure whose count is to be computed.
- *
- *  \return Number of bytes currently stored in the buffer.
- */
+@ Retrieves the current number of bytes stored in a particular buffer. This value is computed
+by entering an atomic lock on the buffer, so that the buffer cannot be modified while the
+computation takes place. This value should be cached when reading out the contents of the buffer,
+so that as small a time as possible is spent in an atomic lock.
+
+Note, that the value returned by this function is guaranteed to only be the minimum number of bytes
+stored in the given buffer; this value may change as other threads write new data, thus
+the returned number should be used only to determine how many successive reads may safely
+be performed on the buffer.
+
+|Buffer| is a pointer to a ring buffer structure whose count is to be computed.
+
+Returns number of bytes currently stored in the buffer.
+
+@<Header files@>=
 inline uint16_t RingBuffer_GetCount(RingBuffer_t* const Buffer) ATTR_WARN_UNUSED_RESULT
- ATTR_NON_NULL_PTR_ARG(1);
+  ATTR_NON_NULL_PTR_ARG(1);
 inline uint16_t RingBuffer_GetCount(RingBuffer_t* const Buffer)
 {
 	uint16_t Count;
@@ -8078,72 +8077,72 @@ inline uint16_t RingBuffer_GetCount(RingBuffer_t* const Buffer)
 	return Count;
 }
 
-/** Retrieves the free space in a particular buffer. This value is computed by entering an atomic
- lock
- *  on the buffer, so that the buffer cannot be modified while the computation takes place.
- *
- *  \note The value returned by this function is guaranteed to only be the maximum number of bytes
- *        free in the given buffer; this value may change as other threads write new data, thus
- *        the returned number should be used only to determine how many successive writes may
- safely
- *        be performed on the buffer when there is a single writer thread.
- *
- *  \param[in] Buffer  Pointer to a ring buffer structure whose free count is to be computed.
- *
- *  \return Number of free bytes in the buffer.
- */
+@ Retrieves the free space in a particular buffer. This value is computed by entering an atomic
+lock on the buffer, so that the buffer cannot be modified while the computation takes place.
+
+Note, that the value returned by this function is guaranteed to only be the maximum number of bytes
+free in the given buffer; this value may change as other threads write new data, thus
+the returned number should be used only to determine how many successive writes may safely
+be performed on the buffer when there is a single writer thread.
+
+|Buffer| is a pointer to a ring buffer structure whose free count is to be computed.
+
+Returns number of free bytes in the buffer.
+
+@<Header files@>=
 inline uint16_t RingBuffer_GetFreeCount(RingBuffer_t* const Buffer) ATTR_WARN_UNUSED_RESULT
- ATTR_NON_NULL_PTR_ARG(1);
+  ATTR_NON_NULL_PTR_ARG(1);
 inline uint16_t RingBuffer_GetFreeCount(RingBuffer_t* const Buffer)
 {
 	return (Buffer->Size - RingBuffer_GetCount(Buffer));
 }
 
-/** Atomically determines if the specified ring buffer contains any data. This should
- *  be tested before removing data from the buffer, to ensure that the buffer does not
- *  underflow.
- *
- *  If the data is to be removed in a loop, store the total number of bytes stored in the
- *  buffer (via a call to the \ref RingBuffer_GetCount() function) in a temporary variable
- *  to reduce the time spent in atomicity locks.
- *
- *  \param[in,out] Buffer  Pointer to a ring buffer structure to insert into.
- *
- *  \return Boolean \c true if the buffer contains no free space, \c false otherwise.
- */
+@ Atomically determines if the specified ring buffer contains any data. This should
+be tested before removing data from the buffer, to ensure that the buffer does not
+underflow.
+
+If the data is to be removed in a loop, store the total number of bytes stored in the
+buffer (via a call to the \ref RingBuffer_GetCount() function) in a temporary variable
+to reduce the time spent in atomicity locks.
+
+|Buffer| is a pointer to a ring buffer structure to insert into.
+
+Returns true if the buffer contains no free space, false otherwise.
+
+@<Header files@>=
 inline bool RingBuffer_IsEmpty(RingBuffer_t* const Buffer) ATTR_WARN_UNUSED_RESULT
- ATTR_NON_NULL_PTR_ARG(1);
+  ATTR_NON_NULL_PTR_ARG(1);
 inline bool RingBuffer_IsEmpty(RingBuffer_t* const Buffer)
 {
 	return (RingBuffer_GetCount(Buffer) == 0);
 }
 
-/** Atomically determines if the specified ring buffer contains any free space. This should
- *  be tested before storing data to the buffer, to ensure that no data is lost due to a
- *  buffer overrun.
- *
- *  \param[in,out] Buffer  Pointer to a ring buffer structure to insert into.
- *
- *  \return Boolean \c true if the buffer contains no free space, \c false otherwise.
- */
+@ Atomically determines if the specified ring buffer contains any free space. This should
+be tested before storing data to the buffer, to ensure that no data is lost due to a
+buffer overrun.
+
+|Buffer| is a pointer to a ring buffer structure to insert into.
+
+Returns true if the buffer contains no free space, false otherwise.
+
+@<Header files@>=
 inline bool RingBuffer_IsFull(RingBuffer_t* const Buffer) ATTR_WARN_UNUSED_RESULT
- ATTR_NON_NULL_PTR_ARG(1);
+  ATTR_NON_NULL_PTR_ARG(1);
 inline bool RingBuffer_IsFull(RingBuffer_t* const Buffer)
 {
-	return (RingBuffer_GetCount(Buffer) == Buffer->Size);
+  return (RingBuffer_GetCount(Buffer) == Buffer->Size);
 }
 
-/** Inserts an element into the ring buffer.
- *
- *  \warning Only one execution thread (main program thread or an ISR) may insert into a single
- buffer
- *           otherwise data corruption may occur. Insertion and removal may occur from different
- execution
- *           threads.
- *
- *  \param[in,out] Buffer  Pointer to a ring buffer structure to insert into.
- *  \param[in]     Data    Data element to insert into the buffer.
- */
+@ Inserts an element into the ring buffer.
+
+Only one execution thread (main program thread or an ISR) may insert into a single buffer
+otherwise data corruption may occur. Insertion and removal may occur from different
+execution threads.
+
+|Buffer| is a pointer to a ring buffer structure to insert into.
+|Data| is data element to insert into the buffer.
+
+@<Header files@>=
 inline void RingBuffer_Insert(RingBuffer_t* Buffer, const uint8_t Data) ATTR_NON_NULL_PTR_ARG(1);
 inline void RingBuffer_Insert(RingBuffer_t* Buffer, const uint8_t Data)
 {
@@ -8162,6 +8161,7 @@ inline void RingBuffer_Insert(RingBuffer_t* Buffer, const uint8_t Data)
 	SetGlobalInterruptMask(CurrentGlobalInt);
 }
 
+@ @<Header files@>=
 /** Removes an element from the ring buffer.
  *
  *  \warning Only one execution thread (main program thread or an ISR) may remove from a single
