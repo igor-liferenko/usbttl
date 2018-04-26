@@ -345,23 +345,6 @@ RingBuffer_t USARTtoUSB_Buffer;
 @<Global...@>=
 uint8_t      USARTtoUSB_Buffer_Data[128];
 
-@ LUFA CDC Class driver interface configuration and state information.
-This structure is
-passed to all CDC Class driver functions, so that multiple instances of the same class
-within a device can be differentiated from one another.
-
-@<Global...@>=
-USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface = {@|
-@<Initialize header of |USB_ClassInfo_CDC_Device_t|@>@/
-};
-
-@ @<Initialize header of |USB_ClassInfo_CDC_Device_t|@>= {@|
-  INTERFACE_ID_CDC_CCI, @|
-  {@, CDC_TX_EPADDR, CDC_TXRX_EPSIZE, 1 @,}, @|
-  {@, CDC_RX_EPADDR, CDC_TXRX_EPSIZE, 1 @,}, @|
-  {@, CDC_NOTIFICATION_EPADDR, CDC_NOTIFICATION_EPSIZE, 1 @,} @/
-}
-
 @ Configures the board hardware and chip peripherals for the demo's functionality.
 
 @<Function prototypes@>=
@@ -2534,32 +2517,29 @@ Class Driver's \&{USB\_ClassInfo\_*}
 structure.
 
 Inside the ClassInfo structure lies two sections, a |Config| section, and a
-|State| section. The |Config|
-section contains the instance's configuration parameters, and must have all fields set
-by the user application
-before the class driver is used. CDC-ACM Device mode Class driver contains a set
-of configuration parameters
-for the endpoint size/number of the associated logical USB interface, plus any
-class-specific configuration parameters.
+|State| section. The |Config| section contains the instance's configuration parameters.
 
-@ The following is an example of a properly initialized instance (i.e., setting \\{Config}
-field) of the Audio Class
-Driver structure:
-@(/dev/null@>=
-USB_ClassInfo_Audio_Device_t My_Audio_Interface = {
-          {
-              1,
-                  {
-                      (ENDPOINT_DIR_IN | 1),
-                      64,
-                      1,
-                  },
-          },
+@ LUFA CDC Class driver interface configuration and state information.
+This structure is
+passed to all CDC Class driver functions, so that multiple instances of the same class
+within a device can be differentiated from one another.
+
+Initialize instance (i.e., set \\{Config} field) of the CDC Class Driver structure.
+
+Note, that the class driver's configuration parameters should match those used in the
+device's descriptors that are sent to the host.
+
+@<Global...@>=
+USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface = {@|
+  @<Initialize \\{Config} field of |USB_ClassInfo_CDC_Device_t|@>@/
 };
 
-@ Note, that the class driver's configuration parameters should match those used in the
-device's descriptors that are
-sent to the host.
+@ @<Initialize \\{Config} field of |USB_ClassInfo_CDC_Device_t|@>= {@|
+  INTERFACE_ID_CDC_CCI, @|
+  {@, CDC_TX_EPADDR, CDC_TXRX_EPSIZE, 1 @,}, @|
+  {@, CDC_RX_EPADDR, CDC_TXRX_EPSIZE, 1 @,}, @|
+  {@, CDC_NOTIFICATION_EPADDR, CDC_NOTIFICATION_EPSIZE, 1 @,} @/
+}
 
 @ To initialize the Class driver instance, the driver's
 |CDC_Device_ConfigureEndpoints| function
