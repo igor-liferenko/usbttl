@@ -3852,37 +3852,25 @@ typedef struct
  *  defined for convenience to give more readable code when used with the endpoint macros.
  */
 #define ENDPOINT_CONTROLEP                      0
+
 @* Endpoint AVR8.
+USB Endpoint definitions for the AVR8 microcontrollers.
+Endpoint data read/write definitions for the Atmel AVR8 architecture.
+Functions, macros, variables, enums and types related to data reading and writing from
+and to endpoints.
+Endpoint primitive read/write definitions for the Atmel AVR8 architecture.
+Functions, macros, variables, enums and types related to data reading and writing of
+primitive data types from and to endpoints.
+Endpoint packet management definitions for the Atmel AVR8 architecture.
+Functions, macros, variables, enums and types related to packet management of endpoints.
+
+@*1 Endpoint management definitions for the Atmel AVR8 architecture.
+
+Functions, macros and enums related to endpoint management. This
+module contains the endpoint management macros, as well as endpoint interrupt and data
+send/receive functions for various data types.
+
 @<Header files@>=
-/** USB Endpoint definitions for the AVR8 microcontrollers.
- */
-
-/** Endpoint data read/write definitions for the Atmel AVR8 architecture.
- *
- *  Functions, macros, variables, enums and types related to data reading and writing from
- and to endpoints.
- */
-
-/** Endpoint primitive read/write definitions for the Atmel AVR8 architecture.
- *
- *  Functions, macros, variables, enums and types related to data reading and writing of
- primitive data types
- *  from and to endpoints.
- */
-
-/** Endpoint packet management definitions for the Atmel AVR8 architecture.
- *
- *  Functions, macros, variables, enums and types related to packet management of endpoints.
- */
-
-/** Endpoint management definitions for the Atmel AVR8 architecture.
- *
- *  Functions, macros and enums related to endpoint management when in USB Device mode. This
- *  module contains the endpoint management macros, as well as endpoint interrupt and data
- *  send/receive functions for various data types.
- *
- */
-
 inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes) ATTR_WARN_UNUSED_RESULT
   ATTR_CONST ATTR_ALWAYS_INLINE;
 inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes)
@@ -3899,82 +3887,69 @@ inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes)
 	return (MaskVal << EPSIZE0);
 }
 
+@ @<Header files@>=
 void Endpoint_ClearEndpoints(void);
 bool Endpoint_ConfigureEndpoint_Prv(const uint8_t Number,
                                     const uint8_t UECFG0XData,
                                     const uint8_t UECFG1XData);
 
-/** Total number of endpoints (including the default control endpoint at address 0) which may
- *  be used in the device. Different USB AVR models support different amounts of endpoints,
- *  this value reflects the maximum number of endpoints for the currently selected AVR model.
- */
-#define ENDPOINT_TOTAL_ENDPOINTS        7
+@ Total number of endpoints (including the default control endpoint at address 0) which may
+be used in the device. Different USB AVR models support different amounts of endpoints,
+this value reflects the maximum number of endpoints for the currently selected AVR model.
 
-/** Enum for the possible error return codes of the \ref Endpoint_WaitUntilReady() function.
- *
- *  \ingroup Group_EndpointRW_AVR8
- */
+@<Header files@>=
+#define ENDPOINT_TOTAL_ENDPOINTS 7
+
+@ Enum for the possible error return codes of the |Endpoint_WaitUntilReady| function.
+
+@<Header files@>=
 enum Endpoint_WaitUntilReady_ErrorCodes_t
 {
   ENDPOINT_READYWAIT_NoError = 0, /* Endpoint is ready for next packet, no error. */
   ENDPOINT_READYWAIT_EndpointStalled = 1, /* The endpoint was stalled during the stream
     transfer by the host or device. */
   ENDPOINT_READYWAIT_DeviceDisconnected = 2, /* Device was disconnected from the host while
-                                                *   waiting for the endpoint to become ready.
+                                                   waiting for the endpoint to become ready.
                                                 */
   ENDPOINT_READYWAIT_BusSuspended = 3, /* The USB bus has been suspended by the host and
-                                       *   no USB endpoint traffic can occur until the bus
-                                       *   has resumed.
+                                          no USB endpoint traffic can occur until the bus
+                                          has resumed.
                                        */
   ENDPOINT_READYWAIT_Timeout = 4, /* The host failed to accept or send the next packet
-                                   *   within the software timeout period set by the
-                                   *   \ref USB_STREAM_TIMEOUT_MS macro.
+                                      within the software timeout period set by the
+                                      |USB_STREAM_TIMEOUT_MS| macro.
                                    */
 };
 
-/** Configures the specified endpoint address with the given endpoint type, bank size and
- number of hardware
- *  banks. Once configured, the endpoint may be read from or written to, depending on its
- direction.
- *
- *  \param[in] Address    Endpoint address to configure.
- *
- *  \param[in] Type       Type of endpoint to configure, a \c EP_TYPE_* mask. Not all
- endpoint types
- *                        are available on Low Speed USB devices - refer to the USB 2.0
- specification.
- *
- *  \param[in] Size       Size of the endpoint's bank, where packets are stored before they
- are transmitted
- *                        to the USB host, or after they have been received from the USB host
- (depending on
- *                        the endpoint's data direction). The bank size must indicate the
- maximum packet size
- *                        that the endpoint can handle.
- *
- *  \param[in] Banks      Number of banks to use for the endpoint being configured.
- *
- *  \attention When the \c ORDERED_EP_CONFIG compile time option is used, Endpoints
- <b>must</b> be configured in
- *             ascending order, or bank corruption will occur.
- *
- *  \note Different endpoints may have different maximum packet sizes based on the
- endpoint's index - please
- *        refer to the chosen microcontroller model's datasheet to determine the maximum bank
- size for each endpoint.
- *        \n\n
- *
- *  \note The default control endpoint should not be manually configured by the user
- application, as
- *        it is automatically configured by the library internally.
- *        \n\n
- *
- *  \note This routine will automatically select the specified endpoint upon success. Upon
- failure, the endpoint
- *        which failed to reconfigure correctly will be selected.
- *
- *  \return Boolean \c true if the configuration succeeded, \c false otherwise.
- */
+@ Configures the specified endpoint address with the given endpoint type, bank size and
+number of hardware
+banks. Once configured, the endpoint may be read from or written to, depending on its
+direction.
+
+|Address| is endpoint address to configure.
+
+|Type| is type of endpoint to configure, a \.{EP\_TYPE\_*} mask. Not all
+endpoint types are available on Low Speed USB devices - refer to the USB 2.0 specification.
+
+|Size| is size of the endpoint's bank, where packets are stored before they
+are transmitted to the USB host, or after they have been received from the USB host
+(depending on the endpoint's data direction). The bank size must indicate the
+maximum packet size that the endpoint can handle.
+
+|Banks| is number of banks to use for the endpoint being configured.
+
+Note, that different endpoints may have different maximum packet sizes based on the
+endpoint's index - please refer to the microcontroller's datasheet to determine the maximum bank
+size for each endpoint.
+
+The default control endpoint is configured {\it not via this function - where\/}?
+
+Note, that this routine will automatically select the specified endpoint upon success. Upon
+failure, the endpoint which failed to reconfigure correctly will be selected.
+
+Returns true if the configuration succeeded, false otherwise.
+
+@<Header files@>=
 inline bool Endpoint_ConfigureEndpoint(const uint8_t Address,
                                              const uint8_t Type,
                                              const uint16_t Size,
@@ -3994,60 +3969,59 @@ inline bool Endpoint_ConfigureEndpoint(const uint8_t Address,
            ((1 << ALLOC) | ((Banks > 1) ? (1 << EPBK0) : 0) | Endpoint_BytesToEPSizeMask(Size)));
 }
 
-/** Indicates the number of bytes currently stored in the current endpoint's selected bank.
- *
- *  \ingroup Group_EndpointRW_AVR8
- *
- *  \return Total number of bytes in the currently selected Endpoint's FIFO buffer.
- */
+@ Indicates the number of bytes currently stored in the current endpoint's selected bank.
+Returns total number of bytes in the currently selected Endpoint's FIFO buffer.
+
+@<Header files@>=
 inline uint16_t Endpoint_BytesInEndpoint(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
 inline uint16_t Endpoint_BytesInEndpoint(void)
 {
 		return (((uint16_t)UEBCHX << 8) | UEBCLX);
 }
 
-/** Determines the currently selected endpoint's direction.
- *
- *  \return The currently selected endpoint's direction, as a \c ENDPOINT_DIR_* mask.
- */
+@ Determines the currently selected endpoint's direction.
+Returns the currently selected endpoint's direction, as a \.{ENDPOINT\_DIR\_*} mask.
+
+@<Header files@>=
 inline uint8_t Endpoint_GetEndpointDirection(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
 inline uint8_t Endpoint_GetEndpointDirection(void)
 {
 	return (UECFG0X & (1 << EPDIR)) ? ENDPOINT_DIR_IN : ENDPOINT_DIR_OUT;
 }
 
-/** Get the endpoint address of the currently selected endpoint. This is typically used to save
- *  the currently selected endpoint so that it can be restored after another endpoint has been
- *  manipulated.
- *
- *  \return Index of the currently selected endpoint.
- */
+@ Get the endpoint address of the currently selected endpoint. This is typically used to save
+the currently selected endpoint so that it can be restored after another endpoint has been
+manipulated.
+
+Returns index of the currently selected endpoint.
+
+@<Header files@>=
 inline uint8_t Endpoint_GetCurrentEndpoint(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
 inline uint8_t Endpoint_GetCurrentEndpoint(void)
 {
 	return ((UENUM & ENDPOINT_EPNUM_MASK) | Endpoint_GetEndpointDirection());
 }
 
-/** Selects the given endpoint address.
- *
- *  Any endpoint operations which do not require the endpoint address to be indicated will
- operate on
- *  the currently selected endpoint.
- *
- *  \param[in] Address Endpoint address to select.
- */
+@ Selects the given endpoint address.
+
+Any endpoint operations which do not require the endpoint address to be indicated will
+operate on the currently selected endpoint.
+
+|Address| is endpoint address to select.
+
+@<Header files@>=
 inline void Endpoint_SelectEndpoint(const uint8_t Address) ATTR_ALWAYS_INLINE;
 inline void Endpoint_SelectEndpoint(const uint8_t Address)
 {
 		UENUM = (Address & ENDPOINT_EPNUM_MASK);
 }
 
-/** Resets the endpoint bank FIFO. This clears all the endpoint banks and resets the USB
- controller's
- *  data In and Out pointers to the bank's contents.
- *
- *  \param[in] Address  Endpoint address whose FIFO buffers are to be reset.
- */
+@ Resets the endpoint bank FIFO. This clears all the endpoint banks and resets the USB
+controller's data In and Out pointers to the bank's contents.
+
+|Address| is endpoint address whose FIFO buffers are to be reset.
+
+@<Header files@>=
 inline void Endpoint_ResetEndpoint(const uint8_t Address) ATTR_ALWAYS_INLINE;
 inline void Endpoint_ResetEndpoint(const uint8_t Address)
 {
@@ -4055,30 +4029,33 @@ inline void Endpoint_ResetEndpoint(const uint8_t Address)
 	UERST = 0;
 }
 
-/** Enables the currently selected endpoint so that data can be sent and received through it to
- *  and from a host.
- *
- *  \note Endpoints must first be configured properly via \ref Endpoint_ConfigureEndpoint().
- */
+@ Enables the currently selected endpoint so that data can be sent and received through it to
+and from a host.
+
+Note, that endpoints must first be configured properly via |Endpoint_ConfigureEndpoint|.
+
+@<Header files@>=
 inline void Endpoint_EnableEndpoint(void) ATTR_ALWAYS_INLINE;
 inline void Endpoint_EnableEndpoint(void)
 {
 	UECONX |= (1 << EPEN);
 }
 
-/** Disables the currently selected endpoint so that data cannot be sent and received through it
- *  to and from a host.
- */
+@ Disables the currently selected endpoint so that data cannot be sent and received through it
+to and from a host.
+
+@<Header files@>=
 inline void Endpoint_DisableEndpoint(void) ATTR_ALWAYS_INLINE;
 inline void Endpoint_DisableEndpoint(void)
 {
 	UECONX &= ~(1 << EPEN);
 }
 
-/** Determines if the currently selected endpoint is enabled, but not necessarily configured.
- *
- * \return Boolean \c true if the currently selected endpoint is enabled, \c false otherwise.
- */
+@ Determines if the currently selected endpoint is enabled, but not necessarily configured.
+
+Returns true if the currently selected endpoint is enabled, false otherwise.
+
+@<Header files@>=
 inline bool Endpoint_IsEnabled(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
 inline bool Endpoint_IsEnabled(void)
 {
@@ -4586,6 +4563,7 @@ void Endpoint_ClearStatusStage(void);
  *  \return A value from the \ref Endpoint_WaitUntilReady_ErrorCodes_t enum.
  */
 uint8_t Endpoint_WaitUntilReady(void);
+
 @* Device.
 @<Header files@>=
 /** Common USB Device definitions for all architectures.
