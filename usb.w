@@ -1019,7 +1019,11 @@ false otherwise.
 @<VBUS line is high@>=
 (USBSTA & (1 << VBUS))
 
-@ @<USB PLL on@>=
+@ Enable internal 3.3V USB data pad regulator to regulate the data pin voltages from the
+VBUS level down to a level within the range allowable by the USB standard
+(i.e., don't use AVR's VCC level for the data pads).
+
+@<USB PLL on@>=
 PLLCSR = USB_PLL_PSC;
 PLLCSR = (USB_PLL_PSC | (1 << PLLE));
 
@@ -1043,10 +1047,7 @@ USBCON &= ~(1 << FRZCLK);
 @ @c
 void USB_Init(void)
 {
-	if (!(USB_Options & USB_OPT_REG_DISABLED))
-	  @<USB REG on@>@;
-	else
-	  @<USB REG off@>@;
+  @<USB REG on@>@;
 
 	if (!(USB_Options & USB_OPT_MANUAL_PLL))
 		PLLFRQ = (1 << PDIV2);
@@ -1058,29 +1059,6 @@ void USB_Init(void)
 
 @ @<USB REG on@>=
 UHWCON |=  (1 << UVREGE);
-
-@ @<USB REG off@>=
-UHWCON &= ~(1 << UVREGE);
-
-@ @c
-void USB_Disable(void)
-{
-	USB_INT_DisableAllInterrupts();
-	USB_INT_ClearAllInterrupts();
-
-	@<Detach the device from the USB bus@>@;
-	USB_Controller_Disable();
-
-	if (!(USB_Options & USB_OPT_MANUAL_PLL))
-	  @<USB PLL off@>@;
-
-	if (!(USB_Options & USB_OPT_REG_KEEP_ENABLED))
-	  @<USB REG off@>@;
-
-        USBCON &= ~(1 << OTGPADE); /* disable VBUS pad */
-
-	USB_IsInitialized = false;
-}
 
 @ Remove the device from any
 attached host, ceasing USB communications. If no host is present, this prevents any host from
@@ -2899,7 +2877,7 @@ We use the Atmel 8-bit AVR (AT90USB* and ATMEGA*U* chips) architecture.
  */
 
 /* General USB Driver Related Tokens: */
-#define USE_STATIC_OPTIONS (USB_DEVICE_OPT_FULLSPEED | USB_OPT_REG_ENABLED | USB_OPT_AUTO_PLL)
+#define USE_STATIC_OPTIONS (USB_DEVICE_OPT_FULLSPEED | USB_OPT_AUTO_PLL)
 #define USB_DEVICE_ONLY
 
 /* USB Device Mode Driver Related Tokens: */
@@ -3667,34 +3645,6 @@ Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pip
 
 /** \name USB Controller Option Masks */
 
-/** Regulator disable option mask for \ref USB_Init(). This indicates that the internal
- 3.3V USB data pad
- *  regulator should be disabled and the AVR's VCC level used for the data pads.
- *
- *  \note See USB AVR data sheet for more information on the internal pad regulator.
- */
-#define USB_OPT_REG_DISABLED               (1 << 1)
-
-/** Regulator enable option mask for \ref USB_Init(). This indicates that the internal
- 3.3V USB data pad
- *  regulator should be enabled to regulate the data pin voltages from the VBUS level down
- to a level within
- *  the range allowable by the USB standard.
- *
- *  \note See USB AVR data sheet for more information on the internal pad regulator.
- */
-#define USB_OPT_REG_ENABLED                (0 << 1)
-
-/** Option mask for \ref USB_Init() to keep regulator enabled at all times. Indicates that
- \ref USB_Disable()
- *  should not disable the regulator as it would otherwise. Has no effect if regulator is
- disabled using
- *  \ref USB_OPT_REG_DISABLED.
- *
- *  \note See USB AVR data sheet for more information on the internal pad regulator.
- */
-#define USB_OPT_REG_KEEP_ENABLED           (1 << 3)
-
 /** Manual PLL control option mask for \ref USB_Init(). This indicates to the library that
  the user application
  *  will take full responsibility for controlling the AVR's PLL (used to generate the high
@@ -3775,13 +3725,6 @@ Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pip
  *  \see \ref Group_Device for the \c USB_DEVICE_OPT_* masks.
  */
 void USB_Init(void);
-
-/** Shuts down the USB interface. This turns off the USB interface after deallocating all USB FIFO
- *  memory, endpoints and pipes. When turned off, no USB functionality can be used until the
- interface
- *  is restarted with the \ref USB_Init() function.
- */
-void USB_Disable(void);
 
 /** Resets the interface, when already initialized. This will re-enumerate the device if
  already connected
