@@ -7481,9 +7481,6 @@ Serial_Init(9600, false);
 // Send a raw byte through the USART
 UDR1 = 0xDC;
 
-// Receive a byte through the USART (or -1 if no data received)
-int16_t DataByte = Serial_ReceiveByte();
-
 @ @<Header files@>=
 int Serial_putchar(char DataByte, FILE *Stream);
 int Serial_getchar(FILE *Stream);
@@ -7544,16 +7541,6 @@ inline void Serial_Disable(void)
 	PORTD &= ~(1 << 2);
 }
 
-/** Indicates whether a character has been received through the USART.
- *
- *  \return Boolean \c true if a character has been received, \c false otherwise.
- */
-inline bool Serial_IsCharReceived(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline bool Serial_IsCharReceived(void)
-{
-	return ((UCSR1A & (1 << RXC1)) ? true : false);
-}
-
 @ Indicates whether there is hardware buffer space for a new transmit on the USART.
 Return true if a character can be queued for transmission immediately, false otherwise.
 
@@ -7570,19 +7557,6 @@ inline bool Serial_IsSendComplete(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLI
 inline bool Serial_IsSendComplete(void)
 {
 	return ((UCSR1A & (1 << TXC1)) ? true : false);
-}
-
-/** Receives the next byte from the USART.
- *
- *  \return Next byte received from the USART, or a negative value if no byte has been received.
- */
-inline int16_t Serial_ReceiveByte(void) ATTR_ALWAYS_INLINE;
-inline int16_t Serial_ReceiveByte(void)
-{
-	if (!(Serial_IsCharReceived()))
-	  return -1;
-
-	return UDR1;
 }
 
 @** RingBuffer.
