@@ -911,7 +911,7 @@ if (USB_INT_HasOccurred(USB_INT_VBUSTI) && USB_INT_IsEnabled(USB_INT_VBUSTI)) {
 		USB_INT_Disable(USB_INT_SUSPI);
 		USB_INT_Enable(USB_INT_WAKEUPI);
 
-		USB_CLK_Freeze();
+		@<USB CLK freeze@>@;
 
 		if (!(USB_Options & USB_OPT_MANUAL_PLL))
 		  @<USB PLL off@>@;
@@ -926,7 +926,7 @@ if (USB_INT_HasOccurred(USB_INT_VBUSTI) && USB_INT_IsEnabled(USB_INT_VBUSTI)) {
       while (!@<USB PLL is ready@>) ;
     }
 
-		USB_CLK_Unfreeze();
+		@<USB CLK unfreeze@>@;
 
 		USB_INT_Clear(USB_INT_WAKEUPI);
 
@@ -994,6 +994,12 @@ PLLCSR = 0;
 @ @<USB PLL is ready@>=
 (PLLCSR & (1 << PLOCK))
 
+@ @<USB CLK freeze@>=
+USBCON |=  (1 << FRZCLK);
+
+@ @<USB CLK unfreeze@>=
+USBCON &= ~(1 << FRZCLK);
+
 @* USB Controller definitions for the AVR8 microcontrollers.
 
 @ @c
@@ -1053,7 +1059,7 @@ void USB_ResetInterface(void)
 
 	USB_Controller_Reset();
 
-	USB_CLK_Unfreeze();
+	@<USB CLK unfreeze@>@;
 
 	if (!(USB_Options & USB_OPT_MANUAL_PLL))
 		@<USB PLL off@>@;
@@ -3745,18 +3751,6 @@ void USB_Disable(void);
 void USB_ResetInterface(void);
 
 #define USB_Options USE_STATIC_OPTIONS
-
-inline void USB_CLK_Freeze(void) ATTR_ALWAYS_INLINE;
-inline void USB_CLK_Freeze(void)
-{
-	USBCON |=  (1 << FRZCLK);
-}
-
-inline void USB_CLK_Unfreeze(void) ATTR_ALWAYS_INLINE;
-inline void USB_CLK_Unfreeze(void)
-{
-	USBCON &= ~(1 << FRZCLK);
-}
 
 inline void USB_Controller_Enable(void) ATTR_ALWAYS_INLINE;
 inline void USB_Controller_Enable(void)
