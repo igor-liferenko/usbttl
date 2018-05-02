@@ -1055,17 +1055,6 @@ that the host does not time out whilst enumerating the device.
 Calling this function when the USB interface is already initialized will cause a complete USB
 interface reset and re-enumeration.
 
-|Mode| is mask indicating what mode the USB interface is to be initialized to,
-a value from the |USB_Modes_t| enum.
-Note, that this parameter does not exist on devices with only one supported USB
-mode (device or host).
-
-|Options| is mask indicating the options which should be used when initializing the USB
-interface to control the USB interface's behavior. This should be
-comprised of a \.{USB\_OPT\_REG\_*} mask to control the regulator, a \.{USB\_OPT\_*\_PLL}
-mask to control the PLL, and a \.{USB\_DEVICE\_OPT\_*} mask (when the device mode is enabled)
-to set the device mode speed.
-
 @<Function prototypes@>=
 void USB_Init(void);
 
@@ -1074,12 +1063,12 @@ void USB_Init(void)
 {
   @<USB REG on@>@;
 
-	if (!(USB_Options & USB_OPT_MANUAL_PLL))
-		PLLFRQ = (1 << PDIV2);
+  if (!(USB_Options & USB_OPT_MANUAL_PLL))
+    PLLFRQ = (1 << PDIV2);
 
-	USB_IsInitialized = true;
+  USB_IsInitialized = true;
 
-	USB_ResetInterface();
+  USB_ResetInterface();
 }
 
 @ @<USB REG on@>=
