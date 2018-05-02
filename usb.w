@@ -2760,10 +2760,9 @@ Configure compile time options,
 as an alternative to the compile time constants supplied through
 the makefile.
 
-For information on what each token does, refer to the LUFA
-manual section "Summary of Compile Tokens".
+|FIXED_CONTROL_ENDPOINT_SIZE| -- by default, the library determines the size of the control endpoint by reading the device descriptor. Normally this reduces the amount of configuration required for the library, allows the value to change dynamically (if descriptors are stored in EEPROM or RAM rather than flash memory) and reduces code maintenance. However, this token can be defined to a non-zero value instead to give the size in bytes of the control endpoint, to reduce the size of the compiled binary.
 
-@ USB Device Mode Driver Related Tokens.
+|FIXED_NUM_CONFIGURATIONS| -- by default, the library determines the number of configurations a USB device supports by reading the device descriptor. This reduces the amount of configuration required to set up the library, and allows the value to change dynamically (if descriptors are stored in EEPROM or RAM rather than flash memory) and reduces code maintenance. However, this value may be fixed via this token to reduce the compiled size of the binary at the expense of flexibility.
 
 @<Header files@>=
 #define FIXED_CONTROL_ENDPOINT_SIZE      8
