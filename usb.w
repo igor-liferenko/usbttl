@@ -2768,68 +2768,6 @@ manual section "Summary of Compile Tokens".
 #define DEVICE_STATE_AS_GPIOR            0
 #define FIXED_NUM_CONFIGURATIONS         1
 
-@* Endianness.
-Macros and functions for byte (re-)ordering.
-
-@<Header files@>=
-typedef uint8_t uint_reg_t;
-
-/** \name Run-time endianness conversion */
-
-/** Performs a conversion between a Little Endian encoded 16-bit piece of data and the
- *  Endianness of the currently selected CPU architecture.
- *
- *  On little endian architectures, this macro does nothing.
- *
- *  \note This macro is designed for run-time conversion of data - for compile-time endianness
- *        conversion, use \ref LE16_TO_CPU instead.
- *
- *  \ingroup Group_EndianConversion
- *
- *  \param[in] x  Data to perform the endianness conversion on.
- *
- *  \return Endian corrected version of the input value.
- */
-#define le16_to_cpu(x)           (x)
-
-@*4 Compile-time endianness conversion.
-
-@ Performs a conversion between a Little Endian encoded 16-bit piece of data and the
-Endianness of the currently selected CPU architecture.
-
-On little endian architectures, this macro does nothing.
-
-\note This macro is designed for compile-time conversion of data - for run time endianness
-conversion, use \ref le16_to_cpu instead.
-
-@<Header files@>=
-#define LE16_TO_CPU(x)           (x)
-
-/** Function to reverse the byte ordering of the individual bytes in a n byte value.
- *
- *  \ingroup Group_ByteSwapping
- *
- *  \param[in,out] Data    Pointer to a number containing an even number of bytes to be reversed.
- *  \param[in]     Length  Length of the data in bytes.
- *
- *  \return Input data with the individual bytes reversed.
- */
-inline void SwapEndian_n(void* const Data, uint8_t Length) ATTR_NON_NULL_PTR_ARG(1);
-inline void SwapEndian_n(void* const Data, uint8_t Length)
-{
-	uint8_t* CurrDataPos = (uint8_t*)Data;
-
-	while (Length > 1)
-	{
-		uint8_t Temp = *CurrDataPos;
-		*CurrDataPos = *(CurrDataPos + Length - 1);
-		*(CurrDataPos + Length - 1) = Temp;
-
-		CurrDataPos++;
-		Length -= 2;
-	}
-}
-
 @* Common.
 @<Header files@>=
 /** Convenience macro to determine the larger of two values.
@@ -2924,8 +2862,8 @@ inline uint8_t BitReverse(uint8_t Byte)
  *
  *  \return  Mask containing the current Global Interrupt Enable Mask bit(s).
  */
-inline uint_reg_t GetGlobalInterruptMask(void) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
-inline uint_reg_t GetGlobalInterruptMask(void)
+inline uint8_t GetGlobalInterruptMask(void) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
+inline uint8_t GetGlobalInterruptMask(void)
 {
 	GCC_MEMORY_BARRIER();
 	return SREG;
@@ -2941,8 +2879,8 @@ inline uint_reg_t GetGlobalInterruptMask(void)
  *
  *  \param[in] GlobalIntState  Global Interrupt Enable Mask value to use
  */
-inline void SetGlobalInterruptMask(const uint_reg_t GlobalIntState) ATTR_ALWAYS_INLINE;
-inline void SetGlobalInterruptMask(const uint_reg_t GlobalIntState)
+inline void SetGlobalInterruptMask(const uint8_t GlobalIntState) ATTR_ALWAYS_INLINE;
+inline void SetGlobalInterruptMask(const uint8_t GlobalIntState)
 {
 	GCC_MEMORY_BARRIER();
 
@@ -4197,7 +4135,7 @@ inline void USB_Device_DisableSOFEvents(void)
 inline void USB_Device_GetSerialString(uint16_t* const UnicodeString) ATTR_NON_NULL_PTR_ARG(1);
 inline void USB_Device_GetSerialString(uint16_t* const UnicodeString)
 {
-	uint_reg_t CurrentGlobalInt = GetGlobalInterruptMask();
+	uint8_t CurrentGlobalInt = GetGlobalInterruptMask();
 	GlobalInterruptDisable();
 
 	uint8_t SigReadAddress = INTERNAL_SERIAL_START_ADDRESS;
@@ -7035,7 +6973,7 @@ inline void RingBuffer_InitBuffer(RingBuffer_t* Buffer,
 {
 	GCC_FORCE_POINTER_ACCESS(Buffer);
 
-	uint_reg_t CurrentGlobalInt = GetGlobalInterruptMask();
+	uint8_t CurrentGlobalInt = GetGlobalInterruptMask();
 	GlobalInterruptDisable();
 
 	Buffer->In     = DataPtr;
@@ -7069,7 +7007,7 @@ inline uint16_t RingBuffer_GetCount(RingBuffer_t* const Buffer)
 {
 	uint16_t Count;
 
-	uint_reg_t CurrentGlobalInt = GetGlobalInterruptMask();
+	uint8_t CurrentGlobalInt = GetGlobalInterruptMask();
 	GlobalInterruptDisable();
 
 	Count = Buffer->Count;
@@ -7154,7 +7092,7 @@ inline void RingBuffer_Insert(RingBuffer_t* Buffer, const uint8_t Data)
 	if (++Buffer->In == Buffer->End)
 	  Buffer->In = Buffer->Start;
 
-	uint_reg_t CurrentGlobalInt = GetGlobalInterruptMask();
+	uint8_t CurrentGlobalInt = GetGlobalInterruptMask();
 	GlobalInterruptDisable();
 
 	Buffer->Count++;
@@ -7183,7 +7121,7 @@ inline uint8_t RingBuffer_Remove(RingBuffer_t* Buffer)
 	if (++Buffer->Out == Buffer->End)
 	  Buffer->Out = Buffer->Start;
 
-	uint_reg_t CurrentGlobalInt = GetGlobalInterruptMask();
+	uint8_t CurrentGlobalInt = GetGlobalInterruptMask();
 	GlobalInterruptDisable();
 
 	Buffer->Count--;
