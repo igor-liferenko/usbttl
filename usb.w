@@ -1063,13 +1063,6 @@ void USB_Init(void)
 @ @<USB REG on@>=
 UHWCON |=  (1 << UVREGE);
 
-@ Remove the device from any
-attached host, ceasing USB communications. If no host is present, this prevents any host from
-enumerating the device once attached until |USB_Attach| is called.
-
-@<Detach the device from the USB bus@>=
-UDCON  |=  (1 << DETACH);
-
 @ Resets the interface, when already initialized. This will re-enumerate the device if
 already connected to a host.
 
