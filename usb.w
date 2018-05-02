@@ -2018,10 +2018,6 @@ uint8_t Endpoint_Write_Stream_LE(const void* const Buffer,
 		{
 			Endpoint_ClearIN();
 
-			#if !defined(INTERRUPT_CONTROL_ENDPOINT)
-			USB_DeviceTask();
-			#endif
-
 			if (BytesProcessed != NULL)
 			{
 				*BytesProcessed += BytesInTransfer;
@@ -2066,10 +2062,6 @@ uint8_t Endpoint_Write_Stream_BE(const void* const Buffer,
 		if (!(Endpoint_IsReadWriteAllowed()))
 		{
 			Endpoint_ClearIN();
-
-			#if !defined(INTERRUPT_CONTROL_ENDPOINT)
-			USB_DeviceTask();
-			#endif
 
 			if (BytesProcessed != NULL)
 			{
@@ -2161,10 +2153,6 @@ uint8_t Endpoint_Read_Stream_BE(void* const Buffer,
 		{
 			Endpoint_ClearOUT();
 
-			#if !defined(INTERRUPT_CONTROL_ENDPOINT)
-			USB_DeviceTask();
-			#endif
-
 			if (BytesProcessed != NULL)
 			{
 				*BytesProcessed += BytesInTransfer;
@@ -2209,10 +2197,6 @@ uint8_t Endpoint_Write_PStream_LE(const void* const Buffer,
 		if (!(Endpoint_IsReadWriteAllowed()))
 		{
 			Endpoint_ClearIN();
-
-			#if !defined(INTERRUPT_CONTROL_ENDPOINT)
-			USB_DeviceTask();
-			#endif
 
 			if (BytesProcessed != NULL)
 			{
@@ -2769,27 +2753,23 @@ alignment bytes usually added between fields to optimize field accesses.
 @<Header files@>=
 #define ATTR_PACKED                      __attribute__ ((packed))
 
-@* LUFAConfig.
-@<Header files@>=
-/** \file
- *  \brief LUFA Library Configuration Header File
- *
- *  This header file is used to configure LUFA's compile time options,
- *  as an alternative to the compile time constants supplied through
- *  a makefile.
- *
- *  For information on what each token does, refer to the LUFA
- *  manual section "Summary of Compile Tokens".
- */
+@* Configuration.
+Configure compile time options,
+as an alternative to the compile time constants supplied through
+the makefile.
 
-/* USB Device Mode Driver Related Tokens: */
-#define USE_FLASH_DESCRIPTORS
+For information on what each token does, refer to the LUFA
+manual section "Summary of Compile Tokens".
+
+@ USB Device Mode Driver Related Tokens.
+
+@<Header files@>=
 #define FIXED_CONTROL_ENDPOINT_SIZE      8
 #define DEVICE_STATE_AS_GPIOR            0
 #define FIXED_NUM_CONFIGURATIONS         1
-#define INTERRUPT_CONTROL_ENDPOINT
 
 @* Endianness.
+
 @<Header files@>=
 typedef uint8_t uint_reg_t;
 #define ARCH_HAS_EEPROM_ADDRESS_SPACE
@@ -5340,15 +5320,10 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
  *   it may be disabled at start-up, enabled on the firing of the \ref EVENT_USB_Device_Connect()
  *      event and disabled again on the firing of the \ref EVENT_USB_Device_Disconnect() event.
  *
- *  The control endpoint can instead be managed via interrupts entirely by the library
- *  by defining the INTERRUPT_CONTROL_ENDPOINT token and passing it to the compiler via
- the -D switch.
- *
- *  \see \ref Group_Events for more information on the USB events.
- *
- *  \ingroup Group_USBManagement
+ *  The control endpoint is instead managed via interrupts entirely in this program.
  */
 void USB_DeviceTask(void);
+
 @* Events.
 @<Header files@>=
 /** \file
