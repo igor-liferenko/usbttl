@@ -317,7 +317,13 @@ RingBuffer_Remove(&USARTtoUSB_Buffer);
 @ @<Load the next byte from the USART transmit buffer into the USART if transmit buffer
     space is available@>=
 if (@<Serial is send-ready@> && !(RingBuffer_IsEmpty(&USBtoUSART_Buffer)))
-  UDR1 = RingBuffer_Remove(&USBtoUSART_Buffer); /* transmit a given byte through the USART */
+  UDR1 = RingBuffer_Remove(&USBtoUSART_Buffer); /* transmit a given raw byte through the USART */
+
+@ Indicates whether there is hardware buffer space for a new transmit on the USART.
+Return true if a character can be queued for transmission immediately, false otherwise.
+
+@<Serial is send-ready@>=
+(UCSR1A & (1 << UDRE1))
 
 @ LED mask for the library LED driver, to indicate that the USB interface is not ready.
 
@@ -496,7 +502,13 @@ UCSR1A = 0;
 UCSR1C = 0;
 @^see datasheet@>
 
-@ @<Set the new baud rate before configuring the USART@>=
+@ Macro |SERIAL_2X_UBBRVAL| is for calculating the baud value from a given baud rate when the
+\.{U2X} (double speed) bit is set. Returns closest UBRR register value for the given UART
+frequency.
+
+@d SERIAL_2X_UBBRVAL(Baud) ((((F_CPU / 8) + (Baud / 2)) / (Baud)) - 1)
+
+@<Set the new baud rate before configuring the USART@>=
 UBRR1 = SERIAL_2X_UBBRVAL(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS);
 
 @ @<Reconfigure the USART in double speed mode for a wider baud rate range at the
@@ -514,6 +526,11 @@ baud rate regardless of the \\{DoubleSpeed} parameter's value.
 
 \\{DoubleSpeed} (|bool|) enables double speed mode when set, halving the sample time to
 double the baud rate.
+
+Macro \.{SERIAL\_UBBRVAL} is for calculating the baud value from a given baud rate when the \.{U2X}
+(double speed) bit is not set. Returns closest UBRR register value for the given UART frequency.
+
+@d SERIAL_UBBRVAL(Baud) ((((F_CPU / 16) + (Baud / 2)) / (Baud)) - 1)
 
 @(/dev/null@>=
 UBRR1  = (DoubleSpeed ? SERIAL_2X_UBBRVAL(BaudRate) : SERIAL_UBBRVAL(BaudRate));
@@ -7482,47 +7499,6 @@ inline uint8_t LEDs_GetLEDs(void)
 {
 	return (PORTD & LEDS_ALL_LEDS);
 }
-
-@** Serial.
-Hardware Serial USART Driver.
-
-On-chip serial USART driver for the 8-bit AVR microcontrollers.
-This provides an easy to use driver for the setup and transfer
-of data over the USART port.
-
-@ The following snippet is an example of how this module may be used within a typical
-application.
-
-@(/dev/null@>=
-// Send a raw byte through the USART
-UDR1 = 0xDC;
-
-@ @<Header files@>=
-int Serial_putchar(char DataByte, FILE *Stream);
-int Serial_getchar(FILE *Stream);
-int Serial_getchar_Blocking(FILE *Stream);
-
-@ Macro for calculating the baud value from a given baud rate when the \.{U2X}
-(double speed) bit is not set.
-
-Returns closest UBRR register value for the given UART frequency.
-
-@<Header files@>=
-#define SERIAL_UBBRVAL(Baud) ((((F_CPU / 16) + (Baud / 2)) / (Baud)) - 1)
-
-@ Macro for calculating the baud value from a given baud rate when the \c U2X
-(double speed) bit is set.
-
-Returns closest UBRR register value for the given UART frequency.
-
-@<Header files@>=
-#define SERIAL_2X_UBBRVAL(Baud) ((((F_CPU / 8) + (Baud / 2)) / (Baud)) - 1)
-
-@ Indicates whether there is hardware buffer space for a new transmit on the USART.
-Return true if a character can be queued for transmission immediately, false otherwise.
-
-@<Serial is send-ready@>=
-(UCSR1A & (1 << UDRE1))
 
 @** RingBuffer.
 Lightweight ring (circular) buffer, for fast insertion/deletion of bytes.
