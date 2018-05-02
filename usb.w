@@ -1000,9 +1000,9 @@ PLLCSR = 0;
 void USB_Init(void)
 {
 	if (!(USB_Options & USB_OPT_REG_DISABLED))
-	  USB_REG_On();
+	  @<USB REG on@>@;
 	else
-	  USB_REG_Off();
+	  @<USB REG off@>@;
 
 	if (!(USB_Options & USB_OPT_MANUAL_PLL))
 		PLLFRQ = (1 << PDIV2);
@@ -1011,6 +1011,12 @@ void USB_Init(void)
 
 	USB_ResetInterface();
 }
+
+@ @<USB REG on@>=
+UHWCON |=  (1 << UVREGE);
+
+@ @<USB REG off@>=
+UHWCON &= ~(1 << UVREGE);
 
 @ @c
 void USB_Disable(void)
@@ -1025,7 +1031,7 @@ void USB_Disable(void)
 	  @<USB PLL off@>@;
 
 	if (!(USB_Options & USB_OPT_REG_KEEP_ENABLED))
-	  USB_REG_Off();
+	  @<USB REG off@>@;
 
         USBCON &= ~(1 << OTGPADE); /* disable VBUS pad */
 
@@ -3739,18 +3745,6 @@ void USB_Disable(void);
 void USB_ResetInterface(void);
 
 #define USB_Options USE_STATIC_OPTIONS
-
-inline void USB_REG_On(void) ATTR_ALWAYS_INLINE;
-inline void USB_REG_On(void)
-{
-	UHWCON |=  (1 << UVREGE);
-}
-
-inline void USB_REG_Off(void) ATTR_ALWAYS_INLINE;
-inline void USB_REG_Off(void)
-{
-	UHWCON &= ~(1 << UVREGE);
-}
 
 inline void USB_CLK_Freeze(void) ATTR_ALWAYS_INLINE;
 inline void USB_CLK_Freeze(void)
