@@ -882,15 +882,12 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 		EVENT_USB_Device_StartOfFrame();
 	}
 
-	if (USB_INT_HasOccurred(USB_INT_VBUSTI) && USB_INT_IsEnabled(USB_INT_VBUSTI))
-	{
-		USB_INT_Clear(USB_INT_VBUSTI);
+if (USB_INT_HasOccurred(USB_INT_VBUSTI) && USB_INT_IsEnabled(USB_INT_VBUSTI)) {
+  USB_INT_Clear(USB_INT_VBUSTI);
 
-		if (@<VBUS line is high@>)
-		{
-			if (!(USB_Options & USB_OPT_MANUAL_PLL))
-			{
-				USB_PLL_On();
+  if (@<VBUS line is high@>) {
+    if (!(USB_Options & USB_OPT_MANUAL_PLL)) {
+      @<USB PLL on@>@;
 				while (!(USB_PLL_IsReady()));
 			}
 
@@ -900,7 +897,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 		else
 		{
 			if (!(USB_Options & USB_OPT_MANUAL_PLL))
-			  USB_PLL_Off();
+			  @<USB PLL off@>@;
 
 			USB_DeviceState = DEVICE_STATE_Unattached;
 			EVENT_USB_Device_Disconnect();
@@ -915,17 +912,15 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 		USB_CLK_Freeze();
 
 		if (!(USB_Options & USB_OPT_MANUAL_PLL))
-		  USB_PLL_Off();
+		  @<USB PLL off@>@;
 
 		USB_DeviceState = DEVICE_STATE_Suspended;
 		EVENT_USB_Device_Suspend();
 	}
 
-	if (USB_INT_HasOccurred(USB_INT_WAKEUPI) && USB_INT_IsEnabled(USB_INT_WAKEUPI))
-	{
-		if (!(USB_Options & USB_OPT_MANUAL_PLL))
-		{
-			USB_PLL_On();
+  if (USB_INT_HasOccurred(USB_INT_WAKEUPI) && USB_INT_IsEnabled(USB_INT_WAKEUPI)) {
+    if (!(USB_Options & USB_OPT_MANUAL_PLL)) {
+      @<USB PLL on@>@;
 			while (!(USB_PLL_IsReady()));
 		}
 
@@ -987,6 +982,13 @@ false otherwise.
 @<VBUS line is high@>=
 USBSTA & (1 << VBUS)
 
+@ @<USB PLL on@>=
+PLLCSR = USB_PLL_PSC;
+PLLCSR = (USB_PLL_PSC | (1 << PLLE));
+
+@ @<USB PLL off@>=
+PLLCSR = 0;
+
 @* USB Controller definitions for the AVR8 microcontrollers.
 
 @ @c
@@ -1015,7 +1017,7 @@ void USB_Disable(void)
 	USB_Controller_Disable();
 
 	if (!(USB_Options & USB_OPT_MANUAL_PLL))
-	  USB_PLL_Off();
+	  @<USB PLL off@>@;
 
 	if (!(USB_Options & USB_OPT_REG_KEEP_ENABLED))
 	  USB_REG_Off();
@@ -1043,7 +1045,7 @@ void USB_ResetInterface(void)
 	USB_CLK_Unfreeze();
 
 	if (!(USB_Options & USB_OPT_MANUAL_PLL))
-		USB_PLL_Off();
+		@<USB PLL off@>@;
 
 	USB_Init_Device();
 
@@ -1077,8 +1079,15 @@ void USB_Init_Device(void)
 	USB_INT_Enable(USB_INT_SUSPI);
 	USB_INT_Enable(USB_INT_EORSTI);
 
-	USB_Attach();
+  @<Attach the device to the USB bus@>@;
 }
+
+@ Announce the device's presence to any attached
+USB host, starting the enumeration process. If no host is present, attaching the device
+will allow for enumeration once a host is connected to the device.
+
+@<Attach the device to the USB bus@>=
+UDCON  &= ~(1 << DETACH);
 
 @ @<Set low speed@>=
 UDCON |=  (1 << LSM);
@@ -3658,20 +3667,6 @@ Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pip
 #define USB_STREAM_TIMEOUT_MS       100
 
 @ @<Header files@>=
-/** Attaches the device to the USB bus. This announces the device's presence to any attached
- *  USB host, starting the enumeration process. If no host is present, attaching the device
- *  will allow for enumeration once a host is connected to the device.
- *
- *  This is inexplicably also required for proper operation while in host mode, to enable the
- *  attachment of a device to the host. This is despite the bit being located in the device-mode
- *  register and despite the datasheet making no mention of its requirement in host mode.
- */
-inline void USB_Attach(void) ATTR_ALWAYS_INLINE;
-inline void USB_Attach(void)
-{
-	UDCON  &= ~(1 << DETACH);
-}
-
 /** Main function to initialize and start the USB interface. Once active, the USB interface will
  *  allow for device connection to a host when in device mode, or for device enumeration while in
  *  host mode.
@@ -3739,19 +3734,6 @@ void USB_Disable(void);
 void USB_ResetInterface(void);
 
 #define USB_Options USE_STATIC_OPTIONS
-
-inline void USB_PLL_On(void) ATTR_ALWAYS_INLINE;
-inline void USB_PLL_On(void)
-{
-	PLLCSR = USB_PLL_PSC;
-	PLLCSR = (USB_PLL_PSC | (1 << PLLE));
-}
-
-inline void USB_PLL_Off(void) ATTR_ALWAYS_INLINE;
-inline void USB_PLL_Off(void)
-{
-	PLLCSR = 0;
-}
 
 inline bool USB_PLL_IsReady(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
 inline bool USB_PLL_IsReady(void)
