@@ -292,6 +292,8 @@ don't block
 while a Zero Length Packet (ZLP) to terminate the transfer is sent if the host isn't
 listening.
 
+@d MIN(x, y)               (((x) < (y)) ? (x) : (y))
+
 @<Calculate bytes to send@>=
 uint8_t BytesToSend = MIN(BufferCount, (CDC_TXRX_EPSIZE - 1));
 
@@ -2765,76 +2767,11 @@ manual section "Summary of Compile Tokens".
 
 @<Header files@>=
 #define FIXED_CONTROL_ENDPOINT_SIZE      8
-#define DEVICE_STATE_AS_GPIOR            0
 #define FIXED_NUM_CONFIGURATIONS         1
 
 @* Common.
+
 @<Header files@>=
-/** Convenience macro to determine the larger of two values.
- *
- *  \attention This macro should only be used with operands that do not have side effects
- from being evaluated
- *             multiple times.
- *
- *  \param[in] x  First value to compare
- *  \param[in] y  First value to compare
- *
- *  \return The larger of the two input parameters
- */
-#define MAX(x, y)               (((x) > (y)) ? (x) : (y))
-
-/** Convenience macro to determine the smaller of two values.
- *
- *  \attention This macro should only be used with operands that do not have side effects
- from being evaluated
- *             multiple times.
- *
- *  \param[in] x  First value to compare.
- *  \param[in] y  First value to compare.
- *
- *  \return The smaller of the two input parameters
- */
-#define MIN(x, y)               (((x) < (y)) ? (x) : (y))
-
-/** Converts the given input into a string, via the C Preprocessor. This macro puts
- literal quotation
- *  marks around the input, converting the source into a string literal.
- *
- *  \param[in] x  Input to convert into a string literal.
- *
- *  \return String version of the input.
- */
-#define STRINGIFY(x)            #x
-
-/** Converts the given input into a string after macro expansion, via the C Preprocessor.
- This macro puts
- *  literal quotation marks around the expanded input, converting the source into a string literal.
- *
- *  \param[in] x  Input to expand and convert into a string literal.
- *
- *  \return String version of the expanded input.
- */
-#define STRINGIFY_EXPANDED(x)   STRINGIFY(x)
-
-/** Concatenates the given input into a single token, via the C Preprocessor.
- *
- *  \param[in] x  First item to concatenate.
- *  \param[in] y  Second item to concatenate.
- *
- *  \return Concatenated version of the input.
- */
-#define CONCAT(x, y)            x ## y
-
-/** CConcatenates the given input into a single token after macro expansion, via the
- C Preprocessor.
- *
- *  \param[in] x  First item to concatenate.
- *  \param[in] y  Second item to concatenate.
- *
- *  \return Concatenated version of the expanded input.
- */
-#define CONCAT_EXPANDED(x, y)   CONCAT(x, y)
-
 /** Function to reverse the individual bits in a byte - i.e. bit 7 is moved to bit 0,
  bit 6 to bit 1,
  *  etc.
@@ -4940,7 +4877,21 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
  */
  USB_Request_Header_t USB_ControlRequest;
 
-#define USB_DeviceState            CONCAT_EXPANDED(GPIOR, DEVICE_STATE_AS_GPIOR)
+@ One of the most frequently used global variables in the stack is the |USB_DeviceState|
+global, which indicates the current state of the Device State Machine. To reduce the
+amount of code and time required to access and modify this global in an application,
+|DEVICE_STATE_AS_GPIOR| may be defined to a value between 0 and 2 to fix the state
+variable into one of the three general purpose IO registers inside the AVR reserved
+for application use. So as it is defined, the corresponding |GPIOR| register should
+not be used within the user application except implicitly via the library APIs.
+
+@d DEVICE_STATE_AS_GPIOR 0
+
+@<Header files@>=
+#define CONCAT(x, y)            x ## y
+#define CONCAT_EXPANDED(x, y)   CONCAT(x, y)
+#define USB_DeviceState CONCAT_EXPANDED(GPIOR, DEVICE_STATE_AS_GPIOR) /* expands into
+  |(*(volatile uint8_t *)((0x1E) + 0x20))| */
 
 /** This is the main USB management task. The USB driver requires this task to be executed
  *  continuously when the USB system is active (attached to a host)
