@@ -1559,10 +1559,10 @@ void CDC_Device_SendControlLineStateChange(USB_ClassInfo_CDC_Device_t* const CDC
 		{
 			.bmRequestType = (REQDIR_DEVICETOHOST | REQTYPE_CLASS | REQREC_INTERFACE),
 			.bRequest      = CDC_NOTIF_SerialState,
-			.wValue        = CPU_TO_LE16(0),
-			.wIndex        = CPU_TO_LE16(0),
+			.wValue        = 0,
+			.wIndex        = 0,
 			.wLength       =
- CPU_TO_LE16(sizeof(CDCInterfaceInfo->State.ControlLineStates.DeviceToHost)),
+ sizeof CDCInterfaceInfo->State.ControlLineStates.DeviceToHost,
 		};
 
 	Endpoint_Write_Stream_LE(&Notification, sizeof(USB_Request_Header_t), NULL);
@@ -2792,54 +2792,6 @@ typedef uint8_t uint_reg_t;
  */
 #define le16_to_cpu(x)           (x)
 
-/** Performs a conversion between a Little Endian encoded 32-bit piece of data and the
- *  Endianness of the currently selected CPU architecture.
- *
- *  On little endian architectures, this macro does nothing.
- *
- *  \note This macro is designed for run-time conversion of data - for compile-time endianness
- *        conversion, use \ref LE32_TO_CPU instead.
- *
- *  \ingroup Group_EndianConversion
- *
- *  \param[in] x  Data to perform the endianness conversion on.
- *
- *  \return Endian corrected version of the input value.
- */
-#define le32_to_cpu(x)           (x)
-
-/** Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
- *  is in Little Endian format regardless of the currently selected CPU architecture.
- *
- *  On little endian architectures, this macro does nothing.
- *
- *  \note This macro is designed for run-time conversion of data - for compile-time endianness
- *        conversion, use \ref CPU_TO_LE16 instead.
- *
- *  \ingroup Group_EndianConversion
- *
- *  \param[in] x  Data to perform the endianness conversion on.
- *
- *  \return Endian corrected version of the input value.
- */
-#define cpu_to_le16(x)           (x)
-
-/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
- *  is in Little Endian format regardless of the currently selected CPU architecture.
- *
- *  On little endian architectures, this macro does nothing.
- *
- *  \note This macro is designed for run-time conversion of data - for compile-time endianness
- *        conversion, use \ref CPU_TO_LE32 instead.
- *
- *  \ingroup Group_EndianConversion
- *
- *  \param[in] x  Data to perform the endianness conversion on.
- *
- *  \return Endian corrected version of the input value.
- */
-#define cpu_to_le32(x)           (x)
-
 @*4 Compile-time endianness conversion.
 
 @ Performs a conversion between a Little Endian encoded 16-bit piece of data and the
@@ -2852,39 +2804,6 @@ conversion, use \ref le16_to_cpu instead.
 
 @<Header files@>=
 #define LE16_TO_CPU(x)           (x)
-
-@ Performs a conversion between a Little Endian encoded 32-bit piece of data and the
-Endianness of the currently selected CPU architecture.
-
-On little endian architectures, this macro does nothing.
-
-\note This macro is designed for compile-time conversion of data - for run time endianness
-      conversion, use \ref le32_to_cpu instead.
-
-@<Header files@>=
-#define LE32_TO_CPU(x)           (x)
-
-@ Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
-is in Little Endian format regardless of the currently selected CPU architecture.
-
-On little endian architectures, this macro does nothing.
-
-\note This macro is designed for compile-time conversion of data - for run-time endianness
-      conversion, use \ref cpu_to_le16 instead.
-
-@<Header files@>=
-#define CPU_TO_LE16(x)           (x)
-
-@ Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
-is in Little Endian format regardless of the currently selected CPU architecture.
-
-On little endian architectures, this macro does nothing.
-
-\note This macro is designed for compile-time conversion of data - for run-time endianness
-        conversion, use \ref cpu_to_le32 instead.
-
-@<Header files@>=
-#define CPU_TO_LE32(x)           (x)
 
 /** Function to reverse the byte ordering of the individual bytes in a n byte value.
  *
@@ -4294,8 +4213,8 @@ inline void USB_Device_GetSerialString(uint16_t* const UnicodeString)
 
 		SerialByte &= 0x0F;
 
-		UnicodeString[SerialCharNum] = cpu_to_le16((SerialByte >= 10) ?
-		   (('A' - 10) + SerialByte) : ('0' + SerialByte));
+		UnicodeString[SerialCharNum] = (SerialByte >= 10) ?
+		   (('A' - 10) + SerialByte) : ('0' + SerialByte);
 	}
 
 	SetGlobalInterruptMask(CurrentGlobalInt);
@@ -5361,9 +5280,9 @@ revision version number to encode.
 
 @<Header files@>=
 #define VERSION_BCD(Major, Minor, Revision) \
-                                          CPU_TO_LE16( ((Major & 0xFF) << 8) | \
+                                          ((Major & 0xFF) << 8) | \
                                                        ((Minor & 0x0F) << 4) | \
-                                                       (Revision & 0x0F) )
+                                                       (Revision & 0x0F)
 
 @*1 USB Configuration Descriptor Attribute Masks.
 
