@@ -1043,44 +1043,21 @@ USBCON &= ~(1 << FRZCLK);
 @ @c
 void USB_Init(void)
 {
-	if (!(USB_Options & USB_OPT_REG_DISABLED))
-	  @<USB REG on@>@;
-	else
-	  @<USB REG off@>@;
+  @<USB REG off@>@;
 
-	if (!(USB_Options & USB_OPT_MANUAL_PLL))
-		PLLFRQ = (1 << PDIV2);
+  if (!(USB_Options & USB_OPT_MANUAL_PLL))
+    PLLFRQ = (1 << PDIV2);
 
-	USB_IsInitialized = true;
+  USB_IsInitialized = true;
 
-	USB_ResetInterface();
+  USB_ResetInterface();
 }
 
-@ @<USB REG on@>=
-UHWCON |=  (1 << UVREGE);
+@ Disable internal 3.3V USB data pad regulator and use AVR's VCC level for the data pads.
+See USB AVR data sheet for more information on the internal pad regulator.
 
-@ @<USB REG off@>=
+@<USB REG off@>=
 UHWCON &= ~(1 << UVREGE);
-
-@ @c
-void USB_Disable(void)
-{
-	USB_INT_DisableAllInterrupts();
-	USB_INT_ClearAllInterrupts();
-
-	@<Detach the device from the USB bus@>@;
-	USB_Controller_Disable();
-
-	if (!(USB_Options & USB_OPT_MANUAL_PLL))
-	  @<USB PLL off@>@;
-
-	if (!(USB_Options & USB_OPT_REG_KEEP_ENABLED))
-	  @<USB REG off@>@;
-
-        USBCON &= ~(1 << OTGPADE); /* disable VBUS pad */
-
-	USB_IsInitialized = false;
-}
 
 @ Remove the device from any
 attached host, ceasing USB communications. If no host is present, this prevents any host from
@@ -1095,7 +1072,7 @@ void USB_ResetInterface(void)
 	USB_INT_DisableAllInterrupts();
 	USB_INT_ClearAllInterrupts();
 
-	USB_Controller_Reset();
+	@<Reset USB controller@>@;
 
 	@<USB CLK unfreeze@>@;
 
@@ -1106,6 +1083,10 @@ void USB_ResetInterface(void)
 
 	USBCON |=  (1 << OTGPADE); /* enable VBUS pad */
 }
+
+@ @<Reset USB controller@>=
+USBCON &= ~(1 << USBE);
+USBCON |=  (1 << USBE);
 
 @ @<Function prototypes@>=
 void USB_Init_Device(void);
@@ -3667,14 +3648,6 @@ Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pip
 
 /** \name USB Controller Option Masks */
 
-/** Regulator disable option mask for \ref USB_Init(). This indicates that the internal
- 3.3V USB data pad
- *  regulator should be disabled and the AVR's VCC level used for the data pads.
- *
- *  \note See USB AVR data sheet for more information on the internal pad regulator.
- */
-#define USB_OPT_REG_DISABLED               (1 << 1)
-
 /** Regulator enable option mask for \ref USB_Init(). This indicates that the internal
  3.3V USB data pad
  *  regulator should be enabled to regulate the data pin voltages from the VBUS level down
@@ -3684,16 +3657,6 @@ Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pip
  *  \note See USB AVR data sheet for more information on the internal pad regulator.
  */
 #define USB_OPT_REG_ENABLED                (0 << 1)
-
-/** Option mask for \ref USB_Init() to keep regulator enabled at all times. Indicates that
- \ref USB_Disable()
- *  should not disable the regulator as it would otherwise. Has no effect if regulator is
- disabled using
- *  \ref USB_OPT_REG_DISABLED.
- *
- *  \note See USB AVR data sheet for more information on the internal pad regulator.
- */
-#define USB_OPT_REG_KEEP_ENABLED           (1 << 3)
 
 /** Manual PLL control option mask for \ref USB_Init(). This indicates to the library that
  the user application
@@ -3776,13 +3739,6 @@ Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pip
  */
 void USB_Init(void);
 
-/** Shuts down the USB interface. This turns off the USB interface after deallocating all USB FIFO
- *  memory, endpoints and pipes. When turned off, no USB functionality can be used until the
- interface
- *  is restarted with the \ref USB_Init() function.
- */
-void USB_Disable(void);
-
 /** Resets the interface, when already initialized. This will re-enumerate the device if
  already connected
  *  to a host, or re-enumerate an already attached device when in host mode.
@@ -3791,24 +3747,6 @@ void USB_ResetInterface(void);
 
 #define USB_Options USE_STATIC_OPTIONS
 
-inline void USB_Controller_Enable(void) ATTR_ALWAYS_INLINE;
-inline void USB_Controller_Enable(void)
-{
-	USBCON |=  (1 << USBE);
-}
-
-inline void USB_Controller_Disable(void) ATTR_ALWAYS_INLINE;
-inline void USB_Controller_Disable(void)
-{
-	USBCON &= ~(1 << USBE);
-}
-
-inline void USB_Controller_Reset(void) ATTR_ALWAYS_INLINE;
-inline void USB_Controller_Reset(void)
-{
-	USBCON &= ~(1 << USBE);
-	USBCON |=  (1 << USBE);
-}
 @* Endpoint.
 @<Header files@>=
 /** Endpoint data read/write definitions.
