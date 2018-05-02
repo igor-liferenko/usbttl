@@ -361,10 +361,8 @@ void SetupHardware(void);
 @ @c
 void SetupHardware(void)
 {
-#if (ARCH == ARCH_AVR8)
-	@<Disable watchdog if enabled by bootloader/fuses@>@;
-	clock_prescale_set(clock_div_1); /* disable clock division */
-#endif
+  @<Disable watchdog if enabled by bootloader/fuses@>@;
+  clock_prescale_set(clock_div_1); /* disable clock division */
   @<Hardware initialization@>@;
 }
 
@@ -2680,28 +2678,6 @@ read and write routines. See each driver's individual documentation for more inf
 on the
 class-specific functions.
 
-@* Hardware Architecture defines.
-Architecture macros for selecting the desired target microcontroller architecture.
-The target architecture is selected in the value of \.{ARCH} via the \.{-D} compiler switch
-to GCC.
-
-We use the Atmel 8-bit AVR (AT90USB* and ATMEGA*U* chips) architecture.
-
-@<Header files@>=
-#define ARCH_AVR8           0
-#define ARCH_           ARCH_AVR8
-
-@* ArchitectureSpecific.
-@<Header files@>=
-/* Architecture specific macros, functions and other definitions, which relate to
- specific architectures.
- */
-
-/** Defines an explicit JTAG break point in the resulting binary via the assembly \c BREAK
- statement. When
- *  a JTAG is used, this causes the program execution to halt when reached until manually resumed.
- */
-#define JTAG_DEBUG_BREAK()              __asm__ __volatile__ ("break" ::)
 @* CompilerSpecific.
 @<Header files@>=
 /* Compiler specific definitions for code optimization and correctness.
