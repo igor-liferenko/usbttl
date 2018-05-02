@@ -2691,20 +2691,6 @@ We use the Atmel 8-bit AVR (AT90USB* and ATMEGA*U* chips) architecture.
 #define ARCH_AVR8           0
 #define ARCH_           ARCH_AVR8
 
-@* BoardTypes.
-@<Header files@>=
-/* Board hardware defines.
- *
- *  Board macros for indicating the chosen physical board hardware to the library.
- These macros should be used when
- *  defining the \c BOARD token to the chosen hardware via the \c -D switch in the
- project makefile.
- *
- */
-
-/** Selects the USBKEY specific LED drivers. */
-#define BOARD_USBKEY               2
-
 @* ArchitectureSpecific.
 @<Header files@>=
 /* Architecture specific macros, functions and other definitions, which relate to
