@@ -506,6 +506,25 @@ UCSR1A = (1 << U2X1);
 UCSR1B = ((1 << RXCIE1) | (1 << TXEN1) | (1 << RXEN1));
 @^see datasheet@>
 
+@ Initializes the USART, ready for serial data transmission and reception. This initializes
+the interface to standard 8-bit, no parity, 1 stop bit settings suitable for most applications.
+
+\\{BaudRate} (|uint32_t|) is serial baud rate, in bits per second. This should be the target
+baud rate regardless of the \\{DoubleSpeed} parameter's value.
+
+\\{DoubleSpeed} (|bool|) enables double speed mode when set, halving the sample time to
+double the baud rate.
+
+@(/dev/null@>=
+UBRR1  = (DoubleSpeed ? SERIAL_2X_UBBRVAL(BaudRate) : SERIAL_UBBRVAL(BaudRate));
+
+UCSR1C = ((1 << UCSZ11) | (1 << UCSZ10));
+UCSR1A = (DoubleSpeed ? (1 << U2X1) : 0);
+UCSR1B = ((1 << TXEN1)  | (1 << RXEN1));
+
+DDRD  |= (1 << 3);
+PORTD |= (1 << 2);
+
 @* USB Device Descriptors. Used in USB device mode. Descriptors are special
 computer-readable structures which the host requests upon device enumeration, to determine
 the device's capabilities and functions.
@@ -7475,9 +7494,6 @@ of data over the USART port.
 application.
 
 @(/dev/null@>=
-// Initialize the serial USART driver before first use, with 9600 baud (and no double-speed mode)
-Serial_Init(9600, false);
-
 // Send a raw byte through the USART
 UDR1 = 0xDC;
 
@@ -7502,62 +7518,11 @@ Returns closest UBRR register value for the given UART frequency.
 @<Header files@>=
 #define SERIAL_2X_UBBRVAL(Baud) ((((F_CPU / 8) + (Baud / 2)) / (Baud)) - 1)
 
-@ @<Header files@>=
-/** Initializes the USART, ready for serial data transmission and reception. This initializes
- the interface to
- *  standard 8-bit, no parity, 1 stop bit settings suitable for most applications.
- *
- *  \param[in] BaudRate     Serial baud rate, in bits per second. This should be the target
- baud rate regardless of the
- *                          \c DoubleSpeed parameter's value.
- *  \param[in] DoubleSpeed  Enables double speed mode when set, halving the sample time to
- double the baud rate.
- */
-inline void Serial_Init(const uint32_t BaudRate, const bool DoubleSpeed);
-inline void Serial_Init(const uint32_t BaudRate, const bool DoubleSpeed)
-{
-	UBRR1  = (DoubleSpeed ? SERIAL_2X_UBBRVAL(BaudRate) : SERIAL_UBBRVAL(BaudRate));
-
-	UCSR1C = ((1 << UCSZ11) | (1 << UCSZ10));
-	UCSR1A = (DoubleSpeed ? (1 << U2X1) : 0);
-	UCSR1B = ((1 << TXEN1)  | (1 << RXEN1));
-
-	DDRD  |= (1 << 3);
-	PORTD |= (1 << 2);
-}
-
-/** Turns off the USART driver, disabling and returning used hardware to their default
- configuration. */
-inline void Serial_Disable(void);
-inline void Serial_Disable(void)
-{
-	UCSR1B = 0;
-	UCSR1A = 0;
-	UCSR1C = 0;
-
-	UBRR1  = 0;
-
-	DDRD  &= ~(1 << 3);
-	PORTD &= ~(1 << 2);
-}
-
 @ Indicates whether there is hardware buffer space for a new transmit on the USART.
 Return true if a character can be queued for transmission immediately, false otherwise.
 
 @<Serial is send-ready@>=
 (UCSR1A & (1 << UDRE1))
-
-@ @<Header files@>=
-/** Indicates whether the hardware USART transmit buffer is completely empty, indicating all
- *  pending transmissions have completed.
- *
- *  \return Boolean \c true if no characters are buffered for transmission, \c false otherwise.
- */
-inline bool Serial_IsSendComplete(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline bool Serial_IsSendComplete(void)
-{
-	return ((UCSR1A & (1 << TXC1)) ? true : false);
-}
 
 @** RingBuffer.
 Lightweight ring (circular) buffer, for fast insertion/deletion of bytes.
