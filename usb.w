@@ -1044,6 +1044,31 @@ USBCON &= ~(1 << FRZCLK);
 
 @* USB Controller definitions for the AVR8 microcontrollers.
 
+@ Main function to initialize and start the USB interface. Once active, the USB interface will
+allow for device connection to a host.
+
+As the USB library relies on interrupts for the enumeration processes,
+the user must enable global interrupts before or shortly after this function is called.
+Interrupts must be enabled within 500ms of this function being called to ensure
+that the host does not time out whilst enumerating the device.
+
+Calling this function when the USB interface is already initialized will cause a complete USB
+interface reset and re-enumeration.
+
+|Mode| is mask indicating what mode the USB interface is to be initialized to,
+a value from the |USB_Modes_t| enum.
+Note, that this parameter does not exist on devices with only one supported USB
+mode (device or host).
+
+|Options| is mask indicating the options which should be used when initializing the USB
+interface to control the USB interface's behavior. This should be
+comprised of a \.{USB\_OPT\_REG\_*} mask to control the regulator, a \.{USB\_OPT\_*\_PLL}
+mask to control the PLL, and a \.{USB\_DEVICE\_OPT\_*} mask (when the device mode is enabled)
+to set the device mode speed.
+
+@<Function prototypes@>=
+void USB_Init(void);
+
 @ @c
 void USB_Init(void)
 {
@@ -2876,10 +2901,6 @@ We use the Atmel 8-bit AVR (AT90USB* and ATMEGA*U* chips) architecture.
  *  manual section "Summary of Compile Tokens".
  */
 
-/* General USB Driver Related Tokens: */
-#define USE_STATIC_OPTIONS (USB_DEVICE_OPT_FULLSPEED | USB_OPT_AUTO_PLL)
-#define USB_DEVICE_ONLY
-
 /* USB Device Mode Driver Related Tokens: */
 #define USE_FLASH_DESCRIPTORS
 #define FIXED_CONTROL_ENDPOINT_SIZE      8
@@ -3645,7 +3666,7 @@ Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pip
 
 /** \name USB Controller Option Masks */
 
-/** Manual PLL control option mask for \ref USB_Init(). This indicates to the library that
+/** Manual PLL control option mask for |USB_Init|. This indicates to the library that
  the user application
  *  will take full responsibility for controlling the AVR's PLL (used to generate the high
  frequency clock
@@ -3654,7 +3675,7 @@ Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pip
  */
 #define USB_OPT_MANUAL_PLL                 (1 << 2)
 
-/** Automatic PLL control option mask for \ref USB_Init(). This indicates to the library that
+/** Automatic PLL control option mask for |USB_Init|. This indicates to the library that
  the library should
  *  take full responsibility for controlling the AVR's PLL (used to generate the high
  frequency clock
@@ -3673,66 +3694,13 @@ Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pip
 #define USB_STREAM_TIMEOUT_MS       100
 
 @ @<Header files@>=
-/** Main function to initialize and start the USB interface. Once active, the USB interface will
- *  allow for device connection to a host when in device mode, or for device enumeration while in
- *  host mode.
- *
- *  As the USB library relies on interrupts for the device and host mode enumeration processes,
- *  the user must enable global interrupts before or shortly after this function is called. In
- *  device mode, interrupts must be enabled within 500ms of this function being called to ensure
- *  that the host does not time out whilst enumerating the device. In host mode, interrupts may be
- *  enabled at the application's leisure however enumeration will not begin of an attached device
- *  until after this has occurred.
- *
- *  Calling this function when the USB interface is already initialized will cause a complete USB
- *  interface reset and re-enumeration.
- *
- *  \param[in] Mode     Mask indicating what mode the USB interface is to be initialized to,
- a value
- *                      from the \ref USB_Modes_t enum.
- *                      \note This parameter does not exist on devices with only one supported USB
- *                            mode (device or host).
- *
- *  \param[in] Options  Mask indicating the options which should be used when initializing the USB
- *                      interface to control the USB interface's behavior. This should be
- comprised of
- *                      a \c USB_OPT_REG_* mask to control the regulator, a \c USB_OPT_*_PLL
- mask to control the
- *                      PLL, and a \c USB_DEVICE_OPT_* mask (when the device mode is enabled)
- to set the device
- *                      mode speed.
- *
- *  \note To reduce the FLASH requirements of the library if only device or host mode is required,
- *        the mode can be statically set in the project makefile by defining the token
- \c USB_DEVICE_ONLY
- *        (for device mode) or \c USB_HOST_ONLY (for host mode), passing the token to the compiler
- *        via the -D switch. If the mode is statically set, this parameter does not exist in the
- *        function prototype.
- *        \n\n
- *
- *  \note To reduce the FLASH requirements of the library if only fixed settings are required,
- *        the options may be set statically in the same manner as the mode (see the Mode
- parameter of
- *        this function). To statically set the USB options, pass in the \c USE_STATIC_OPTIONS
- token,
- *        defined to the appropriate options masks. When the options are statically set, this
- *        parameter does not exist in the function prototype.
- *        \n\n
- *
- *  \note The mode parameter does not exist on devices where only one mode is possible, such as USB
- *        AVR models which only implement the USB device mode in hardware.
- *
- *  \see \ref Group_Device for the \c USB_DEVICE_OPT_* masks.
- */
-void USB_Init(void);
-
 /** Resets the interface, when already initialized. This will re-enumerate the device if
  already connected
  *  to a host, or re-enumerate an already attached device when in host mode.
  */
 void USB_ResetInterface(void);
 
-#define USB_Options USE_STATIC_OPTIONS
+#define USB_Options (USB_DEVICE_OPT_FULLSPEED | USB_OPT_AUTO_PLL)
 
 inline void USB_Controller_Enable(void) ATTR_ALWAYS_INLINE;
 inline void USB_Controller_Enable(void)
@@ -4613,7 +4581,7 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 
 @*4 USB Device Mode Option Masks.
 
-@ Mask for the Options parameter of the \ref USB_Init() function. This indicates that the
+@ Mask for the Options parameter of the |USB_Init| function. This indicates that the
 USB interface should be initialized in low speed (1.5Mb/s) mode.
 
 \note Low Speed mode is not available on all USB AVR models.
@@ -4625,7 +4593,7 @@ USB interface should be initialized in low speed (1.5Mb/s) mode.
 @<Header files@>=
 #define USB_DEVICE_OPT_LOWSPEED            (1 << 0)
 
-@ Mask for the Options parameter of the \ref USB_Init() function. This indicates that the
+@ Mask for the Options parameter of the |USB_Init| function. This indicates that the
 USB interface should be initialized in full speed (12Mb/s) mode.
 @<Header files@>=
 #define USB_DEVICE_OPT_FULLSPEED               (0 << 0)
@@ -5481,7 +5449,7 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
  */
 
 /** Indicates if the USB interface is currently initialized but not necessarily connected to a host
- *  or device (i.e. if \ref USB_Init() has been run). If this is false, all other library
+ *  or device (i.e. if |USB_Init| has been run). If this is false, all other library
  globals related
  *  to the USB driver are invalid.
  *
