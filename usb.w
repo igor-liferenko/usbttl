@@ -316,8 +316,8 @@ RingBuffer_Remove(&USARTtoUSB_Buffer);
 
 @ @<Load the next byte from the USART transmit buffer into the USART if transmit buffer
     space is available@>=
-if (Serial_IsSendReady() && !(RingBuffer_IsEmpty(&USBtoUSART_Buffer)))
-  Serial_SendByte(RingBuffer_Remove(&USBtoUSART_Buffer));
+if (@<Serial is send-ready@> && !(RingBuffer_IsEmpty(&USBtoUSART_Buffer)))
+  UDR1 = RingBuffer_Remove(&USBtoUSART_Buffer); /* transmit a given byte through the USART */
 
 @ LED mask for the library LED driver, to indicate that the USB interface is not ready.
 
@@ -7478,11 +7478,8 @@ application.
 // Initialize the serial USART driver before first use, with 9600 baud (and no double-speed mode)
 Serial_Init(9600, false);
 
-// Send a string through the USART
-Serial_SendString("Test String\r\n");
-
 // Send a raw byte through the USART
-Serial_SendByte(0xDC);
+UDR1 = 0xDC;
 
 // Receive a byte through the USART (or -1 if no data received)
 int16_t DataByte = Serial_ReceiveByte();
@@ -7507,28 +7504,6 @@ Returns closest UBRR register value for the given UART frequency.
 
 @<Header files@>=
 #define SERIAL_2X_UBBRVAL(Baud) ((((F_CPU / 8) + (Baud / 2)) / (Baud)) - 1)
-
-@ Transmits a given NUL terminated string located in program space (FLASH) through the USART.
-
-|FlashStringPtr| is a pointer to a string located in program space.
-
-@<Header files@>=
-void Serial_SendString_P(const char* FlashStringPtr) ATTR_NON_NULL_PTR_ARG(1);
-
-@ Transmits a given NUL terminated string located in SRAM memory through the USART.
-
-|StringPtr| is a pointer to a string located in SRAM space.
-
-@<Header files@>=
-void Serial_SendString(const char* StringPtr) ATTR_NON_NULL_PTR_ARG(1);
-
-@ Transmits a given buffer located in SRAM memory through the USART.
-
-|Buffer| is a pointer to a buffer containing the data to send.
-|Length| is length of the data to send, in bytes.
-
-@<Header files@>=
-void Serial_SendData(const void* Buffer, uint16_t Length) ATTR_NON_NULL_PTR_ARG(1);
 
 @ @<Header files@>=
 /** Initializes the USART, ready for serial data transmission and reception. This initializes
@@ -7579,18 +7554,13 @@ inline bool Serial_IsCharReceived(void)
 	return ((UCSR1A & (1 << RXC1)) ? true : false);
 }
 
-/** Indicates whether there is hardware buffer space for a new transmit on the USART. This
- *  function can be used to determine if a call to \ref Serial_SendByte() will block in advance.
- *
- *  \return Boolean \c true if a character can be queued for transmission immediately,
- \c false otherwise.
- */
-inline bool Serial_IsSendReady(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline bool Serial_IsSendReady(void)
-{
-	return ((UCSR1A & (1 << UDRE1)) ? true : false);
-}
+@ Indicates whether there is hardware buffer space for a new transmit on the USART.
+Return true if a character can be queued for transmission immediately, false otherwise.
 
+@<Serial is send-ready@>=
+(UCSR1A & (1 << UDRE1))
+
+@ @<Header files@>=
 /** Indicates whether the hardware USART transmit buffer is completely empty, indicating all
  *  pending transmissions have completed.
  *
@@ -7600,21 +7570,6 @@ inline bool Serial_IsSendComplete(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLI
 inline bool Serial_IsSendComplete(void)
 {
 	return ((UCSR1A & (1 << TXC1)) ? true : false);
-}
-
-/** Transmits a given byte through the USART.
- *
- *  \note If no buffer space is available in the hardware USART, this function will block. To
- check if
- *        space is available before calling this function, see \ref Serial_IsSendReady().
- *
- *  \param[in] DataByte  Byte to transmit through the USART.
- */
-inline void Serial_SendByte(const char DataByte) ATTR_ALWAYS_INLINE;
-inline void Serial_SendByte(const char DataByte)
-{
-	while (!(Serial_IsSendReady()));
-	UDR1 = DataByte;
 }
 
 /** Receives the next byte from the USART.
