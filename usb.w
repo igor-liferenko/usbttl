@@ -886,7 +886,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 	{
 		USB_INT_Clear(USB_INT_VBUSTI);
 
-		if (USB_VBUS_GetStatus())
+		if (@<VBUS line is high@>)
 		{
 			if (!(USB_Options & USB_OPT_MANUAL_PLL))
 			{
@@ -980,6 +980,13 @@ ISR(USB_COM_vect, ISR_BLOCK)
 	Endpoint_SelectEndpoint(PrevSelectedEndpoint);
 }
 
+@ Determine if the VBUS line is currently high (i.e. the USB host is supplying power).
+True if the VBUS line is currently detecting power from a host,
+false otherwise.
+
+@<VBUS line is high@>=
+USBSTA & (1 << VBUS)
+
 @* USB Controller definitions for the AVR8 microcontrollers.
 
 @ @c
@@ -1004,7 +1011,7 @@ void USB_Disable(void)
 	USB_INT_DisableAllInterrupts();
 	USB_INT_ClearAllInterrupts();
 
-	USB_Detach();
+	@<Detach the device from the USB bus@>@;
 	USB_Controller_Disable();
 
 	if (!(USB_Options & USB_OPT_MANUAL_PLL))
@@ -1017,6 +1024,13 @@ void USB_Disable(void)
 
 	USB_IsInitialized = false;
 }
+
+@ Remove the device from any
+attached host, ceasing USB communications. If no host is present, this prevents any host from
+enumerating the device once attached until |USB_Attach| is called.
+
+@<Detach the device from the USB bus@>=
+UDCON  |=  (1 << DETACH);
 
 @ @c
 void USB_ResetInterface(void)
@@ -3643,30 +3657,7 @@ Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pip
  */
 #define USB_STREAM_TIMEOUT_MS       100
 
-/** Determines if the VBUS line is currently high (i.e. the USB host is supplying power).
- *
- *  \note This function is not available on some AVR models which do not support hardware
- VBUS monitoring.
- *
- *  \return Boolean \c true if the VBUS line is currently detecting power from a host,
- \c false otherwise.
- */
-inline bool USB_VBUS_GetStatus(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline bool USB_VBUS_GetStatus(void)
-{
-	return ((USBSTA & (1 << VBUS)) ? true : false);
-}
-
-/** Detaches the device from the USB bus. This has the effect of removing the device from any
- *  attached host, ceasing USB communications. If no host is present, this prevents any host from
- *  enumerating the device once attached until \ref USB_Attach() is called.
- */
-inline void USB_Detach(void) ATTR_ALWAYS_INLINE;
-inline void USB_Detach(void)
-{
-	UDCON  |=  (1 << DETACH);
-}
-
+@ @<Header files@>=
 /** Attaches the device to the USB bus. This announces the device's presence to any attached
  *  USB host, starting the enumeration process. If no host is present, attaching the device
  *  will allow for enumeration once a host is connected to the device.
