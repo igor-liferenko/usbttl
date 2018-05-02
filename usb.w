@@ -913,21 +913,19 @@ void USB_INT_ClearAllInterrupts(void)
 
 ISR(USB_GEN_vect, ISR_BLOCK)
 {
-	if (USB_INT_HasOccurred(USB_INT_SOFI) && USB_INT_IsEnabled(USB_INT_SOFI))
-	{
-		USB_INT_Clear(USB_INT_SOFI);
+  if (USB_INT_HasOccurred(USB_INT_SOFI) && USB_INT_IsEnabled(USB_INT_SOFI)) {
+    USB_INT_Clear(USB_INT_SOFI);
+    EVENT_USB_Device_StartOfFrame();
+  }
 
-		EVENT_USB_Device_StartOfFrame();
-	}
+  if (USB_INT_HasOccurred(USB_INT_VBUSTI) && USB_INT_IsEnabled(USB_INT_VBUSTI)) {
+    USB_INT_Clear(USB_INT_VBUSTI);
 
-if (USB_INT_HasOccurred(USB_INT_VBUSTI) && USB_INT_IsEnabled(USB_INT_VBUSTI)) {
-  USB_INT_Clear(USB_INT_VBUSTI);
-
-  if (@<VBUS line is high@>) {
-    if (!(USB_Options & USB_OPT_MANUAL_PLL)) {
-      @<USB PLL on@>@;
-				while (!@<USB PLL is ready@>) ;
-			}
+    if (@<VBUS line is high@>) {
+      if (!(USB_Options & USB_OPT_MANUAL_PLL)) {
+        @<USB PLL on@>@;
+        while (!@<USB PLL is ready@>) ;
+      }
 
 			USB_DeviceState = DEVICE_STATE_Powered;
 			EVENT_USB_Device_Connect();
@@ -962,20 +960,21 @@ if (USB_INT_HasOccurred(USB_INT_VBUSTI) && USB_INT_IsEnabled(USB_INT_VBUSTI)) {
       while (!@<USB PLL is ready@>) ;
     }
 
-		@<USB CLK unfreeze@>@;
+    @<USB CLK unfreeze@>@;
 
-		USB_INT_Clear(USB_INT_WAKEUPI);
+    USB_INT_Clear(USB_INT_WAKEUPI);
 
-		USB_INT_Disable(USB_INT_WAKEUPI);
-		USB_INT_Enable(USB_INT_SUSPI);
+    USB_INT_Disable(USB_INT_WAKEUPI);
+    USB_INT_Enable(USB_INT_SUSPI);
 
-		if (USB_Device_ConfigurationNumber)
-		  USB_DeviceState = DEVICE_STATE_Configured;
-		else
-		  USB_DeviceState = (USB_Device_IsAddressSet()) ? DEVICE_STATE_Addressed : DEVICE_STATE_Powered;
+    if (USB_Device_ConfigurationNumber)
+      USB_DeviceState = DEVICE_STATE_Configured;
+    else
+      USB_DeviceState = @<Address of USB Device is set@> ?
+        DEVICE_STATE_Addressed : DEVICE_STATE_Powered;
 
-		EVENT_USB_Device_WakeUp();
-	}
+    EVENT_USB_Device_WakeUp();
+  }
 
 	if (USB_INT_HasOccurred(USB_INT_EORSTI) && USB_INT_IsEnabled(USB_INT_EORSTI))
 	{
@@ -1035,6 +1034,9 @@ USBCON |=  (1 << FRZCLK);
 
 @ @<USB CLK unfreeze@>=
 USBCON &= ~(1 << FRZCLK);
+
+@ @<Address of USB Device is set@>=
+(UDADDR & (1 << ADDEN))
 
 @* USB Controller definitions for the AVR8 microcontrollers.
 
@@ -1769,7 +1771,8 @@ void USB_Device_SetConfiguration(void)
   if (USB_Device_ConfigurationNumber)
     USB_DeviceState = DEVICE_STATE_Configured;
   else
-    USB_DeviceState = (USB_Device_IsAddressSet()) ? DEVICE_STATE_Configured : DEVICE_STATE_Powered;
+    USB_DeviceState = @<Address of USB Device is set@> ?
+      DEVICE_STATE_Configured : DEVICE_STATE_Powered;
 
   EVENT_USB_Device_ConfigurationChanged();
 }
@@ -4750,12 +4753,6 @@ inline void USB_Device_DisableSOFEvents(void) ATTR_ALWAYS_INLINE;
 inline void USB_Device_DisableSOFEvents(void)
 {
 	USB_INT_Disable(USB_INT_SOFI);
-}
-
-inline bool USB_Device_IsAddressSet(void) ATTR_ALWAYS_INLINE;
-inline bool USB_Device_IsAddressSet(void)
-{
-  return (UDADDR & (1 << ADDEN));
 }
 
 inline void USB_Device_GetSerialString(uint16_t* const UnicodeString) ATTR_NON_NULL_PTR_ARG(1);
