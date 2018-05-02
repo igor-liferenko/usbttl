@@ -922,43 +922,35 @@ ISR(USB_GEN_vect, ISR_BLOCK)
     USB_INT_Clear(USB_INT_VBUSTI);
 
     if (@<VBUS line is high@>) {
-      if (!(USB_Options & USB_OPT_MANUAL_PLL)) {
-        @<USB PLL on@>@;
-        while (!@<USB PLL is ready@>) ;
-      }
-
-			USB_DeviceState = DEVICE_STATE_Powered;
-			EVENT_USB_Device_Connect();
-		}
-		else
-		{
-			if (!(USB_Options & USB_OPT_MANUAL_PLL))
-			  @<USB PLL off@>@;
-
-			USB_DeviceState = DEVICE_STATE_Unattached;
-			EVENT_USB_Device_Disconnect();
-		}
-	}
-
-	if (USB_INT_HasOccurred(USB_INT_SUSPI) && USB_INT_IsEnabled(USB_INT_SUSPI))
-	{
-		USB_INT_Disable(USB_INT_SUSPI);
-		USB_INT_Enable(USB_INT_WAKEUPI);
-
-		@<USB CLK freeze@>@;
-
-		if (!(USB_Options & USB_OPT_MANUAL_PLL))
-		  @<USB PLL off@>@;
-
-		USB_DeviceState = DEVICE_STATE_Suspended;
-		EVENT_USB_Device_Suspend();
-	}
-
-  if (USB_INT_HasOccurred(USB_INT_WAKEUPI) && USB_INT_IsEnabled(USB_INT_WAKEUPI)) {
-    if (!(USB_Options & USB_OPT_MANUAL_PLL)) {
       @<USB PLL on@>@;
       while (!@<USB PLL is ready@>) ;
+
+      USB_DeviceState = DEVICE_STATE_Powered;
+      EVENT_USB_Device_Connect();
     }
+    else {
+      @<USB PLL off@>@;
+
+      USB_DeviceState = DEVICE_STATE_Unattached;
+      EVENT_USB_Device_Disconnect();
+    }
+  }
+
+  if (USB_INT_HasOccurred(USB_INT_SUSPI) && USB_INT_IsEnabled(USB_INT_SUSPI)) {
+    USB_INT_Disable(USB_INT_SUSPI);
+    USB_INT_Enable(USB_INT_WAKEUPI);
+
+    @<USB CLK freeze@>@;
+
+    @<USB PLL off@>@;
+
+    USB_DeviceState = DEVICE_STATE_Suspended;
+    EVENT_USB_Device_Suspend();
+  }
+
+  if (USB_INT_HasOccurred(USB_INT_WAKEUPI) && USB_INT_IsEnabled(USB_INT_WAKEUPI)) {
+    @<USB PLL on@>@;
+    while (!@<USB PLL is ready@>) ;
 
     @<USB CLK unfreeze@>@;
 
@@ -1063,8 +1055,7 @@ void USB_Init(void)
 {
   @<USB REG on@>@;
 
-  if (!(USB_Options & USB_OPT_MANUAL_PLL))
-    PLLFRQ = (1 << PDIV2);
+  PLLFRQ = (1 << PDIV2);
 
   USB_IsInitialized = true;
 
@@ -1091,8 +1082,7 @@ void USB_ResetInterface(void)
 
 	@<USB CLK unfreeze@>@;
 
-	if (!(USB_Options & USB_OPT_MANUAL_PLL))
-		@<USB PLL off@>@;
+	@<USB PLL off@>@;
 
 	USB_Init_Device();
 
@@ -1112,9 +1102,6 @@ void USB_Init_Device(void)
 
 	USB_Device_CurrentlySelfPowered = false;
 
-  if (USB_Options & USB_DEVICE_OPT_LOWSPEED)
-    @<Set low speed@>@;
-  else
     @<Set full speed@>@;
 
 	USB_INT_Enable(USB_INT_VBUSTI);
@@ -1135,9 +1122,6 @@ will allow for enumeration once a host is connected to the device.
 
 @<Attach the device to the USB bus@>=
 UDCON  &= ~(1 << DETACH);
-
-@ @<Set low speed@>=
-UDCON |=  (1 << LSM);
 
 @ @<Set full speed@>=
 UDCON &= ~(1 << LSM);
@@ -3688,8 +3672,6 @@ Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pip
  *  to a host, or re-enumerate an already attached device when in host mode.
  */
 void USB_ResetInterface(void);
-
-#define USB_Options (USB_DEVICE_OPT_FULLSPEED | USB_OPT_AUTO_PLL)
 
 inline void USB_Controller_Enable(void) ATTR_ALWAYS_INLINE;
 inline void USB_Controller_Enable(void)
