@@ -1,3 +1,5 @@
+%TODO: convert all functions to lowercase with _
+
 %NOTE: to test, use avr/check.w + see cweb/SERIAL_TODO
 
 %NOTE: do not do via
@@ -888,7 +890,7 @@ if (USB_INT_HasOccurred(USB_INT_VBUSTI) && USB_INT_IsEnabled(USB_INT_VBUSTI)) {
   if (@<VBUS line is high@>) {
     if (!(USB_Options & USB_OPT_MANUAL_PLL)) {
       @<USB PLL on@>@;
-				while (!(USB_PLL_IsReady()));
+				while (!@<USB PLL is ready@>) ;
 			}
 
 			USB_DeviceState = DEVICE_STATE_Powered;
@@ -921,8 +923,8 @@ if (USB_INT_HasOccurred(USB_INT_VBUSTI) && USB_INT_IsEnabled(USB_INT_VBUSTI)) {
   if (USB_INT_HasOccurred(USB_INT_WAKEUPI) && USB_INT_IsEnabled(USB_INT_WAKEUPI)) {
     if (!(USB_Options & USB_OPT_MANUAL_PLL)) {
       @<USB PLL on@>@;
-			while (!(USB_PLL_IsReady()));
-		}
+      while (!@<USB PLL is ready@>) ;
+    }
 
 		USB_CLK_Unfreeze();
 
@@ -980,7 +982,7 @@ True if the VBUS line is currently detecting power from a host,
 false otherwise.
 
 @<VBUS line is high@>=
-USBSTA & (1 << VBUS)
+(USBSTA & (1 << VBUS))
 
 @ @<USB PLL on@>=
 PLLCSR = USB_PLL_PSC;
@@ -988,6 +990,9 @@ PLLCSR = (USB_PLL_PSC | (1 << PLLE));
 
 @ @<USB PLL off@>=
 PLLCSR = 0;
+
+@ @<USB PLL is ready@>=
+(PLLCSR & (1 << PLOCK))
 
 @* USB Controller definitions for the AVR8 microcontrollers.
 
@@ -3734,12 +3739,6 @@ void USB_Disable(void);
 void USB_ResetInterface(void);
 
 #define USB_Options USE_STATIC_OPTIONS
-
-inline bool USB_PLL_IsReady(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline bool USB_PLL_IsReady(void)
-{
-	return ((PLLCSR & (1 << PLOCK)) ? true : false);
-}
 
 inline void USB_REG_On(void) ATTR_ALWAYS_INLINE;
 inline void USB_REG_On(void)
