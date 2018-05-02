@@ -2774,26 +2774,6 @@ Macros and functions for byte (re-)ordering.
 @<Header files@>=
 typedef uint8_t uint_reg_t;
 
-/** Swaps the byte ordering of a 32-bit value at compile-time. Do not use this macro for
- swapping byte orderings
- *  of dynamic values computed at runtime- use \ref SwapEndian_32() instead. The result of
- this macro can be used
- *  inside struct or other variable initializers outside of a function, something that is
- not possible with the
- *  inline function variant.
- *
- *  \hideinitializer
- *
- *  \ingroup Group_ByteSwapping
- *
- *  \param[in] x  32-bit value whose byte ordering is to be swapped.
- *
- *  \return Input value with the byte ordering reversed.
- */
-#define SWAPENDIAN_32(x) \
-   (uint32_t)((((x) & 0xFF000000UL) >> 24UL) | (((x) & 0x00FF0000UL) >> 8UL) | \
-   (((x) & 0x0000FF00UL) << 8UL)  | (((x) & 0x000000FFUL) << 24UL))
-
 /** \name Run-time endianness conversion */
 
 /** Performs a conversion between a Little Endian encoded 16-bit piece of data and the
@@ -2828,22 +2808,6 @@ typedef uint8_t uint_reg_t;
  */
 #define le32_to_cpu(x)           (x)
 
-/** Performs a conversion between a Big Endian encoded 32-bit piece of data and the
- *  Endianness of the currently selected CPU architecture.
- *
- *  On big endian architectures, this macro does nothing.
- *
- *  \note This macro is designed for run-time conversion of data - for compile-time endianness
- *        conversion, use \ref BE32_TO_CPU instead.
- *
- *  \ingroup Group_EndianConversion
- *
- *  \param[in] x  Data to perform the endianness conversion on.
- *
- *  \return Endian corrected version of the input value.
- */
-#define be32_to_cpu(x)           SwapEndian_32(x)
-
 /** Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
  *  is in Little Endian format regardless of the currently selected CPU architecture.
  *
@@ -2876,22 +2840,6 @@ typedef uint8_t uint_reg_t;
  */
 #define cpu_to_le32(x)           (x)
 
-/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
- *  is in Big Endian format regardless of the currently selected CPU architecture.
- *
- *  On big endian architectures, this macro does nothing.
- *
- *  \note This macro is designed for run-time conversion of data - for compile-time endianness
- *        conversion, use \ref CPU_TO_BE32 instead.
- *
- *  \ingroup Group_EndianConversion
- *
- *  \param[in] x  Data to perform the endianness conversion on.
- *
- *  \return Endian corrected version of the input value.
- */
-#define cpu_to_be32(x)           SwapEndian_32(x)
-
 @*4 Compile-time endianness conversion.
 
 @ Performs a conversion between a Little Endian encoded 16-bit piece of data and the
@@ -2916,17 +2864,6 @@ On little endian architectures, this macro does nothing.
 @<Header files@>=
 #define LE32_TO_CPU(x)           (x)
 
-@ Performs a conversion between a Big Endian encoded 32-bit piece of data and the
-Endianness of the currently selected CPU architecture.
-
-On big endian architectures, this macro does nothing.
-
-\note This macro is designed for compile-time conversion of data - for run-time endianness
-       conversion, use \ref be32_to_cpu instead.
-
-@<Header files@>=
-#define BE32_TO_CPU(x)           SWAPENDIAN_32(x)
-
 @ Performs a conversion on a natively encoded 16-bit piece of data to ensure that it
 is in Little Endian format regardless of the currently selected CPU architecture.
 
@@ -2948,58 +2885,6 @@ On little endian architectures, this macro does nothing.
 
 @<Header files@>=
 #define CPU_TO_LE32(x)           (x)
-
-/** Performs a conversion on a natively encoded 32-bit piece of data to ensure that it
- *  is in Big Endian format regardless of the currently selected CPU architecture.
- *
- *  On big endian architectures, this macro does nothing.
- *
- *  \note This macro is designed for compile-time conversion of data - for run-time endianness
- *        conversion, use \ref cpu_to_be32 instead.
- *
- *  \ingroup Group_EndianConversion
- *
- *  \param[in] x  Data to perform the endianness conversion on.
- *
- *  \return Endian corrected version of the input value.
- */
-#define CPU_TO_BE32(x)           SWAPENDIAN_32(x)
-
-/** Function to reverse the byte ordering of the individual bytes in a 32 bit value.
- *
- *  \ingroup Group_ByteSwapping
- *
- *  \param[in] DWord  Double word of data whose bytes are to be swapped.
- *
- *  \return Input data with the individual bytes reversed.
- */
-inline uint32_t SwapEndian_32(const uint32_t DWord) ATTR_WARN_UNUSED_RESULT
-  ATTR_CONST ATTR_ALWAYS_INLINE;
-inline uint32_t SwapEndian_32(const uint32_t DWord)
-{
-	if (GCC_IS_COMPILE_CONST(DWord))
-	  return SWAPENDIAN_32(DWord);
-
-	uint8_t Temp;
-
-	union
-	{
-		uint32_t DWord;
-		uint8_t  Bytes[4];
-	} Data;
-
-	Data.DWord = DWord;
-
-	Temp = Data.Bytes[0];
-	Data.Bytes[0] = Data.Bytes[3];
-	Data.Bytes[3] = Temp;
-
-	Temp = Data.Bytes[1];
-	Data.Bytes[1] = Data.Bytes[2];
-	Data.Bytes[2] = Temp;
-
-	return Data.DWord;
-}
 
 /** Function to reverse the byte ordering of the individual bytes in a n byte value.
  *
