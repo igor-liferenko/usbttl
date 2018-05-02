@@ -1072,13 +1072,19 @@ enumerating the device once attached until |USB_Attach| is called.
 @<Detach the device from the USB bus@>=
 UDCON  |=  (1 << DETACH);
 
+@ Resets the interface, when already initialized. This will re-enumerate the device if
+already connected to a host.
+
+@<Function prototypes@>=
+void USB_ResetInterface(void);
+
 @ @c
 void USB_ResetInterface(void)
 {
 	USB_INT_DisableAllInterrupts();
 	USB_INT_ClearAllInterrupts();
 
-	USB_Controller_Reset();
+	@<Reset USB controller@>@;
 
 	@<USB CLK unfreeze@>@;
 
@@ -1088,6 +1094,10 @@ void USB_ResetInterface(void)
 
 	USBCON |=  (1 << OTGPADE); /* enable VBUS pad */
 }
+
+@ @<Reset USB controller@>=
+USBCON &= ~(1 << USBE);
+USBCON |=  (1 << USBE);
 
 @ @<Function prototypes@>=
 void USB_Init_Device(void);
@@ -3666,31 +3676,6 @@ Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pip
  */
 #define USB_STREAM_TIMEOUT_MS       100
 
-@ @<Header files@>=
-/** Resets the interface, when already initialized. This will re-enumerate the device if
- already connected
- *  to a host, or re-enumerate an already attached device when in host mode.
- */
-void USB_ResetInterface(void);
-
-inline void USB_Controller_Enable(void) ATTR_ALWAYS_INLINE;
-inline void USB_Controller_Enable(void)
-{
-	USBCON |=  (1 << USBE);
-}
-
-inline void USB_Controller_Disable(void) ATTR_ALWAYS_INLINE;
-inline void USB_Controller_Disable(void)
-{
-	USBCON &= ~(1 << USBE);
-}
-
-inline void USB_Controller_Reset(void) ATTR_ALWAYS_INLINE;
-inline void USB_Controller_Reset(void)
-{
-	USBCON &= ~(1 << USBE);
-	USBCON |=  (1 << USBE);
-}
 @* Endpoint.
 @<Header files@>=
 /** Endpoint data read/write definitions.
