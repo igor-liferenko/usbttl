@@ -880,6 +880,21 @@ void EVENT_USB_Device_Reset(void)
 
 @* Main USB service task management.
 
+@ This is the main USB management task. The USB driver requires this task to be executed
+continuously when the USB system is active (attached to a host)
+in order to manage USB communications. This task may be executed inside an RTOS,
+fast timer ISR or the main user application loop.
+
+The USB task must be serviced within 30ms.
+The task may be serviced at all times, or (for minimum CPU consumption)
+it may be disabled at start-up, enabled on the firing of the |EVENT_USB_Device_Connect|
+event and disabled again on the firing of the |EVENT_USB_Device_Disconnect| event.
+
+In this program the control endpoint is instead managed via interrupts entirely.
+
+@<Function prototypes@>=
+void USB_DeviceTask(void);
+
 @ @c
 void USB_DeviceTask(void)
 {
@@ -1056,8 +1071,6 @@ void USB_Init(void)
   @<USB REG on@>@;
 
   PLLFRQ = (1 << PDIV2);
-
-  USB_IsInitialized = true;
 
   USB_ResetInterface();
 }
@@ -2781,52 +2794,31 @@ token to reduce the compiled size of the binary at the expense of flexibility.
 
 @* Common.
 
-@<Header files@>=
-/** Function to reverse the individual bits in a byte - i.e. bit 7 is moved to bit 0,
- bit 6 to bit 1,
- *  etc.
- *
- *  \param[in] Byte  Byte of data whose bits are to be reversed.
- *
- *  \return Input data with the individual bits reversed (mirrored).
- */
-inline uint8_t BitReverse(uint8_t Byte) ATTR_WARN_UNUSED_RESULT ATTR_CONST;
-inline uint8_t BitReverse(uint8_t Byte)
-{
-	Byte = (((Byte & 0xF0) >> 4) | ((Byte & 0x0F) << 4));
-	Byte = (((Byte & 0xCC) >> 2) | ((Byte & 0x33) << 2));
-	Byte = (((Byte & 0xAA) >> 1) | ((Byte & 0x55) << 1));
+@ Retrieves a mask which contains the current state of the global interrupts for the device. This
+value can be stored before altering the global interrupt enable state, before restoring the
+flag(s) back to their previous values after a critical section using
+|SetGlobalInterruptMask|.
 
-	return Byte;
-}
+Returns mask containing the current Global Interrupt Enable Mask bit(s).
 
-/** Retrieves a mask which contains the current state of the global interrupts for the device. This
- *  value can be stored before altering the global interrupt enable state, before restoring the
- *  flag(s) back to their previous values after a critical section using
- \ref SetGlobalInterruptMask().
- *
- *  \ingroup Group_GlobalInt
- *
- *  \return  Mask containing the current Global Interrupt Enable Mask bit(s).
- */
+@<Function prototypes@>=
 inline uint8_t GetGlobalInterruptMask(void) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
+@ @c
 inline uint8_t GetGlobalInterruptMask(void)
 {
 	GCC_MEMORY_BARRIER();
 	return SREG;
 }
 
-/** Sets the global interrupt enable state of the microcontroller to the mask passed
- into the function.
- *  This can be combined with \ref GetGlobalInterruptMask() to save and restore the
- Global Interrupt Enable
- *  Mask bit(s) of the device after a critical section has completed.
- *
- *  \ingroup Group_GlobalInt
- *
- *  \param[in] GlobalIntState  Global Interrupt Enable Mask value to use
- */
+@ Sets the global interrupt enable state of the microcontroller to the mask passed
+into the function.
+This can be combined with |GetGlobalInterruptMask| to save and restore the
+Global Interrupt Enable
+Mask bit(s) of the device after a critical section has completed.
+
+@<Function prototypes@>=
 inline void SetGlobalInterruptMask(const uint8_t GlobalIntState) ATTR_ALWAYS_INLINE;
+@ @c
 inline void SetGlobalInterruptMask(const uint8_t GlobalIntState)
 {
 	GCC_MEMORY_BARRIER();
@@ -2836,11 +2828,11 @@ inline void SetGlobalInterruptMask(const uint8_t GlobalIntState)
 	GCC_MEMORY_BARRIER();
 }
 
-/** Enables global interrupt handling for the device, allowing interrupts to be handled.
- *
- *  \ingroup Group_GlobalInt
- */
+@ Enables global interrupt handling for the device, allowing interrupts to be handled.
+
+@<Function prototypes@>=
 inline void GlobalInterruptEnable(void) ATTR_ALWAYS_INLINE;
+@ @c
 inline void GlobalInterruptEnable(void)
 {
 	GCC_MEMORY_BARRIER();
@@ -2850,11 +2842,11 @@ inline void GlobalInterruptEnable(void)
 	GCC_MEMORY_BARRIER();
 }
 
-/** Disabled global interrupt handling for the device, preventing interrupts from being handled.
- *
- *  \ingroup Group_GlobalInt
- */
+@ Disabled global interrupt handling for the device, preventing interrupts from being handled.
+
+@<Function prototypes@>=
 inline void GlobalInterruptDisable(void) ATTR_ALWAYS_INLINE;
+@ @c
 inline void GlobalInterruptDisable(void)
 {
 	GCC_MEMORY_BARRIER();
@@ -2863,17 +2855,7 @@ inline void GlobalInterruptDisable(void)
 
 	GCC_MEMORY_BARRIER();
 }
-@* USBMode.
-@<Header files@>=
-/** USB mode and feature support definitions.
- *
- *  This defines macros indicating the type of USB controller, and its
- *  capabilities.
- */
 
-
-#define USB_SERIES_4_AVR
-#define USB_CAN_BE_DEVICE
 @* USBInterrupt AVR8.
 @<Header files@>=
 /** USB Controller Interrupt definitions for the AVR8 microcontrollers.
@@ -4853,39 +4835,17 @@ Note that the status stage packet is sent or received in the opposite direction 
 uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
                                           uint16_t Length) ATTR_NON_NULL_PTR_ARG(1);
 @* USBTask.
-@<Header files@>=
-/** Main USB service task management.
- *
- *  This contains the function definitions required for the main USB service task,
- which must be called
- *  to ensure that the USB connection to or from a connected USB device is maintained.
- */
+Main USB service task management.
 
-/** Indicates if the USB interface is currently initialized but not necessarily connected to a host
- *  or device (i.e. if |USB_Init| has been run). If this is false, all other library
- globals related
- *  to the USB driver are invalid.
- *
- *  \attention This variable should be treated as read-only in the user application, and
- never manually
- *             changed in value.
- *
- *  \ingroup Group_USBManagement
- */
- volatile bool USB_IsInitialized;
+This contains the function definitions required for the main USB service task,
+which must be called to ensure that the USB connection to a connected USB device
+is maintained.
 
-/** Structure containing the last received Control request when in Device mode (for use in
- user-applications
- *  inside of the \ref EVENT_USB_Device_ControlRequest() event, or for filling up with a
- control request to
- *  issue when in Host mode before calling \ref USB_Host_SendControlRequest().
- *
- *  \note The contents of this structure is automatically endian-corrected for the current
- CPU architecture.
- *
- *  \ingroup Group_USBManagement
- */
- USB_Request_Header_t USB_ControlRequest;
+@ Structure containing the last received Control request for use
+inside of the |EVENT_USB_Device_ControlRequest| event.
+
+@<Global variables@>=
+USB_Request_Header_t USB_ControlRequest;
 
 @ One of the most frequently used global variables in the stack is the |USB_DeviceState|
 global, which indicates the current state of the Device State Machine. To reduce the
@@ -4902,20 +4862,6 @@ not be used within the user application except implicitly via the library APIs.
 #define CONCAT_EXPANDED(x, y)   CONCAT(x, y)
 #define USB_DeviceState CONCAT_EXPANDED(GPIOR, DEVICE_STATE_AS_GPIOR) /* expands into
   |(*(volatile uint8_t *)((0x1E) + 0x20))| */
-
-/** This is the main USB management task. The USB driver requires this task to be executed
- *  continuously when the USB system is active (attached to a host)
- *  in order to manage USB communications. This task may be executed inside an RTOS,
- *  fast timer ISR or the main user application loop.
- *
- *  The USB task must be serviced within 30ms.
- *  The task may be serviced at all times, or (for minimum CPU consumption)
- *   it may be disabled at start-up, enabled on the firing of the \ref EVENT_USB_Device_Connect()
- *      event and disabled again on the firing of the \ref EVENT_USB_Device_Disconnect() event.
- *
- *  The control endpoint is instead managed via interrupts entirely in this program.
- */
-void USB_DeviceTask(void);
 
 @* Events.
 @<Header files@>=
