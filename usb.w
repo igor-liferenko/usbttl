@@ -251,7 +251,7 @@ int main(void)
     sizeof USARTtoUSB_Buffer_Data);
 
   @<Indicate that USB device is disconnected@>@;
-  GlobalInterruptEnable();
+  @<Enable global interrupt@>@;
 
   while (1) {
     @<Only try to read in bytes from the CDC interface if the transmit buffer...@>@;
@@ -1010,7 +1010,7 @@ ISR(USB_COM_vect, ISR_BLOCK)
 	Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
 	USB_INT_Disable(USB_INT_RXSTPI);
 
-	GlobalInterruptEnable();
+  @<Enable global interrupt@>@;
 
 	USB_Device_ProcessControlRequest();
 
@@ -2797,64 +2797,38 @@ token to reduce the compiled size of the binary at the expense of flexibility.
 @ Retrieves a mask which contains the current state of the global interrupts for the device. This
 value can be stored before altering the global interrupt enable state, before restoring the
 flag(s) back to their previous values after a critical section using
-|SetGlobalInterruptMask|.
+|@<Set global interrupt mask@>|.
 
-Returns mask containing the current Global Interrupt Enable Mask bit(s).
+|SREG| contains mask containing the current Global Interrupt Enable Mask bit(s).
 
-@<Header...@>=
-inline uint8_t GetGlobalInterruptMask(void) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
-@ @c
-inline uint8_t GetGlobalInterruptMask(void)
-{
-	GCC_MEMORY_BARRIER();
-	return SREG;
-}
+@<Get global interrupt mask@>=
+GCC_MEMORY_BARRIER();
+CurrentGlobalInt = SREG;
 
 @ Sets the global interrupt enable state of the microcontroller to the mask passed
 into the function.
-This can be combined with |GetGlobalInterruptMask| to save and restore the
+This can be combined with |@<Get global interrupt mask@>| to save and restore the
 Global Interrupt Enable
 Mask bit(s) of the device after a critical section has completed.
 
-@<Header...@>=
-inline void SetGlobalInterruptMask(const uint8_t GlobalIntState) ATTR_ALWAYS_INLINE;
-@ @c
-inline void SetGlobalInterruptMask(const uint8_t GlobalIntState)
-{
-	GCC_MEMORY_BARRIER();
+@<Set global interrupt mask@>=
+GCC_MEMORY_BARRIER();
+SREG = CurrentGlobalInt;
+GCC_MEMORY_BARRIER();
 
-	SREG = GlobalIntState;
+@ Allow interrupts to be handled.
 
-	GCC_MEMORY_BARRIER();
-}
+@<Enable global interrupt@>=
+GCC_MEMORY_BARRIER();
+sei();
+GCC_MEMORY_BARRIER();
 
-@ Enables global interrupt handling for the device, allowing interrupts to be handled.
+@ Prevent interrupts from being handled.
 
-@<Header...@>=
-inline void GlobalInterruptEnable(void) ATTR_ALWAYS_INLINE;
-@ @c
-inline void GlobalInterruptEnable(void)
-{
-	GCC_MEMORY_BARRIER();
-
-	sei();
-
-	GCC_MEMORY_BARRIER();
-}
-
-@ Disabled global interrupt handling for the device, preventing interrupts from being handled.
-
-@<Header...@>=
-inline void GlobalInterruptDisable(void) ATTR_ALWAYS_INLINE;
-@ @c
-inline void GlobalInterruptDisable(void)
-{
-	GCC_MEMORY_BARRIER();
-
-	cli();
-
-	GCC_MEMORY_BARRIER();
-}
+@<Disable global interrupt@>=
+GCC_MEMORY_BARRIER();
+cli();
+GCC_MEMORY_BARRIER();
 
 @* USBInterrupt AVR8.
 @<Header files@>=
@@ -4064,10 +4038,11 @@ inline void USB_Device_DisableSOFEvents(void)
 inline void USB_Device_GetSerialString(uint16_t* const UnicodeString) ATTR_NON_NULL_PTR_ARG(1);
 inline void USB_Device_GetSerialString(uint16_t* const UnicodeString)
 {
-	uint8_t CurrentGlobalInt = GetGlobalInterruptMask();
-	GlobalInterruptDisable();
+  uint8_t CurrentGlobalInt;
+  @<Get global interrupt mask@>@;
+  @<Disable global interrupt@>@;
 
-	uint8_t SigReadAddress = INTERNAL_SERIAL_START_ADDRESS;
+  uint8_t SigReadAddress = INTERNAL_SERIAL_START_ADDRESS;
 
   for (uint8_t SerialCharNum = 0; SerialCharNum < (INTERNAL_SERIAL_LENGTH_BITS / 4);
     SerialCharNum++) {
@@ -4084,7 +4059,7 @@ inline void USB_Device_GetSerialString(uint16_t* const UnicodeString)
 		   (('A' - 10) + SerialByte) : ('0' + SerialByte);
 	}
 
-	SetGlobalInterruptMask(CurrentGlobalInt);
+  @<Set global interrupt mask@>@;
 }
 @* StdRequestType.
 @<Header files@>=
@@ -6878,10 +6853,10 @@ inline void RingBuffer_InitBuffer(RingBuffer_t* Buffer,
                                         uint8_t* const DataPtr,
                                         const uint16_t Size)
 {
-	GCC_FORCE_POINTER_ACCESS(Buffer);
-
-	uint8_t CurrentGlobalInt = GetGlobalInterruptMask();
-	GlobalInterruptDisable();
+  GCC_FORCE_POINTER_ACCESS(Buffer);
+  uint8_t CurrentGlobalInt;
+  @<Get global interrupt mask@>@;
+  @<Disable global interrupt@>@;
 
 	Buffer->In     = DataPtr;
 	Buffer->Out    = DataPtr;
@@ -6890,7 +6865,7 @@ inline void RingBuffer_InitBuffer(RingBuffer_t* Buffer,
 	Buffer->Size   = Size;
 	Buffer->Count  = 0;
 
-	SetGlobalInterruptMask(CurrentGlobalInt);
+  @<Set global interrupt mask@>@;
 }
 
 @ Retrieves the current number of bytes stored in a particular buffer. This value is computed
@@ -6912,14 +6887,15 @@ inline uint16_t RingBuffer_GetCount(RingBuffer_t* const Buffer) ATTR_WARN_UNUSED
   ATTR_NON_NULL_PTR_ARG(1);
 inline uint16_t RingBuffer_GetCount(RingBuffer_t* const Buffer)
 {
-	uint16_t Count;
+  uint16_t Count;
 
-	uint8_t CurrentGlobalInt = GetGlobalInterruptMask();
-	GlobalInterruptDisable();
+  uint8_t CurrentGlobalInt;
+  @<Get global interrupt mask@>@;
+  @<Disable global interrupt@>@;
 
-	Count = Buffer->Count;
+  Count = Buffer->Count;
 
-	SetGlobalInterruptMask(CurrentGlobalInt);
+  @<Set global interrupt mask@>@;
 	return Count;
 }
 
@@ -6999,12 +6975,13 @@ inline void RingBuffer_Insert(RingBuffer_t* Buffer, const uint8_t Data)
 	if (++Buffer->In == Buffer->End)
 	  Buffer->In = Buffer->Start;
 
-	uint8_t CurrentGlobalInt = GetGlobalInterruptMask();
-	GlobalInterruptDisable();
+  uint8_t CurrentGlobalInt;
+  @<Get global interrupt mask@>@;
+  @<Disable global interrupt@>@;
 
 	Buffer->Count++;
 
-	SetGlobalInterruptMask(CurrentGlobalInt);
+  @<Set global interrupt mask@>@;
 }
 
 @ Removes an element from the ring buffer.
@@ -7028,12 +7005,13 @@ inline uint8_t RingBuffer_Remove(RingBuffer_t* Buffer)
 	if (++Buffer->Out == Buffer->End)
 	  Buffer->Out = Buffer->Start;
 
-	uint8_t CurrentGlobalInt = GetGlobalInterruptMask();
-	GlobalInterruptDisable();
+  uint8_t CurrentGlobalInt;
+  @<Get global interrupt mask@>@;
+  @<Disable global interrupt@>@;
 
 	Buffer->Count--;
 
-	SetGlobalInterruptMask(CurrentGlobalInt);
+  @<Set global interrupt mask@>@;
 
 	return Data;
 }
