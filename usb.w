@@ -2801,7 +2801,7 @@ flag(s) back to their previous values after a critical section using
 
 Returns mask containing the current Global Interrupt Enable Mask bit(s).
 
-@<Function prototypes@>=
+@<Header...@>=
 inline uint8_t GetGlobalInterruptMask(void) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
 @ @c
 inline uint8_t GetGlobalInterruptMask(void)
@@ -2816,7 +2816,7 @@ This can be combined with |GetGlobalInterruptMask| to save and restore the
 Global Interrupt Enable
 Mask bit(s) of the device after a critical section has completed.
 
-@<Function prototypes@>=
+@<Header...@>=
 inline void SetGlobalInterruptMask(const uint8_t GlobalIntState) ATTR_ALWAYS_INLINE;
 @ @c
 inline void SetGlobalInterruptMask(const uint8_t GlobalIntState)
@@ -2830,7 +2830,7 @@ inline void SetGlobalInterruptMask(const uint8_t GlobalIntState)
 
 @ Enables global interrupt handling for the device, allowing interrupts to be handled.
 
-@<Function prototypes@>=
+@<Header...@>=
 inline void GlobalInterruptEnable(void) ATTR_ALWAYS_INLINE;
 @ @c
 inline void GlobalInterruptEnable(void)
@@ -2844,7 +2844,7 @@ inline void GlobalInterruptEnable(void)
 
 @ Disabled global interrupt handling for the device, preventing interrupts from being handled.
 
-@<Function prototypes@>=
+@<Header...@>=
 inline void GlobalInterruptDisable(void) ATTR_ALWAYS_INLINE;
 @ @c
 inline void GlobalInterruptDisable(void)
