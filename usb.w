@@ -1447,7 +1447,8 @@ uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 
 	Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataINEndpoint.Address);
 
-	if (!(Endpoint_BytesInEndpoint()))
+	if (@<Number of bytes in endpoint@>
+            == 0)
 	  return ENDPOINT_READYWAIT_NoError;
 
 	bool BankFull = !(Endpoint_IsReadWriteAllowed());
@@ -1476,14 +1477,14 @@ uint16_t CDC_Device_BytesReceived(USB_ClassInfo_CDC_Device_t* const CDCInterface
 
 	if (Endpoint_IsOUTReceived())
 	{
-		if (!(Endpoint_BytesInEndpoint()))
-		{
+		if (@<Number of bytes in endpoint@>
+                    == 0) {
 			Endpoint_ClearOUT();
 			return 0;
 		}
 		else
 		{
-			return Endpoint_BytesInEndpoint();
+			return @<Number of bytes in endpoint@>;
 		}
 	}
 	else
@@ -1505,10 +1506,11 @@ int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInf
 
 	if (Endpoint_IsOUTReceived())
 	{
-		if (Endpoint_BytesInEndpoint())
+		if (@<Number of bytes in endpoint@> != 0)
 		  ReceivedByte = Endpoint_Read_8();
 
-		if (!(Endpoint_BytesInEndpoint()))
+		if (@<Number of bytes in endpoint@>
+                    == 0)
 		  Endpoint_ClearOUT();
 	}
 
@@ -2215,7 +2217,7 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 
 		if (Endpoint_IsINReady())
 		{
-			uint16_t BytesInEndpoint = Endpoint_BytesInEndpoint();
+			uint16_t BytesInEndpoint = @<Number of bytes in endpoint@>;
 
 			while (Length && (BytesInEndpoint < USB_Device_ControlEndpointSize))
 			{
@@ -2272,7 +2274,7 @@ uint8_t Endpoint_Write_Control_Stream_BE(const void* const Buffer,
 
 		if (Endpoint_IsINReady())
 		{
-			uint16_t BytesInEndpoint = Endpoint_BytesInEndpoint();
+			uint16_t BytesInEndpoint = @<Number of bytes in endpoint@>;
 
 			while (Length && (BytesInEndpoint < USB_Device_ControlEndpointSize))
 			{
@@ -2323,7 +2325,7 @@ uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer, uint16_t Length)
 
 		if (Endpoint_IsOUTReceived())
 		{
-			while (Length && Endpoint_BytesInEndpoint())
+			while (Length && @<Number of bytes in endpoint@> != 0)
 			{
 				*DataStream = Endpoint_Read_8();
 				DataStream += 1;
@@ -2368,7 +2370,7 @@ uint8_t Endpoint_Read_Control_Stream_BE(void* const Buffer, uint16_t Length)
 
 		if (Endpoint_IsOUTReceived())
 		{
-			while (Length && Endpoint_BytesInEndpoint())
+			while (Length && @<Number of bytes in endpoint@> != 0)
 			{
 				*DataStream = Endpoint_Read_8();
 				DataStream -= 1;
@@ -2419,7 +2421,7 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 
 		if (Endpoint_IsINReady())
 		{
-			uint16_t BytesInEndpoint = Endpoint_BytesInEndpoint();
+			uint16_t BytesInEndpoint = @<Number of bytes in endpoint@>;
 
 			while (Length && (BytesInEndpoint < USB_Device_ControlEndpointSize))
 			{
@@ -3239,12 +3241,8 @@ inline bool Endpoint_ConfigureEndpoint(const uint8_t Address,
 @ Indicates the number of bytes currently stored in the current endpoint's selected bank.
 Returns total number of bytes in the currently selected Endpoint's FIFO buffer.
 
-@<Header files@>=
-inline uint16_t Endpoint_BytesInEndpoint(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline uint16_t Endpoint_BytesInEndpoint(void)
-{
-		return (((uint16_t)UEBCHX << 8) | UEBCLX);
-}
+@<Number of bytes in endpoint@>=
+(((uint16_t)UEBCHX << 8) | UEBCLX)
 
 @ Determines the currently selected endpoint's direction.
 Returns the currently selected endpoint's direction, as a \.{ENDPOINT\_DIR\_*} mask.
