@@ -1160,51 +1160,6 @@ bool Endpoint_ConfigureEndpointTable(const USB_Endpoint_Table_t* const Table,
 }
 
 @ @c
-bool Endpoint_ConfigureEndpoint_Prv(const uint8_t Number,
-                                    const uint8_t UECFG0XData,
-                                    const uint8_t UECFG1XData)
-{
-	for (uint8_t EPNum = Number; EPNum < ENDPOINT_TOTAL_ENDPOINTS; EPNum++)
-	{
-		uint8_t UECFG0XTemp;
-		uint8_t UECFG1XTemp;
-		uint8_t UEIENXTemp;
-
-		Endpoint_SelectEndpoint(EPNum);
-
-		if (EPNum == Number)
-		{
-			UECFG0XTemp = UECFG0XData;
-			UECFG1XTemp = UECFG1XData;
-			UEIENXTemp  = 0;
-		}
-		else
-		{
-			UECFG0XTemp = UECFG0X;
-			UECFG1XTemp = UECFG1X;
-			UEIENXTemp  = UEIENX;
-		}
-
-		if (!(UECFG1XTemp & (1 << ALLOC)))
-		  continue;
-
-		Endpoint_DisableEndpoint();
-		UECFG1X &= ~(1 << ALLOC);
-
-		Endpoint_EnableEndpoint();
-		UECFG0X = UECFG0XTemp;
-		UECFG1X = UECFG1XTemp;
-		UEIENX  = UEIENXTemp;
-
-		if (!(Endpoint_IsConfigured()))
-		  return false;
-	}
-
-	Endpoint_SelectEndpoint(Number);
-	return true;
-}
-
-@ @c
 void Endpoint_ClearEndpoints(void)
 {
 	UEINT = 0;
@@ -3100,68 +3055,47 @@ is not received or acknowledged within this time period, the stream function wil
 #define USB_STREAM_TIMEOUT_MS       100
 
 @* Endpoint.
-@<Header files@>=
-/** Endpoint data read/write definitions.
- *
- *  Functions, macros, variables, enums and types related to data reading and writing from and
- to endpoints.
- */
+Endpoint data read/write definitions.
+Functions, macros, variables, enums and types related to data reading and writing from and
+to endpoints.
 
-/* USB Endpoint package management definitions.
- *
- *  Functions, macros, variables, enums and types related to packet management of endpoints.
- */
-
-/** Endpoint management definitions.
- *
- *  Functions, macros and enums related to endpoint management when in USB Device mode. This
- *  contains the endpoint management macros, as well as endpoint interrupt and data
- *  send/receive functions for various data types.
- *
- */
-
-/** Type define for a endpoint table entry, used to configure endpoints in groups via
- *  \ref Endpoint_ConfigureEndpointTable().
- */
-typedef struct
-{
-	uint8_t  Address; /**< Address of the endpoint to configure, or zero if the table
- entry is to be unused. */
-	uint16_t Size; /**< Size of the endpoint bank, in bytes. */
-	uint8_t  Banks; /**< Number of hardware banks to use for the endpoint. */
-        uint8_t  Type; /**< Type of the endpoint, a \c EP_TYPE_* mask. */
-} USB_Endpoint_Table_t;
-
-/** Endpoint number mask, for masking against endpoint addresses to retrieve the endpoint's
- *  numerical address in the device.
- */
-#define ENDPOINT_EPNUM_MASK                     0x0F
-
-/** Endpoint address for the default control endpoint, which always resides in address 0. This is
- *  defined for convenience to give more readable code when used with the endpoint macros.
- */
-#define ENDPOINT_CONTROLEP                      0
-
-@* Endpoint AVR8.
-USB Endpoint definitions for the AVR8 microcontrollers.
-Endpoint data read/write definitions for the Atmel AVR8 architecture.
-Functions, macros, variables, enums and types related to data reading and writing from
-and to endpoints.
-Endpoint primitive read/write definitions for the Atmel AVR8 architecture.
-Functions, macros, variables, enums and types related to data reading and writing of
-primitive data types from and to endpoints.
-Endpoint packet management definitions for the Atmel AVR8 architecture.
+USB Endpoint package management definitions.
 Functions, macros, variables, enums and types related to packet management of endpoints.
 
-@*1 Endpoint management definitions for the Atmel AVR8 architecture.
-
+Endpoint management definitions.
 Functions, macros and enums related to endpoint management. This
-module contains the endpoint management macros, as well as endpoint interrupt and data
+contains the endpoint management macros, as well as endpoint interrupt and data
 send/receive functions for various data types.
 
+@ Type define for a endpoint table entry, used to configure endpoints in groups via
+|Endpoint_ConfigureEndpointTable|.
+
 @<Header files@>=
+typedef struct
+{
+	uint8_t  Address; /* address of the endpoint to configure, or zero if the table
+ entry is to be unused */
+	uint16_t Size; /* size of the endpoint bank, in bytes */
+	uint8_t  Banks; /* number of hardware banks to use for the endpoint */
+        uint8_t  Type; /* type of the endpoint, a \.{EP\_TYPE\_*} mask */
+} USB_Endpoint_Table_t;
+
+@ Endpoint number mask, for masking against endpoint addresses to retrieve the endpoint's
+numerical address in the device.
+
+@<Header files@>=
+#define ENDPOINT_EPNUM_MASK                     0x0F
+
+@ Endpoint address for the default control endpoint, which always resides in address 0. This is
+defined for convenience to give more readable code when used with the endpoint macros.
+
+@<Header files@>=
+#define ENDPOINT_CONTROLEP                      0
+
+@ @<Func...@>=
 inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes) ATTR_WARN_UNUSED_RESULT
   ATTR_CONST ATTR_ALWAYS_INLINE;
+@ @c
 inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes)
 {
 	uint8_t  MaskVal    = 0;
@@ -3176,11 +3110,54 @@ inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes)
 	return (MaskVal << EPSIZE0);
 }
 
-@ @<Header files@>=
-void Endpoint_ClearEndpoints(void);
+@ @<Func...@>=
 bool Endpoint_ConfigureEndpoint_Prv(const uint8_t Number,
                                     const uint8_t UECFG0XData,
                                     const uint8_t UECFG1XData);
+@ @c
+bool Endpoint_ConfigureEndpoint_Prv(const uint8_t Number,
+                                    const uint8_t UECFG0XData,
+                                    const uint8_t UECFG1XData)
+{
+        for (uint8_t EPNum = Number; EPNum < ENDPOINT_TOTAL_ENDPOINTS; EPNum++)
+        {
+                uint8_t UECFG0XTemp;
+                uint8_t UECFG1XTemp;
+                uint8_t UEIENXTemp;
+
+                Endpoint_SelectEndpoint(EPNum);
+
+                if (EPNum == Number)
+                {
+                        UECFG0XTemp = UECFG0XData;
+                        UECFG1XTemp = UECFG1XData;
+                        UEIENXTemp  = 0;
+                }
+                else
+                {
+                        UECFG0XTemp = UECFG0X;
+                        UECFG1XTemp = UECFG1X;
+                        UEIENXTemp  = UEIENX;
+                }
+
+                if (!(UECFG1XTemp & (1 << ALLOC)))
+                  continue;
+
+                Endpoint_DisableEndpoint();
+                UECFG1X &= ~(1 << ALLOC);
+
+                Endpoint_EnableEndpoint();
+                UECFG0X = UECFG0XTemp;
+                UECFG1X = UECFG1XTemp;
+                UEIENX  = UEIENXTemp;
+
+                if (!(Endpoint_IsConfigured()))
+                  return false;
+        }
+
+        Endpoint_SelectEndpoint(Number);
+        return true;
+}
 
 @ Total number of endpoints (including the default control endpoint at address 0) which may
 be used in the device. Different USB AVR models support different amounts of endpoints,
@@ -3238,11 +3215,12 @@ failure, the endpoint which failed to reconfigure correctly will be selected.
 
 Returns true if the configuration succeeded, false otherwise.
 
-@<Header files@>=
+@<Func...@>=
 inline bool Endpoint_ConfigureEndpoint(const uint8_t Address,
                                              const uint8_t Type,
                                              const uint16_t Size,
                                              const uint8_t Banks) ATTR_ALWAYS_INLINE;
+@ @c
 inline bool Endpoint_ConfigureEndpoint(const uint8_t Address,
                                               const uint8_t Type,
                                               const uint16_t Size,
