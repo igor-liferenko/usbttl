@@ -1423,7 +1423,7 @@ uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 
 	Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataINEndpoint.Address);
 
-	if (!(Endpoint_IsReadWriteAllowed()))
+	if (!@<Read-write is allowed for endpoint@>)
 	{
 		Endpoint_ClearIN();
 
@@ -1452,7 +1452,7 @@ uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
             == 0)
 	  return ENDPOINT_READYWAIT_NoError;
 
-	bool BankFull = !(Endpoint_IsReadWriteAllowed());
+	bool BankFull = !@<Read-write is allowed for endpoint@>;
 
 	Endpoint_ClearIN();
 
@@ -1908,7 +1908,7 @@ uint8_t Endpoint_Discard_Stream(uint16_t Length,
 
 	while (Length)
 	{
-		if (!(Endpoint_IsReadWriteAllowed()))
+		if (!@<Read-write is allowed for endpoint@>)
 		{
 			Endpoint_ClearOUT();
 
@@ -1948,7 +1948,7 @@ uint8_t Endpoint_Null_Stream(uint16_t Length,
 
 	while (Length)
 	{
-		if (!(Endpoint_IsReadWriteAllowed()))
+		if (!@<Read-write is allowed for endpoint@>)
 		{
 			Endpoint_ClearIN();
 
@@ -1993,7 +1993,7 @@ uint8_t Endpoint_Write_Stream_LE(const void* const Buffer,
 
 	while (Length)
 	{
-		if (!(Endpoint_IsReadWriteAllowed()))
+		if (!@<Read-write is allowed for endpoint@>)
 		{
 			Endpoint_ClearIN();
 
@@ -2038,8 +2038,7 @@ uint8_t Endpoint_Write_Stream_BE(const void* const Buffer,
 
 	while (Length)
 	{
-		if (!(Endpoint_IsReadWriteAllowed()))
-		{
+		if (!@<Read-write is allowed for endpoint@>) {
 			Endpoint_ClearIN();
 
 			if (BytesProcessed != NULL)
@@ -2083,8 +2082,7 @@ uint8_t Endpoint_Read_Stream_LE(void* const Buffer,
 
 	while (Length)
 	{
-		if (!(Endpoint_IsReadWriteAllowed()))
-		{
+		if (!@<Read-write is allowed for endpoint@>) {
 			Endpoint_ClearOUT();
 
 			if (BytesProcessed != NULL)
@@ -2128,8 +2126,7 @@ uint8_t Endpoint_Read_Stream_BE(void* const Buffer,
 
 	while (Length)
 	{
-		if (!(Endpoint_IsReadWriteAllowed()))
-		{
+		if (!@<Read-write is allowed for endpoint@>) {
 			Endpoint_ClearOUT();
 
 			if (BytesProcessed != NULL)
@@ -2173,8 +2170,7 @@ uint8_t Endpoint_Write_PStream_LE(const void* const Buffer,
 
 	while (Length)
 	{
-		if (!(Endpoint_IsReadWriteAllowed()))
-		{
+		if (!@<Read-write is allowed for endpoint@>) {
 			Endpoint_ClearIN();
 
 			if (BytesProcessed != NULL)
@@ -3161,7 +3157,7 @@ bool Endpoint_ConfigureEndpoint_Prv(const uint8_t Number,
                 UECFG1X = UECFG1XTemp;
                 UEIENX  = UEIENXTemp;
 
-                if (!(Endpoint_IsConfigured()))
+                if (!@<Endpoint is configured@>)
                   return false;
         }
 
@@ -3182,6 +3178,14 @@ to and from a host.
 
 @<Disable endpoint@>=
 UECONX &= ~(1 << EPEN);
+
+@ Determines if the currently selected endpoint is configured.
+
+Returns boolean true if the currently selected endpoint has been configured, false
+otherwise.
+
+@<Endpoint is configured@>=
+((UESTA0X & (1 << CFGOK)) ? true : false) 
 
 @ Total number of endpoints (including the default control endpoint at address 0) which may
 be used in the device. Different USB AVR models support different amounts of endpoints,
@@ -3308,69 +3312,23 @@ inline void Endpoint_ResetEndpoint(const uint8_t Address)
 	UERST = 0;
 }
 
-@ Retrieves the number of busy banks in the currently selected endpoint, which have been
-queued for
-transmission via the |Endpoint_ClearIN| command, or are awaiting acknowledgment via the
-|Endpoint_ClearOUT| command.
+@ Determines if the currently selected endpoint may be read from (if data is waiting in
+the endpoint
+bank and the endpoint is an OUT direction, or if the bank is not yet full if the endpoint
+is an IN
+direction). This function will return false if an error has occurred in the endpoint, if
+the endpoint
+is an OUT direction and no packet (or an empty packet) has been received, or if the endpoint
+is an IN
+direction and the endpoint bank is full.
 
-Returns total number of busy banks in the selected endpoint.
+Returns boolean true if the currently selected endpoint may be read from or written to,
+depending on its direction.
 
-@<Header files@>=
-inline uint8_t Endpoint_GetBusyBanks(void) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
-inline uint8_t Endpoint_GetBusyBanks(void)
-{
-	return (UESTA0X & (0x03 << NBUSYBK0));
-}
+@<Read-write is allowed for endpoint@>=
+((UEINTX & (1 << RWAL)) ? true : false)
 
-/** Aborts all pending IN transactions on the currently selected endpoint, once the bank
- *  has been queued for transmission to the host via \ref Endpoint_ClearIN(). This function
- *  will terminate all queued transactions, resetting the endpoint banks ready for a new
- *  packet.
- *
- *  \ingroup Group_EndpointPacketManagement_AVR8
- */
-inline void Endpoint_AbortPendingIN(void)
-{
-	while (Endpoint_GetBusyBanks() != 0)
-	{
-		UEINTX |= (1 << RXOUTI);
-		while (UEINTX & (1 << RXOUTI));
-	}
-}
-
-/** Determines if the currently selected endpoint may be read from (if data is waiting in
- the endpoint
- *  bank and the endpoint is an OUT direction, or if the bank is not yet full if the endpoint
- is an IN
- *  direction). This function will return false if an error has occurred in the endpoint, if
- the endpoint
- *  is an OUT direction and no packet (or an empty packet) has been received, or if the endpoint
- is an IN
- *  direction and the endpoint bank is full.
- *
- *  \ingroup Group_EndpointPacketManagement_AVR8
- *
- *  \return Boolean \c true if the currently selected endpoint may be read from or written to,
- depending
- *          on its direction.
- */
-inline bool Endpoint_IsReadWriteAllowed(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline bool Endpoint_IsReadWriteAllowed(void)
-{
-	return ((UEINTX & (1 << RWAL)) ? true : false);
-}
-
-/** Determines if the currently selected endpoint is configured.
- *
- *  \return Boolean \c true if the currently selected endpoint has been configured, \c false
- otherwise.
- */
-inline bool Endpoint_IsConfigured(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline bool Endpoint_IsConfigured(void)
-{
-	return ((UESTA0X & (1 << CFGOK)) ? true : false);
-}
-
+@ @<Header files@>=
 /** Returns a mask indicating which INTERRUPT type endpoints have interrupted - i.e. their
  *  interrupt duration has elapsed. Which endpoints have interrupted can be determined by
  *  masking the return value against <tt>(1 << <i>{Endpoint Number}</i>)</tt>.
