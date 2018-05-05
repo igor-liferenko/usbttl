@@ -282,7 +282,7 @@ until it completes as there is a chance nothing is listening and a lengthy timeo
 occur.
 
 @<Try to send more data@>=
-if (Endpoint_IsINReady()) {
+if (@<Endpoint is ready for an IN packet@>) {
   @<Calculate bytes to send@>@;
   @<Read bytes from the USART receive buffer into the USB IN endpoint@>@;
 }
@@ -1189,7 +1189,7 @@ void Endpoint_ClearStatusStage(void)
 	}
 	else
 	{
-		while (!(Endpoint_IsINReady()))
+		while (!@<Endpoint is ready for an IN packet@>)
 		{
 			if (USB_DeviceState == DEVICE_STATE_Unattached)
 			  return;
@@ -1209,9 +1209,8 @@ uint8_t Endpoint_WaitUntilReady(void)
 	for (;;)
 	{
 		if (@<Get endpoint direction@>
-                    == ENDPOINT_DIR_IN)
-		{
-			if (Endpoint_IsINReady())
+                    == ENDPOINT_DIR_IN)	{
+			if (@<Endpoint is ready for an IN packet@>)
 			  return ENDPOINT_READYWAIT_NoError;
 		}
 		else
@@ -1260,7 +1259,7 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 			{
 				Endpoint_ClearSETUP();
 
-				while (!(Endpoint_IsINReady()));
+				while (!@<Endpoint is ready for an IN packet@>);
 
                             Endpoint_Write_32_LE(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS);
 				Endpoint_Write_8(CDCInterfaceInfo->State.LineEncoding.CharFormat);
@@ -1359,7 +1358,7 @@ void CDC_DeviceTask(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 
 	Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataINEndpoint.Address);
 
-	if (Endpoint_IsINReady())
+	if (@<Endpoint is ready for an IN packet@>)
 	  CDC_Device_Flush(CDCInterfaceInfo);
 }
 
@@ -1689,7 +1688,7 @@ void USB_Device_SetAddress(void)
 
 	Endpoint_ClearStatusStage();
 
-	while (!(Endpoint_IsINReady()));
+	while (!@<Endpoint is ready for an IN packet@>) ;
 
   @<Enable device address@>@;
 
@@ -2219,8 +2218,7 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 		else if (Endpoint_IsOUTReceived())
 		  break;
 
-		if (Endpoint_IsINReady())
-		{
+		if (@<Endpoint is ready for an IN packet@>) {
 			uint16_t BytesInEndpoint = @<Number of bytes in endpoint@>;
 
 			while (Length && (BytesInEndpoint < USB_Device_ControlEndpointSize))
@@ -2276,8 +2274,7 @@ uint8_t Endpoint_Write_Control_Stream_BE(const void* const Buffer,
 		else if (Endpoint_IsOUTReceived())
 		  break;
 
-		if (Endpoint_IsINReady())
-		{
+		if (@<Endpoint is ready for an IN packet@>) {
 			uint16_t BytesInEndpoint = @<Number of bytes in endpoint@>;
 
 			while (Length && (BytesInEndpoint < USB_Device_ControlEndpointSize))
@@ -2340,8 +2337,7 @@ uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer, uint16_t Length)
 		}
 	}
 
-	while (!(Endpoint_IsINReady()))
-	{
+	while (!@<Endpoint is ready for an IN packet@>) {
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
@@ -2385,8 +2381,7 @@ uint8_t Endpoint_Read_Control_Stream_BE(void* const Buffer, uint16_t Length)
 		}
 	}
 
-	while (!(Endpoint_IsINReady()))
-	{
+	while (!@<Endpoint is ready for an IN packet@>) {
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
@@ -2423,8 +2418,7 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 		else if (Endpoint_IsOUTReceived())
 		  break;
 
-		if (Endpoint_IsINReady())
-		{
+		if (@<Endpoint is ready for an IN packet@>) {
 			uint16_t BytesInEndpoint = @<Number of bytes in endpoint@>;
 
 			while (Length && (BytesInEndpoint < USB_Device_ControlEndpointSize))
@@ -3326,21 +3320,14 @@ Returns boolean true if the currently selected endpoint may be read from or writ
 depending on its direction.
 
 @<Read-write is allowed for endpoint@>=
-((UEINTX & (1 << RWAL)) ? true : false)
+(UEINTX & (1 << RWAL))
+
+@ Determines if the selected IN endpoint is ready for a new packet to be sent to the host.
+
+@<Endpoint is ready for an IN packet@>=
+(UEINTX & (1 << TXINI))
 
 @ @<Header files@>=
-/** Determines if the selected IN endpoint is ready for a new packet to be sent to the host.
- *
- *  \ingroup Group_EndpointPacketManagement_AVR8
- *
- *  \return Boolean \c true if the current endpoint is ready for an IN packet, \c false otherwise.
- */
-inline bool Endpoint_IsINReady(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline bool Endpoint_IsINReady(void)
-{
-	return ((UEINTX & (1 << TXINI)) ? true : false);
-}
-
 /** Determines if the selected OUT endpoint has received new packet from the host.
  *
  *  \ingroup Group_EndpointPacketManagement_AVR8
