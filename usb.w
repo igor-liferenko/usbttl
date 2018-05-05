@@ -1194,7 +1194,7 @@ void Endpoint_ClearStatusStage(void)
 			  return;
 		}
 
-		Endpoint_ClearIN();
+		@<Clear IN packet on endpoint@>@;
 	}
 }
 
@@ -1262,7 +1262,7 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 				Endpoint_Write_8(CDCInterfaceInfo->State.LineEncoding.ParityType);
 				Endpoint_Write_8(CDCInterfaceInfo->State.LineEncoding.DataBits);
 
-				Endpoint_ClearIN();
+				@<Clear IN packet on endpoint@>@;
 				Endpoint_ClearStatusStage();
 			}
 
@@ -1414,9 +1414,8 @@ uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 
 	Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataINEndpoint.Address);
 
-	if (!@<Read-write is allowed for endpoint@>)
-	{
-		Endpoint_ClearIN();
+	if (!@<Read-write is allowed for endpoint@>) {
+		@<Clear IN packet on endpoint@>@;
 
 		uint8_t ErrorCode;
 
@@ -1445,14 +1444,13 @@ uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 
 	bool BankFull = !@<Read-write is allowed for endpoint@>;
 
-	Endpoint_ClearIN();
+	@<Clear IN packet on endpoint@>@;
 
-	if (BankFull)
-	{
+	if (BankFull) {
 		if ((ErrorCode = Endpoint_WaitUntilReady()) != ENDPOINT_READYWAIT_NoError)
 		  return ErrorCode;
 
-		Endpoint_ClearIN();
+	  @<Clear IN packet on endpoint@>@;
 	}
 
 	return ENDPOINT_READYWAIT_NoError;
@@ -1530,7 +1528,7 @@ void CDC_Device_SendControlLineStateChange(USB_ClassInfo_CDC_Device_t* const CDC
 	Endpoint_Write_Stream_LE(&CDCInterfaceInfo->State.ControlLineStates.DeviceToHost,
 	                         sizeof(CDCInterfaceInfo->State.ControlLineStates.DeviceToHost),
 	                         NULL);
-	Endpoint_ClearIN();
+	@<Clear IN packet on endpoint@>@;
 }
 
 @ @c
@@ -1724,7 +1722,7 @@ void USB_Device_GetConfiguration(void)
   @<Clear a received SETUP packet on endpoint@>@;
 
 	Endpoint_Write_8(USB_Device_ConfigurationNumber);
-	Endpoint_ClearIN();
+  @<Clear IN packet on endpoint@>@;
 
 	Endpoint_ClearStatusStage();
 }
@@ -1820,7 +1818,7 @@ void USB_Device_GetStatus(void)
   @<Clear a received SETUP packet on endpoint@>@;
 
 	Endpoint_Write_16_LE(CurrentStatus);
-	Endpoint_ClearIN();
+  @<Clear IN packet on endpoint@>@;
 
 	Endpoint_ClearStatusStage();
 }
@@ -1937,9 +1935,8 @@ uint8_t Endpoint_Null_Stream(uint16_t Length,
 
 	while (Length)
 	{
-		if (!@<Read-write is allowed for endpoint@>)
-		{
-			Endpoint_ClearIN();
+		if (!@<Read-write is allowed for endpoint@>) {
+			@<Clear IN packet on endpoint@>@;
 
 			if (BytesProcessed != NULL)
 			{
@@ -1982,9 +1979,8 @@ uint8_t Endpoint_Write_Stream_LE(const void* const Buffer,
 
 	while (Length)
 	{
-		if (!@<Read-write is allowed for endpoint@>)
-		{
-			Endpoint_ClearIN();
+		if (!@<Read-write is allowed for endpoint@>) {
+			@<Clear IN packet on endpoint@>@;
 
 			if (BytesProcessed != NULL)
 			{
@@ -2028,7 +2024,7 @@ uint8_t Endpoint_Write_Stream_BE(const void* const Buffer,
 	while (Length)
 	{
 		if (!@<Read-write is allowed for endpoint@>) {
-			Endpoint_ClearIN();
+			@<Clear IN packet on endpoint@>@;
 
 			if (BytesProcessed != NULL)
 			{
@@ -2160,7 +2156,7 @@ uint8_t Endpoint_Write_PStream_LE(const void* const Buffer,
 	while (Length)
 	{
 		if (!@<Read-write is allowed for endpoint@>) {
-			Endpoint_ClearIN();
+			@<Clear IN packet on endpoint@>@;
 
 			if (BytesProcessed != NULL)
 			{
@@ -2193,7 +2189,7 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 	if (Length > USB_ControlRequest.wLength)
 	  Length = USB_ControlRequest.wLength;
 	else if (!(Length))
-	  Endpoint_ClearIN();
+	  @<Clear IN packet on endpoint@>@;
 
 	while (Length || LastPacketFull)
 	{
@@ -2220,7 +2216,7 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 			}
 
 			LastPacketFull = (BytesInEndpoint == USB_Device_ControlEndpointSize);
-			Endpoint_ClearIN();
+			@<Clear IN packet on endpoint@>@;
 		}
 	}
 
@@ -2248,7 +2244,7 @@ uint8_t Endpoint_Write_Control_Stream_BE(const void* const Buffer,
 	if (Length > USB_ControlRequest.wLength)
 	  Length = USB_ControlRequest.wLength;
 	else if (!(Length))
-	  Endpoint_ClearIN();
+	  @<Clear IN packet on endpoint@>@;
 
 	while (Length || LastPacketFull)
 	{
@@ -2275,7 +2271,7 @@ uint8_t Endpoint_Write_Control_Stream_BE(const void* const Buffer,
 			}
 
 			LastPacketFull = (BytesInEndpoint == USB_Device_ControlEndpointSize);
-			Endpoint_ClearIN();
+			@<Clear IN packet on endpoint@>@;
 		}
 	}
 
@@ -2387,7 +2383,7 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 	if (Length > USB_ControlRequest.wLength)
 	  Length = USB_ControlRequest.wLength;
 	else if (!(Length))
-	  Endpoint_ClearIN();
+	  @<Clear IN packet on endpoint@>@;
 
 	while (Length || LastPacketFull)
 	{
@@ -2414,7 +2410,7 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 			}
 
 			LastPacketFull = (BytesInEndpoint == USB_Device_ControlEndpointSize);
-			Endpoint_ClearIN();
+			@<Clear IN packet on endpoint@>@;
 		}
 	}
 
@@ -3327,19 +3323,13 @@ Note, that this is not applicable for non CONTROL type endpoints.
 @<Clear a received SETUP packet on endpoint@>=
 UEINTX &= ~(1 << RXSTPI);
 
-@ @<Header files@>=
-/** Sends an IN packet to the host on the currently selected endpoint, freeing up the endpoint
- for the
- *  next packet and switching to the alternative endpoint bank if double banked.
- *
- *  \ingroup Group_EndpointPacketManagement_AVR8
- */
-inline void Endpoint_ClearIN(void) ATTR_ALWAYS_INLINE;
-inline void Endpoint_ClearIN(void)
-{
-	UEINTX &= ~((1 << TXINI) | (1 << FIFOCON));
-}
+@ Sends an IN packet to the host on the currently selected endpoint, freeing up the endpoint
+for the next packet and switching to the alternative endpoint bank if double banked.
 
+@<Clear IN packet on endpoint@>=
+UEINTX &= ~((1 << TXINI) | (1 << FIFOCON));
+
+@ @<Header files@>=
 /** Acknowledges an OUT packet to the host on the currently selected endpoint, freeing up
  the endpoint
  *  for the next packet and switching to the alternative endpoint bank if double banked.
@@ -4279,7 +4269,7 @@ uint8_t Endpoint_Discard_Stream(uint16_t Length, uint16_t* const BytesProcessed)
 @ Writes a given number of zeroed bytes to the currently selected endpoint's bank, sending
 full packets to the host as needed. The last packet is not automatically sent once the
 remaining bytes have been written; the user is responsible for manually sending the last
-packet to the host via the \ref Endpoint_ClearIN() macro.
+packet to the host via the |@<Clear IN packet on endpoint@>|.
 
 If the BytesProcessed parameter is \c NULL, the entire stream transfer is attempted at once,
 failing or succeeding as a single unit. If the BytesProcessed parameter points to a valid
@@ -4336,7 +4326,7 @@ uint8_t Endpoint_Null_Stream(uint16_t Length, uint16_t* const BytesProcessed);
 @ Writes the given number of bytes to the endpoint from the given buffer in little endian,
 sending full packets to the host as needed. The last packet filled is not automatically sent;
 the user is responsible for manually sending the last written packet to the host via the
-\ref Endpoint_ClearIN() macro.
+|@<Clear IN packet on endpoint@>| macro.
 
 If the BytesProcessed parameter is \c NULL, the entire stream transfer is attempted at once,
 failing or succeeding as a single unit. If the BytesProcessed parameter points to a valid
@@ -4398,7 +4388,7 @@ uint8_t Endpoint_Write_Stream_LE(const void* const Buffer, uint16_t Length,
 @ Writes the given number of bytes to the endpoint from the given buffer in big endian,
 sending full packets to the host as needed. The last packet filled is not automatically sent;
 the user is responsible for manually sending the last written packet to the host via the
-\ref Endpoint_ClearIN() macro.
+|@<Clear IN packet on endpoint@>| macro.
 
 \note This routine should not be used on CONTROL type endpoints.
 
@@ -4559,8 +4549,9 @@ uint8_t Endpoint_Write_Control_Stream_BE(const void* const Buffer,
 @ Reads the given number of bytes from the CONTROL endpoint from the given buffer in little endian,
 discarding fully read packets from the host as needed. The device IN acknowledgement is not
 automatically sent after success or failure states; the user is responsible for manually
- sending the
-status IN packet to finalize the transfer's status stage via the \ref Endpoint_ClearIN() macro.
+sending the
+status IN packet to finalize the transfer's status stage via the |@<Clear IN packet on endpoint@>|
+macro.
 
 \note This function automatically sends the last packet in the data stage of the transaction;
  when the
@@ -4586,8 +4577,9 @@ uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer,
 @ Reads the given number of bytes from the CONTROL endpoint from the given buffer in big endian,
 discarding fully read packets from the host as needed. The device IN acknowledgement is not
 automatically sent after success or failure states; the user is responsible for manually sending
- the
-status IN packet to finalize the transfer's status stage via the \ref Endpoint_ClearIN() macro.
+the
+status IN packet to finalize the transfer's status stage via the |@<Clear IN packet on endpoint@>|
+macro.
 
 \note This function automatically sends the last packet in the data stage of the transaction;
  when the
