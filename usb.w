@@ -905,7 +905,7 @@ void USB_DeviceTask(void)
 
 	Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
 
-	if (Endpoint_IsSETUPReceived())
+	if (@<Endpoint has received a SETUP packet@>)
 	  USB_Device_ProcessControlRequest();
 
 	Endpoint_SelectEndpoint(PrevEndpoint);
@@ -1242,7 +1242,7 @@ uint8_t Endpoint_WaitUntilReady(void)
 @ @c
 void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
-	if (!(Endpoint_IsSETUPReceived()))
+	if (!@<Endpoint has received a SETUP packet@>)
 	  return;
 
 	if (USB_ControlRequest.wIndex != CDCInterfaceInfo->Config.ControlInterfaceNumber)
@@ -1623,7 +1623,7 @@ void USB_Device_ProcessControlRequest(void)
 
   EVENT_USB_Device_ControlRequest();
 
-  if (Endpoint_IsSETUPReceived()) {
+  if (@<Endpoint has received a SETUP packet@>) {
     uint8_t bmRequestType = USB_ControlRequest.bmRequestType;
 
     switch (USB_ControlRequest.bRequest) {
@@ -1661,7 +1661,7 @@ void USB_Device_ProcessControlRequest(void)
     }
   }
 
-  if (Endpoint_IsSETUPReceived()) {
+  if (@<Endpoint has received a SETUP packet@>) {
 	Endpoint_ClearSETUP();
 	Endpoint_StallTransaction();
   }
@@ -2206,7 +2206,7 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
-		else if (Endpoint_IsSETUPReceived())
+		else if (@<Endpoint has received a SETUP packet@>)
 		  return ENDPOINT_RWCSTREAM_HostAborted;
 		else if (@<Endpoint received an OUT packet@>)
 		  break;
@@ -2234,7 +2234,7 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
-		else if (Endpoint_IsSETUPReceived())
+		else if (@<Endpoint has received a SETUP packet@>)
 		  return ENDPOINT_RWCSTREAM_HostAborted;
 	}
 
@@ -2261,7 +2261,7 @@ uint8_t Endpoint_Write_Control_Stream_BE(const void* const Buffer,
 		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
-		else if (Endpoint_IsSETUPReceived())
+		else if (@<Endpoint has received a SETUP packet@>)
 		  return ENDPOINT_RWCSTREAM_HostAborted;
 		else if (@<Endpoint received an OUT packet@>)
 		  break;
@@ -2289,7 +2289,7 @@ uint8_t Endpoint_Write_Control_Stream_BE(const void* const Buffer,
 		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
-		else if (Endpoint_IsSETUPReceived())
+		else if (@<Endpoint has received a SETUP packet@>)
 		  return ENDPOINT_RWCSTREAM_HostAborted;
 	}
 
@@ -2312,7 +2312,7 @@ uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer, uint16_t Length)
 		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
-		else if (Endpoint_IsSETUPReceived())
+		else if (@<Endpoint has received a SETUP packet@>)
 		  return ENDPOINT_RWCSTREAM_HostAborted;
 
 		if (@<Endpoint received an OUT packet@>) {
@@ -2354,7 +2354,7 @@ uint8_t Endpoint_Read_Control_Stream_BE(void* const Buffer, uint16_t Length)
 		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
-		else if (Endpoint_IsSETUPReceived())
+		else if (@<Endpoint has received a SETUP packet@>)
 		  return ENDPOINT_RWCSTREAM_HostAborted;
 
 		if (@<Endpoint received an OUT packet@>) {
@@ -2400,7 +2400,7 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
-		else if (Endpoint_IsSETUPReceived())
+		else if (@<Endpoint has received a SETUP packet@>)
 		  return ENDPOINT_RWCSTREAM_HostAborted;
 		else if (@<Endpoint received an OUT packet@>)
 		  break;
@@ -2428,7 +2428,7 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
-		else if (Endpoint_IsSETUPReceived())
+		else if (@<Endpoint has received a SETUP packet@>)
 		  return ENDPOINT_RWCSTREAM_HostAborted;
 	}
 
@@ -3318,20 +3318,12 @@ depending on its direction.
 @<Endpoint received an OUT packet@>=
 (UEINTX & (1 << RXOUTI))
 
-@ @<Header files@>=
-/** Determines if the current CONTROL type endpoint has received a SETUP packet.
- *
- *  \ingroup Group_EndpointPacketManagement_AVR8
- *
- *  \return Boolean \c true if the selected endpoint has received a SETUP packet, \c false
- otherwise.
- */
-inline bool Endpoint_IsSETUPReceived(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline bool Endpoint_IsSETUPReceived(void)
-{
-	return ((UEINTX & (1 << RXSTPI)) ? true : false);
-}
+@ Determines if the current CONTROL type endpoint has received a SETUP packet.
 
+@<Endpoint has received a SETUP packet@>=
+(UEINTX & (1 << RXSTPI))
+
+@ @<Header files@>=
 /** Clears a received SETUP packet on the currently selected CONTROL type endpoint, freeing up the
  *  endpoint for the next packet.
  *
