@@ -901,7 +901,7 @@ void USB_DeviceTask(void)
 	if (USB_DeviceState == DEVICE_STATE_Unattached)
 	  return;
 
-	uint8_t PrevEndpoint = Endpoint_GetCurrentEndpoint();
+	uint8_t PrevEndpoint = @<Get current endpoint@>;
 
 	Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
 
@@ -1005,7 +1005,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 
 ISR(USB_COM_vect, ISR_BLOCK)
 {
-	uint8_t PrevSelectedEndpoint = Endpoint_GetCurrentEndpoint();
+	uint8_t PrevSelectedEndpoint = @<Get current endpoint@>;
 
 	Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
 	USB_INT_Disable(USB_INT_RXSTPI);
@@ -3257,12 +3257,8 @@ manipulated.
 
 Returns index of the currently selected endpoint.
 
-@<Header files@>=
-inline uint8_t Endpoint_GetCurrentEndpoint(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline uint8_t Endpoint_GetCurrentEndpoint(void)
-{
-	return ((UENUM & ENDPOINT_EPNUM_MASK) | @<Get endpoint direction@>);
-}
+@<Get current endpoint@>=
+((UENUM & ENDPOINT_EPNUM_MASK) | @<Get endpoint direction@>)
 
 @ Selects the given endpoint address.
 
