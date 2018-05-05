@@ -3329,33 +3329,6 @@ depending on its direction.
 ((UEINTX & (1 << RWAL)) ? true : false)
 
 @ @<Header files@>=
-/** Returns a mask indicating which INTERRUPT type endpoints have interrupted - i.e. their
- *  interrupt duration has elapsed. Which endpoints have interrupted can be determined by
- *  masking the return value against <tt>(1 << <i>{Endpoint Number}</i>)</tt>.
- *
- *  \return Mask whose bits indicate which endpoints have interrupted.
- */
-inline uint8_t Endpoint_GetEndpointInterrupts(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline uint8_t Endpoint_GetEndpointInterrupts(void)
-{
-	return UEINT;
-}
-
-/** Determines if the specified endpoint number has interrupted (valid only for INTERRUPT type
- *  endpoints).
- *
- *  \param[in] Address  Address of the endpoint whose interrupt flag should be tested.
- *
- *  \return Boolean \c true if the specified endpoint has interrupted, \c false otherwise.
- */
-inline bool Endpoint_HasEndpointInterrupted(const uint8_t Address) ATTR_WARN_UNUSED_RESULT
-  ATTR_ALWAYS_INLINE;
-inline bool Endpoint_HasEndpointInterrupted(const uint8_t Address)
-{
-  return ((Endpoint_GetEndpointInterrupts() & (1 << (Address & ENDPOINT_EPNUM_MASK))) ?
-    true : false);
-}
-
 /** Determines if the selected IN endpoint is ready for a new packet to be sent to the host.
  *
  *  \ingroup Group_EndpointPacketManagement_AVR8
