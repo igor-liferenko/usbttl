@@ -1208,7 +1208,8 @@ uint8_t Endpoint_WaitUntilReady(void)
 
 	for (;;)
 	{
-		if (Endpoint_GetEndpointDirection() == ENDPOINT_DIR_IN)
+		if (@<Get endpoint direction@>
+                    == ENDPOINT_DIR_IN)
 		{
 			if (Endpoint_IsINReady())
 			  return ENDPOINT_READYWAIT_NoError;
@@ -3247,12 +3248,8 @@ Returns total number of bytes in the currently selected Endpoint's FIFO buffer.
 @ Determines the currently selected endpoint's direction.
 Returns the currently selected endpoint's direction, as a \.{ENDPOINT\_DIR\_*} mask.
 
-@<Header files@>=
-inline uint8_t Endpoint_GetEndpointDirection(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline uint8_t Endpoint_GetEndpointDirection(void)
-{
-	return (UECFG0X & (1 << EPDIR)) ? ENDPOINT_DIR_IN : ENDPOINT_DIR_OUT;
-}
+@<Get endpoint direction@>=
+((UECFG0X & (1 << EPDIR)) ? ENDPOINT_DIR_IN : ENDPOINT_DIR_OUT)
 
 @ Get the endpoint address of the currently selected endpoint. This is typically used to save
 the currently selected endpoint so that it can be restored after another endpoint has been
@@ -3264,7 +3261,7 @@ Returns index of the currently selected endpoint.
 inline uint8_t Endpoint_GetCurrentEndpoint(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
 inline uint8_t Endpoint_GetCurrentEndpoint(void)
 {
-	return ((UENUM & ENDPOINT_EPNUM_MASK) | Endpoint_GetEndpointDirection());
+	return ((UENUM & ENDPOINT_EPNUM_MASK) | @<Get endpoint direction@>);
 }
 
 @ Selects the given endpoint address.
@@ -3327,15 +3324,14 @@ inline bool Endpoint_IsEnabled(void)
 	return ((UECONX & (1 << EPEN)) ? true : false);
 }
 
-/** Retrieves the number of busy banks in the currently selected endpoint, which have been
- queued for
- *  transmission via the \ref Endpoint_ClearIN() command, or are awaiting acknowledgment via the
- *  \ref Endpoint_ClearOUT() command.
- *
- *  \ingroup Group_EndpointPacketManagement_AVR8
- *
- *  \return Total number of busy banks in the selected endpoint.
- */
+@ Retrieves the number of busy banks in the currently selected endpoint, which have been
+queued for
+transmission via the |Endpoint_ClearIN| command, or are awaiting acknowledgment via the
+|Endpoint_ClearOUT| command.
+
+Returns total number of busy banks in the selected endpoint.
+
+@<Header files@>=
 inline uint8_t Endpoint_GetBusyBanks(void) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
 inline uint8_t Endpoint_GetBusyBanks(void)
 {
