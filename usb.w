@@ -1252,9 +1252,8 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 	{
 		case CDC_REQ_GetLineEncoding:
 			if (USB_ControlRequest.bmRequestType ==
-                            (REQDIR_DEVICETOHOST | REQTYPE_CLASS | REQREC_INTERFACE))
-			{
-				Endpoint_ClearSETUP();
+                            (REQDIR_DEVICETOHOST | REQTYPE_CLASS | REQREC_INTERFACE)) {
+				@<Clear a received SETUP packet on endpoint@>@;
 
 				while (!@<Endpoint is ready for an IN packet@>);
 
@@ -1271,7 +1270,7 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 		case CDC_REQ_SetLineEncoding:
 			if (USB_ControlRequest.bmRequestType ==
    (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE)) {
-				Endpoint_ClearSETUP();
+				@<Clear a received SETUP packet on endpoint@>@;
 
 				while (!@<Endpoint received an OUT packet@>) {
 					if (USB_DeviceState == DEVICE_STATE_Unattached)
@@ -1296,9 +1295,8 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 			break;
 		case CDC_REQ_SetControlLineState:
 			if (USB_ControlRequest.bmRequestType ==
- (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE))
-			{
-				Endpoint_ClearSETUP();
+ (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE)) {
+				@<Clear a received SETUP packet on endpoint@>@;
 				Endpoint_ClearStatusStage();
 
 				CDCInterfaceInfo->State.ControlLineStates.HostToDevice
@@ -1310,9 +1308,8 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 			break;
 		case CDC_REQ_SendBreak:
 			if (USB_ControlRequest.bmRequestType ==
- (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE))
-			{
-				Endpoint_ClearSETUP();
+ (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE)) {
+				@<Clear a received SETUP packet on endpoint@>@;
 				Endpoint_ClearStatusStage();
 
 				EVENT_CDC_Device_BreakSent(CDCInterfaceInfo,
@@ -1662,7 +1659,7 @@ void USB_Device_ProcessControlRequest(void)
   }
 
   if (@<Endpoint has received a SETUP packet@>) {
-	Endpoint_ClearSETUP();
+	@<Clear a received SETUP packet on endpoint@>@;
 	Endpoint_StallTransaction();
   }
 }
@@ -1677,7 +1674,7 @@ void USB_Device_SetAddress(void)
 
   @<Set device address@>@;
 
-	Endpoint_ClearSETUP();
+  @<Clear a received SETUP packet on endpoint@>@;
 
 	Endpoint_ClearStatusStage();
 
@@ -1703,7 +1700,7 @@ void USB_Device_SetConfiguration(void)
   if ((uint8_t)USB_ControlRequest.wValue > FIXED_NUM_CONFIGURATIONS)
 	return;
 
-  Endpoint_ClearSETUP();
+  @<Clear a received SETUP packet on endpoint@>@;
 
   USB_Device_ConfigurationNumber = (uint8_t)USB_ControlRequest.wValue;
 
@@ -1724,7 +1721,7 @@ void USB_Device_GetConfiguration(void);
 @ @c
 void USB_Device_GetConfiguration(void)
 {
-	Endpoint_ClearSETUP();
+  @<Clear a received SETUP packet on endpoint@>@;
 
 	Endpoint_Write_8(USB_Device_ConfigurationNumber);
 	Endpoint_ClearIN();
@@ -1749,7 +1746,7 @@ void USB_Device_GetInternalSerialDescriptor(void)
 
 	USB_Device_GetSerialString(SignatureDescriptor.UnicodeString);
 
-	Endpoint_ClearSETUP();
+  @<Clear a received SETUP packet on endpoint@>@;
 
 	Endpoint_Write_Control_Stream_LE(&SignatureDescriptor, sizeof(SignatureDescriptor));
 	Endpoint_ClearOUT();
@@ -1774,7 +1771,7 @@ void USB_Device_GetDescriptor(void)
              USB_ControlRequest.wIndex, &DescriptorPointer)) == NO_DESCRIPTOR)
 		return;
 
-	Endpoint_ClearSETUP();
+  @<Clear a received SETUP packet on endpoint@>@;
 
 	Endpoint_Write_Control_PStream_LE(DescriptorPointer, DescriptorSize);
 
@@ -1820,7 +1817,7 @@ void USB_Device_GetStatus(void)
 			return;
 	}
 
-	Endpoint_ClearSETUP();
+  @<Clear a received SETUP packet on endpoint@>@;
 
 	Endpoint_Write_16_LE(CurrentStatus);
 	Endpoint_ClearIN();
@@ -1871,7 +1868,7 @@ void USB_Device_ClearSetFeature(void)
 
   Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
 
-  Endpoint_ClearSETUP();
+  @<Clear a received SETUP packet on endpoint@>@;
 
   Endpoint_ClearStatusStage();
 }
@@ -3323,20 +3320,14 @@ depending on its direction.
 @<Endpoint has received a SETUP packet@>=
 (UEINTX & (1 << RXSTPI))
 
-@ @<Header files@>=
-/** Clears a received SETUP packet on the currently selected CONTROL type endpoint, freeing up the
- *  endpoint for the next packet.
- *
- *  \ingroup Group_EndpointPacketManagement_AVR8
- *
- *  \note This is not applicable for non CONTROL type endpoints.
- */
-inline void Endpoint_ClearSETUP(void) ATTR_ALWAYS_INLINE;
-inline void Endpoint_ClearSETUP(void)
-{
-	UEINTX &= ~(1 << RXSTPI);
-}
+@ Clears a received SETUP packet on the currently selected CONTROL type endpoint, freeing up the
+endpoint for the next packet.
+Note, that this is not applicable for non CONTROL type endpoints.
 
+@<Clear a received SETUP packet on endpoint@>=
+UEINTX &= ~(1 << RXSTPI);
+
+@ @<Header files@>=
 /** Sends an IN packet to the host on the currently selected endpoint, freeing up the endpoint
  for the
  *  next packet and switching to the alternative endpoint bank if double banked.
