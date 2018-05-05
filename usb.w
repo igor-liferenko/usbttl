@@ -1861,7 +1861,7 @@ void USB_Device_ClearSetFeature(void)
 
         Endpoint_SelectEndpoint(EndpointIndex);
 
-        if (Endpoint_IsEnabled()) {
+        if (@<Endpoint is enabled@>) {
           if (USB_ControlRequest.bRequest == REQ_SetFeature)
             Endpoint_StallTransaction();
           else {
@@ -1883,6 +1883,13 @@ void USB_Device_ClearSetFeature(void)
 
   Endpoint_ClearStatusStage();
 }
+
+@ Determines if the currently selected endpoint is enabled, but not necessarily configured.
+
+Returns true if the currently selected endpoint is enabled, false otherwise.
+
+@<Endpoint is enabled@>=
+((UECONX & (1 << EPEN)) ? true : false) 
 
 @* Endpoint data stream transmission and reception management for the AVR8 microcontrollers.
 
@@ -3299,17 +3306,6 @@ inline void Endpoint_ResetEndpoint(const uint8_t Address)
 {
 	UERST = (1 << (Address & ENDPOINT_EPNUM_MASK));
 	UERST = 0;
-}
-
-@ Determines if the currently selected endpoint is enabled, but not necessarily configured.
-
-Returns true if the currently selected endpoint is enabled, false otherwise.
-
-@<Header files@>=
-inline bool Endpoint_IsEnabled(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline bool Endpoint_IsEnabled(void)
-{
-	return ((UECONX & (1 << EPEN)) ? true : false);
 }
 
 @ Retrieves the number of busy banks in the currently selected endpoint, which have been
