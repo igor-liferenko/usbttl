@@ -1179,8 +1179,7 @@ void Endpoint_ClearStatusStage(void)
 {
 	if (USB_ControlRequest.bmRequestType & REQDIR_DEVICETOHOST)
 	{
-		while (!(Endpoint_IsOUTReceived()))
-		{
+		while (!@<Endpoint received an OUT packet@>) {
 			if (USB_DeviceState == DEVICE_STATE_Unattached)
 			  return;
 		}
@@ -1206,16 +1205,14 @@ uint8_t Endpoint_WaitUntilReady(void)
 
 	uint16_t PreviousFrameNumber = USB_Device_GetFrameNumber();
 
-	for (;;)
-	{
+	for (;;) {
 		if (@<Get endpoint direction@>
                     == ENDPOINT_DIR_IN)	{
 			if (@<Endpoint is ready for an IN packet@>)
 			  return ENDPOINT_READYWAIT_NoError;
 		}
-		else
-		{
-			if (Endpoint_IsOUTReceived())
+		else {
+			if (@<Endpoint received an OUT packet@>)
 			  return ENDPOINT_READYWAIT_NoError;
 		}
 
@@ -1273,12 +1270,10 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 			break;
 		case CDC_REQ_SetLineEncoding:
 			if (USB_ControlRequest.bmRequestType ==
-   (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE))
-			{
+   (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE)) {
 				Endpoint_ClearSETUP();
 
-				while (!(Endpoint_IsOUTReceived()))
-				{
+				while (!@<Endpoint received an OUT packet@>) {
 					if (USB_DeviceState == DEVICE_STATE_Unattached)
 					  return;
 				}
@@ -1475,8 +1470,7 @@ uint16_t CDC_Device_BytesReceived(USB_ClassInfo_CDC_Device_t* const CDCInterface
 
 	Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataOUTEndpoint.Address);
 
-	if (Endpoint_IsOUTReceived())
-	{
+	if (@<Endpoint received an OUT packet@>) {
 		if (@<Number of bytes in endpoint@>
                     == 0) {
 			Endpoint_ClearOUT();
@@ -1504,8 +1498,7 @@ int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInf
 
 	Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataOUTEndpoint.Address);
 
-	if (Endpoint_IsOUTReceived())
-	{
+	if (@<Endpoint received an OUT packet@>) {
 		if (@<Number of bytes in endpoint@> != 0)
 		  ReceivedByte = Endpoint_Read_8();
 
@@ -2215,7 +2208,7 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
 		else if (Endpoint_IsSETUPReceived())
 		  return ENDPOINT_RWCSTREAM_HostAborted;
-		else if (Endpoint_IsOUTReceived())
+		else if (@<Endpoint received an OUT packet@>)
 		  break;
 
 		if (@<Endpoint is ready for an IN packet@>) {
@@ -2234,8 +2227,7 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 		}
 	}
 
-	while (!(Endpoint_IsOUTReceived()))
-	{
+	while (!@<Endpoint received an OUT packet@>) {
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
@@ -2271,7 +2263,7 @@ uint8_t Endpoint_Write_Control_Stream_BE(const void* const Buffer,
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
 		else if (Endpoint_IsSETUPReceived())
 		  return ENDPOINT_RWCSTREAM_HostAborted;
-		else if (Endpoint_IsOUTReceived())
+		else if (@<Endpoint received an OUT packet@>)
 		  break;
 
 		if (@<Endpoint is ready for an IN packet@>) {
@@ -2290,8 +2282,7 @@ uint8_t Endpoint_Write_Control_Stream_BE(const void* const Buffer,
 		}
 	}
 
-	while (!(Endpoint_IsOUTReceived()))
-	{
+	while (!@<Endpoint received an OUT packet@>) {
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
@@ -2324,10 +2315,8 @@ uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer, uint16_t Length)
 		else if (Endpoint_IsSETUPReceived())
 		  return ENDPOINT_RWCSTREAM_HostAborted;
 
-		if (Endpoint_IsOUTReceived())
-		{
-			while (Length && @<Number of bytes in endpoint@> != 0)
-			{
+		if (@<Endpoint received an OUT packet@>) {
+			while (Length && @<Number of bytes in endpoint@> != 0) {
 				*DataStream = Endpoint_Read_8();
 				DataStream += 1;
 				Length--;
@@ -2368,10 +2357,8 @@ uint8_t Endpoint_Read_Control_Stream_BE(void* const Buffer, uint16_t Length)
 		else if (Endpoint_IsSETUPReceived())
 		  return ENDPOINT_RWCSTREAM_HostAborted;
 
-		if (Endpoint_IsOUTReceived())
-		{
-			while (Length && @<Number of bytes in endpoint@> != 0)
-			{
+		if (@<Endpoint received an OUT packet@>) {
+			while (Length && @<Number of bytes in endpoint@> != 0) {
 				*DataStream = Endpoint_Read_8();
 				DataStream -= 1;
 				Length--;
@@ -2415,7 +2402,7 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
 		else if (Endpoint_IsSETUPReceived())
 		  return ENDPOINT_RWCSTREAM_HostAborted;
-		else if (Endpoint_IsOUTReceived())
+		else if (@<Endpoint received an OUT packet@>)
 		  break;
 
 		if (@<Endpoint is ready for an IN packet@>) {
@@ -2434,8 +2421,7 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 		}
 	}
 
-	while (!(Endpoint_IsOUTReceived()))
-	{
+	while (!@<Endpoint received an OUT packet@>) {
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
@@ -3327,19 +3313,12 @@ depending on its direction.
 @<Endpoint is ready for an IN packet@>=
 (UEINTX & (1 << TXINI))
 
-@ @<Header files@>=
-/** Determines if the selected OUT endpoint has received new packet from the host.
- *
- *  \ingroup Group_EndpointPacketManagement_AVR8
- *
- *  \return Boolean \c true if current endpoint is has received an OUT packet, \c false otherwise.
- */
-inline bool Endpoint_IsOUTReceived(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline bool Endpoint_IsOUTReceived(void)
-{
-	return ((UEINTX & (1 << RXOUTI)) ? true : false);
-}
+@ Determines if the selected OUT endpoint has received new packet from the host.
 
+@<Endpoint received an OUT packet@>=
+(UEINTX & (1 << RXOUTI))
+
+@ @<Header files@>=
 /** Determines if the current CONTROL type endpoint has received a SETUP packet.
  *
  *  \ingroup Group_EndpointPacketManagement_AVR8
