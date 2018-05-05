@@ -3149,7 +3149,7 @@ bool Endpoint_ConfigureEndpoint_Prv(const uint8_t Number,
                 Endpoint_DisableEndpoint();
                 UECFG1X &= ~(1 << ALLOC);
 
-                Endpoint_EnableEndpoint();
+                @<Enable endpoint@>@;
                 UECFG0X = UECFG0XTemp;
                 UECFG1X = UECFG1XTemp;
                 UEIENX  = UEIENXTemp;
@@ -3161,6 +3161,14 @@ bool Endpoint_ConfigureEndpoint_Prv(const uint8_t Number,
         Endpoint_SelectEndpoint(Number);
         return true;
 }
+
+@ Enables the currently selected endpoint so that data can be sent and received through it to
+and from a host.
+
+Note, that endpoints must first be configured properly via |Endpoint_ConfigureEndpoint|.
+
+@<Enable endpoint@>=
+UECONX |= (1 << EPEN);
 
 @ Total number of endpoints (including the default control endpoint at address 0) which may
 be used in the device. Different USB AVR models support different amounts of endpoints,
@@ -3285,18 +3293,6 @@ inline void Endpoint_ResetEndpoint(const uint8_t Address)
 {
 	UERST = (1 << (Address & ENDPOINT_EPNUM_MASK));
 	UERST = 0;
-}
-
-@ Enables the currently selected endpoint so that data can be sent and received through it to
-and from a host.
-
-Note, that endpoints must first be configured properly via |Endpoint_ConfigureEndpoint|.
-
-@<Header files@>=
-inline void Endpoint_EnableEndpoint(void) ATTR_ALWAYS_INLINE;
-inline void Endpoint_EnableEndpoint(void)
-{
-	UECONX |= (1 << EPEN);
 }
 
 @ Disables the currently selected endpoint so that data cannot be sent and received through it
