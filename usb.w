@@ -890,13 +890,6 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 	return Size;
 }
 
-@* USB Event management definitions.
-
-@ @c
-void EVENT_USB_Device_Reset(void)
-{
-}
-
 @* Main USB service task management.
 
 @ This is the main USB management task. The USB driver requires this task to be executed
@@ -1012,8 +1005,6 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 		                           USB_Device_ControlEndpointSize, 1);
 
 		USB_INT_Enable(USB_INT_RXSTPI);
-
-		EVENT_USB_Device_Reset();
 	}
 }
 
@@ -4453,19 +4444,6 @@ void EVENT_USB_Device_ControlRequest(void);
  *        \ref Group_USBManagement documentation).
  */
 void EVENT_USB_Device_ConfigurationChanged(void);
-
-/** Event for USB interface reset. This event fires when the USB interface is in device mode, and
- *  a the USB host requests that the device reset its interface. This event fires after the control
- *  endpoint has been automatically configured by the library.
- *
- *  This event is time-critical; exceeding OS-specific delays within this event handler
- (typically of around
- *  two seconds) will prevent the device from enumerating correctly.
- *
- *  \note This event does not exist if the \c USB_HOST_ONLY token is supplied to the compiler (see
- *        \ref Group_USBManagement documentation).
- */
-void EVENT_USB_Device_Reset(void) ATTR_CONST;
 
 @* StdDescriptors.
 Common standard USB Descriptor definitions.
