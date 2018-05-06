@@ -457,37 +457,6 @@ void EVENT_USB_Device_ConfigurationChanged(void)
 	LEDs_SetAllLEDs(ConfigSuccess ? LEDMASK_USB_READY : LEDMASK_USB_ERROR);
 }
 
-@ Event handler for USB Control Request reception event.
-This event fires when a the USB host issues a control request
-to the mandatory device control endpoint (of address 0). This may either be a standard
-request that the library may have a handler code for internally, or a class specific request
-issued to the device which must be handled appropriately. If a request is not processed in the
-user application via this event, it will be passed to the library for processing internally
-if a suitable handler exists.
-
-This event is time-critical; each packet within the request transaction must be acknowledged or
-sent within 50ms or the host will abort the transfer.
-
-The library internally handles all standard control requests with the exceptions of SYNC FRAME,
-SET DESCRIPTOR and SET INTERFACE. These and all other non-standard control requests
-will be left
-for the user to process via this event if desired. If not handled in the user application or by
-the library internally, unknown requests are automatically STALLed.
-
-Requests should be handled in the same manner as described in the USB 2.0 Specification,
-or appropriate class specification. In all instances, the library has already read the
-request SETUP parameters into the |USB_ControlRequest| structure which should then
-be used by the application to determine how to handle the issued request.
-
-@<Func...@>=
-void EVENT_USB_Device_ControlRequest(void);
-
-@ @c
-void EVENT_USB_Device_ControlRequest(void)
-{
-	CDC_Device_ProcessControlRequest(&VirtualSerial_CDC_Interface);
-}
-
 @ ISR to manage the reception of data from the serial port, placing received bytes into
 a circular buffer
 for later transmission to the host.
@@ -1342,6 +1311,17 @@ is active (i.e. enumerated to a host) the frame number is incremented by one.
 UDFNUM
 
 @* Device mode driver for the library USB CDC Class driver.
+
+@ Processes incoming control requests from the host, that are directed to the given CDC
+class interface. This should be
+linked to the |EVENT_USB_Device_ControlRequest| event.
+
+|CDCInterfaceInfo| -- pointer to a structure containing a CDC Class configuration
+and state.
+
+@<Func...@>=
+void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
+  ATTR_NON_NULL_PTR_ARG(1);
 
 @ @c
 void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
@@ -2260,12 +2240,37 @@ int main(void)
 each class driver instance, using the address of the instance to operate on as the function's
 parameter. The request handler will abort if it is determined that the current request is not
 targeted at the given class driver instance, thus these methods can safely be called
-one-after-another in the event handler with no form of error checking:
+one-after-another in the event handler with no form of error checking.
 
-@(/dev/null@>=
+Event handler for USB Control Request reception event.
+This event fires when a the USB host issues a control request
+to the mandatory device control endpoint (of address 0). This may either be a standard
+request that the library may have a handler code for internally, or a class specific request
+issued to the device which must be handled appropriately. If a request is not processed in the
+user application via this event, it will be passed to the library for processing internally
+if a suitable handler exists.
+
+This event is time-critical; each packet within the request transaction must be acknowledged or
+sent within 50ms or the host will abort the transfer.
+
+The library internally handles all standard control requests with the exceptions of SYNC FRAME,
+SET DESCRIPTOR and SET INTERFACE. These and all other non-standard control requests
+will be left
+for the user to process via this event if desired. If not handled in the user application or by
+the library internally, unknown requests are automatically STALLed.
+
+Requests should be handled in the same manner as described in the USB 2.0 Specification,
+or appropriate class specification. In all instances, the library has already read the
+request SETUP parameters into the |USB_ControlRequest| structure which should then
+be used by the application to determine how to handle the issued request.
+
+@<Func...@>=
+void EVENT_USB_Device_ControlRequest(void);
+
+@ @c
 void EVENT_USB_Device_ControlRequest(void)
 {
-  Audio_Device_ProcessControlRequest(&My_Audio_Interface);
+	CDC_Device_ProcessControlRequest(&VirtualSerial_CDC_Interface);
 }
 
 @ Class driver also defines a callback function |CALLBACK_USB_GetDescriptor|.
@@ -4891,16 +4896,6 @@ typedef struct
  *  \return Boolean \c true if the endpoints were successfully configured, \c false otherwise.
  */
 bool CDC_Device_ConfigureEndpoints(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
- ATTR_NON_NULL_PTR_ARG(1);
-
-/** xxx Processes incoming control requests from the host, that are directed to the given CDC
- class interface. This should be
- *  linked to the library \ref EVENT_USB_Device_ControlRequest() event.
- *
- *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration
- and state.
- */
-void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
  ATTR_NON_NULL_PTR_ARG(1);
 
 /** General management task for a given CDC class interface, required for the correct operation
