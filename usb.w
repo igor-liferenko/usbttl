@@ -457,9 +457,32 @@ void EVENT_USB_Device_ConfigurationChanged(void)
 	LEDs_SetAllLEDs(ConfigSuccess ? LEDMASK_USB_READY : LEDMASK_USB_ERROR);
 }
 
-@ Event handler for the library USB Control Request reception event.
+@ Event handler for USB Control Request reception event.
+This event fires when a the USB host issues a control request
+to the mandatory device control endpoint (of address 0). This may either be a standard
+request that the library may have a handler code for internally, or a class specific request
+issued to the device which must be handled appropriately. If a request is not processed in the
+user application via this event, it will be passed to the library for processing internally
+if a suitable handler exists.
 
-@c
+This event is time-critical; each packet within the request transaction must be acknowledged or
+sent within 50ms or the host will abort the transfer.
+
+The library internally handles all standard control requests with the exceptions of SYNC FRAME,
+SET DESCRIPTOR and SET INTERFACE. These and all other non-standard control requests
+will be left
+for the user to process via this event if desired. If not handled in the user application or by
+the library internally, unknown requests are automatically STALLed.
+
+Requests should be handled in the same manner as described in the USB 2.0 Specification,
+or appropriate class specification. In all instances, the library has already read the
+request SETUP parameters into the |USB_ControlRequest| structure which should then
+be used by the application to determine how to handle the issued request.
+
+@<Func...@>=
+void EVENT_USB_Device_ControlRequest(void);
+
+@ @c
 void EVENT_USB_Device_ControlRequest(void)
 {
 	CDC_Device_ProcessControlRequest(&VirtualSerial_CDC_Interface);
@@ -3521,34 +3544,6 @@ Each event must only have one associated event handler, but can be raised by mul
 sources by calling the
 event handler function (with any required event parameters).
 
-/** Event for control requests. This event fires when a the USB host issues a control request
- *  to the mandatory device control endpoint (of address 0). This may either be a standard
- *  request that the library may have a handler code for internally, or a class specific request
- *  issued to the device which must be handled appropriately. If a request is not processed in the
- *  user application via this event, it will be passed to the library for processing internally
- *  if a suitable handler exists.
- *
- *  This event is time-critical; each packet within the request transaction must be acknowledged or
- *  sent within 50ms or the host will abort the transfer.
- *
- *  The library internally handles all standard control requests with the exceptions of SYNC FRAME,
- *  SET DESCRIPTOR and SET INTERFACE. These and all other non-standard control requests
- will be left
- *  for the user to process via this event if desired. If not handled in the user application or by
- *  the library internally, unknown requests are automatically STALLed.
- *
- *  \note This event does not exist if the \c USB_HOST_ONLY token is supplied to the compiler (see
- *        \ref Group_USBManagement documentation).
- *        \n\n
- *
- *  \note Requests should be handled in the same manner as described in the USB 2.0 Specification,
- *        or appropriate class specification. In all instances, the library has already read the
- *        request SETUP parameters into the \ref USB_ControlRequest structure which should then
- be used
- *        by the application to determine how to handle the issued request.
- */
-void EVENT_USB_Device_ControlRequest(void);
-
 /** Event for USB configuration number changed. This event fires when a the USB host changes the
  *  selected configuration number while in device mode. This event should be hooked in device
  *  applications to create the endpoints and configure the device for the selected configuration.
@@ -3559,8 +3554,6 @@ void EVENT_USB_Device_ControlRequest(void);
  *
  *  This event fires after the value of \ref USB_Device_ConfigurationNumber has been changed.
  *
- *  \note This event does not exist if the \c USB_HOST_ONLY token is supplied to the compiler (see
- *        \ref Group_USBManagement documentation).
  */
 void EVENT_USB_Device_ConfigurationChanged(void);
 
@@ -4900,7 +4893,7 @@ typedef struct
 bool CDC_Device_ConfigureEndpoints(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
  ATTR_NON_NULL_PTR_ARG(1);
 
-/** Processes incoming control requests from the host, that are directed to the given CDC
+/** xxx Processes incoming control requests from the host, that are directed to the given CDC
  class interface. This should be
  *  linked to the library \ref EVENT_USB_Device_ControlRequest() event.
  *
