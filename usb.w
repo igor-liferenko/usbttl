@@ -3391,13 +3391,10 @@ inline void Endpoint_Discard_8(void)
   (void) UEDATX;
 }
 
-/** Writes two bytes to the currently selected endpoint's bank in little endian format, for IN
- *  direction endpoints.
- *
- *  \ingroup Group_EndpointPrimitiveRW_AVR8
- *
- *  \param[in] Data  Data to write to the currently selected endpoint's FIFO buffer.
- */
+@ Writes two bytes to the currently selected endpoint's bank (i.e., FIFO buffer)
+in little endian format, for IN direction endpoints.
+
+@<Header files@>=
 inline void Endpoint_Write_16_LE(const uint16_t Data) ATTR_ALWAYS_INLINE;
 inline void Endpoint_Write_16_LE(const uint16_t Data)
 {
@@ -3405,42 +3402,10 @@ inline void Endpoint_Write_16_LE(const uint16_t Data)
 	UEDATX = (Data >> 8);
 }
 
-/** Writes two bytes to the currently selected endpoint's bank in big endian format, for IN
- *  direction endpoints.
- *
- *  \ingroup Group_EndpointPrimitiveRW_AVR8
- *
- *  \param[in] Data  Data to write to the currently selected endpoint's FIFO buffer.
- */
-inline void Endpoint_Write_16_BE(const uint16_t Data) ATTR_ALWAYS_INLINE;
-inline void Endpoint_Write_16_BE(const uint16_t Data)
-{
-	UEDATX = (Data >> 8);
-	UEDATX = (Data & 0xFF);
-}
+@ Reads next four bytes from the currently selected endpoint's bank (i.e., FIFO buffer)
+in little endian format, for OUT direction endpoints.
 
-/** Discards two bytes from the currently selected endpoint's bank, for OUT direction endpoints.
- *
- *  \ingroup Group_EndpointPrimitiveRW_AVR8
- */
-inline void Endpoint_Discard_16(void) ATTR_ALWAYS_INLINE;
-inline void Endpoint_Discard_16(void)
-{
-	uint8_t Dummy;
-
-	Dummy = UEDATX;
-	Dummy = UEDATX;
-
-	(void)Dummy;
-}
-
-/** Reads four bytes from the currently selected endpoint's bank in little endian format, for OUT
- *  direction endpoints.
- *
- *  \ingroup Group_EndpointPrimitiveRW_AVR8
- *
- *  \return Next four bytes in the currently selected endpoint's FIFO buffer.
- */
+@<Header files@>=
 inline uint32_t Endpoint_Read_32_LE(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
 inline uint32_t Endpoint_Read_32_LE(void)
 {
