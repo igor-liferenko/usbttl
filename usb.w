@@ -1277,16 +1277,20 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 					  return;
 				}
 
-        CDCInterfaceInfo->State.LineEncoding.BaudRateBPS = Endpoint_Read_32_LE();
-        CDCInterfaceInfo->State.LineEncoding.CharFormat = @<Read one byte from endpoint@>;
-        CDCInterfaceInfo->State.LineEncoding.ParityType = @<Read one byte from endpoint@>;
-        CDCInterfaceInfo->State.LineEncoding.DataBits = @<Read one byte from endpoint@>;
+				CDCInterfaceInfo->State.LineEncoding.BaudRateBPS
+ = Endpoint_Read_32_LE();
+				CDCInterfaceInfo->State.LineEncoding.CharFormat
+  = Endpoint_Read_8();
+				CDCInterfaceInfo->State.LineEncoding.ParityType
+  = Endpoint_Read_8();
+				CDCInterfaceInfo->State.LineEncoding.DataBits
+    = Endpoint_Read_8();
 
         @<Clear OUT packet on endpoint@>@;
-        Endpoint_ClearStatusStage();
+				Endpoint_ClearStatusStage();
 
-        EVENT_CDC_Device_LineEncodingChanged(CDCInterfaceInfo);
-      }
+				EVENT_CDC_Device_LineEncodingChanged(CDCInterfaceInfo);
+			}
 
 			break;
 		case CDC_REQ_SetControlLineState:
@@ -1491,7 +1495,7 @@ int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInf
 
 	if (@<Endpoint received an OUT packet@>) {
 		if (@<Number of bytes in endpoint@> != 0)
-		  ReceivedByte = @<Read one byte from endpoint@>;
+		  ReceivedByte = Endpoint_Read_8();
 
 		if (@<Number of bytes in endpoint@>
                     == 0)
@@ -1610,7 +1614,7 @@ void USB_Device_ProcessControlRequest(void)
 
   for (uint8_t RequestHeaderByte = 0; RequestHeaderByte < sizeof(USB_Request_Header_t);
     RequestHeaderByte++)
-	  *(RequestHeader++) = @<Read one byte from endpoint@>;
+	  *(RequestHeader++) = Endpoint_Read_8();
 
   EVENT_USB_Device_ControlRequest();
 
@@ -2080,7 +2084,7 @@ uint8_t Endpoint_Read_Stream_LE(void* const Buffer,
 		}
 		else
 		{
-			*DataStream = @<Read one byte from endpoint@>;
+			*DataStream = Endpoint_Read_8();
 			DataStream += 1;
 			Length--;
 			BytesInTransfer++;
@@ -2124,7 +2128,7 @@ uint8_t Endpoint_Read_Stream_BE(void* const Buffer,
 		}
 		else
 		{
-			*DataStream = @<Read one byte from endpoint@>;
+			*DataStream = Endpoint_Read_8();
 			DataStream -= 1;
 			Length--;
 			BytesInTransfer++;
@@ -2309,7 +2313,7 @@ uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer, uint16_t Length)
 
 		if (@<Endpoint received an OUT packet@>) {
 			while (Length && @<Number of bytes in endpoint@> != 0) {
-				*DataStream = @<Read one byte from endpoint@>;
+				*DataStream = Endpoint_Read_8();
 				DataStream += 1;
 				Length--;
 			}
@@ -2351,7 +2355,7 @@ uint8_t Endpoint_Read_Control_Stream_BE(void* const Buffer, uint16_t Length)
 
 		if (@<Endpoint received an OUT packet@>) {
 			while (Length && @<Number of bytes in endpoint@> != 0) {
-				*DataStream = @<Read one byte from endpoint@>;
+				*DataStream = Endpoint_Read_8();
 				DataStream -= 1;
 				Length--;
 			}
@@ -3357,82 +3361,34 @@ UECONX |= (1 << STALLRQC);
 @<Endpoint is istalled@>=
 (UECONX & (1 << STALLRQ))
 
-@ Reads one byte from the currently selected endpoint's bank, for OUT direction endpoints.
+@ Reads next byte from the currently selected endpoint's bank (i.e., FIFO buffer),
+for OUT direction endpoints.
 
-Returns next byte in the currently selected endpoint's FIFO buffer.
+@<Header files@>=
+inline uint8_t Endpoint_Read_8(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+inline uint8_t Endpoint_Read_8(void)
+{
+  return UEDATX;
+}
 
-@<Read one byte from endpoint@>=
-UEDATX
+@ Writes one byte to the currently selected endpoint's bank (i.e., FIFO buffer),
+for IN direction endpoints.
 
-@ @<Header files@>=
-/** Writes one byte to the currently selected endpoint's bank, for IN direction endpoints.
- *
- *  \ingroup Group_EndpointPrimitiveRW_AVR8
- *
- *  \param[in] Data  Data to write into the the currently selected endpoint's FIFO buffer.
- */
+@<Header files@>=
 inline void Endpoint_Write_8(const uint8_t Data) ATTR_ALWAYS_INLINE;
 inline void Endpoint_Write_8(const uint8_t Data)
 {
-	UEDATX = Data;
+  UEDATX = Data;
 }
 
-/** Discards one byte from the currently selected endpoint's bank, for OUT direction endpoints.
- *
- *  \ingroup Group_EndpointPrimitiveRW_AVR8
- */
+@ Discards one byte from the currently selected endpoint's bank (i.e., FIFO buffer),
+for OUT direction endpoints.
+
+@<Header files@>=
 inline void Endpoint_Discard_8(void) ATTR_ALWAYS_INLINE;
 inline void Endpoint_Discard_8(void)
 {
-	uint8_t Dummy;
-
-	Dummy = UEDATX;
-
-	(void)Dummy;
-}
-
-/** Reads two bytes from the currently selected endpoint's bank in little endian format, for OUT
- *  direction endpoints.
- *
- *  \ingroup Group_EndpointPrimitiveRW_AVR8
- *
- *  \return Next two bytes in the currently selected endpoint's FIFO buffer.
- */
-inline uint16_t Endpoint_Read_16_LE(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline uint16_t Endpoint_Read_16_LE(void)
-{
-	union
-	{
-		uint16_t Value;
-		uint8_t  Bytes[2];
-	} Data;
-
-	Data.Bytes[0] = UEDATX;
-	Data.Bytes[1] = UEDATX;
-
-	return Data.Value;
-}
-
-/** Reads two bytes from the currently selected endpoint's bank in big endian format, for OUT
- *  direction endpoints.
- *
- *  \ingroup Group_EndpointPrimitiveRW_AVR8
- *
- *  \return Next two bytes in the currently selected endpoint's FIFO buffer.
- */
-inline uint16_t Endpoint_Read_16_BE(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline uint16_t Endpoint_Read_16_BE(void)
-{
-	union
-	{
-		uint16_t Value;
-		uint8_t  Bytes[2];
-	} Data;
-
-	Data.Bytes[1] = UEDATX;
-	Data.Bytes[0] = UEDATX;
-
-	return Data.Value;
+  (void) UEDATX;
 }
 
 /** Writes two bytes to the currently selected endpoint's bank in little endian format, for IN
