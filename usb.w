@@ -692,17 +692,13 @@ typedef struct {
 
 @
 
-@d CDC_DSUBTYPE_CS_INTERFACE_HEADER 0x00 /* CDC class-specific Header
-  functional descriptor */
-
 @<Initialize |CDC_Functional_Header|@>= {@|
   {@, sizeof (USB_CDC_Descriptor_Func_Header_t), DTYPE_CS_INTERFACE @,},@|
   CDC_DSUBTYPE_CS_INTERFACE_HEADER,@|
   VERSION_BCD(1,1,0) @/
 }
 
-@ @d CDC_DSUBTYPE_CS_INTERFACE_ACM 0x02 /* CDC class-specific Abstract Control Model
-  functional descriptor */
+@
 
 @<Initialize |CDC_Functional_ACM|@>= {@|
   {@, sizeof (USB_CDC_Descriptor_Func_ACM_t), DTYPE_CS_INTERFACE @,},@|
@@ -712,7 +708,6 @@ typedef struct {
 
 @ @d INTERFACE_ID_CDC_CCI 0 /* CDC CCI interface descriptor ID */
 @d INTERFACE_ID_CDC_DCI 1 /* CDC DCI interface descriptor ID */
-@d CDC_DSUBTYPE_CS_INTERFACE_UNION 0x06 /* CDC class-specific Union functional descriptor */
 
 @<Initialize |CDC_Functional_Union|@>= {@|
   {@, sizeof (USB_CDC_Descriptor_Func_Union_t), DTYPE_CS_INTERFACE @,},@|
@@ -4160,43 +4155,14 @@ notification structure when sent to the host via the CDC notification endpoint.
 @<Header files@>=
 #define CDC_NOTIF_SERIAL_STATE 0x20
 
-/** Enum for the CDC class specific interface descriptor subtypes. */
-enum CDC_DescriptorSubtypes_t
-{
-  CDC_DSUBTYPE_CSInterface_Header = 0x00, /**< CDC class-specific Header functional descriptor. */
-  CDC_DSUBTYPE_CSInterface_CallManagement = 0x01, /**< CDC class-specific Call Management
- functional descriptor. */
-  CDC_DSUBTYPE_CSInterface_ACM = 0x02, /**< CDC class-specific Abstract Control Model functional
- descriptor. */
-  CDC_DSUBTYPE_CSInterface_DirectLine = 0x03, /**< CDC class-specific Direct Line functional
- descriptor. */
-  CDC_DSUBTYPE_CSInterface_TelephoneRinger = 0x04, /**< CDC class-specific Telephone Ringer
- functional descriptor. */
-  CDC_DSUBTYPE_CSInterface_TelephoneCall = 0x05, /**< CDC class-specific Telephone Call
- functional descriptor. */
-  CDC_DSUBTYPE_CSInterface_Union = 0x06, /**< CDC class-specific Union functional descriptor. */
-  CDC_DSUBTYPE_CSInterface_CountrySelection = 0x07, /**< CDC class-specific Country Selection
- functional descriptor. */
-  CDC_DSUBTYPE_CSInterface_TelephoneOpModes = 0x08, /**< CDC class-specific Telephone Operation
- Modes functional descriptor. */
-  CDC_DSUBTYPE_CSInterface_USBTerminal = 0x09, /**< CDC class-specific USB Terminal functional
- descriptor. */
-  CDC_DSUBTYPE_CSInterface_NetworkChannel = 0x0A, /**< CDC class-specific Network Channel
- functional descriptor. */
-  CDC_DSUBTYPE_CSInterface_ProtocolUnit = 0x0B, /**< CDC class-specific Protocol Unit functional
- descriptor. */
-  CDC_DSUBTYPE_CSInterface_ExtensionUnit = 0x0C, /**< CDC class-specific Extension Unit functional
- descriptor. */
-  CDC_DSUBTYPE_CSInterface_MultiChannel = 0x0D, /**< CDC class-specific Multi-Channel Management
- functional descriptor. */
-  CDC_DSUBTYPE_CSInterface_CAPI = 0x0E, /**< CDC class-specific Common ISDN API functional
- descriptor. */
-  CDC_DSUBTYPE_CSInterface_Ethernet = 0x0F, /**< CDC class-specific Ethernet functional
- descriptor. */
-  CDC_DSUBTYPE_CSInterface_ATM = 0x10, /**< CDC class-specific Asynchronous Transfer Mode
- functional descriptor. */
-};
+@ CDC class specific interface descriptor subtypes.
 
+@<Header files@>=
+#define CDC_DSUBTYPE_CS_INTERFACE_HEADER 0x00 /* Header functional descriptor */
+#define CDC_DSUBTYPE_CS_INTERFACE_ACM 0x02 /* Abstract Control Model functional descriptor */
+#define CDC_DSUBTYPE_CS_INTERFACE_UNION 0x06 /* Union functional descriptor */
+
+@ @<Header files@>=
 /** Enum for the possible line encoding formats of a virtual serial port. */
 enum CDC_LineEncodingFormats_t
 {
@@ -4233,7 +4199,7 @@ typedef struct
   USB_Descriptor_Header_t Header; /**< Regular descriptor header containing the descriptor's
  type and length. */
   uint8_t Subtype; /**< Sub type value used to distinguish between CDC class-specific descriptors,
-                    *   must be \ref CDC_DSUBTYPE_CSInterface_Header.
+                    *   must be \ref CDC_DSUBTYPE_CS_INTERFACE_HEADER.
                     */
   uint16_t CDCSpecification; /**< Version number of the CDC specification implemented by the
  device,
@@ -4266,7 +4232,7 @@ typedef struct
                            */
   uint8_t  bDescriptorSubType; /**< Sub type value used to distinguish between CDC
  class-specific descriptors,
-	                        *   must be \ref CDC_DSUBTYPE_CSInterface_Header.
+	                        *   must be \ref CDC_DSUBTYPE_CS_INTERFACE_HEADER.
 	                        */
   uint16_t bcdCDC; /**< Version number of the CDC specification implemented by the device,
  encoded in BCD format.
@@ -4293,7 +4259,7 @@ typedef struct
  type and length. */
   uint8_t                 Subtype; /**< Sub type value used to distinguish between CDC
  class-specific descriptors,
-	                             *   must be \ref CDC_DSUBTYPE_CSInterface_ACM.
+	                             *   must be \ref CDC_DSUBTYPE_CS_INTERFACE_ACM.
 	                             */
   uint8_t                 Capabilities; /**< Capabilities of the ACM interface, given as a bit
  mask. For most devices,
@@ -4325,7 +4291,7 @@ typedef struct
 	                          */
 	uint8_t bDescriptorSubType; /**< Sub type value used to distinguish between CDC
  class-specific descriptors,
-	                             *   must be \ref CDC_DSUBTYPE_CSInterface_ACM.
+	                             *   must be \ref CDC_DSUBTYPE_CS_INTERFACE_ACM.
 	                             */
 	uint8_t bmCapabilities; /**< Capabilities of the ACM interface, given as a bit mask.
  For most devices,
@@ -4352,7 +4318,7 @@ typedef struct
  descriptor's type and length. */
 	uint8_t                 Subtype; /**< Sub type value used to distinguish between CDC
  class-specific descriptors,
-	                                  *   must be \ref CDC_DSUBTYPE_CSInterface_Union.
+	                                  *   must be \ref CDC_DSUBTYPE_CS_INTERFACE_UNION.
 	                                  */
 	uint8_t                 MasterInterfaceNumber; /**< Interface number of the CDC
  Control interface. */
@@ -4381,7 +4347,7 @@ typedef struct
 	                          */
 	uint8_t bDescriptorSubType; /**< Sub type value used to distinguish between CDC
  class-specific descriptors,
-	                             *   must be \ref CDC_DSUBTYPE_CSInterface_Union.
+	                             *   must be \ref CDC_DSUBTYPE_CS_INTERFACE_UNION.
 	                             */
 	uint8_t bMasterInterface; /**< Interface number of the CDC Control interface. */
 	uint8_t bSlaveInterface0; /**< Interface number of the CDC Data interface. */
