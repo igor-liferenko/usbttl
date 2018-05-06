@@ -1932,48 +1932,6 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 	return ENDPOINT_RWCSTREAM_NoError;
 }
 
-@ @c
-uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer, uint16_t Length)
-{
-	uint8_t* DataStream = ((uint8_t*)Buffer + 0);
-
-	if (!(Length))
-    @<Clear OUT packet on endpoint@>@;
-
-	while (Length)
-	{
-		uint8_t USB_DeviceState_LCL = USB_DeviceState;
-
-		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
-		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
-		  return ENDPOINT_RWCSTREAM_BusSuspended;
-		else if (@<Endpoint has received a SETUP packet@>)
-		  return ENDPOINT_RWCSTREAM_HostAborted;
-
-		if (@<Endpoint received an OUT packet@>) {
-			while (Length && @<Number of bytes in endpoint@> != 0) {
-				*DataStream = Endpoint_Read_8();
-				DataStream += 1;
-				Length--;
-			}
-
-      @<Clear OUT packet on endpoint@>@;
-		}
-	}
-
-	while (!@<Endpoint is ready for an IN packet@>) {
-		uint8_t USB_DeviceState_LCL = USB_DeviceState;
-
-		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
-		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
-		  return ENDPOINT_RWCSTREAM_BusSuspended;
-	}
-
-	return ENDPOINT_RWCSTREAM_NoError;
-}
-
 @ FLASH buffer source version of |Endpoint_Write_Control_Stream_LE|.
 
 The FLASH data must be located in the first 64KB of FLASH for this function to work correctly.
@@ -3472,35 +3430,6 @@ Note that the status stage packet is sent or received in the opposite direction 
 @<Header files@>=
 uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
                                          uint16_t Length) ATTR_NON_NULL_PTR_ARG(1);
-
-@ Reads the given number of bytes from the CONTROL endpoint from the given buffer in little endian,
-discarding fully read packets from the host as needed. The device IN acknowledgement is not
-automatically sent after success or failure states; the user is responsible for manually
-sending the
-status IN packet to finalize the transfer's status stage via the |@<Clear IN packet on endpoint@>|
-macro.
-
-\note This function automatically sends the last packet in the data stage of the transaction;
- when the
-function returns, the user is responsible for clearing the <b>status</b> stage of the transaction.
-Note that the status stage packet is sent or received in the opposite direction of the data flow.
-        \n\n
-
-\note This routine should only be used on CONTROL type endpoints.
-
-\warning Unlike the standard stream read/write commands, the control stream commands cannot be
- chained
-         together; i.e. the entire stream data must be read or written at the one time.
-
-\param[out] Buffer  Pointer to the destination data buffer to write to.
-\param[in]  Length  Number of bytes to send via the currently selected endpoint.
-
-\return A value from the \ref Endpoint_ControlStream_RW_ErrorCodes_t enum.
-
-@<Header files@>=
-uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer,
-                                        uint16_t Length) ATTR_NON_NULL_PTR_ARG(1);
-
 
 @* USBTask.
 Main USB service task management.
