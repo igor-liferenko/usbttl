@@ -2302,61 +2302,6 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 }
 
 @ @c
-uint8_t Endpoint_Write_Control_Stream_BE(const void* const Buffer,
-                            uint16_t Length)
-{
-	uint8_t* DataStream     = ((uint8_t*)Buffer + (Length - 1));
-	bool     LastPacketFull = false;
-
-	if (Length > USB_ControlRequest.wLength)
-	  Length = USB_ControlRequest.wLength;
-	else if (!(Length))
-	  @<Clear IN packet on endpoint@>@;
-
-	while (Length || LastPacketFull)
-	{
-		uint8_t USB_DeviceState_LCL = USB_DeviceState;
-
-		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
-		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
-		  return ENDPOINT_RWCSTREAM_BusSuspended;
-		else if (@<Endpoint has received a SETUP packet@>)
-		  return ENDPOINT_RWCSTREAM_HostAborted;
-		else if (@<Endpoint received an OUT packet@>)
-		  break;
-
-		if (@<Endpoint is ready for an IN packet@>) {
-			uint16_t BytesInEndpoint = @<Number of bytes in endpoint@>;
-
-			while (Length && (BytesInEndpoint < USB_Device_ControlEndpointSize))
-			{
-				Endpoint_Write_8(*DataStream);
-				DataStream -= 1;
-				Length--;
-				BytesInEndpoint++;
-			}
-
-			LastPacketFull = (BytesInEndpoint == USB_Device_ControlEndpointSize);
-			@<Clear IN packet on endpoint@>@;
-		}
-	}
-
-	while (!@<Endpoint received an OUT packet@>) {
-		uint8_t USB_DeviceState_LCL = USB_DeviceState;
-
-		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
-		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
-		  return ENDPOINT_RWCSTREAM_BusSuspended;
-		else if (@<Endpoint has received a SETUP packet@>)
-		  return ENDPOINT_RWCSTREAM_HostAborted;
-	}
-
-	return ENDPOINT_RWCSTREAM_NoError;
-}
-
-@ @c
 uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer, uint16_t Length)
 {
 	uint8_t* DataStream = ((uint8_t*)Buffer + 0);
@@ -4250,35 +4195,6 @@ Note that the status stage packet is sent or received in the opposite direction 
 
 @<Header files@>=
 uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
-                                         uint16_t Length) ATTR_NON_NULL_PTR_ARG(1);
-
-@ Writes the given number of bytes to the CONTROL type endpoint from the given buffer in big
- endian,
-sending full packets to the host as needed. The host OUT acknowledgement is not automatically
- cleared
-in both failure and success states; the user is responsible for manually clearing the status
- OUT packet
-to finalize the transfer's status stage via the |@<Clear OUT packet on endpoint@>| macro.
-
-\note This function automatically sends the last packet in the data stage of the transaction;
- when the
-function returns, the user is responsible for clearing the <b>status</b> stage of the transaction.
-Note that the status stage packet is sent or received in the opposite direction of the data flow.
-        \n\n
-
-\note This routine should only be used on CONTROL type endpoints.
-
-\warning Unlike the standard stream read/write commands, the control stream commands cannot
- be chained
-          together; i.e. the entire stream data must be read or written at the one time.
-
-\param[in] Buffer  Pointer to the source data buffer to read from.
-\param[in] Length  Number of bytes to read for the currently selected endpoint into the buffer.
-
-\return A value from the \ref Endpoint_ControlStream_RW_ErrorCodes_t enum.
-
-@<Header files@>=
-uint8_t Endpoint_Write_Control_Stream_BE(const void* const Buffer,
                                          uint16_t Length) ATTR_NON_NULL_PTR_ARG(1);
 
 @ Reads the given number of bytes from the CONTROL endpoint from the given buffer in little endian,
