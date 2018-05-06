@@ -1410,31 +1410,26 @@ uint8_t CDC_Device_SendString_P(USB_ClassInfo_CDC_Device_t* const CDCInterfaceIn
 	return Endpoint_Write_PStream_LE(String, strlen_P(String), NULL);
 }
 
-@ @c
-uint8_t CDC_Device_SendData(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
-                            const void* const Buffer,
-                            const uint16_t Length)
-{
-	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
- !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
-	  return ENDPOINT_RWSTREAM_DeviceDisconnected;
+@ Sends a given byte to the attached USB host, if connected. If a host is not connected
+when the function is called, the
+byte is discarded. Bytes will be queued for transmission to the host until either the
+endpoint bank becomes full, or the
+|CDC_Device_Flush| function is called to flush the pending data to the host. This
+allows for multiple bytes to be
+packed into a single endpoint packet, increasing data throughput.
 
-	Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataINEndpoint.Address);
-	return Endpoint_Write_Stream_LE(Buffer, Length, NULL);
-}
+This function must only be called when the Device state machine is in the
+|DEVICE_STATE_CONFIGURED| state or the call will fail.
 
-@ @c
-uint8_t CDC_Device_SendData_P(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
-                            const void* const Buffer,
-                            const uint16_t Length)
-{
-	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
- !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
-	  return ENDPOINT_RWSTREAM_DeviceDisconnected;
+|CDCInterfaceInfo| --  pointer to a structure containing a CDC Class
+configuration and state.
+|Data| -- byte of data to send to the host.
 
-	Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataINEndpoint.Address);
-	return Endpoint_Write_PStream_LE(Buffer, Length, NULL);
-}
+Returns a value from the |Endpoint_WaitUntilReady_ErrorCodes_t| enum.
+
+@<Func...@>=
+uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
+                            const uint8_t Data) ATTR_NON_NULL_PTR_ARG(1);
 
 @ @c
 uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
@@ -1919,83 +1914,6 @@ Returns true if the currently selected endpoint is enabled, false otherwise.
 UECONX |= (1 << RSTDT);
 
 @* Endpoint data stream transmission and reception management for the AVR8 microcontrollers.
-
-@ @c
-uint8_t Endpoint_Discard_Stream(uint16_t Length,
-                                uint16_t* const BytesProcessed)
-{
-	uint8_t  ErrorCode;
-	uint16_t BytesInTransfer = 0;
-
-	if ((ErrorCode = Endpoint_WaitUntilReady()))
-	  return ErrorCode;
-
-	if (BytesProcessed != NULL)
-	  Length -= *BytesProcessed;
-
-	while (Length) {
-		if (!@<Read-write is allowed for endpoint@>) {
-      @<Clear OUT packet on endpoint@>@;
-
-			if (BytesProcessed != NULL)
-			{
-				*BytesProcessed += BytesInTransfer;
-				return ENDPOINT_RWSTREAM_IncompleteTransfer;
-			}
-
-			if ((ErrorCode = Endpoint_WaitUntilReady()))
-			  return ErrorCode;
-		}
-		else
-		{
-			Endpoint_Discard_8();
-
-			Length--;
-			BytesInTransfer++;
-		}
-	}
-
-	return ENDPOINT_RWSTREAM_NoError;
-}
-
-@ @c
-uint8_t Endpoint_Null_Stream(uint16_t Length,
-                             uint16_t* const BytesProcessed)
-{
-	uint8_t  ErrorCode;
-	uint16_t BytesInTransfer = 0;
-
-	if ((ErrorCode = Endpoint_WaitUntilReady()))
-	  return ErrorCode;
-
-	if (BytesProcessed != NULL)
-	  Length -= *BytesProcessed;
-
-	while (Length)
-	{
-		if (!@<Read-write is allowed for endpoint@>) {
-			@<Clear IN packet on endpoint@>@;
-
-			if (BytesProcessed != NULL)
-			{
-				*BytesProcessed += BytesInTransfer;
-				return ENDPOINT_RWSTREAM_IncompleteTransfer;
-			}
-
-			if ((ErrorCode = Endpoint_WaitUntilReady()))
-			  return ErrorCode;
-		}
-		else
-		{
-			Endpoint_Write_8(0);
-
-			Length--;
-			BytesInTransfer++;
-		}
-	}
-
-	return ENDPOINT_RWSTREAM_NoError;
-}
 
 @ @c
 uint8_t Endpoint_Write_Stream_LE(const void* const Buffer,
@@ -3127,7 +3045,7 @@ Returns boolean true if the currently selected endpoint has been configured, fal
 otherwise.
 
 @<Endpoint is configured@>=
-((UESTA0X & (1 << CFGOK)) ? true : false) 
+(UESTA0X & (1 << CFGOK))
 
 @ Total number of endpoints (including the default control endpoint at address 0) which may
 be used in the device. Different USB AVR models support different amounts of endpoints,
@@ -3833,118 +3751,6 @@ enum Endpoint_ControlStream_RW_ErrorCodes_t
  data streams from
  *  and to endpoints.
  */
-
-@*4 Stream functions for null data.
-
-@ Reads and discards the given number of bytes from the currently selected endpoint's bank,
-discarding fully read packets from the host as needed. The last packet is not automatically
-discarded once the remaining bytes has been read; the user is responsible for manually
-discarding the last packet from the host via the |@<Clear OUT packet on endpoint@>| macro.
-
-If the BytesProcessed parameter is \c NULL, the entire stream transfer is attempted at once,
-failing or succeeding as a single unit. If the BytesProcessed parameter points to a valid
-storage location, the transfer will instead be performed as a series of chunks. Each time
-the endpoint bank becomes empty while there is still data to process (and after the current
-packet has been acknowledged) the BytesProcessed location will be updated with the total number
-of bytes processed in the stream, and the function will exit with an error code of
-\ref ENDPOINT_RWSTREAM_IncompleteTransfer. This allows for any abort checking to be performed
-in the user code - to continue the transfer, call the function again with identical parameters
-and it will resume until the BytesProcessed value reaches the total transfer length.
-
- *  <b>Single Stream Transfer Example:</b>
- *  \code
- *  uint8_t ErrorCode;
- *
- *  if ((ErrorCode = Endpoint_Discard_Stream(512, NULL)) != ENDPOINT_RWSTREAM_NoError)
- *  {
- *       // Stream failed to complete - check ErrorCode here
- *  }
- *  \endcode
- *
- *  <b>Partial Stream Transfers Example:</b>
- *  \code
- *  uint8_t  ErrorCode;
- *  uint16_t BytesProcessed;
- *
- *  BytesProcessed = 0;
- *  while ((ErrorCode = Endpoint_Discard_Stream(512, &BytesProcessed)) ==
- ENDPOINT_RWSTREAM_IncompleteTransfer)
- *  {
- *      // Stream not yet complete - do other actions here, abort if required
- *  }
- *
- *  if (ErrorCode != ENDPOINT_RWSTREAM_NoError)
- *  {
- *      // Stream failed to complete - check ErrorCode here
- *  }
- *  \endcode
- *
- *  \note This routine should not be used on CONTROL type endpoints.
- *
- *  \param[in] Length          Number of bytes to discard via the currently selected endpoint.
- *  \param[in] BytesProcessed  Pointer to a location where the total number of bytes processed
- in the current
- *                             transaction should be updated, \c NULL if the entire stream
- should be read at once.
- *
- *  \return A value from the \ref Endpoint_Stream_RW_ErrorCodes_t enum.
-@<Header files@>=
-uint8_t Endpoint_Discard_Stream(uint16_t Length, uint16_t* const BytesProcessed);
-
-@ Writes a given number of zeroed bytes to the currently selected endpoint's bank, sending
-full packets to the host as needed. The last packet is not automatically sent once the
-remaining bytes have been written; the user is responsible for manually sending the last
-packet to the host via the |@<Clear IN packet on endpoint@>|.
-
-If the BytesProcessed parameter is \c NULL, the entire stream transfer is attempted at once,
-failing or succeeding as a single unit. If the BytesProcessed parameter points to a valid
-storage location, the transfer will instead be performed as a series of chunks. Each time
-the endpoint bank becomes full while there is still data to process (and after the current
-packet transmission has been initiated) the BytesProcessed location will be updated with the
-total number of bytes processed in the stream, and the function will exit with an error code of
-\ref ENDPOINT_RWSTREAM_IncompleteTransfer. This allows for any abort checking to be performed
-in the user code - to continue the transfer, call the function again with identical parameters
-and it will resume until the BytesProcessed value reaches the total transfer length.
-
- * <b>Single Stream Transfer Example:</b>
- *  \code
- *  uint8_t ErrorCode;
- *
- *  if ((ErrorCode = Endpoint_Null_Stream(512, NULL)) != ENDPOINT_RWSTREAM_NoError)
- *  {
- *       // Stream failed to complete - check ErrorCode here
- *  }
- *  \endcode
- *
- *  <b>Partial Stream Transfers Example:</b>
- *  \code
- *  uint8_t  ErrorCode;
- *  uint16_t BytesProcessed;
- *
- *  BytesProcessed = 0;
- *  while ((ErrorCode = Endpoint_Null_Stream(512, &BytesProcessed)) ==
- ENDPOINT_RWSTREAM_IncompleteTransfer)
- *  {
- *      // Stream not yet complete - do other actions here, abort if required
- *  }
- *
- *  if (ErrorCode != ENDPOINT_RWSTREAM_NoError)
- *  {
- *      // Stream failed to complete - check ErrorCode here
- *  }
- *  \endcode
- *
- *  \note This routine should not be used on CONTROL type endpoints.
- *
- *  \param[in] Length          Number of zero bytes to send via the currently selected endpoint.
- *  \param[in] BytesProcessed  Pointer to a location where the total number of bytes processed
- in the current
- *                             transaction should be updated, \c NULL if the entire stream
- should be read at once.
- *
- *  \return A value from the \ref Endpoint_Stream_RW_ErrorCodes_t enum.
-@<Header files@>=
-uint8_t Endpoint_Null_Stream(uint16_t Length, uint16_t* const BytesProcessed);
 
 @*4 Stream functions for RAM source/destination data.
 
@@ -5809,52 +5615,6 @@ void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const C
 void EVENT_CDC_Device_BreakSent(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                                const uint8_t Duration) ATTR_CONST ATTR_NON_NULL_PTR_ARG(1);
 
-/** Sends a given data buffer to the attached USB host, if connected. If a host is not connected
- when the function is
- *  called, the string is discarded. Bytes will be queued for transmission to the host until
- either the endpoint bank
- *  becomes full, or the \ref CDC_Device_Flush() function is called to flush the pending data
- to the host. This allows
- *  for multiple bytes to be packed into a single endpoint packet, increasing data throughput.
- *
- *  \pre This function must only be called when the Device state machine is in the
- \ref DEVICE_STATE_CONFIGURED state or
- *       the call will fail.
- *
- *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class
- configuration and state.
- *  \param[in]     Buffer            Pointer to a buffer containing the data to send to the device.
- *  \param[in]     Length            Length of the data to send to the host.
- *
- *  \return A value from the \ref Endpoint_Stream_RW_ErrorCodes_t enum.
- */
-uint8_t CDC_Device_SendData(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
-                            const void* const Buffer,
-                       const uint16_t Length) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
-
-/** Sends a given data buffer from PROGMEM space to the attached USB host, if connected. If a
- host is not connected when the
- *  function is called, the string is discarded. Bytes will be queued for transmission to the
- host until either the endpoint
- *  bank becomes full, or the \ref CDC_Device_Flush() function is called to flush the pending
- data to the host. This allows
- *  for multiple bytes to be packed into a single endpoint packet, increasing data throughput.
- *
- *  \pre This function must only be called when the Device state machine is in the
- \ref DEVICE_STATE_CONFIGURED state or
- *       the call will fail.
- *
- *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class
- configuration and state.
- *  \param[in]     Buffer            Pointer to a buffer containing the data to send to the device.
- *  \param[in]     Length            Length of the data to send to the host.
- *
- *  \return A value from the \ref Endpoint_Stream_RW_ErrorCodes_t enum.
- */
-uint8_t CDC_Device_SendData_P(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
-                            const void* const Buffer,
-                       const uint16_t Length) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
-
 /** Sends a given null terminated string to the attached USB host, if connected. If a host is
  not connected when
  *  the function is called, the string is discarded. Bytes will be queued for transmission
@@ -5898,27 +5658,6 @@ uint8_t CDC_Device_SendString(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo
  */
 uint8_t CDC_Device_SendString_P(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                    const char* const String) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
-
-/** Sends a given byte to the attached USB host, if connected. If a host is not connected
- when the function is called, the
- *  byte is discarded. Bytes will be queued for transmission to the host until either the
- endpoint bank becomes full, or the
- *  \ref CDC_Device_Flush() function is called to flush the pending data to the host. This
- allows for multiple bytes to be
- *  packed into a single endpoint packet, increasing data throughput.
- *
- *  \pre This function must only be called when the Device state machine is in the
- \ref DEVICE_STATE_CONFIGURED state or
- *       the call will fail.
- *
- *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class
- configuration and state.
- *  \param[in]     Data              Byte of data to send to the host.
- *
- *  \return A value from the |Endpoint_WaitUntilReady_ErrorCodes_t| enum.
- */
-uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
-                            const uint8_t Data) ATTR_NON_NULL_PTR_ARG(1);
 
 /** Determines the number of bytes received by the CDC interface from the host, waiting
  to be read. This indicates the number
