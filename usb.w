@@ -893,9 +893,6 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 @* USB Event management definitions.
 
 @ @c
-void EVENT_USB_Device_WakeUp(void)
-{
-}
 void EVENT_USB_Device_Reset(void)
 {
 }
@@ -998,8 +995,6 @@ ISR(USB_GEN_vect, ISR_BLOCK)
     else
       USB_DeviceState = @<Address of USB Device is set@> ?
         DEVICE_STATE_ADDRESSED : DEVICE_STATE_POWERED;
-
-    EVENT_USB_Device_WakeUp();
   }
 
 	if (USB_INT_HasOccurred(USB_INT_EORSTI) && USB_INT_IsEnabled(USB_INT_EORSTI))
@@ -4458,23 +4453,6 @@ void EVENT_USB_Device_ControlRequest(void);
  *        \ref Group_USBManagement documentation).
  */
 void EVENT_USB_Device_ConfigurationChanged(void);
-
-/** Event for USB wake up. This event fires when a the USB interface is suspended while in device
- *  mode, and the host wakes up the device by supplying Start Of Frame pulses. This is generally
- *  hooked to pull the user application out of a low power state and back into normal operating
- *  mode. If the USB interface is enumerated with the \ref USB_OPT_AUTO_PLL option set, the library
- *  will automatically restart the USB PLL before the event is fired.
- *
- *  \note This event does not exist if the \c USB_HOST_ONLY token is supplied to the compiler (see
- *        \ref Group_USBManagement documentation).
- *        \n\n
- *
- *  \note This event does not exist on the microcontrollers with limited USB VBUS sensing abilities
- *        when the \c NO_LIMITED_CONTROLLER_CONNECT compile time token is not set - see
- *        \ref EVENT_USB_Device_Disconnect.
- *
- */
-void EVENT_USB_Device_WakeUp(void) ATTR_CONST;
 
 /** Event for USB interface reset. This event fires when the USB interface is in device mode, and
  *  a the USB host requests that the device reset its interface. This event fires after the control
