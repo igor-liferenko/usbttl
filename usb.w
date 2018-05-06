@@ -430,9 +430,6 @@ Macro for the definition of interrupt service routines, so that the compiler can
  microcontroller's
   Interrupt Controller (if present) before they will properly handle incoming interrupt events.
 
-@d DEVICE_STATE_CONFIGURED 4 /* may be implemented by the user project. This state indicates
-  that the device has been enumerated by the host and is ready for USB communications to begin */
-
 @c
 ISR(USART1_RX_vect, ISR_BLOCK)
 {
@@ -795,21 +792,52 @@ Descriptor.
 const USB_Descriptor_String_t PROGMEM ProductString =
   USB_STRING_DESCRIPTOR(L"LUFA USB-RS232 Adapter");
 
-@ This function is called by the library when in device mode, and must be overridden
-(see library "USB Descriptors"
-documentation) by the application code so that the address and size of a requested
-descriptor can be given
-to the USB library. When the device receives a Get Descriptor request on the control
+@ Function to retrieve a given descriptor's size and memory location from the given
+descriptor type value,
+index and language ID. This function MUST be overridden in the user application
+(added with full, identical
+prototype and name so that the library can call it to retrieve descriptor data.
+
+When the device receives a Get Descriptor request on the control
 endpoint, this function
 is called so that the descriptor details can be passed back and the appropriate descriptor
 sent back to the
 USB host.
 
-@<Function prototypes@>=
+|wValue| -- The type of the descriptor to retrieve in the upper
+byte, and the index in the lower byte (when more than one descriptor of the given
+type exists, such as the case of string descriptors). The type may be one of
+the standard types defined in the |DescriptorTypes_t| enum, or may be a
+class-specific descriptor type value.
+
+|wIndex| -- The language ID of the string to return if the
+|wValue| type indicates |DTYPE_String|, otherwise zero for standard
+descriptors, or as defined in a class-specific standards.
+
+|DescriptorAddress| -- pointer to the descriptor in memory. This should be
+set by the routine to the address of the descriptor.
+
+|DescriptorMemorySpace| -- a value from the
+|USB_DescriptorMemorySpaces_t| enum to indicate the memory
+space in which the descriptor is stored.
+This parameter does not exist when one
+of the \.{USE\_*\_DESCRIPTORS} compile time options is used,
+or on architectures which use a unified address space.
+
+Note, that by default, the library expects all descriptors to be located in flash memory via
+the |PROGMEM| attribute.
+If descriptors should be located in RAM or EEPROM instead (to speed up access in
+the case of RAM, or to allow the descriptors to be changed dynamically at runtime) either the
+|USE_RAM_DESCRIPTORS| or the |USE_EEPROM_DESCRIPTORS| tokens may be defined in the project
+makefile and passed to the compiler by the -D switch.
+
+Returns size in bytes of the descriptor if it exists, zero or |NO_DESCRIPTOR| otherwise.
+
+@<Func...@>=
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
                                     const uint16_t wIndex,
-                                    const void** const DescriptorAddress)
-                                    ATTR_WARN_UNUSED_RESULT ATTR_NON_NULL_PTR_ARG(3);
+                                    const void** const DescriptorAddress
+                                    ) ATTR_WARN_UNUSED_RESULT ATTR_NON_NULL_PTR_ARG(3);
 
 @ @dSTRING_ID_LANGUAGE 0 /* Supported Languages string descriptor
     ID (must be zero) */
@@ -898,7 +926,7 @@ void USB_DeviceTask(void);
 @ @c
 void USB_DeviceTask(void)
 {
-	if (USB_DeviceState == DEVICE_STATE_Unattached)
+	if (USB_DeviceState == DEVICE_STATE_UNATTACHED)
 	  return;
 
 	uint8_t PrevEndpoint = @<Get current endpoint@>;
@@ -940,13 +968,13 @@ ISR(USB_GEN_vect, ISR_BLOCK)
       @<USB PLL on@>@;
       while (!@<USB PLL is ready@>) ;
 
-      USB_DeviceState = DEVICE_STATE_Powered;
+      USB_DeviceState = DEVICE_STATE_POWERED;
       EVENT_USB_Device_Connect();
     }
     else {
       @<USB PLL off@>@;
 
-      USB_DeviceState = DEVICE_STATE_Unattached;
+      USB_DeviceState = DEVICE_STATE_UNATTACHED;
       EVENT_USB_Device_Disconnect();
     }
   }
@@ -959,7 +987,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 
     @<USB PLL off@>@;
 
-    USB_DeviceState = DEVICE_STATE_Suspended;
+    USB_DeviceState = DEVICE_STATE_SUSPENDED;
     EVENT_USB_Device_Suspend();
   }
 
@@ -975,10 +1003,10 @@ ISR(USB_GEN_vect, ISR_BLOCK)
     USB_INT_Enable(USB_INT_SUSPI);
 
     if (USB_Device_ConfigurationNumber)
-      USB_DeviceState = DEVICE_STATE_Configured;
+      USB_DeviceState = DEVICE_STATE_CONFIGURED;
     else
       USB_DeviceState = @<Address of USB Device is set@> ?
-        DEVICE_STATE_Addressed : DEVICE_STATE_Powered;
+        DEVICE_STATE_ADDRESSED : DEVICE_STATE_POWERED;
 
     EVENT_USB_Device_WakeUp();
   }
@@ -987,7 +1015,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 	{
 		USB_INT_Clear(USB_INT_EORSTI);
 
-		USB_DeviceState                = DEVICE_STATE_Default;
+		USB_DeviceState                = DEVICE_STATE_DEFAULT;
 		USB_Device_ConfigurationNumber = 0;
 
 		USB_INT_Clear(USB_INT_SUSPI);
@@ -1110,7 +1138,7 @@ void USB_Init_Device(void);
 @ @c
 void USB_Init_Device(void)
 {
-	USB_DeviceState                 = DEVICE_STATE_Unattached;
+	USB_DeviceState                 = DEVICE_STATE_UNATTACHED;
 	USB_Device_ConfigurationNumber  = 0;
 
 	USB_Device_RemoteWakeupEnabled  = false;
@@ -1205,7 +1233,7 @@ void Endpoint_ClearStatusStage(void)
 	if (USB_ControlRequest.bmRequestType & REQDIR_DEVICETOHOST)
 	{
 		while (!@<Endpoint received an OUT packet@>) {
-			if (USB_DeviceState == DEVICE_STATE_Unattached)
+			if (USB_DeviceState == DEVICE_STATE_UNATTACHED)
 			  return;
 		}
 
@@ -1215,7 +1243,7 @@ void Endpoint_ClearStatusStage(void)
 	{
 		while (!@<Endpoint is ready for an IN packet@>)
 		{
-			if (USB_DeviceState == DEVICE_STATE_Unattached)
+			if (USB_DeviceState == DEVICE_STATE_UNATTACHED)
 			  return;
 		}
 
@@ -1253,9 +1281,9 @@ uint8_t Endpoint_WaitUntilReady(void)
 
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
-		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
+		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
 		  return ENDPOINT_READYWAIT_DeviceDisconnected;
-		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
 		  return ENDPOINT_READYWAIT_BusSuspended;
 		else if (@<Endpoint is istalled@>)
 		  return ENDPOINT_READYWAIT_EndpointStalled;
@@ -1314,7 +1342,7 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 				@<Clear a received SETUP packet on endpoint@>@;
 
 				while (!@<Endpoint received an OUT packet@>) {
-					if (USB_DeviceState == DEVICE_STATE_Unattached)
+					if (USB_DeviceState == DEVICE_STATE_UNATTACHED)
 					  return;
 				}
 
@@ -1385,7 +1413,7 @@ bool CDC_Device_ConfigureEndpoints(USB_ClassInfo_CDC_Device_t* const CDCInterfac
 @ @c
 void CDC_DeviceTask(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
-	if ((USB_DeviceState != DEVICE_STATE_Configured) ||
+	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
 	  return;
 
@@ -1399,7 +1427,7 @@ void CDC_DeviceTask(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 uint8_t CDC_Device_SendString(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                               const char* const String)
 {
-	if ((USB_DeviceState != DEVICE_STATE_Configured) ||
+	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
 	  return ENDPOINT_RWSTREAM_DeviceDisconnected;
 
@@ -1411,7 +1439,7 @@ uint8_t CDC_Device_SendString(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo
 uint8_t CDC_Device_SendString_P(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                               const char* const String)
 {
-	if ((USB_DeviceState != DEVICE_STATE_Configured) ||
+	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
 	  return ENDPOINT_RWSTREAM_DeviceDisconnected;
 
@@ -1424,7 +1452,7 @@ uint8_t CDC_Device_SendData(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                             const void* const Buffer,
                             const uint16_t Length)
 {
-	if ((USB_DeviceState != DEVICE_STATE_Configured) ||
+	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
 	  return ENDPOINT_RWSTREAM_DeviceDisconnected;
 
@@ -1437,7 +1465,7 @@ uint8_t CDC_Device_SendData_P(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo
                             const void* const Buffer,
                             const uint16_t Length)
 {
-	if ((USB_DeviceState != DEVICE_STATE_Configured) ||
+	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
 	  return ENDPOINT_RWSTREAM_DeviceDisconnected;
 
@@ -1449,7 +1477,7 @@ uint8_t CDC_Device_SendData_P(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo
 uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                             const uint8_t Data)
 {
-	if ((USB_DeviceState != DEVICE_STATE_Configured) ||
+	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
 	  return ENDPOINT_RWSTREAM_DeviceDisconnected;
 
@@ -1471,7 +1499,7 @@ uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 @ @c
 uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
-	if ((USB_DeviceState != DEVICE_STATE_Configured) ||
+	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
 	  return ENDPOINT_RWSTREAM_DeviceDisconnected;
 
@@ -1500,7 +1528,7 @@ uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 @ @c
 uint16_t CDC_Device_BytesReceived(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
-	if ((USB_DeviceState != DEVICE_STATE_Configured) ||
+	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
 	  return 0;
 
@@ -1526,7 +1554,7 @@ uint16_t CDC_Device_BytesReceived(USB_ClassInfo_CDC_Device_t* const CDCInterface
 @ @c
 int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
-	if ((USB_DeviceState != DEVICE_STATE_Configured) ||
+	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
 	  return -1;
 
@@ -1549,7 +1577,7 @@ int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInf
 @ @c
 void CDC_Device_SendControlLineStateChange(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
-	if ((USB_DeviceState != DEVICE_STATE_Configured) ||
+	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
 	  return;
 
@@ -1625,7 +1653,7 @@ int CDC_Device_getchar_Blocking(FILE* Stream)
 	while ((ReceivedByte =
  CDC_Device_ReceiveByte((USB_ClassInfo_CDC_Device_t*)fdev_get_udata(Stream))) < 0)
 	{
-		if (USB_DeviceState == DEVICE_STATE_Unattached)
+		if (USB_DeviceState == DEVICE_STATE_UNATTACHED)
 		  return _FDEV_EOF;
 
 		CDC_DeviceTask((USB_ClassInfo_CDC_Device_t*)fdev_get_udata(Stream));
@@ -1721,7 +1749,7 @@ void USB_Device_SetAddress(void)
 
   @<Enable device address@>@;
 
-	USB_DeviceState = (DeviceAddress) ? DEVICE_STATE_Addressed : DEVICE_STATE_Default;
+	USB_DeviceState = (DeviceAddress) ? DEVICE_STATE_ADDRESSED : DEVICE_STATE_DEFAULT;
 }
 
 @ @<Set device address@>=
@@ -1746,10 +1774,10 @@ void USB_Device_SetConfiguration(void)
   Endpoint_ClearStatusStage();
 
   if (USB_Device_ConfigurationNumber)
-    USB_DeviceState = DEVICE_STATE_Configured;
+    USB_DeviceState = DEVICE_STATE_CONFIGURED;
   else
     USB_DeviceState = @<Address of USB Device is set@> ?
-      DEVICE_STATE_Configured : DEVICE_STATE_Powered;
+      DEVICE_STATE_CONFIGURED : DEVICE_STATE_POWERED;
 
   EVENT_USB_Device_ConfigurationChanged();
 }
@@ -2239,9 +2267,9 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 	{
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
-		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
+		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
 		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
-		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
 		else if (@<Endpoint has received a SETUP packet@>)
 		  return ENDPOINT_RWCSTREAM_HostAborted;
@@ -2267,9 +2295,9 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 	while (!@<Endpoint received an OUT packet@>) {
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
-		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
+		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
 		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
-		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
 		else if (@<Endpoint has received a SETUP packet@>)
 		  return ENDPOINT_RWCSTREAM_HostAborted;
@@ -2294,9 +2322,9 @@ uint8_t Endpoint_Write_Control_Stream_BE(const void* const Buffer,
 	{
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
-		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
+		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
 		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
-		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
 		else if (@<Endpoint has received a SETUP packet@>)
 		  return ENDPOINT_RWCSTREAM_HostAborted;
@@ -2322,9 +2350,9 @@ uint8_t Endpoint_Write_Control_Stream_BE(const void* const Buffer,
 	while (!@<Endpoint received an OUT packet@>) {
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
-		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
+		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
 		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
-		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
 		else if (@<Endpoint has received a SETUP packet@>)
 		  return ENDPOINT_RWCSTREAM_HostAborted;
@@ -2345,9 +2373,9 @@ uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer, uint16_t Length)
 	{
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
-		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
+		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
 		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
-		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
 		else if (@<Endpoint has received a SETUP packet@>)
 		  return ENDPOINT_RWCSTREAM_HostAborted;
@@ -2366,9 +2394,9 @@ uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer, uint16_t Length)
 	while (!@<Endpoint is ready for an IN packet@>) {
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
-		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
+		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
 		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
-		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
 	}
 
@@ -2387,9 +2415,9 @@ uint8_t Endpoint_Read_Control_Stream_BE(void* const Buffer, uint16_t Length)
 	{
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
-		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
+		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
 		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
-		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
 		else if (@<Endpoint has received a SETUP packet@>)
 		  return ENDPOINT_RWCSTREAM_HostAborted;
@@ -2408,9 +2436,9 @@ uint8_t Endpoint_Read_Control_Stream_BE(void* const Buffer, uint16_t Length)
 	while (!@<Endpoint is ready for an IN packet@>) {
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
-		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
+		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
 		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
-		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
 	}
 
@@ -2433,9 +2461,9 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 	{
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
-		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
+		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
 		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
-		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
 		else if (@<Endpoint has received a SETUP packet@>)
 		  return ENDPOINT_RWCSTREAM_HostAborted;
@@ -2461,9 +2489,9 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 	while (!@<Endpoint received an OUT packet@>) {
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
-		if (USB_DeviceState_LCL == DEVICE_STATE_Unattached)
+		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
 		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
-		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
+		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
 		  return ENDPOINT_RWCSTREAM_BusSuspended;
 		else if (@<Endpoint has received a SETUP packet@>)
 		  return ENDPOINT_RWCSTREAM_HostAborted;
@@ -2610,7 +2638,7 @@ int main(void)
       LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
 
       for (;;) {
-          if (USB_DeviceState != DEVICE_STATE_Configured)
+          if (USB_DeviceState != DEVICE_STATE_CONFIGURED)
             Create_And_Process_Samples();
 
           Audio_Device_USBTask(&My_Audio_Interface);
@@ -3501,84 +3529,54 @@ changed in value.
 @* Device.
 USB Device management definitions.
 
-@ Enum for the various states of the USB Device state machine. Only some states are
-implemented in the LUFA library - other states are left to the user to implement.
+@*1 Various states of the USB Device state machine.
 
 For information on each possible USB device state, refer to the USB 2.0 specification.
 
 See |USB_DeviceState|, which stores the current device state machine state.
 
-@<Header files@>=
-enum USB_Device_States_t
-{
-  DEVICE_STATE_Unattached = 0, /* Internally implemented by the library. This state indicates
-                                *   that the device is not currently connected to a host.
-                                */
-  DEVICE_STATE_Powered = 1, /* Internally implemented by the library. This state indicates
-                       *   that the device is connected to a host, but enumeration has not
-                        *   yet begun.
-                          */
-  DEVICE_STATE_Default = 2, /* Internally implemented by the library. This state indicates
-                             *   that the device's USB bus has been reset by the host and it is
-                             *   now waiting for the host to begin the enumeration process.
-                             */
-  DEVICE_STATE_Addressed = 3, /* Internally implemented by the library. This state indicates
-                      *   that the device has been addressed by the USB Host, but is not
-                      *   yet configured.
-                      */
-  DEVICE_STATE_Configured = 4, /* May be implemented by the user project. This state indicates
-                                *   that the device has been enumerated by the host and is ready
-                                *   for USB communications to begin.
-                                */
-  DEVICE_STATE_Suspended = 5, /* May be implemented by the user project. This state indicates
-                              *   that the USB bus has been suspended by the host, and the device
-                              *   should power down to a minimal power level until the bus is
-                              *   resumed.
-                              */
-};
-
-@ Function to retrieve a given descriptor's size and memory location from the given
-descriptor type value,
-index and language ID. This function MUST be overridden in the user application
-(added with full, identical
-prototype and name so that the library can call it to retrieve descriptor data.
-
-|wValue| -- The type of the descriptor to retrieve in the upper
-byte, and the index in the lower byte (when more than one descriptor of the given
-type exists, such as the case of string descriptors). The type may be one of
-the standard types defined in the |DescriptorTypes_t| enum, or may be a
-class-specific descriptor type value.
-
-|wIndex| -- The language ID of the string to return if the
-|wValue| type indicates |DTYPE_String|, otherwise zero for standard
-descriptors, or as defined in a class-specific standards.
-
-|DescriptorAddress| -- pointer to the descriptor in memory. This should be
-set by the routine to the address of the descriptor.
-
-|DescriptorMemorySpace| -- a value from the
-|USB_DescriptorMemorySpaces_t| enum to indicate the memory
-space in which the descriptor is stored.
-This parameter does not exist when one
-of the \.{USE\_*\_DESCRIPTORS} compile time options is used,
-or on architectures which use a unified address space.
-
-Note, that by default, the library expects all descriptors to be located in flash memory via
-the |PROGMEM| attribute.
-If descriptors should be located in RAM or EEPROM instead (to speed up access in
-the case of RAM, or to allow the descriptors to be changed dynamically at runtime) either the
-|USE_RAM_DESCRIPTORS| or the |USE_EEPROM_DESCRIPTORS| tokens may be defined in the project
-makefile and passed to the compiler by the -D switch.
-
-Returns size in bytes of the descriptor if it exists, zero or |NO_DESCRIPTOR| otherwise.
+@ This state indicates
+that the device is not currently connected to a host.
 
 @<Header files@>=
-uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
-                                    const uint16_t wIndex,
-                                    const void** const DescriptorAddress
-                                    ) ATTR_WARN_UNUSED_RESULT ATTR_NON_NULL_PTR_ARG(3);
+#define DEVICE_STATE_UNATTACHED 0
 
-@*4 USB Device Mode Option Masks.
+@ This state indicates
+that the device is connected to a host, but enumeration has not
+yet begun.
+
+@<Header files@>=
+#define DEVICE_STATE_POWERED 1
+
+@ This state indicates
+that the device's USB bus has been reset by the host and it is
+now waiting for the host to begin the enumeration process.
+
+@<Header files@>=
+#define DEVICE_STATE_DEFAULT 2
+
+@ This state indicates
+that the device has been addressed by the USB Host, but is not
+yet configured.
+
+@<Header files@>=
+#define DEVICE_STATE_ADDRESSED 3
+
+@ This state indicates
+that the device has been enumerated by the host and is ready
+for USB communications to begin.
+
+@<Header files@>=
+#define DEVICE_STATE_CONFIGURED 4
+
+@ This state indicates
+that the USB bus has been suspended by the host, and the device
+should power down to a minimal power level until the bus is resumed.
+
+@<Header files@>=
+#define DEVICE_STATE_SUSPENDED 5
+
+@*1 USB Device Mode Option Masks.
 
 @ Mask for the Options parameter of the |USB_Init| function. This indicates that the
 USB interface should be initialized in full speed (12Mb/s) mode.
@@ -3866,7 +3864,7 @@ This contains the function prototypes necessary for the processing of incoming s
  */
 
 /** Enum for the possible descriptor memory spaces, for the \c MemoryAddressSpace parameter of the
- *  \ref CALLBACK_USB_GetDescriptor() function. This can be used when none of the
+ *  |CALLBACK_USB_GetDescriptor| function. This can be used when none of the
  \c USE_*_DESCRIPTORS
  *  compile time options are used, to indicate in which memory space the descriptor is stored.
  *
@@ -6058,7 +6056,7 @@ void EVENT_CDC_Device_BreakSent(USB_ClassInfo_CDC_Device_t* const CDCInterfaceIn
  *  for multiple bytes to be packed into a single endpoint packet, increasing data throughput.
  *
  *  \pre This function must only be called when the Device state machine is in the
- \ref DEVICE_STATE_Configured state or
+ \ref DEVICE_STATE_CONFIGURED state or
  *       the call will fail.
  *
  *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class
@@ -6081,7 +6079,7 @@ uint8_t CDC_Device_SendData(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
  *  for multiple bytes to be packed into a single endpoint packet, increasing data throughput.
  *
  *  \pre This function must only be called when the Device state machine is in the
- \ref DEVICE_STATE_Configured state or
+ \ref DEVICE_STATE_CONFIGURED state or
  *       the call will fail.
  *
  *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class
@@ -6105,7 +6103,7 @@ uint8_t CDC_Device_SendData_P(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo
  increasing data throughput.
  *
  *  \pre This function must only be called when the Device state machine is in the
- \ref DEVICE_STATE_Configured state or
+ \ref DEVICE_STATE_CONFIGURED state or
  *       the call will fail.
  *
  *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration
@@ -6127,7 +6125,7 @@ uint8_t CDC_Device_SendString(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo
  increasing data throughput.
  *
  *  \pre This function must only be called when the Device state machine is in the
- \ref DEVICE_STATE_Configured state or
+ \ref DEVICE_STATE_CONFIGURED state or
  *       the call will fail.
  *
  *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class
@@ -6148,7 +6146,7 @@ uint8_t CDC_Device_SendString_P(USB_ClassInfo_CDC_Device_t* const CDCInterfaceIn
  *  packed into a single endpoint packet, increasing data throughput.
  *
  *  \pre This function must only be called when the Device state machine is in the
- \ref DEVICE_STATE_Configured state or
+ \ref DEVICE_STATE_CONFIGURED state or
  *       the call will fail.
  *
  *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class
@@ -6169,7 +6167,7 @@ uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
  *  bank will not be released back to the USB controller until all bytes are read.
  *
  *  \pre This function must only be called when the Device state machine is in the
- \ref DEVICE_STATE_Configured state or
+ \ref DEVICE_STATE_CONFIGURED state or
  *       the call will fail.
  *
  *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class
@@ -6189,7 +6187,7 @@ uint16_t CDC_Device_BytesReceived(USB_ClassInfo_CDC_Device_t* const CDCInterface
  *  function which are guaranteed to succeed.
  *
  *  \pre This function must only be called when the Device state machine is in the
- \ref DEVICE_STATE_Configured state or
+ \ref DEVICE_STATE_CONFIGURED state or
  *       the call will fail.
  *
  *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class
@@ -6203,7 +6201,7 @@ int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInf
 /** Flushes any data waiting to be sent, ensuring that the send buffer is cleared.
  *
  *  \pre This function must only be called when the Device state machine is in the
- \ref DEVICE_STATE_Configured state or
+ \ref DEVICE_STATE_CONFIGURED state or
  *       the call will fail.
  *
  *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration
@@ -6223,7 +6221,7 @@ uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
  *  \c ControlLineStates.DeviceToHost value is updated to push the new states to the USB host.
  *
  *  \pre This function must only be called when the Device state machine is in the
- \ref DEVICE_STATE_Configured state or
+ \ref DEVICE_STATE_CONFIGURED state or
  *       the call will fail.
  *
  *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class
