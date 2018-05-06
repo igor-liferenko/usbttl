@@ -940,9 +940,6 @@ void USB_INT_ClearAllInterrupts(void)
 
 ISR(USB_GEN_vect, ISR_BLOCK)
 {
-  if (USB_INT_HasOccurred(USB_INT_SOFI) && USB_INT_IsEnabled(USB_INT_SOFI))
-    USB_INT_Clear(USB_INT_SOFI);
-
   if (USB_INT_HasOccurred(USB_INT_VBUSTI) && USB_INT_IsEnabled(USB_INT_VBUSTI)) {
     USB_INT_Clear(USB_INT_VBUSTI);
 
@@ -2772,7 +2769,6 @@ enum USB_Interrupts_t
 	USB_INT_WAKEUPI = 2,
 	USB_INT_SUSPI   = 3,
 	USB_INT_EORSTI  = 4,
-	USB_INT_SOFI    = 5,
 	USB_INT_RXSTPI  = 6,
 };
 
@@ -2794,9 +2790,6 @@ inline void USB_INT_Enable(const uint8_t Interrupt)
 			break;
 		case USB_INT_EORSTI:
 			UDIEN  |= (1 << EORSTE);
-			break;
-		case USB_INT_SOFI:
-			UDIEN  |= (1 << SOFE);
 			break;
 		case USB_INT_RXSTPI:
 			UEIENX |= (1 << RXSTPE);
@@ -2823,9 +2816,6 @@ inline void USB_INT_Disable(const uint8_t Interrupt)
 		case USB_INT_EORSTI:
 			UDIEN  &= ~(1 << EORSTE);
 			break;
-		case USB_INT_SOFI:
-			UDIEN  &= ~(1 << SOFE);
-			break;
 		case USB_INT_RXSTPI:
 			UEIENX &= ~(1 << RXSTPE);
 			break;
@@ -2851,9 +2841,6 @@ inline void USB_INT_Clear(const uint8_t Interrupt)
 		case USB_INT_EORSTI:
 			UDINT  &= ~(1 << EORSTI);
 			break;
-		case USB_INT_SOFI:
-			UDINT  &= ~(1 << SOFI);
-			break;
 		case USB_INT_RXSTPI:
 			UEINTX &= ~(1 << RXSTPI);
 			break;
@@ -2875,8 +2862,6 @@ inline bool USB_INT_IsEnabled(const uint8_t Interrupt)
 			return (UDIEN  & (1 << SUSPE));
 		case USB_INT_EORSTI:
 			return (UDIEN  & (1 << EORSTE));
-		case USB_INT_SOFI:
-			return (UDIEN  & (1 << SOFE));
 		case USB_INT_RXSTPI:
 			return (UEIENX & (1 << RXSTPE));
 		default:
@@ -2898,8 +2883,6 @@ inline bool USB_INT_HasOccurred(const uint8_t Interrupt)
 			return (UDINT  & (1 << SUSPI));
 		case USB_INT_EORSTI:
 			return (UDINT  & (1 << EORSTI));
-		case USB_INT_SOFI:
-			return (UDINT  & (1 << SOFI));
 		case USB_INT_RXSTPI:
 			return (UEINTX & (1 << RXSTPI));
 		default:
@@ -3559,11 +3542,12 @@ inline void USB_Device_GetSerialString(uint16_t* const UnicodeString)
 
   @<Set global interrupt mask@>@;
 }
+
 @* StdRequestType.
 @<Header files@>=
 /** USB control endpoint request definitions.
  */
-
+xxxx
 /** USB control endpoint request definitions.
  *
  *  This module contains definitions for the various control request parameters, so that
