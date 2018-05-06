@@ -4059,47 +4059,47 @@ from the host, to indicate that the RTS line state should be high.
 @<Header files@>=
 #define CDC_CONTROL_LINE_OUT_RTS         (1 << 1)
 
-@ Mask for the DCD handshake line for use with the |CDC_NOTIF_SerialState| class-specific
+@ Mask for the DCD handshake line for use with the |CDC_NOTIF_SERIAL_STATE| class-specific
 notification
 from the device to the host, to indicate that the DCD line state is currently high.
 
 @<Header files@>=
 #define CDC_CONTROL_LINE_IN_DCD          (1 << 0)
 
-@ Mask for the DSR handshake line for use with the |CDC_NOTIF_SerialState| class-specific
+@ Mask for the DSR handshake line for use with the |CDC_NOTIF_SERIAL_STATE| class-specific
 notification
 from the device to the host, to indicate that the DSR line state is currently high.
 
 @<Header files@>=
 #define CDC_CONTROL_LINE_IN_DSR          (1 << 1)
 
-@ Mask for the BREAK handshake line for use with the |CDC_NOTIF_SerialState| class-specific
+@ Mask for the BREAK handshake line for use with the |CDC_NOTIF_SERIAL_STATE| class-specific
 notification
 from the device to the host, to indicate that the BREAK line state is currently high.
 
 @<Header files@>=
 #define CDC_CONTROL_LINE_IN_BREAK        (1 << 2)
 
-@ Mask for the RING handshake line for use with the |CDC_NOTIF_SerialState| class-specific
+@ Mask for the RING handshake line for use with the |CDC_NOTIF_SERIAL_STATE| class-specific
 notification
 from the device to the host, to indicate that the RING line state is currently high.
 
 @<Header files@>=
 #define CDC_CONTROL_LINE_IN_RING         (1 << 3)
 
-@ Mask for use with the |CDC_NOTIF_SerialState| class-specific notification from the device
+@ Mask for use with the |CDC_NOTIF_SERIAL_STATE| class-specific notification from the device
 to the host, to indicate that a framing error has occurred on the virtual serial port.
 
 @<Header files@>=
 #define CDC_CONTROL_LINE_IN_FRAMEERROR   (1 << 4)
 
-@ Mask for use with the |CDC_NOTIF_SerialState| class-specific notification from the device
+@ Mask for use with the |CDC_NOTIF_SERIAL_STATE| class-specific notification from the device
 to the host, to indicate that a parity error has occurred on the virtual serial port.
 
 @<Header files@>=
 #define CDC_CONTROL_LINE_IN_PARITYERROR  (1 << 5)
 
-@ Mask for use with the |CDC_NOTIF_SerialState| class-specific notification from the device
+@ Mask for use with the |CDC_NOTIF_SERIAL_STATE| class-specific notification from the device
 to the host, to indicate that a data overrun error has occurred on the virtual serial port.
 
 @<Header files@>=
@@ -4152,18 +4152,13 @@ relating to the CDC device class.
   line states */
 #define CDC_REQ_SEND_BREAK 0x23 /* send a break to the receiver via the carrier channel */
 
-@ @<Header files@>=
-/** Enum for the CDC class specific notification requests that can be issued by a CDC device
- to a host. */
-enum CDC_ClassNotifications_t
-{
-  CDC_NOTIF_SerialState = 0x20, /**< Notification type constant for a change in the virtual
- serial port
-                     *   handshake line states, for use with a \ref USB_Request_Header_t
-                     *   notification structure when sent to the host via the CDC notification
-	                         *   endpoint.
-	                         */
-};
+@ CDC class specific notification request that can be issued by a CDC device
+to a host. Notification type constant for a change in the virtual
+serial port handshake line states, for use with a |USB_Request_Header_t|
+notification structure when sent to the host via the CDC notification endpoint.
+
+@<Header files@>=
+#define CDC_NOTIF_SERIAL_STATE 0x20
 
 /** Enum for the CDC class specific interface descriptor subtypes. */
 enum CDC_DescriptorSubtypes_t
