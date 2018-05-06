@@ -1301,7 +1301,7 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 
 	switch (USB_ControlRequest.bRequest)
 	{
-		case CDC_REQ_GetLineEncoding:
+		case CDC_REQ_GET_LINE_ENCODING:
 			if (USB_ControlRequest.bmRequestType ==
                             (REQDIR_DEVICETOHOST | REQTYPE_CLASS | REQREC_INTERFACE)) {
 				@<Clear a received SETUP packet on endpoint@>@;
@@ -1318,7 +1318,7 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 			}
 
 			break;
-		case CDC_REQ_SetLineEncoding:
+		case CDC_REQ_SET_LINE_ENCODING:
 			if (USB_ControlRequest.bmRequestType ==
    (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE)) {
 				@<Clear a received SETUP packet on endpoint@>@;
@@ -1344,7 +1344,7 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 			}
 
 			break;
-		case CDC_REQ_SetControlLineState:
+		case CDC_REQ_SET_CONTROL_LINE_STATE:
 			if (USB_ControlRequest.bmRequestType ==
  (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE)) {
 				@<Clear a received SETUP packet on endpoint@>@;
@@ -1357,7 +1357,7 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 			}
 
 			break;
-		case CDC_REQ_SendBreak:
+		case CDC_REQ_SEND_BREAK:
 			if (USB_ControlRequest.bmRequestType ==
  (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE)) {
 				@<Clear a received SETUP packet on endpoint@>@;
@@ -4045,14 +4045,14 @@ Constants, Types and Enum definitions for the USB CDC Class.
 
 @*1 Virtual Control Line Masks.
 
-@ Mask for the DTR handshake line for use with the |CDC_REQ_SetControlLineState|
+@ Mask for the DTR handshake line for use with the |CDC_REQ_SET_CONTROL_LINE_STATE|
 class-specific request
 from the host, to indicate that the DTR line state should be high.
 
 @<Header files@>=
 #define CDC_CONTROL_LINE_OUT_DTR         (1 << 0)
 
-@ Mask for the RTS handshake line for use with the |CDC_REQ_SetControlLineState|
+@ Mask for the RTS handshake line for use with the |CDC_REQ_SET_CONTROL_LINE_STATE|
 class-specific request
 from the host, to indicate that the RTS line state should be high.
 
@@ -4141,24 +4141,18 @@ relating to the CDC device class.
 #define CDC_CSCP_NO_DATA_PROTOCOL 0x00 /* device or interface
                                   belongs to no specific protocol of the CDC data class */
 
-@ @<Header files@>=
-/** Enum for the CDC class specific control requests that can be issued by the USB bus host. */
-enum CDC_ClassRequests_t
-{
-  CDC_REQ_SendEncapsulatedCommand = 0x00, /**< CDC class-specific request to send an
- encapsulated command to the device. */
-  CDC_REQ_GetEncapsulatedResponse = 0x01, /**< CDC class-specific request to retrieve an
- encapsulated command response from the device. */
-  CDC_REQ_SetLineEncoding = 0x20, /**< CDC class-specific request to set the current virtual
- serial port configuration settings. */
-  CDC_REQ_GetLineEncoding = 0x21, /**< CDC class-specific request to get the current virtual
- serial port configuration settings. */
-  CDC_REQ_SetControlLineState = 0x22, /**< CDC class-specific request to set the current
- virtual serial port handshake line states. */
-  CDC_REQ_SendBreak = 0x23, /**< CDC class-specific request to send a break to the receiver
- via the carrier channel. */
-};
+@ CDC class specific control requests that can be issued by the USB bus host.
 
+@<Header files@>=
+#define CDC_REQ_SET_LINE_ENCODING 0x20 /* set the current virtual serial port configuration
+  settings */
+#define CDC_REQ_GET_LINE_ENCODING 0x21 /* get the current virtual serial port configuration
+  settings */
+#define CDC_REQ_SET_CONTROL_LINE_STATE 0x22 /* set the current virtual serial port handshake
+  line states */
+#define CDC_REQ_SEND_BREAK 0x23 /* send a break to the receiver via the carrier channel */
+
+@ @<Header files@>=
 /** Enum for the CDC class specific notification requests that can be issued by a CDC device
  to a host. */
 enum CDC_ClassNotifications_t
