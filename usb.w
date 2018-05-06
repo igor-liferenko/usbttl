@@ -1665,32 +1665,32 @@ void USB_Device_ProcessControlRequest(void)
     uint8_t bmRequestType = USB_ControlRequest.bmRequestType;
 
     switch (USB_ControlRequest.bRequest) {
-    case REQ_GetStatus:
+    case REQ_GET_STATUS:
 	if ((bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_DEVICE)) ||
 		(bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_ENDPOINT)))
 			USB_Device_GetStatus();
 	
 	break;
-    case REQ_ClearFeature:
-    case REQ_SetFeature:
+    case REQ_CLEAR_FEATURE:
+    case REQ_SET_FEATURE:
 	if ((bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_STANDARD | REQREC_DEVICE)) ||
 		(bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_STANDARD | REQREC_ENDPOINT)))
 					USB_Device_ClearSetFeature();
 	break;
-    case REQ_SetAddress:
+    case REQ_SET_ADDRESS:
 	if (bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_STANDARD | REQREC_DEVICE))
 		  USB_Device_SetAddress();
 	break;
-    case REQ_GetDescriptor:
+    case REQ_GET_DESCRIPTOR:
 	if ((bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_DEVICE)) ||
 		(bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_INTERFACE)))
 					USB_Device_GetDescriptor();
 	break;
-    case REQ_GetConfiguration:
+    case REQ_GET_CONFIGURATION:
 	if (bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_DEVICE))
 		USB_Device_GetConfiguration();
 	break;
-    case REQ_SetConfiguration:
+    case REQ_SET_CONFIGURATION:
 	if (bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_STANDARD | REQREC_DEVICE))
 		USB_Device_SetConfiguration();
 	break;
@@ -1877,7 +1877,7 @@ void USB_Device_ClearSetFeature(void)
     case REQREC_DEVICE:
     {
 	if ((uint8_t)USB_ControlRequest.wValue == FEATURE_SEL_DeviceRemoteWakeup)
-	  USB_Device_RemoteWakeupEnabled = (USB_ControlRequest.bRequest == REQ_SetFeature);
+	  USB_Device_RemoteWakeupEnabled = (USB_ControlRequest.bRequest == REQ_SET_FEATURE);
 	else return;
 	break;
     }
@@ -1892,7 +1892,7 @@ void USB_Device_ClearSetFeature(void)
         Endpoint_SelectEndpoint(EndpointIndex);
 
         if (@<Endpoint is enabled@>) {
-          if (USB_ControlRequest.bRequest == REQ_SetFeature)
+          if (USB_ControlRequest.bRequest == REQ_SET_FEATURE)
             @<Stall transaction on endpoint@>@;
           else {
             @<Clear STALL condition on endpoint@>@;
@@ -3544,172 +3544,194 @@ inline void USB_Device_GetSerialString(uint16_t* const UnicodeString)
 }
 
 @* StdRequestType.
-@<Header files@>=
-/** USB control endpoint request definitions.
- */
-xxxx
-/** USB control endpoint request definitions.
- *
- *  This module contains definitions for the various control request parameters, so that
- the request
- *  details (such as data direction, request recipient, etc.) can be extracted via masking.
- */
+USB control endpoint request definitions.
 
-/** Mask for the request type parameter, to indicate the direction of the request data
- (Host to Device
- *  or Device to Host). The result of this mask should then be compared to the request
- direction masks.
- *
- *  \see \c REQDIR_* macros for masks indicating the request data direction.
- */
+Contains definitions for the various control request parameters, so that
+the request details (such as data direction, request recipient, etc.) can be extracted
+via masking.
+
+@ Mask for the request type parameter, to indicate the direction of the request data
+(Host to Device or Device to Host). The result of this mask should then be compared to
+the request direction masks.
+
+See \.{REQDIR\_*} macros for masks indicating the request data direction.
+
+@<Header files@>=
 #define CONTROL_REQTYPE_DIRECTION  0x80
 
-/** Mask for the request type parameter, to indicate the type of request (Device, Class or Vendor
- *  Specific). The result of this mask should then be compared to the request type masks.
- *
- *  \see \c REQTYPE_* macros for masks indicating the request type.
- */
+@ Mask for the request type parameter, to indicate the type of request (Device, Class or Vendor
+Specific). The result of this mask should then be compared to the request type masks.
+
+See \.{REQTYPE\_*} macros for masks indicating the request type.
+
+@<Header files@>=
 #define CONTROL_REQTYPE_TYPE       0x60
 
-/** Mask for the request type parameter, to indicate the recipient of the request (Device,
- Interface
- *  Endpoint or Other). The result of this mask should then be compared to the request recipient
- *  masks.
- *
- *  \see \c REQREC_* macros for masks indicating the request recipient.
- */
+@ Mask for the request type parameter, to indicate the recipient of the request (Device,
+Interface Endpoint or Other). The result of this mask should then be compared to the request
+recipient masks.
+
+See \.{REQREC\_*} macros for masks indicating the request recipient.
+
+@<Header files@>=
 #define CONTROL_REQTYPE_RECIPIENT  0x1F
 
-/** \name Control Request Data Direction Masks */
+@*1 Control Request Data Direction Masks.
 
-/** Request data direction mask, indicating that the request data will flow from host to device.
- *
- *  \see \ref CONTROL_REQTYPE_DIRECTION macro.
- */
+@ Request data direction mask, indicating that the request data will flow from host to device.
+
+See |CONTROL_REQTYPE_DIRECTION| macro.
+
+@<Header files@>=
 #define REQDIR_HOSTTODEVICE        (0 << 7)
 
-/** Request data direction mask, indicating that the request data will flow from device to host.
- *
- *  \see \ref CONTROL_REQTYPE_DIRECTION macro.
- */
+@ Request data direction mask, indicating that the request data will flow from device to host.
+
+See |CONTROL_REQTYPE_DIRECTION| macro.
+
+@<Header files@>=
 #define REQDIR_DEVICETOHOST        (1 << 7)
 
-/** \name Control Request Type Masks */
+@*1 Control Request Type Masks.
 
-/** Request type mask, indicating that the request is a standard request.
- *
- *  \see \ref CONTROL_REQTYPE_TYPE macro.
- */
+@ Request type mask, indicating that the request is a standard request.
+
+See |CONTROL_REQTYPE_TYPE| macro.
+
+@<Header files@>=
 #define REQTYPE_STANDARD           (0 << 5)
 
-/** Request type mask, indicating that the request is a class-specific request.
- *
- *  \see \ref CONTROL_REQTYPE_TYPE macro.
- */
+@ Request type mask, indicating that the request is a class-specific request.
+
+See |CONTROL_REQTYPE_TYPE| macro.
+
+@<Header files@>=
 #define REQTYPE_CLASS              (1 << 5)
 
-/** Request type mask, indicating that the request is a vendor specific request.
- *
- *  \see \ref CONTROL_REQTYPE_TYPE macro.
- */
+@ Request type mask, indicating that the request is a vendor specific request.
+
+See |CONTROL_REQTYPE_TYPE| macro.
+
+@<Header files@>=
 #define REQTYPE_VENDOR             (2 << 5)
 
-/** \name Control Request Recipient Masks */
+@*1 Control Request Recipient Masks.
 
-/** Request recipient mask, indicating that the request is to be issued to the device as a whole.
- *
- *  \see \ref CONTROL_REQTYPE_RECIPIENT macro.
- */
+@ Request recipient mask, indicating that the request is to be issued to the device as a whole.
+
+See |CONTROL_REQTYPE_RECIPIENT| macro.
+
+@<Header files@>=
 #define REQREC_DEVICE              (0 << 0)
 
-/** Request recipient mask, indicating that the request is to be issued to an interface in the
- *  currently selected configuration.
- *
- *  \see \ref CONTROL_REQTYPE_RECIPIENT macro.
- */
+@ Request recipient mask, indicating that the request is to be issued to an interface in the
+currently selected configuration.
+
+See |CONTROL_REQTYPE_RECIPIENT| macro.
+
+@<Header files@>=
 #define REQREC_INTERFACE           (1 << 0)
 
-/** Request recipient mask, indicating that the request is to be issued to an endpoint in the
- *  currently selected configuration.
- *
- *  \see \ref CONTROL_REQTYPE_RECIPIENT macro.
- */
+@ Request recipient mask, indicating that the request is to be issued to an endpoint in the
+currently selected configuration.
+
+See |CONTROL_REQTYPE_RECIPIENT| macro.
+
+@<Header files@>=
 #define REQREC_ENDPOINT            (2 << 0)
 
-/** Request recipient mask, indicating that the request is to be issued to an unspecified element
- *  in the currently selected configuration.
- *
- *  \see \ref CONTROL_REQTYPE_RECIPIENT macro.
- */
+@ Request recipient mask, indicating that the request is to be issued to an unspecified element
+in the currently selected configuration.
+
+See |CONTROL_REQTYPE_RECIPIENT| macro.
+
+@<Header files@>=
 #define REQREC_OTHER               (3 << 0)
 
-/** \brief Standard USB Control Request
- *
- *  Type define for a standard USB control request.
- *
- *  \see The USB 2.0 specification for more information on standard control requests.
- */
+@*1 Standard USB Control Request.
+
+Type define for a standard USB control request.
+
+See The USB 2.0 specification for more information on standard control requests.
+
+@<Header files@>=
 typedef struct
 {
-	uint8_t  bmRequestType; /**< Type of the request. */
-	uint8_t  bRequest; /**< Request command code. */
-	uint16_t wValue; /**< wValue parameter of the request. */
-	uint16_t wIndex; /**< wIndex parameter of the request. */
-	uint16_t wLength; /**< Length of the data to transfer in bytes. */
+	uint8_t  bmRequestType; /* type of the request */
+	uint8_t  bRequest; /* request command code */
+	uint16_t wValue; /* parameter of the request */
+	uint16_t wIndex; /* parameter of the request */
+	uint16_t wLength; /* length of the data to transfer in bytes */
 } ATTR_PACKED USB_Request_Header_t;
 
-/** Enumeration for the various standard request commands. These commands are applicable when the
- *  request type is \ref REQTYPE_STANDARD (with the exception of \ref REQ_GetDescriptor, which is
- always
- *  handled regardless of the request type value).
- *
- *  \see Chapter 9 of the USB 2.0 Specification.
- */
-enum USB_Control_Request_t
-{
-  REQ_GetStatus = 0, /* Implemented in the library for device and endpoint recipients. Passed
-	             *   to the user application for other recipients via the
-	             *   \ref EVENT_USB_Device_ControlRequest() event when received in
-	             *   device mode. */
-  REQ_ClearFeature = 1, /* Implemented in the library for device and endpoint recipients. Passed
-                          *   to the user application for other recipients via the
-                         *   \ref EVENT_USB_Device_ControlRequest() event when received in
-                         *   device mode. */
-  REQ_SetFeature = 3, /**< Implemented in the library for device and endpoint recipients. Passed
-                        *   to the user application for other recipients via the
-                        *   \ref EVENT_USB_Device_ControlRequest() event when received in
-                        *   device mode. */
-  REQ_SetAddress = 5, /* Implemented in the library for the device recipient. Passed
-                       *   to the user application for other recipients via the
-                       *   \ref EVENT_USB_Device_ControlRequest() event when received in
-                       *   device mode. */
-  REQ_GetDescriptor = 6, /* Implemented in the library for device and interface recipients.
- Passed to the
-                          *   user application for other recipients via the
-                          *   \ref EVENT_USB_Device_ControlRequest() event when received in
-                          *   device mode. */
-  REQ_SetDescriptor = 7, /**< Not implemented in the library, passed to the user application
-                         *   via the \ref EVENT_USB_Device_ControlRequest() event when received in
-                        *   device mode. */
-  REQ_GetConfiguration = 8, /**< Implemented in the library for the device recipient. Passed
-                             *   to the user application for other recipients via the
-                             *   \ref EVENT_USB_Device_ControlRequest() event when received in
-                             *   device mode. */
-  REQ_SetConfiguration = 9, /**< Implemented in the library for the device recipient. Passed
-                             *   to the user application for other recipients via the
-                             *   \ref EVENT_USB_Device_ControlRequest() event when received in
-                             *   device mode. */
-  REQ_GetInterface = 10, /**< Not implemented in the library, passed to the user application
-                         *   via the \ref EVENT_USB_Device_ControlRequest() event when received in
-                         *   device mode. */
-  REQ_SetInterface = 11, /* Not implemented in the library, passed to the user application
-                          *   via the \ref EVENT_USB_Device_ControlRequest() event when received in
-                          *   device mode. */
-  REQ_SynchFrame = 12, /* Not implemented in the library, passed to the user application
-                       *   via the \ref EVENT_USB_Device_ControlRequest() event when received in
-                       *   device mode. */
-};
+@*1 Enumeration for the various standard request commands. These commands are applicable when the
+request type is |REQTYPE_STANDARD| (with the exception of |REQ_GET_DESCRIPTOR|, which is
+always handled regardless of the request type value).
 
+See Chapter 9 of the USB 2.0 Specification.
+
+@ Passed for other recipients via the |EVENT_USB_Device_ControlRequest| event when received.
+
+@<Header files@>=
+#define REQ_GET_STATUS 0
+
+@ Passed for other recipients via the |EVENT_USB_Device_ControlRequest|
+event when received.
+
+@<Header files@>=
+#define REQ_CLEAR_FEATURE 1
+
+@ Passed for other recipients via the
+|EVENT_USB_Device_ControlRequest| event when received.
+
+@<Header files@>=
+#define REQ_SET_FEATURE 3
+
+@ Passed for other recipients via the
+|EVENT_USB_Device_ControlRequest| event when received.
+
+@<Header files@>=
+#define REQ_SET_ADDRESS 5
+
+@ Passed for other recipients via the
+|EVENT_USB_Device_ControlRequest| event when received.
+
+@<Header files@>=
+#define REQ_GET_DESCRIPTOR 6
+
+@ Passed via the |EVENT_USB_Device_ControlRequest| event when received.
+
+@<Header files@>=
+#define REQ_SET_DESCRIPTOR 7
+
+@ Passed for other recipients via the
+|EVENT_USB_Device_ControlRequest| event when received.
+
+@<Header files@>=
+#define REQ_GET_CONFIGURATION 8
+
+@ Passed for other recipients via the
+|EVENT_USB_Device_ControlRequest| event when received.
+
+@<Header files@>=
+#define REQ_SET_CONFIGURATION 9
+
+@ Passed via the |EVENT_USB_Device_ControlRequest| event when received.
+
+@<Header files@>=
+#define REQ_GET_NITERFACE 10
+
+@ Passed via the |EVENT_USB_Device_ControlRequest| event when received.
+
+@<Header files@>=
+#define REQ_SET_INTERFACE 11
+
+@ Passed via the |EVENT_USB_Device_ControlRequest| event when received.
+
+@<Header files@>=
+#define REQ_SYNCH_FRAME 12
+
+@ @<Header files@>=
 /** Feature Selector values for Set Feature and Clear Feature standard control requests
  directed to the device, interface
  *  and endpoint recipients.
