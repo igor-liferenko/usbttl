@@ -1877,6 +1877,33 @@ UECONX |= (1 << RSTDT);
 
 @* Endpoint data stream transmission and reception management for the AVR8 microcontrollers.
 
+@ Writes the given number of bytes to the CONTROL type endpoint from the given buffer in
+little endian,
+sending full packets to the host as needed. The host OUT acknowledgement is not automatically
+cleared
+in both failure and success states; the user is responsible for manually clearing the status
+OUT packet
+to finalize the transfer's status stage via the |@<Clear OUT packet on endpoint@>| macro.
+
+This function automatically sends the last packet in the data stage of the transaction;
+when the
+function returns, the user is responsible for clearing the status stage of the transaction.
+Note that the status stage packet is sent or received in the opposite direction of the data flow.
+
+This routine should only be used on CONTROL type endpoints.
+
+Unlike the standard stream read/write commands, the control stream commands cannot
+be chained
+together; i.e. the entire stream data must be read or written at the one time.
+
+|Buffer| -- pointer to the source data buffer to read from.
+|Length| -- number of bytes to read for the currently selected endpoint into the buffer.
+
+Returns a \.{ENDPOINT\_RWCSTREAM\_*} value.
+
+@<Func...@>=
+uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
+                                         uint16_t Length) ATTR_NON_NULL_PTR_ARG(1);
 @ @c
 uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
                             uint16_t Length)
@@ -1894,11 +1921,11 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
+		  return ENDPOINT_RWCSTREAM_DEVICE_DISCONNECTED;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
-		  return ENDPOINT_RWCSTREAM_BusSuspended;
+		  return ENDPOINT_RWCSTREAM_BUS_SUSPENDED;
 		else if (@<Endpoint has received a SETUP packet@>)
-		  return ENDPOINT_RWCSTREAM_HostAborted;
+		  return ENDPOINT_RWCSTREAM_HOST_ABORTED;
 		else if (@<Endpoint received an OUT packet@>)
 		  break;
 
@@ -1922,14 +1949,14 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
+		  return ENDPOINT_RWCSTREAM_DEVICE_DISCONNECTED;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
-		  return ENDPOINT_RWCSTREAM_BusSuspended;
+		  return ENDPOINT_RWCSTREAM_BUS_SUSPENDED;
 		else if (@<Endpoint has received a SETUP packet@>)
-		  return ENDPOINT_RWCSTREAM_HostAborted;
+		  return ENDPOINT_RWCSTREAM_HOST_ABORTED;
 	}
 
-	return ENDPOINT_RWCSTREAM_NoError;
+	return ENDPOINT_RWCSTREAM_NO_ERROR;
 }
 
 @ FLASH buffer source version of |Endpoint_Write_Control_Stream_LE|.
@@ -1971,11 +1998,11 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
+		  return ENDPOINT_RWCSTREAM_DEVICE_DISCONNECTED;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
-		  return ENDPOINT_RWCSTREAM_BusSuspended;
+		  return ENDPOINT_RWCSTREAM_BUS_SUSPENDED;
 		else if (@<Endpoint has received a SETUP packet@>)
-		  return ENDPOINT_RWCSTREAM_HostAborted;
+		  return ENDPOINT_RWCSTREAM_HOST_ABORTED;
 		else if (@<Endpoint received an OUT packet@>)
 		  break;
 
@@ -1999,14 +2026,14 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_RWCSTREAM_DeviceDisconnected;
+		  return ENDPOINT_RWCSTREAM_DEVICE_DISCONNECTED;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
-		  return ENDPOINT_RWCSTREAM_BusSuspended;
+		  return ENDPOINT_RWCSTREAM_BUS_SUSPENDED;
 		else if (@<Endpoint has received a SETUP packet@>)
-		  return ENDPOINT_RWCSTREAM_HostAborted;
+		  return ENDPOINT_RWCSTREAM_HOST_ABORTED;
 	}
 
-	return ENDPOINT_RWCSTREAM_NoError;
+	return ENDPOINT_RWCSTREAM_NO_ERROR;
 }
 
 @ @<Header files@>=
@@ -3374,20 +3401,17 @@ bool USB_Device_CurrentlySelfPowered;
 Functions, macros, variables, enums and types related to data reading and writing of
 data streams from and to endpoints.
 
+@ Possible error return codes of the \\{Endpoint\_*\_Control\_Stream\_*} functions.
+
 @<Header files@>=
-/** Enum for the possible error return codes of the \c Endpoint_*_Control_Stream_* functions. */
-enum Endpoint_ControlStream_RW_ErrorCodes_t
-{
-  ENDPOINT_RWCSTREAM_NoError = 0, /**< Command completed successfully, no error. */
-  ENDPOINT_RWCSTREAM_HostAborted        = 1, /**< The aborted the transfer prematurely. */
-  ENDPOINT_RWCSTREAM_DeviceDisconnected = 2, /**< Device was disconnected from the host during
-                                          *   the transfer.
-                                           */
-  ENDPOINT_RWCSTREAM_BusSuspended       = 3, /**< The USB bus has been suspended by the host and
-		                             *   no USB endpoint traffic can occur until the bus
-		                            *   has resumed.
-		                            */
-};
+#define ENDPOINT_RWCSTREAM_NO_ERROR 0 /* command completed successfully, no error */
+#define ENDPOINT_RWCSTREAM_HOST_ABORTED 1 /* aborted the transfer prematurely */
+#define ENDPOINT_RWCSTREAM_DEVICE_DISCONNECTED 2 /* device was disconnected from the host during
+                                                   the transfer */
+#define ENDPOINT_RWCSTREAM_BUS_SUSPENDED 3 /* the USB bus has been suspended by the host and
+		                             no USB endpoint traffic can occur until the bus
+		                             has resumed */
+
 @* EndpointStream AVR8.
 @<Header files@>=
 /** Endpoint data stream transmission and reception management for the AVR8 microcontrollers.
@@ -3399,37 +3423,6 @@ enum Endpoint_ControlStream_RW_ErrorCodes_t
  data streams from
  *  and to endpoints.
  */
-
-@*4 Stream functions for RAM source/destination data.
-
-@ Writes the given number of bytes to the CONTROL type endpoint from the given buffer in
- little endian,
-sending full packets to the host as needed. The host OUT acknowledgement is not automatically
- cleared
-in both failure and success states; the user is responsible for manually clearing the status
- OUT packet
-to finalize the transfer's status stage via the |@<Clear OUT packet on endpoint@>| macro.
-
-\note This function automatically sends the last packet in the data stage of the transaction;
- when the
-function returns, the user is responsible for clearing the <b>status</b> stage of the transaction.
-Note that the status stage packet is sent or received in the opposite direction of the data flow.
-        \n\n
-
-\note This routine should only be used on CONTROL type endpoints.
-
-\warning Unlike the standard stream read/write commands, the control stream commands cannot
- be chained
-         together; i.e. the entire stream data must be read or written at the one time.
-
-\param[in] Buffer  Pointer to the source data buffer to read from.
-\param[in] Length  Number of bytes to read for the currently selected endpoint into the buffer.
-
-\return A value from the \ref Endpoint_ControlStream_RW_ErrorCodes_t enum.
-
-@<Header files@>=
-uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
-                                         uint16_t Length) ATTR_NON_NULL_PTR_ARG(1);
 
 @* USBTask.
 Main USB service task management.
