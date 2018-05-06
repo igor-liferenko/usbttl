@@ -1931,50 +1931,6 @@ uint8_t Endpoint_Write_Stream_LE(const void* const Buffer,
 
 @ xxx
 @c
-uint8_t Endpoint_Write_PStream_LE(const void* const Buffer,
-                            uint16_t Length,
-                            uint16_t* const BytesProcessed)
-{
-	uint8_t* DataStream      = ((uint8_t*)Buffer + 0);
-	uint16_t BytesInTransfer = 0;
-	uint8_t  ErrorCode;
-
-	if ((ErrorCode = Endpoint_WaitUntilReady()))
-	  return ErrorCode;
-
-	if (BytesProcessed != NULL)
-	{
-		Length -= *BytesProcessed;
-		DataStream += *BytesProcessed;
-	}
-
-	while (Length)
-	{
-		if (!@<Read-write is allowed for endpoint@>) {
-			@<Clear IN packet on endpoint@>@;
-
-			if (BytesProcessed != NULL)
-			{
-				*BytesProcessed += BytesInTransfer;
-				return ENDPOINT_RWSTREAM_IncompleteTransfer;
-			}
-
-			if ((ErrorCode = Endpoint_WaitUntilReady()))
-			  return ErrorCode;
-		}
-		else
-		{
-			Endpoint_Write_8(pgm_read_byte(DataStream));
-			DataStream += 1;
-			Length--;
-			BytesInTransfer++;
-		}
-	}
-
-	return ENDPOINT_RWSTREAM_NoError;
-}
-
-@ @c
 uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
                             uint16_t Length)
 {
@@ -2071,7 +2027,8 @@ uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer, uint16_t Length)
 	return ENDPOINT_RWCSTREAM_NoError;
 }
 
-@ @c
+@ xxx
+@c
 uint8_t Endpoint_Read_Control_Stream_BE(void* const Buffer, uint16_t Length)
 {
 	uint8_t* DataStream = ((uint8_t*)Buffer + (Length - 1));
@@ -3741,24 +3698,6 @@ uint8_t Endpoint_Read_Control_Stream_BE(void* const Buffer,
                                        uint16_t Length) ATTR_NON_NULL_PTR_ARG(1);
 
 @*4 Stream functions for PROGMEM source/destination data.
-
-@ FLASH buffer source version of \ref Endpoint_Write_Stream_LE().
-
-\pre The FLASH data must be located in the first 64KB of FLASH for this function to work correctly.
-
-\param[in] Buffer          Pointer to the source data buffer to read from.
-\param[in] Length          Number of bytes to read for the currently selected endpoint into
- the buffer.
-\param[in] BytesProcessed  Pointer to a location where the total number of bytes processed
- in the current
-          transaction should be updated, \c NULL if the entire stream should be written at once.
-
-\return A value from the \ref Endpoint_Stream_RW_ErrorCodes_t enum.
-
-@<Header files@>=
-uint8_t Endpoint_Write_PStream_LE(const void* const Buffer,
-                                 uint16_t Length,
-                                 uint16_t* const BytesProcessed) ATTR_NON_NULL_PTR_ARG(1);
 
 @ FLASH buffer source version of \ref Endpoint_Write_Control_Stream_LE().
 
