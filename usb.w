@@ -1223,6 +1223,16 @@ void Endpoint_ClearStatusStage(void)
 	}
 }
 
+@ Spin-loops until the currently selected non-control endpoint is ready for the next packet
+of data to be read or written to it.
+
+Note, that this routine should not be called on CONTROL type endpoints.
+
+Returns A value from the |Endpoint_WaitUntilReady_ErrorCodes_t| enum.
+
+@<Func...@>=
+uint8_t Endpoint_WaitUntilReady(void);
+
 @ @c
 uint8_t Endpoint_WaitUntilReady(void)
 {
@@ -3481,19 +3491,6 @@ changed in value.
 
 @<Header files@>=
 #define USB_Device_ControlEndpointSize FIXED_CONTROL_ENDPOINT_SIZE
-
-@ @<Header files@>=
-/** Spin-loops until the currently selected non-control endpoint is ready for the next packet
- of data
- *  to be read or written to it.
- *
- *  \note This routine should not be called on CONTROL type endpoints.
- *
- *  \ingroup Group_EndpointRW_AVR8
- *
- *  \return A value from the \ref Endpoint_WaitUntilReady_ErrorCodes_t enum.
- */
-uint8_t Endpoint_WaitUntilReady(void);
 
 @* Device.
 @<Header files@>=
@@ -6205,7 +6202,7 @@ uint8_t CDC_Device_SendString_P(USB_ClassInfo_CDC_Device_t* const CDCInterfaceIn
  configuration and state.
  *  \param[in]     Data              Byte of data to send to the host.
  *
- *  \return A value from the \ref Endpoint_WaitUntilReady_ErrorCodes_t enum.
+ *  \return A value from the |Endpoint_WaitUntilReady_ErrorCodes_t| enum.
  */
 uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                             const uint8_t Data) ATTR_NON_NULL_PTR_ARG(1);
@@ -6259,7 +6256,7 @@ int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInf
  *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration
  and state.
  *
- *  \return A value from the \ref Endpoint_WaitUntilReady_ErrorCodes_t enum.
+ *  \return A value from the |Endpoint_WaitUntilReady_ErrorCodes_t| enum.
  */
 uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
  ATTR_NON_NULL_PTR_ARG(1);
