@@ -1461,7 +1461,7 @@ uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 
 @ Reads a byte of data from the host. If no data is waiting to be read of if a USB host is
 not connected, the function
-returns a negative value. The \ref CDC_Device_BytesReceived() function may be queried in
+returns a negative value. The |CDC_Device_BytesReceived| function may be queried in
 advance to determine how many
 bytes are currently buffered in the CDC interface's data receive endpoint bank, and thus how
 many repeated calls to this
@@ -1929,139 +1929,8 @@ uint8_t Endpoint_Write_Stream_LE(const void* const Buffer,
 	return ENDPOINT_RWSTREAM_NoError;
 }
 
-@ @c
-uint8_t Endpoint_Write_Stream_BE(const void* const Buffer,
-                            uint16_t Length,
-                            uint16_t* const BytesProcessed)
-{
-	uint8_t* DataStream      = ((uint8_t*)Buffer + (Length - 1));
-	uint16_t BytesInTransfer = 0;
-	uint8_t  ErrorCode;
-
-	if ((ErrorCode = Endpoint_WaitUntilReady()))
-	  return ErrorCode;
-
-	if (BytesProcessed != NULL)
-	{
-		Length -= *BytesProcessed;
-		DataStream -= *BytesProcessed;
-	}
-
-	while (Length)
-	{
-		if (!@<Read-write is allowed for endpoint@>) {
-			@<Clear IN packet on endpoint@>@;
-
-			if (BytesProcessed != NULL)
-			{
-				*BytesProcessed += BytesInTransfer;
-				return ENDPOINT_RWSTREAM_IncompleteTransfer;
-			}
-
-			if ((ErrorCode = Endpoint_WaitUntilReady()))
-			  return ErrorCode;
-		}
-		else
-		{
-			Endpoint_Write_8(*DataStream);
-			DataStream -= 1;
-			Length--;
-			BytesInTransfer++;
-		}
-	}
-
-	return ENDPOINT_RWSTREAM_NoError;
-}
-
-@ @c
-uint8_t Endpoint_Read_Stream_LE(void* const Buffer,
-                            uint16_t Length,
-                            uint16_t* const BytesProcessed)
-{
-	uint8_t* DataStream      = ((uint8_t*)Buffer + 0);
-	uint16_t BytesInTransfer = 0;
-	uint8_t  ErrorCode;
-
-	if ((ErrorCode = Endpoint_WaitUntilReady()))
-	  return ErrorCode;
-
-	if (BytesProcessed != NULL)
-	{
-		Length -= *BytesProcessed;
-		DataStream += *BytesProcessed;
-	}
-
-	while (Length)
-	{
-		if (!@<Read-write is allowed for endpoint@>) {
-      @<Clear OUT packet on endpoint@>@;
-
-			if (BytesProcessed != NULL)
-			{
-				*BytesProcessed += BytesInTransfer;
-				return ENDPOINT_RWSTREAM_IncompleteTransfer;
-			}
-
-			if ((ErrorCode = Endpoint_WaitUntilReady()))
-			  return ErrorCode;
-		}
-		else
-		{
-			*DataStream = Endpoint_Read_8();
-			DataStream += 1;
-			Length--;
-			BytesInTransfer++;
-		}
-	}
-
-	return ENDPOINT_RWSTREAM_NoError;
-}
-
-@ @c
-uint8_t Endpoint_Read_Stream_BE(void* const Buffer,
-                            uint16_t Length,
-                            uint16_t* const BytesProcessed)
-{
-	uint8_t* DataStream      = ((uint8_t*)Buffer + (Length - 1));
-	uint16_t BytesInTransfer = 0;
-	uint8_t  ErrorCode;
-
-	if ((ErrorCode = Endpoint_WaitUntilReady()))
-	  return ErrorCode;
-
-	if (BytesProcessed != NULL)
-	{
-		Length -= *BytesProcessed;
-		DataStream -= *BytesProcessed;
-	}
-
-	while (Length)
-	{
-		if (!@<Read-write is allowed for endpoint@>) {
-      @<Clear OUT packet on endpoint@>@;
-
-			if (BytesProcessed != NULL)
-			{
-				*BytesProcessed += BytesInTransfer;
-				return ENDPOINT_RWSTREAM_IncompleteTransfer;
-			}
-
-			if ((ErrorCode = Endpoint_WaitUntilReady()))
-			  return ErrorCode;
-		}
-		else
-		{
-			*DataStream = Endpoint_Read_8();
-			DataStream -= 1;
-			Length--;
-			BytesInTransfer++;
-		}
-	}
-
-	return ENDPOINT_RWSTREAM_NoError;
-}
-
-@ @c
+@ xxx
+@c
 uint8_t Endpoint_Write_PStream_LE(const void* const Buffer,
                             uint16_t Length,
                             uint16_t* const BytesProcessed)
@@ -3780,114 +3649,11 @@ and it will resume until the BytesProcessed value reaches the total transfer len
  *                             transaction should be updated, \c NULL if the entire stream
  should be written at once.
  *
- *  \return A value from the \ref Endpoint_Stream_RW_ErrorCodes_t enum.
+Returns a \.{ENDPOINT\_RWSTREAM\_*} value.
 
 @<Header files@>=
 uint8_t Endpoint_Write_Stream_LE(const void* const Buffer, uint16_t Length,
                             uint16_t* const BytesProcessed) ATTR_NON_NULL_PTR_ARG(1);
-
-@ Writes the given number of bytes to the endpoint from the given buffer in big endian,
-sending full packets to the host as needed. The last packet filled is not automatically sent;
-the user is responsible for manually sending the last written packet to the host via the
-|@<Clear IN packet on endpoint@>| macro.
-
-\note This routine should not be used on CONTROL type endpoints.
-
-\param[in] Buffer          Pointer to the source data buffer to read from.
-\param[in] Length          Number of bytes to read for the currently selected endpoint into
- the buffer.
-\param[in] BytesProcessed  Pointer to a location where the total number of bytes processed
- in the current
-           transaction should be updated, \c NULL if the entire stream should be written at once.
-
-\return A value from the \ref Endpoint_Stream_RW_ErrorCodes_t enum.
-
-@<Header files@>=
-uint8_t Endpoint_Write_Stream_BE(const void* const Buffer,
-                                 uint16_t Length,
-                                 uint16_t* const BytesProcessed) ATTR_NON_NULL_PTR_ARG(1);
-
-@ Reads the given number of bytes from the endpoint from the given buffer in little endian,
-discarding fully read packets from the host as needed. The last packet is not automatically
-discarded once the remaining bytes has been read; the user is responsible for manually
-discarding the last packet from the host via the |@<Clear OUT packet on endpoint@>| macro.
-
-If the BytesProcessed parameter is \c NULL, the entire stream transfer is attempted at once,
-failing or succeeding as a single unit. If the BytesProcessed parameter points to a valid
-storage location, the transfer will instead be performed as a series of chunks. Each time
-the endpoint bank becomes empty while there is still data to process (and after the current
-packet has been acknowledged) the BytesProcessed location will be updated with the total number
-of bytes processed in the stream, and the function will exit with an error code of
-\ref ENDPOINT_RWSTREAM_IncompleteTransfer. This allows for any abort checking to be performed
-in the user code - to continue the transfer, call the function again with identical parameters
-and it will resume until the BytesProcessed value reaches the total transfer length.
-
- *  <b>Single Stream Transfer Example:</b>
- *  \code
- *  uint8_t DataStream[512];
- *  uint8_t ErrorCode;
- *
- *  if ((ErrorCode = Endpoint_Read_Stream_LE(DataStream, sizeof(DataStream),
- *                                           NULL)) != ENDPOINT_RWSTREAM_NoError)
- *  {
- *       // Stream failed to complete - check ErrorCode here
- *  }
- *  \endcode
- *
- *  <b>Partial Stream Transfers Example:</b>
- *  \code
- *  uint8_t  DataStream[512];
- *  uint8_t  ErrorCode;
- *  uint16_t BytesProcessed;
- *
- *  BytesProcessed = 0;
- *  while ((ErrorCode = Endpoint_Read_Stream_LE(DataStream, sizeof(DataStream),
- *                                  &BytesProcessed)) == ENDPOINT_RWSTREAM_IncompleteTransfer)
- *  {
- *      // Stream not yet complete - do other actions here, abort if required
- *  }
- *
- *  if (ErrorCode != ENDPOINT_RWSTREAM_NoError)
- *  {
- *      // Stream failed to complete - check ErrorCode here
- *  }
- *  \endcode
- *
- *  \note This routine should not be used on CONTROL type endpoints.
- *
- *  \param[out] Buffer          Pointer to the destination data buffer to write to.
- *  \param[in]  Length          Number of bytes to send via the currently selected endpoint.
- *  \param[in]  BytesProcessed  Pointer to a location where the total number of bytes
- processed in the current
- *                              transaction should be updated, \c NULL if the entire stream
- should be read at once.
- *
- *  \return A value from the \ref Endpoint_Stream_RW_ErrorCodes_t enum.
-
-@<Header files@>=
-uint8_t Endpoint_Read_Stream_LE(void* const Buffer,
-                                uint16_t Length,
-                                uint16_t* const BytesProcessed) ATTR_NON_NULL_PTR_ARG(1);
-
-@ Reads the given number of bytes from the endpoint from the given buffer in big endian,
-discarding fully read packets from the host as needed. The last packet is not automatically
-discarded once the remaining bytes has been read; the user is responsible for manually
-discarding the last packet from the host via the |@<Clear OUT packet on endpoint@>| macro.
-
-\note This routine should not be used on CONTROL type endpoints.
-
-\param[out] Buffer          Pointer to the destination data buffer to write to.
-\param[in]  Length          Number of bytes to send via the currently selected endpoint.
-\param[in]  BytesProcessed  Pointer to a location where the total number of bytes processed in
- the current
-             transaction should be updated, \c NULL if the entire stream should be read at once.
-
-\return A value from the \ref Endpoint_Stream_RW_ErrorCodes_t enum.
-
-@<Header files@>=
-uint8_t Endpoint_Read_Stream_BE(void* const Buffer,
-                                uint16_t Length,
-                                uint16_t* const BytesProcessed) ATTR_NON_NULL_PTR_ARG(1);
 
 @ Writes the given number of bytes to the CONTROL type endpoint from the given buffer in
  little endian,
