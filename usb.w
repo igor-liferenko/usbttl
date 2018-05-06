@@ -1407,13 +1407,17 @@ Returns a value from the |Endpoint_WaitUntilReady_ErrorCodes_t| enum.
 uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                             const uint8_t Data) ATTR_NON_NULL_PTR_ARG(1);
 
-@ @c
+@
+
+@d DEVICE_DISCONNECTED 2 /* device was disconnected from the host during
+                                             the transfer */
+@c
 uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                             const uint8_t Data)
 {
 	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
-	  return ENDPOINT_RWSTREAM_DeviceDisconnected;
+	  return DEVICE_DISCONNECTED;
 
 	Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataINEndpoint.Address);
 
@@ -1435,7 +1439,7 @@ uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
-	  return ENDPOINT_RWSTREAM_DeviceDisconnected;
+	  return DEVICE_DISCONNECTED;
 
 	uint8_t ErrorCode;
 
@@ -3393,44 +3397,12 @@ support self powered mode, as indicated in the device descriptors.
 @<Global var...@>=
 bool USB_Device_CurrentlySelfPowered;
 
-@* EndpointStream.
+@* Endpoint data stream transmission and reception management.
+
+Functions, macros, variables, enums and types related to data reading and writing of
+data streams from and to endpoints.
+
 @<Header files@>=
-/** Endpoint data stream transmission and reception management.
- */
-
-/** Endpoint data stream transmission and reception management.
- *
- *  Functions, macros, variables, enums and types related to data reading and writing of
- data streams from
- *  and to endpoints.
- */
-
-/** Enum for the possible error return codes of the \c Endpoint_*_Stream_* functions. */
-enum Endpoint_Stream_RW_ErrorCodes_t
-{
-  ENDPOINT_RWSTREAM_NoError = 0, /* Command completed successfully, no error. */
-  ENDPOINT_RWSTREAM_EndpointStalled = 1, /* The endpoint was stalled during the stream
-                                          *   transfer by the host or device.
-                                          */
-  ENDPOINT_RWSTREAM_DeviceDisconnected = 2, /* Device was disconnected from the host during
-                                             *   the transfer.
-	                                     */
-  ENDPOINT_RWSTREAM_BusSuspended = 3, /* The USB bus has been suspended by the host and
-                                       *   no USB endpoint traffic can occur until the bus
-                                       *   has resumed.
-                                       */
-  ENDPOINT_RWSTREAM_Timeout = 4, /* The host failed to accept or send the next packet
-                                  *   within the software timeout period set by the
-                                  *   \ref USB_STREAM_TIMEOUT_MS macro.
-                                  */
-  ENDPOINT_RWSTREAM_IncompleteTransfer = 5, /* Indicates that the endpoint bank became
- full or empty before
-                                         *   the complete contents of the current stream could be
-                                   *   transferred. The endpoint stream function should be called
-                                  *   again to process the next chunk of data in the transfer.
-                                  */
-};
-
 /** Enum for the possible error return codes of the \c Endpoint_*_Control_Stream_* functions. */
 enum Endpoint_ControlStream_RW_ErrorCodes_t
 {
