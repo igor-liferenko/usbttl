@@ -1448,15 +1448,13 @@ uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 
 @
 
-@d DEVICE_DISCONNECTED 2 /* device was disconnected from the host during
-                                             the transfer */
 @c
 uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                             const uint8_t Data)
 {
 	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
-	  return DEVICE_DISCONNECTED;
+	  return ENDPOINT_DEVICE_DISCONNECTED;
 
 	Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataINEndpoint.Address);
 
@@ -1492,7 +1490,7 @@ uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
-	  return DEVICE_DISCONNECTED;
+	  return ENDPOINT_DEVICE_DISCONNECTED;
 
 	uint8_t ErrorCode;
 
@@ -1960,11 +1958,11 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_RWCSTREAM_DEVICE_DISCONNECTED;
+		  return ENDPOINT_DEVICE_DISCONNECTED;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
-		  return ENDPOINT_RWCSTREAM_BUS_SUSPENDED;
+		  return ENDPOINT_BUS_SUSPENDED;
 		else if (@<Endpoint has received a SETUP packet@>)
-		  return ENDPOINT_RWCSTREAM_HOST_ABORTED;
+		  return ENDPOINT_HOST_ABORTED;
 		else if (@<Endpoint received an OUT packet@>)
 		  break;
 
@@ -1988,14 +1986,14 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_RWCSTREAM_DEVICE_DISCONNECTED;
+		  return ENDPOINT_DEVICE_DISCONNECTED;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
-		  return ENDPOINT_RWCSTREAM_BUS_SUSPENDED;
+		  return ENDPOINT_BUS_SUSPENDED;
 		else if (@<Endpoint has received a SETUP packet@>)
-		  return ENDPOINT_RWCSTREAM_HOST_ABORTED;
+		  return ENDPOINT_HOST_ABORTED;
 	}
 
-	return ENDPOINT_RWCSTREAM_NO_ERROR;
+	return ENDPOINT_NO_ERROR;
 }
 
 @ FLASH buffer source version of |Endpoint_Write_Control_Stream_LE|.
@@ -2037,11 +2035,11 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_RWCSTREAM_DEVICE_DISCONNECTED;
+		  return ENDPOINT_DEVICE_DISCONNECTED;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
-		  return ENDPOINT_RWCSTREAM_BUS_SUSPENDED;
+		  return ENDPOINT_BUS_SUSPENDED;
 		else if (@<Endpoint has received a SETUP packet@>)
-		  return ENDPOINT_RWCSTREAM_HOST_ABORTED;
+		  return ENDPOINT_HOST_ABORTED;
 		else if (@<Endpoint received an OUT packet@>)
 		  break;
 
@@ -2065,14 +2063,14 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_RWCSTREAM_DEVICE_DISCONNECTED;
+		  return ENDPOINT_DEVICE_DISCONNECTED;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
-		  return ENDPOINT_RWCSTREAM_BUS_SUSPENDED;
+		  return ENDPOINT_BUS_SUSPENDED;
 		else if (@<Endpoint has received a SETUP packet@>)
-		  return ENDPOINT_RWCSTREAM_HOST_ABORTED;
+		  return ENDPOINT_HOST_ABORTED;
 	}
 
-	return ENDPOINT_RWCSTREAM_NO_ERROR;
+	return ENDPOINT_NO_ERROR;
 }
 
 @ @<Header files@>=
@@ -3487,25 +3485,13 @@ data streams from and to endpoints.
 @ Possible error return codes of the \\{Endpoint\_*\_Control\_Stream\_*} functions.
 
 @<Header files@>=
-#define ENDPOINT_RWCSTREAM_NO_ERROR 0 /* command completed successfully, no error */
-#define ENDPOINT_RWCSTREAM_HOST_ABORTED 1 /* aborted the transfer prematurely */
-#define ENDPOINT_RWCSTREAM_DEVICE_DISCONNECTED 2 /* device was disconnected from the host during
+#define ENDPOINT_NO_ERROR 0 /* command completed successfully, no error */
+#define ENDPOINT_HOST_ABORTED 1 /* aborted the transfer prematurely */
+#define ENDPOINT_DEVICE_DISCONNECTED 2 /* device was disconnected from the host during
                                                    the transfer */
-#define ENDPOINT_RWCSTREAM_BUS_SUSPENDED 3 /* the USB bus has been suspended by the host and
+#define ENDPOINT_BUS_SUSPENDED 3 /* the USB bus has been suspended by the host and
 		                             no USB endpoint traffic can occur until the bus
 		                             has resumed */
-
-@* EndpointStream AVR8.
-@<Header files@>=
-/** Endpoint data stream transmission and reception management for the AVR8 microcontrollers.
- */
-
-/** Endpoint data stream transmission and reception management for the Atmel AVR8 architecture.
- *
- *  Functions, macros, variables, enums and types related to data reading and writing of
- data streams from
- *  and to endpoints.
- */
 
 @* USBTask.
 Main USB service task management.
