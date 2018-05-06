@@ -1190,6 +1190,15 @@ void Endpoint_ClearEndpoints(void)
 	}
 }
 
+@ Completes the status stage of a control transfer on a CONTROL type endpoint automatically,
+with respect to the data direction. This is a convenience function which can be used to
+simplify user control request handling.
+
+Note, that this routine should not be called on non CONTROL type endpoints.
+
+@<Func...@>=
+void Endpoint_ClearStatusStage(void);
+
 @ @c
 void Endpoint_ClearStatusStage(void)
 {
@@ -3474,14 +3483,6 @@ changed in value.
 #define USB_Device_ControlEndpointSize FIXED_CONTROL_ENDPOINT_SIZE
 
 @ @<Header files@>=
-/** Completes the status stage of a control transfer on a CONTROL type endpoint automatically,
- *  with respect to the data direction. This is a convenience function which can be used to
- *  simplify user control request handling.
- *
- *  \note This routine should not be called on non CONTROL type endpoints.
- */
-void Endpoint_ClearStatusStage(void);
-
 /** Spin-loops until the currently selected non-control endpoint is ready for the next packet
  of data
  *  to be read or written to it.
