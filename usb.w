@@ -1876,14 +1876,14 @@ void USB_Device_ClearSetFeature(void)
   {
     case REQREC_DEVICE:
     {
-	if ((uint8_t)USB_ControlRequest.wValue == FEATURE_SEL_DeviceRemoteWakeup)
+	if ((uint8_t)USB_ControlRequest.wValue == FEATURE_SEL_DEVICE_REMOTE_WAKEUP)
 	  USB_Device_RemoteWakeupEnabled = (USB_ControlRequest.bRequest == REQ_SET_FEATURE);
 	else return;
 	break;
     }
     case REQREC_ENDPOINT:
     {
-      if ((uint8_t)USB_ControlRequest.wValue == FEATURE_SEL_EndpointHalt) {
+      if ((uint8_t)USB_ControlRequest.wValue == FEATURE_SEL_ENDPOINT_HALT) {
         uint8_t EndpointIndex = ((uint8_t)USB_ControlRequest.wIndex & ENDPOINT_EPNUM_MASK);
 
         if (EndpointIndex == ENDPOINT_CONTROLEP || EndpointIndex >= ENDPOINT_TOTAL_ENDPOINTS)
@@ -3731,33 +3731,30 @@ event when received.
 @<Header files@>=
 #define REQ_SYNCH_FRAME 12
 
-@ @<Header files@>=
-/** Feature Selector values for Set Feature and Clear Feature standard control requests
- directed to the device, interface
- *  and endpoint recipients.
- */
-enum USB_Feature_Selectors_t
-{
-  FEATURE_SEL_EndpointHalt = 0x00, /* Feature selector for Clear Feature or Set Feature
- commands. When
-                       *   used in a Set Feature or Clear Feature request this indicates that an
-                      *   endpoint (whose address is given elsewhere in the request) should have
-                      *   its stall condition changed.
-                      */
-  FEATURE_SEL_DeviceRemoteWakeup = 0x01, /* Feature selector for Device level Remote Wakeup
- enable set or clear.
-                     *   This feature can be controlled by the host on devices which indicate
-                     *   remote wakeup support in their descriptors to selectively disable or
-                     *   enable remote wakeup.
-                     */
-  FEATURE_SEL_TestMode = 0x02, /* Feature selector for Test Mode features, used to test
- the USB controller
-                                *   to check for incorrect operation.
-                               */
-};
+@*1 Feature Selector values.
+Feature Selector values for Set Feature and Clear Feature standard control requests
+directed to the device, interface and endpoint recipients.
 
+@ Feature selector for Clear Feature or Set Feature commands. When
+used in a Set Feature or Clear Feature request this indicates that an
+endpoint (whose address is given elsewhere in the request) should have
+its stall condition changed.
+
+@<Header files@>=
+#define FEATURE_SEL_ENDPOINT_HALT 0x00
+
+@ Feature selector for Device level Remote Wakeup enable set or clear.
+This feature can be controlled by the host on devices which indicate
+remote wakeup support in their descriptors to selectively disable or
+enable remote wakeup.
+
+@<Header files@>=
+#define FEATURE_SEL_DEVICE_REMOTE_WAKEUP 0x01
+
+@ @<Header files@>=
 #define FEATURE_SELFPOWERED_ENABLED     (1 << 0)
 #define FEATURE_REMOTE_WAKEUP_ENABLED   (1 << 1)
+
 @* DeviceStandardReq.
 @<Header files@>=
 /** USB device standard request management.
