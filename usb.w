@@ -1184,7 +1184,7 @@ void Endpoint_ClearStatusStage(void)
 			  return;
 		}
 
-		Endpoint_ClearOUT();
+		@<Clear OUT packet on endpoint@>@;
 	}
 	else
 	{
@@ -1286,7 +1286,7 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 				CDCInterfaceInfo->State.LineEncoding.DataBits
     = Endpoint_Read_8();
 
-				Endpoint_ClearOUT();
+        @<Clear OUT packet on endpoint@>@;
 				Endpoint_ClearStatusStage();
 
 				EVENT_CDC_Device_LineEncodingChanged(CDCInterfaceInfo);
@@ -1468,7 +1468,7 @@ uint16_t CDC_Device_BytesReceived(USB_ClassInfo_CDC_Device_t* const CDCInterface
 	if (@<Endpoint received an OUT packet@>) {
 		if (@<Number of bytes in endpoint@>
                     == 0) {
-			Endpoint_ClearOUT();
+      @<Clear OUT packet on endpoint@>@;
 			return 0;
 		}
 		else
@@ -1499,7 +1499,7 @@ int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInf
 
 		if (@<Number of bytes in endpoint@>
                     == 0)
-		  Endpoint_ClearOUT();
+    @<Clear OUT packet on endpoint@>@;
 	}
 
 	return ReceivedByte;
@@ -1747,7 +1747,7 @@ void USB_Device_GetInternalSerialDescriptor(void)
   @<Clear a received SETUP packet on endpoint@>@;
 
 	Endpoint_Write_Control_Stream_LE(&SignatureDescriptor, sizeof(SignatureDescriptor));
-	Endpoint_ClearOUT();
+  @<Clear OUT packet on endpoint@>@;
 }
 
 @ @<Function prototypes@>=
@@ -1773,7 +1773,7 @@ void USB_Device_GetDescriptor(void)
 
 	Endpoint_Write_Control_PStream_LE(DescriptorPointer, DescriptorSize);
 
-	Endpoint_ClearOUT();
+  @<Clear OUT packet on endpoint@>@;
 }
 
 @ @<Function prototypes@>=
@@ -1893,11 +1893,9 @@ uint8_t Endpoint_Discard_Stream(uint16_t Length,
 	if (BytesProcessed != NULL)
 	  Length -= *BytesProcessed;
 
-	while (Length)
-	{
-		if (!@<Read-write is allowed for endpoint@>)
-		{
-			Endpoint_ClearOUT();
+	while (Length) {
+		if (!@<Read-write is allowed for endpoint@>) {
+      @<Clear OUT packet on endpoint@>@;
 
 			if (BytesProcessed != NULL)
 			{
@@ -2068,7 +2066,7 @@ uint8_t Endpoint_Read_Stream_LE(void* const Buffer,
 	while (Length)
 	{
 		if (!@<Read-write is allowed for endpoint@>) {
-			Endpoint_ClearOUT();
+      @<Clear OUT packet on endpoint@>@;
 
 			if (BytesProcessed != NULL)
 			{
@@ -2112,7 +2110,7 @@ uint8_t Endpoint_Read_Stream_BE(void* const Buffer,
 	while (Length)
 	{
 		if (!@<Read-write is allowed for endpoint@>) {
-			Endpoint_ClearOUT();
+      @<Clear OUT packet on endpoint@>@;
 
 			if (BytesProcessed != NULL)
 			{
@@ -2295,7 +2293,7 @@ uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer, uint16_t Length)
 	uint8_t* DataStream = ((uint8_t*)Buffer + 0);
 
 	if (!(Length))
-	  Endpoint_ClearOUT();
+    @<Clear OUT packet on endpoint@>@;
 
 	while (Length)
 	{
@@ -2315,7 +2313,7 @@ uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer, uint16_t Length)
 				Length--;
 			}
 
-			Endpoint_ClearOUT();
+      @<Clear OUT packet on endpoint@>@;
 		}
 	}
 
@@ -2337,7 +2335,7 @@ uint8_t Endpoint_Read_Control_Stream_BE(void* const Buffer, uint16_t Length)
 	uint8_t* DataStream = ((uint8_t*)Buffer + (Length - 1));
 
 	if (!(Length))
-	  Endpoint_ClearOUT();
+    @<Clear OUT packet on endpoint@>@;
 
 	while (Length)
 	{
@@ -2357,7 +2355,7 @@ uint8_t Endpoint_Read_Control_Stream_BE(void* const Buffer, uint16_t Length)
 				Length--;
 			}
 
-			Endpoint_ClearOUT();
+      @<Clear OUT packet on endpoint@>@;
 		}
 	}
 
@@ -3329,19 +3327,13 @@ for the next packet and switching to the alternative endpoint bank if double ban
 @<Clear IN packet on endpoint@>=
 UEINTX &= ~((1 << TXINI) | (1 << FIFOCON));
 
-@ @<Header files@>=
-/** Acknowledges an OUT packet to the host on the currently selected endpoint, freeing up
- the endpoint
- *  for the next packet and switching to the alternative endpoint bank if double banked.
- *
- *  \ingroup Group_EndpointPacketManagement_AVR8
- */
-inline void Endpoint_ClearOUT(void) ATTR_ALWAYS_INLINE;
-inline void Endpoint_ClearOUT(void)
-{
-		UEINTX &= ~((1 << RXOUTI) | (1 << FIFOCON));
-}
+@ Acknowledges an OUT packet to the host on the currently selected endpoint, freeing up
+the endpoint for the next packet and switching to the alternative endpoint bank if double banked.
 
+@<Clear OUT packet on endpoint@>=
+UEINTX &= ~((1 << RXOUTI) | (1 << FIFOCON));
+
+@ @<Header files@>=
 /** Stalls the current endpoint, indicating to the host that a logical problem occurred with the
  *  indicated endpoint and that the current transfer sequence should be aborted. This provides a
  *  way for devices to indicate invalid commands to the host so that the current transfer can be
@@ -4214,7 +4206,7 @@ enum Endpoint_ControlStream_RW_ErrorCodes_t
 @ Reads and discards the given number of bytes from the currently selected endpoint's bank,
 discarding fully read packets from the host as needed. The last packet is not automatically
 discarded once the remaining bytes has been read; the user is responsible for manually
-discarding the last packet from the host via the \ref Endpoint_ClearOUT() macro.
+discarding the last packet from the host via the |@<Clear OUT packet on endpoint@>| macro.
 
 If the BytesProcessed parameter is \c NULL, the entire stream transfer is attempted at once,
 failing or succeeding as a single unit. If the BytesProcessed parameter points to a valid
@@ -4409,7 +4401,7 @@ uint8_t Endpoint_Write_Stream_BE(const void* const Buffer,
 @ Reads the given number of bytes from the endpoint from the given buffer in little endian,
 discarding fully read packets from the host as needed. The last packet is not automatically
 discarded once the remaining bytes has been read; the user is responsible for manually
-discarding the last packet from the host via the \ref Endpoint_ClearOUT() macro.
+discarding the last packet from the host via the |@<Clear OUT packet on endpoint@>| macro.
 
 If the BytesProcessed parameter is \c NULL, the entire stream transfer is attempted at once,
 failing or succeeding as a single unit. If the BytesProcessed parameter points to a valid
@@ -4471,7 +4463,7 @@ uint8_t Endpoint_Read_Stream_LE(void* const Buffer,
 @ Reads the given number of bytes from the endpoint from the given buffer in big endian,
 discarding fully read packets from the host as needed. The last packet is not automatically
 discarded once the remaining bytes has been read; the user is responsible for manually
-discarding the last packet from the host via the \ref Endpoint_ClearOUT() macro.
+discarding the last packet from the host via the |@<Clear OUT packet on endpoint@>| macro.
 
 \note This routine should not be used on CONTROL type endpoints.
 
@@ -4494,7 +4486,7 @@ sending full packets to the host as needed. The host OUT acknowledgement is not 
  cleared
 in both failure and success states; the user is responsible for manually clearing the status
  OUT packet
-to finalize the transfer's status stage via the \ref Endpoint_ClearOUT() macro.
+to finalize the transfer's status stage via the |@<Clear OUT packet on endpoint@>| macro.
 
 \note This function automatically sends the last packet in the data stage of the transaction;
  when the
@@ -4523,7 +4515,7 @@ sending full packets to the host as needed. The host OUT acknowledgement is not 
  cleared
 in both failure and success states; the user is responsible for manually clearing the status
  OUT packet
-to finalize the transfer's status stage via the \ref Endpoint_ClearOUT() macro.
+to finalize the transfer's status stage via the |@<Clear OUT packet on endpoint@>| macro.
 
 \note This function automatically sends the last packet in the data stage of the transaction;
  when the
