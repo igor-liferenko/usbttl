@@ -381,7 +381,37 @@ USB_Init();
 
 LED mask for the library LED driver, to indicate that the USB interface is enumerating.
 
-@c
+Event for USB device connection. This event fires when the microcontroller is in USB
+Device mode
+and the device is connected to a USB host, beginning the enumeration process measured
+by a rising
+level on the microcontroller's VBUS sense pin.
+
+This event is time-critical; exceeding OS-specific delays within this event handler
+(typically of around
+two seconds) will prevent the device from enumerating correctly.
+
+This event may fire multiple times during device enumeration on the
+microcontrollers with limited USB controllers
+if |NO_LIMITED_CONTROLLER_CONNECT| is not defined.
+
+For the microcontrollers with limited USB controller functionality, VBUS sensing
+is not available.
+this means that the current connection state is derived from the bus suspension
+and wake up events by default,
+which is not always accurate (host may suspend the bus while still connected).
+If the actual connection state
+needs to be determined, VBUS should be routed to an external pin, and the
+auto-detect behavior turned off by
+passing the |NO_LIMITED_CONTROLLER_CONNECT| token to the compiler via the -D
+switch at compile time. The connection
+and disconnection events may be manually fired, and the |USB_DeviceState|
+global changed manually.
+
+@<Func...@>=
+void EVENT_USB_Device_Connect(void);
+
+@ @c
 void EVENT_USB_Device_Connect(void)
 {
 	LEDs_SetAllLEDs(LEDS_LED2 | LEDS_LED3);
@@ -3453,70 +3483,24 @@ not be used within the user application except implicitly via the library APIs.
 #define USB_DeviceState CONCAT_EXPANDED(GPIOR, DEVICE_STATE_AS_GPIOR) /* expands into
   |(*(volatile uint8_t *)((0x1E) + 0x20))| */
 
-@* Events.
-@<Header files@>=
-/** \file
- *  \brief USB Event management definitions.
- *  \copydetails Group_Events
- *
- */
+@* USB Event management.
+This contains macros and functions relating to the management of library events, which
+are small
+pieces of code similar to ISRs which are run when a given condition is met. Each event
+can be fired from
+multiple places in the user or library code, which may or may not be inside an ISR, thus
+each handler
+should be written to be as small and fast as possible to prevent possible problems.
 
-/** \ingroup Group_USB
- *  \defgroup Group_Events USB Events
- *  \brief USB Event management definitions.
- *
- *  This contains macros and functions relating to the management of library events, which
- are small
- *  pieces of code similar to ISRs which are run when a given condition is met. Each event
- can be fired from
- *  multiple places in the user or library code, which may or may not be inside an ISR, thus
- each handler
- *  should be written to be as small and fast as possible to prevent possible problems.
- *
- *  Events can be hooked by the user application by declaring a handler function with the
- same name and parameters
- *  listed here. If an event with no user-associated handler is fired within the library,
- it by default maps to an
- *  internal empty stub function.
- *
- *  Each event must only have one associated event handler, but can be raised by multiple
- sources by calling the
- *  event handler function (with any required event parameters).
- *
- */
+Events can be hooked by the user application by declaring a handler function with the
+same name and parameters
+listed here. If an event with no user-associated handler is fired within the library,
+it by default maps to an
+internal empty stub function.
 
-/** Event for USB device connection. This event fires when the microcontroller is in USB
- Device mode
- *  and the device is connected to a USB host, beginning the enumeration process measured
- by a rising
- *  level on the microcontroller's VBUS sense pin.
- *
- *  This event is time-critical; exceeding OS-specific delays within this event handler
- (typically of around
- *  two seconds) will prevent the device from enumerating correctly.
- *
- *  \attention This event may fire multiple times during device enumeration on the
- microcontrollers with limited USB controllers
- *             if \c NO_LIMITED_CONTROLLER_CONNECT is not defined.
- *
- *  \note For the microcontrollers with limited USB controller functionality, VBUS sensing
- is not available.
- *        this means that the current connection state is derived from the bus suspension
- and wake up events by default,
- *        which is not always accurate (host may suspend the bus while still connected).
- If the actual connection state
- *        needs to be determined, VBUS should be routed to an external pin, and the
- auto-detect behavior turned off by
- *        passing the \c NO_LIMITED_CONTROLLER_CONNECT token to the compiler via the -D
- switch at compile time. The connection
- *        and disconnection events may be manually fired, and the \ref USB_DeviceState
- global changed manually.
- *        \n\n
- *
- *  \see \ref Group_USBManagement for more information on the USB management task and
- reducing CPU usage.
- */
-void EVENT_USB_Device_Connect(void);
+Each event must only have one associated event handler, but can be raised by multiple
+sources by calling the
+event handler function (with any required event parameters).
 
 /** Event for USB device disconnection. This event fires when the microcontroller is in
  USB Device mode and the device is
