@@ -1859,8 +1859,7 @@ UECONX |= (1 << RSTDT);
 
 @* Endpoint data stream transmission and reception management for the AVR8 microcontrollers.
 
-@ xxx
-@c
+@ @c
 uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
                             uint16_t Length)
 {
@@ -1957,6 +1956,28 @@ uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer, uint16_t Length)
 	return ENDPOINT_RWCSTREAM_NoError;
 }
 
+@ FLASH buffer source version of |Endpoint_Write_Control_Stream_LE|.
+
+The FLASH data must be located in the first 64KB of FLASH for this function to work correctly.
+
+This function automatically sends the last packet in the data stage of the transaction;
+when the function returns, the user is responsible for clearing the
+status stage of the transaction.
+Note that the status stage packet is sent or received in the opposite direction of the data flow.
+
+This routine should only be used on CONTROL type endpoints.
+
+Unlike the standard stream read/write commands, the control stream commands cannot be
+chained together; i.e. the entire stream data must be read or written at the one time.
+
+|Buffer| -- pointer to the source data buffer to read from.
+|Length| -- number of bytes to read for the currently selected endpoint into the buffer.
+
+Returns a \.{ENDPOINT\_RWCSTREAM\_*} value.
+
+@<Func...@>=
+uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
+                                          uint16_t Length) ATTR_NON_NULL_PTR_ARG(1);
 @ @c
 uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
                             uint16_t Length)
@@ -3494,33 +3515,7 @@ Note that the status stage packet is sent or received in the opposite direction 
 uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer,
                                         uint16_t Length) ATTR_NON_NULL_PTR_ARG(1);
 
-@*4 Stream functions for PROGMEM source/destination data.
 
-@ FLASH buffer source version of \ref Endpoint_Write_Control_Stream_LE().
-
-\pre The FLASH data must be located in the first 64KB of FLASH for this function to work correctly.
-
-\note This function automatically sends the last packet in the data stage of the transaction;
- when the
-function returns, the user is responsible for clearing the <b>status</b> stage of the transaction.
-Note that the status stage packet is sent or received in the opposite direction of the data flow.
-        \n\n
-
-\note This routine should only be used on CONTROL type endpoints.
-       \n\n
-
-\warning Unlike the standard stream read/write commands, the control stream commands cannot be
- chained
-      together; i.e. the entire stream data must be read or written at the one time.
-
-\param[in] Buffer  Pointer to the source data buffer to read from.
-\param[in] Length  Number of bytes to read for the currently selected endpoint into the buffer.
-
-\return A value from the \ref Endpoint_ControlStream_RW_ErrorCodes_t enum.
-
-@<Header files@>=
-uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
-                                          uint16_t Length) ATTR_NON_NULL_PTR_ARG(1);
 @* USBTask.
 Main USB service task management.
 
