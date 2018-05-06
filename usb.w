@@ -444,19 +444,6 @@ void EVENT_USB_Device_Disconnect(void)
   @<Indicate that USB device is disconnected@>@;
 }
 
-@ Event handler for the library USB Configuration Changed event.
-
-@d LEDMASK_USB_READY (LEDS_LED2 | LEDS_LED4)
-@d LEDMASK_USB_ERROR (LEDS_LED1 | LEDS_LED3)
-
-@c
-void EVENT_USB_Device_ConfigurationChanged(void)
-{
-	bool ConfigSuccess = true;
-	ConfigSuccess &= CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface);
-	LEDs_SetAllLEDs(ConfigSuccess ? LEDMASK_USB_READY : LEDMASK_USB_ERROR);
-}
-
 @ ISR to manage the reception of data from the serial port, placing received bytes into
 a circular buffer
 for later transmission to the host.
@@ -2195,17 +2182,36 @@ should be called in response to the |EVENT_USB_Device_ConfigurationChanged| even
 This function will return a
 boolean true value if the driver successfully initialized the instance. Like all the
 class driver functions, this function
-takes in the address of the specific instance you wish to initialize --- in this manner,
-multiple separate instances of
-the same class type can be initialized like this:
+takes in the address of the specific instance you wish to initialize
+(this was done to be able to initialize multiple separate instances of the same class
+type).
 
-@(/dev/null@>=
+Event handler for USB configuration number change event.
+This event fires when a the USB host changes the
+selected configuration number while in device mode. This event should be hooked in device
+applications to create the endpoints and configure the device for the selected configuration.
+
+This event is time-critical; exceeding OS-specific delays within this event handler
+(typically of around
+one second) will prevent the device from enumerating correctly.
+
+This event fires after the value of |USB_Device_ConfigurationNumber| has been changed.
+
+@<Func...@>=
+void EVENT_USB_Device_ConfigurationChanged(void);
+
+@
+
+@d LEDMASK_USB_READY (LEDS_LED2 | LEDS_LED4)
+@d LEDMASK_USB_ERROR (LEDS_LED1 | LEDS_LED3)
+
+@c
 void EVENT_USB_Device_ConfigurationChanged(void)
 {
-      LEDs_SetAllLEDs(LEDMASK_USB_READY);
-
-      if (!(Audio_Device_ConfigureEndpoints(&My_Audio_Interface)))
-          LEDs_SetAllLEDs(LEDMASK_USB_ERROR);
+  if (CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface))
+    LEDs_SetAllLEDs(LEDMASK_USB_READY);
+  else
+    LEDs_SetAllLEDs(LEDMASK_USB_ERROR);
 }
 
 @ Once initialized, it is important to maintain the class driver's state by repeatedly
@@ -3548,19 +3554,6 @@ internal empty stub function.
 Each event must only have one associated event handler, but can be raised by multiple
 sources by calling the
 event handler function (with any required event parameters).
-
-/** Event for USB configuration number changed. This event fires when a the USB host changes the
- *  selected configuration number while in device mode. This event should be hooked in device
- *  applications to create the endpoints and configure the device for the selected configuration.
- *
- *  This event is time-critical; exceeding OS-specific delays within this event handler
- (typically of around
- *  one second) will prevent the device from enumerating correctly.
- *
- *  This event fires after the value of \ref USB_Device_ConfigurationNumber has been changed.
- *
- */
-void EVENT_USB_Device_ConfigurationChanged(void);
 
 @* StdDescriptors.
 Common standard USB Descriptor definitions.
