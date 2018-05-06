@@ -600,9 +600,7 @@ const USB_Descriptor_Device_t PROGMEM DeviceDescriptor = {@|
   FIXED_NUM_CONFIGURATIONS @/
 };
 
-@ @d DTYPE_DEVICE 0x01 /* indicates that the descriptor is a device descriptor */
-
-@<Initialize header of USB device descriptor@>=
+@ @<Initialize header of USB device descriptor@>=
 {@, sizeof (USB_Descriptor_Device_t), DTYPE_DEVICE @,}
 
 @ Configuration descriptor structure. This descriptor, located in FLASH memory, describes
@@ -674,9 +672,7 @@ typedef struct {
         USB_Descriptor_Endpoint_t                CDC_DataOut_Endpoint;
         USB_Descriptor_Endpoint_t                CDC_DataIn_Endpoint;
 
-@ @d DTYPE_CONFIGURATION 0x02 /* configuration descriptor */
-
-@<Initialize header of standard Configuration Descriptor@>= {@|
+@ @<Initialize header of standard Configuration Descriptor@>= {@|
   {@, sizeof (USB_Descriptor_Config_Header_t), DTYPE_CONFIGURATION @,}, @|
   sizeof @[@](USB_Descriptor_Config_t),@|
   2,@|
@@ -692,7 +688,6 @@ typedef struct {
     that the device or interface belongs to the Abstract Control Model CDC subclass */
 @d CDC_CSCP_AT_COMMAND_PROTOCOL 0x01 /* Protocol value indicating that the device
     or interface belongs to the AT Command protocol of the CDC class */
-@d DTYPE_INTERFACE 0x04 /* indicates that the descriptor is an interface descriptor */
 
 @<Initialize |CDC_CCI_Interface|@>= {@|
   {@, sizeof (USB_Descriptor_Interface_t), DTYPE_INTERFACE @,},@|
@@ -705,10 +700,10 @@ typedef struct {
   NO_DESCRIPTOR @/
 }
 
-@ @d CDC_DSUBTYPE_CS_INTERFACE_HEADER 0x00 /* CDC class-specific Header
+@
+
+@d CDC_DSUBTYPE_CS_INTERFACE_HEADER 0x00 /* CDC class-specific Header
   functional descriptor */
-@d DTYPE_CS_INTERFACE 0x24 /* indicates that the descriptor is a class
-  specific interface descriptor */
 
 @<Initialize |CDC_Functional_Header|@>= {@|
   {@, sizeof (USB_CDC_Descriptor_Func_Header_t), DTYPE_CS_INTERFACE @,},@|
@@ -736,7 +731,7 @@ typedef struct {
   INTERFACE_ID_CDC_DCI @/
 }
 
-@ @d DTYPE_ENDPOINT 0x05 /* indicates that the descriptor is an endpoint descriptor */
+@
 
 @<Initialize |CDC_Notification_Endpoint|@>= {@|
   {@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_ENDPOINT @,},@|
@@ -795,7 +790,7 @@ to indicate that the English language is supported by the device in its string d
 const USB_Descriptor_String_t PROGMEM LanguageString = {
   {
     sizeof (USB_Descriptor_Header_t) + sizeof ((uint16_t){LANGUAGE_ID_ENG}),
-    DTYPE_String
+    DTYPE_STRING
   },
   {LANGUAGE_ID_ENG}
 };
@@ -839,7 +834,7 @@ the standard types defined in the |DescriptorTypes_t| enum, or may be a
 class-specific descriptor type value.
 
 |wIndex| -- The language ID of the string to return if the
-|wValue| type indicates |DTYPE_String|, otherwise zero for standard
+|wValue| type indicates |DTYPE_STRING|, otherwise zero for standard
 descriptors, or as defined in a class-specific standards.
 
 |DescriptorAddress| -- pointer to the descriptor in memory. This should be
@@ -860,7 +855,6 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
     ID (must be zero) */
 @d STRING_ID_MANUFACTURER 1 /* Manufacturer string ID */
 @d STRING_ID_PRODUCT 2 /* Product string ID */
-@d DTYPE_STRING 0x03 /* indicates that the descriptor is a string descriptor */
 
 @c
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
@@ -1768,7 +1762,7 @@ void USB_Device_GetInternalSerialDescriptor(void)
 		uint16_t                UnicodeString[INTERNAL_SERIAL_LENGTH_BITS / 4];
 	} SignatureDescriptor;
 
-	SignatureDescriptor.Header.Type = DTYPE_String;
+	SignatureDescriptor.Header.Type = DTYPE_STRING;
 	SignatureDescriptor.Header.Size = USB_STRING_LEN(INTERNAL_SERIAL_LENGTH_BITS / 4);
 
 	USB_Device_GetSerialString(SignatureDescriptor.UnicodeString);
@@ -1788,7 +1782,7 @@ void USB_Device_GetDescriptor(void)
 	const void* DescriptorPointer;
 	uint16_t DescriptorSize;
 
-	if (USB_ControlRequest.wValue == ((DTYPE_String << 8) | USE_INTERNAL_SERIAL))
+	if (USB_ControlRequest.wValue == ((DTYPE_STRING << 8) | USE_INTERNAL_SERIAL))
 	{
 		USB_Device_GetInternalSerialDescriptor();
 		return;
@@ -3579,7 +3573,7 @@ Parameter is string to initialize a USB String Descriptor structure with.
 #define USB_STRING_DESCRIPTOR(String) { \
   { \
     sizeof (USB_Descriptor_Header_t) + ( sizeof (String) - 2 ), \
-    DTYPE_String \
+    DTYPE_STRING \
   }, \
   String \
 }
@@ -3642,25 +3636,12 @@ See the USB specification for more details on the possible Endpoint usage attrib
 @ Enum for the possible standard descriptor types, as given in each descriptor's header.
 
 @<Header files@>=
-enum USB_DescriptorTypes_t
-{
-  DTYPE_Device = 0x01, /**< Indicates that the descriptor is a device descriptor. */
-  DTYPE_Configuration = 0x02, /**< Indicates that the descriptor is a configuration descriptor. */
-  DTYPE_String = 0x03, /**< Indicates that the descriptor is a string descriptor. */
-  DTYPE_Interface = 0x04, /**< Indicates that the descriptor is an interface descriptor. */
-  DTYPE_Endpoint = 0x05, /**< Indicates that the descriptor is an endpoint descriptor. */
-  DTYPE_DeviceQualifier = 0x06, /**< Indicates that the descriptor is a device qualifier
- descriptor. */
-  DTYPE_Other = 0x07, /**< Indicates that the descriptor is of other type. */
-  DTYPE_InterfacePower = 0x08, /**< Indicates that the descriptor is an interface power
- descriptor. */
-  DTYPE_InterfaceAssociation = 0x0B, /**< Indicates that the descriptor is an interface
- association descriptor. */
-  DTYPE_CSInterface = 0x24, /**< Indicates that the descriptor is a class specific interface
- descriptor. */
-  DTYPE_CSEndpoint = 0x25, /**< Indicates that the descriptor is a class specific endpoint
- descriptor. */
-};
+#define DTYPE_DEVICE 0x01 /* device descriptor */
+#define DTYPE_CONFIGURATION 0x02 /* configuration descriptor */
+#define DTYPE_STRING 0x03 /* string descriptor */
+#define DTYPE_INTERFACE 0x04 /* interface descriptor */
+#define DTYPE_ENDPOINT 0x05 /* endpoint descriptor */
+#define DTYPE_CS_INTERFACE 0x24 /* class specific interface descriptor */
 
 @ Enum for possible Class, Subclass and Protocol values of device and interface descriptors.
 
@@ -3705,45 +3686,37 @@ enum USB_Descriptor_ClassSubclassProtocol_t
 	                              */
 };
 
-@ \brief Standard USB Descriptor Header (LUFA naming conventions).
+@ Standard USB Descriptor Header (LUFA naming conventions).
 
 Type define for all descriptors' standard header, indicating the descriptor's length
 and type. This structure
 uses LUFA-specific element names to make each element's purpose clearer.
 
-\see \ref USB_StdDescriptor_Header_t for the version of this type with standard element names.
-
-\note Regardless of CPU architecture, these values should be stored as little endian.
+See |USB_StdDescriptor_Header_t| for the version of this type with standard element names.
 
 @<Header files@>=
 typedef struct
 {
-  uint8_t Size; /**< Size of the descriptor, in bytes. */
-  uint8_t Type; /**< Type of the descriptor, either a value in \ref USB_DescriptorTypes_t or
- a value
-	         *   given by the specific class.
-	         */
+  uint8_t Size; /* size of the descriptor, in bytes */
+  uint8_t Type; /* type of the descriptor, either a value in \.{DTYPE\_*} or
+    a value given by the specific class */
 } ATTR_PACKED USB_Descriptor_Header_t;
 
-@ \brief Standard USB Descriptor Header (USB-IF naming conventions).
+@ Standard USB Descriptor Header (USB-IF naming conventions).
 
 Type define for all descriptors' standard header, indicating the descriptor's length and
 type. This structure
 uses the relevant standard's given element names to ensure compatibility with the standard.
 
-\see \ref USB_Descriptor_Header_t for the version of this type with non-standard LUFA
+See |USB_Descriptor_Header_t| for the version of this type with non-standard LUFA
 specific element names.
-
-\note Regardless of CPU architecture, these values should be stored as little endian.
 
 @<Header files@>=
 typedef struct
 {
   uint8_t bLength; /**< Size of the descriptor, in bytes. */
-  uint8_t bDescriptorType; /**< Type of the descriptor, either a value in
- \ref USB_DescriptorTypes_t or a value
-                         *   given by the specific class.
-                         */
+  uint8_t bDescriptorType; /* type of the descriptor, either a value in
+  \.{DTYPE\_*} or a value given by the specific class */
 } ATTR_PACKED USB_StdDescriptor_Header_t;
 
 @ \brief Standard USB Device Descriptor (LUFA naming conventions).
@@ -3819,10 +3792,8 @@ LUFA specific element names.
 typedef struct
 {
 	uint8_t  bLength; /**< Size of the descriptor, in bytes. */
-	uint8_t  bDescriptorType; /**< Type of the descriptor, either a value in
- \ref USB_DescriptorTypes_t or a value
-                              *   given by the specific class.
-                              */
+	uint8_t  bDescriptorType; /* type of the descriptor, either a value in
+          \.{DTYPE\_*} or a value given by the specific class */
 	uint16_t bcdUSB; /**< BCD of the supported USB specification.
 	                  *
 	                  *   \see \ref VERSION_BCD() utility macro.
@@ -3906,10 +3877,8 @@ non-standard LUFA specific element names.
 typedef struct
 {
 	uint8_t  bLength; /**< Size of the descriptor, in bytes. */
-	uint8_t  bDescriptorType; /**< Type of the descriptor, either a value in
- \ref USB_DescriptorTypes_t or a value
-	                           *   given by the specific class.
-	                           */
+  uint8_t  bDescriptorType; /* type of the descriptor, either a value in
+    \.{DTYPE\_*} or a value given by the specific class */
 	uint16_t bcdUSB; /**< BCD of the supported USB specification.
 	                  *
 	                  *   \see \ref VERSION_BCD() utility macro.
@@ -3976,10 +3945,8 @@ specific element names.
 typedef struct
 {
 	uint8_t  bLength; /**< Size of the descriptor, in bytes. */
-	uint8_t  bDescriptorType; /**< Type of the descriptor, either a value in
- \ref USB_DescriptorTypes_t or a value
-	                           *   given by the specific class.
-	                           */
+  uint8_t  bDescriptorType; /* type of the descriptor, either a value in
+    \.{DTYPE\_*} or a value given by the specific class */
 	uint16_t wTotalLength; /**< Size of the configuration descriptor header,
                            *   and all sub descriptors inside the configuration.
                            */
@@ -4043,10 +4010,8 @@ specific element names.
 typedef struct
 {
 	uint8_t bLength; /**< Size of the descriptor, in bytes. */
-	uint8_t bDescriptorType; /**< Type of the descriptor, either a value in
- \ref USB_DescriptorTypes_t or a value
-	                          *   given by the specific class.
-	                          */
+  uint8_t bDescriptorType; /* type of the descriptor, either a value in
+    \.{DTYPE\_*} or a value given by the specific class */
 	uint8_t bInterfaceNumber; /**< Index of the interface in the current configuration. */
 	uint8_t bAlternateSetting; /**< Alternate setting for the interface number. The same
 	                            *   interface number can have multiple alternate settings
@@ -4126,10 +4091,8 @@ element names.
 typedef struct
 {
 	uint8_t bLength; /**< Size of the descriptor, in bytes. */
-	uint8_t bDescriptorType; /**< Type of the descriptor, either a value in
- \ref USB_DescriptorTypes_t or a value
-	                          *   given by the specific class.
-	                          */
+  uint8_t bDescriptorType; /* type of the descriptor, either a value in
+    \.{DTYPE\_*} or a value given by the specific class */
 	uint8_t bFirstInterface; /**< Index of the first associated interface. */
 	uint8_t bInterfaceCount; /**< Total number of associated interfaces. */
 	uint8_t bFunctionClass; /**< Interface class ID. */
@@ -4189,10 +4152,8 @@ element names.
 typedef struct
 {
 	uint8_t  bLength; /**< Size of the descriptor, in bytes. */
-	uint8_t  bDescriptorType; /**< Type of the descriptor, either a value in
- \ref USB_DescriptorTypes_t or a
-	                           *   value given by the specific class.
-	                           */
+  uint8_t  bDescriptorType; /* type of the descriptor, either a value in
+    \.{DTYPE\_*} or a value given by the specific class */
 	uint8_t  bEndpointAddress; /**< Logical address of the endpoint within the
  device for the current
 	                            *   configuration, including direction mask.
@@ -4261,7 +4222,7 @@ typedef struct
 {
 	uint8_t bLength; /**< Size of the descriptor, in bytes. */
 	uint8_t bDescriptorType; /**< Type of the descriptor, either a value in
- \ref USB_DescriptorTypes_t
+  \.{DTYPE\_*}
 	                          *   or a value given by the specific class.
 	                          */
 	uint16_t bString[]; /**< String data, as unicode characters (alternatively, string
@@ -4535,7 +4496,7 @@ typedef struct
 {
   uint8_t  bFunctionLength; /**< Size of the descriptor, in bytes. */
   uint8_t  bDescriptorType; /**< Type of the descriptor, either a value in
- \ref USB_DescriptorTypes_t or a value
+    \.{DTYPE\_*} or a value
                            *   given by the specific class.
                            */
   uint8_t  bDescriptorSubType; /**< Sub type value used to distinguish between CDC
@@ -4594,7 +4555,7 @@ typedef struct
 {
 	uint8_t bFunctionLength; /**< Size of the descriptor, in bytes. */
 	uint8_t bDescriptorType; /**< Type of the descriptor, either a value in
- \ref USB_DescriptorTypes_t or a value
+  \.{DTYPE\_*} or a value
 	                          *   given by the specific class.
 	                          */
 	uint8_t bDescriptorSubType; /**< Sub type value used to distinguish between CDC
@@ -4650,7 +4611,7 @@ typedef struct
 {
 	uint8_t bFunctionLength; /**< Size of the descriptor, in bytes. */
 	uint8_t bDescriptorType; /**< Type of the descriptor, either a value in
- \ref USB_DescriptorTypes_t or a value
+  \.{DTYPE\_*} or a value
 	                          *   given by the specific class.
 	                          */
 	uint8_t bDescriptorSubType; /**< Sub type value used to distinguish between CDC
