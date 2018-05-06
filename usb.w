@@ -3643,49 +3643,6 @@ See the USB specification for more details on the possible Endpoint usage attrib
 #define DTYPE_ENDPOINT 0x05 /* endpoint descriptor */
 #define DTYPE_CS_INTERFACE 0x24 /* class specific interface descriptor */
 
-@ Enum for possible Class, Subclass and Protocol values of device and interface descriptors.
-
-@<Header files@>=
-enum USB_Descriptor_ClassSubclassProtocol_t
-{
-  USB_CSCP_NoDeviceClass = 0x00, /**< Descriptor Class value indicating that the device does
- not belong
-                                   *   to a particular class at the device level.
-                                   */
-  USB_CSCP_NoDeviceSubclass = 0x00, /**< Descriptor Subclass value indicating that the device
- does not belong
-                                     *   to a particular subclass at the device level.
-                                     */
-  USB_CSCP_NoDeviceProtocol = 0x00, /**< Descriptor Protocol value indicating that the device
- does not belong
-                                      *   to a particular protocol at the device level.
-                                      */
-  USB_CSCP_VendorSpecificClass = 0xFF, /**< Descriptor Class value indicating that the
- device/interface belongs
-                                        *   to a vendor specific class.
-                                        */
-  USB_CSCP_VendorSpecificSubclass = 0xFF, /**< Descriptor Subclass value indicating that the
- device/interface belongs
-	                                   *   to a vendor specific subclass.
-	                                   */
-  USB_CSCP_VendorSpecificProtocol = 0xFF, /**< Descriptor Protocol value indicating that the
- device/interface belongs
-                                        *   to a vendor specific protocol.
-                                        */
-  USB_CSCP_IADDeviceClass = 0xEF, /**< Descriptor Class value indicating that the device
- belongs to the
-				    *   Interface Association Descriptor class.
-				    */
-  USB_CSCP_IADDeviceSubclass = 0x02, /**< Descriptor Subclass value indicating that the
- device belongs to the
-                                      *   Interface Association Descriptor subclass.
-                                      */
-  USB_CSCP_IADDeviceProtocol = 0x01, /**< Descriptor Protocol value indicating that the device
- belongs to the
-	                              *   Interface Association Descriptor protocol.
-	                              */
-};
-
 @ Standard USB Descriptor Header (LUFA naming conventions).
 
 Type define for all descriptors' standard header, indicating the descriptor's length
