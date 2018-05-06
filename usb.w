@@ -578,11 +578,6 @@ number of device configurations.
 The descriptor is read out by the USB host when the enumeration
 process begins.
 
-@d CDC_CSCP_NO_SPECIFIC_SUBCLASS 0x00 /* Subclass value indicating that the device or interface
-  belongs to no specific subclass of the CDC class */
-@d CDC_CSCP_NO_SPECIFIC_PROTOCOL 0x00 /* Protocol value indicating that the device or interface
-   belongs to no specific protocol of the CDC class */
-
 @<Global...@>=
 const USB_Descriptor_Device_t PROGMEM DeviceDescriptor = {@|
   @<Initialize header of USB device descriptor@>, @|
@@ -682,12 +677,7 @@ typedef struct {
   USB_CONFIG_POWER_MA(100)@/
 }
 
-@ @d CDC_CSCP_CDC_CLASS 0x02 /* Class value indicating that the device or interface
-    belongs to the CDC class */
-@d CDC_CSCP_ACM_SUBCLASS 0x02 /* Subclass value indicating
-    that the device or interface belongs to the Abstract Control Model CDC subclass */
-@d CDC_CSCP_AT_COMMAND_PROTOCOL 0x01 /* Protocol value indicating that the device
-    or interface belongs to the AT Command protocol of the CDC class */
+@
 
 @<Initialize |CDC_CCI_Interface|@>= {@|
   {@, sizeof (USB_Descriptor_Interface_t), DTYPE_INTERFACE @,},@|
@@ -741,12 +731,8 @@ typedef struct {
   0xFF @/
 }
 
-@ @d CDC_CSCP_NO_DATA_PROTOCOL 0x00 /* Protocol value indicating
-     that the device or interface belongs to no specific protocol of the CDC data class */
-@d CDC_CSCP_NO_DATA_SUBCLASS 0x00 /* Subclass value indicating
-    that the device or interface belongs to no specific subclass of the CDC data class */
-@d CDC_CSCP_CDC_DATA_CLASS 0x0A /* Class value indicating that the device or interface
-    belongs to the CDC Data class */
+@
+
 @<Initialize |CDC_DCI_Interface|@>= {@|
   {@, sizeof (USB_Descriptor_Interface_t), DTYPE_INTERFACE @,},@|
   INTERFACE_ID_CDC_DCI,@|
@@ -3956,7 +3942,7 @@ typedef struct {
     the current configuration, including direction mask.
 	                           */
   uint8_t  Attributes; /**< Endpoint attributes, comprised of a mask of the endpoint
-    type (\.{EP\_TYPE\_*}) and attributes (ENDPOINT_ATTR_*) masks */
+    type (\.{EP\_TYPE\_*}) and attributes (\.{ENDPOINT\_ATTR\_*}) masks */
   uint16_t EndpointSize; /**< Size of the endpoint bank, in bytes. This indicates the
     maximum packet size that the endpoint can receive at a time */
   uint8_t  PollingIntervalMS; /**< Polling interval in milliseconds for the endpoint
@@ -3983,7 +3969,7 @@ typedef struct
   uint8_t  bEndpointAddress; /**< Logical address of the endpoint within the
     device for the current configuration, including direction mask */
   uint8_t  bmAttributes; /**< Endpoint attributes, comprised of a mask of the
-    endpoint type (\.{EP\_TYPE\_*}) and attributes (ENDPOINT_ATTR_*) masks */
+    endpoint type (\.{EP\_TYPE\_*}) and attributes (\.{ENDPOINT\_ATTR\_*}) masks */
   uint16_t wMaxPacketSize; /**< Size of the endpoint bank, in bytes. This indicates
     the maximum packet size that the endpoint can receive at a time */
   uint8_t  bInterval; /**< Polling interval in milliseconds for the endpoint if it is
@@ -4049,130 +4035,113 @@ typedef struct
 } ATTR_PACKED USB_StdDescriptor_String_t;
 
 @** CDC Class Driver module. This module contains an
-implementation of the USB CDC-ACM class Virtual Serial
-Ports, for Device USB mode.
-Note: the CDC class can instead be implemented manually via the low-level LUFA APIs.
+implementation of the USB CDC-ACM class Virtual Serial Ports.
+
+Note: the CDC class can instead be implemented manually via the low-level APIs.
+
 @* CDCClassCommon.
+Common definitions and declarations for the USB CDC Class driver.
+Constants, Types and Enum definitions for the USB CDC Class.
+
+@*1 Virtual Control Line Masks.
+
+@ Mask for the DTR handshake line for use with the |CDC_REQ_SetControlLineState|
+class-specific request
+from the host, to indicate that the DTR line state should be high.
+
 @<Header files@>=
-/** Common definitions and declarations for the library USB CDC Class driver.
- *  Constants, Types and Enum definitions that are common to both Device and Host modes for the USB
- *  CDC Class.
- */
-
-/** \name Virtual Control Line Masks */
-
-/** Mask for the DTR handshake line for use with the \ref CDC_REQ_SetControlLineState
- class-specific request
- *  from the host, to indicate that the DTR line state should be high.
- */
 #define CDC_CONTROL_LINE_OUT_DTR         (1 << 0)
 
-/** Mask for the RTS handshake line for use with the \ref CDC_REQ_SetControlLineState
- class-specific request
- *  from the host, to indicate that the RTS line state should be high.
- */
+@ Mask for the RTS handshake line for use with the |CDC_REQ_SetControlLineState|
+class-specific request
+from the host, to indicate that the RTS line state should be high.
+
+@<Header files@>=
 #define CDC_CONTROL_LINE_OUT_RTS         (1 << 1)
 
-/** Mask for the DCD handshake line for use with the \ref CDC_NOTIF_SerialState class-specific
- notification
- *  from the device to the host, to indicate that the DCD line state is currently high.
- */
+@ Mask for the DCD handshake line for use with the |CDC_NOTIF_SerialState| class-specific
+notification
+from the device to the host, to indicate that the DCD line state is currently high.
+
+@<Header files@>=
 #define CDC_CONTROL_LINE_IN_DCD          (1 << 0)
 
-/** Mask for the DSR handshake line for use with the \ref CDC_NOTIF_SerialState class-specific
- notification
- *  from the device to the host, to indicate that the DSR line state is currently high.
- */
+@ Mask for the DSR handshake line for use with the |CDC_NOTIF_SerialState| class-specific
+notification
+from the device to the host, to indicate that the DSR line state is currently high.
+
+@<Header files@>=
 #define CDC_CONTROL_LINE_IN_DSR          (1 << 1)
 
-/** Mask for the BREAK handshake line for use with the \ref CDC_NOTIF_SerialState class-specific
- notification
- *  from the device to the host, to indicate that the BREAK line state is currently high.
- */
+@ Mask for the BREAK handshake line for use with the |CDC_NOTIF_SerialState| class-specific
+notification
+from the device to the host, to indicate that the BREAK line state is currently high.
+
+@<Header files@>=
 #define CDC_CONTROL_LINE_IN_BREAK        (1 << 2)
 
-/** Mask for the RING handshake line for use with the \ref CDC_NOTIF_SerialState class-specific
- notification
- *  from the device to the host, to indicate that the RING line state is currently high.
- */
+@ Mask for the RING handshake line for use with the |CDC_NOTIF_SerialState| class-specific
+notification
+from the device to the host, to indicate that the RING line state is currently high.
+
+@<Header files@>=
 #define CDC_CONTROL_LINE_IN_RING         (1 << 3)
 
-/** Mask for use with the \ref CDC_NOTIF_SerialState class-specific notification from the device
- to the host,
- *  to indicate that a framing error has occurred on the virtual serial port.
- */
+@ Mask for use with the |CDC_NOTIF_SerialState| class-specific notification from the device
+to the host, to indicate that a framing error has occurred on the virtual serial port.
+
+@<Header files@>=
 #define CDC_CONTROL_LINE_IN_FRAMEERROR   (1 << 4)
 
-/** Mask for use with the \ref CDC_NOTIF_SerialState class-specific notification from the device
- to the host,
- *  to indicate that a parity error has occurred on the virtual serial port.
- */
+@ Mask for use with the |CDC_NOTIF_SerialState| class-specific notification from the device
+to the host, to indicate that a parity error has occurred on the virtual serial port.
+
+@<Header files@>=
 #define CDC_CONTROL_LINE_IN_PARITYERROR  (1 << 5)
 
-/** Mask for use with the \ref CDC_NOTIF_SerialState class-specific notification from the device
- to the host,
- *  to indicate that a data overrun error has occurred on the virtual serial port.
- */
+@ Mask for use with the |CDC_NOTIF_SerialState| class-specific notification from the device
+to the host, to indicate that a data overrun error has occurred on the virtual serial port.
+
+@<Header files@>=
 #define CDC_CONTROL_LINE_IN_OVERRUNERROR (1 << 6)
 
-/** Macro to define a CDC class-specific functional descriptor. CDC functional descriptors have a
- *  uniform structure but variable sized data payloads, thus cannot be represented accurately by
- *  a single \c typedef \c struct. A macro is used instead so that functional descriptors
- can be created
- *  easily by specifying the size of the payload. This allows \c sizeof() to work correctly.
- *
- *  \param[in] DataSize  Size in bytes of the CDC functional descriptor's data payload.
- */
+@ Macro to define a CDC class-specific functional descriptor. CDC functional descriptors have a
+uniform structure but variable sized data payloads, thus cannot be represented accurately by
+a single \c typedef \c struct. A macro is used instead so that functional descriptors
+can be created
+easily by specifying the size of the payload. This allows \c sizeof() to work correctly.
+
+|DataSize| -- size in bytes of the CDC functional descriptor's data payload.
+
+@<Header files@>=
 #define CDC_FUNCTIONAL_DESCRIPTOR(DataSize)        \
-     struct                                        \
-     {                                             \
+     struct {                                      \
           USB_Descriptor_Header_t Header;          \
-	      uint8_t                 SubType;         \
+	  uint8_t                 SubType;         \
           uint8_t                 Data[DataSize];  \
      }
 
-/** Enum for possible Class, Subclass and Protocol values of device and interface descriptors
- relating to the CDC
- *  device class.
- */
-enum CDC_Descriptor_ClassSubclassProtocol_t
-{
-  CDC_CSCP_CDCClass = 0x02, /**< Descriptor Class value indicating that the device or interface
-	                                         *   belongs to the CDC class.
-	                                         */
-  CDC_CSCP_NoSpecificSubclass = 0x00, /**< Descriptor Subclass value indicating that the
- device or interface
-	                                *   belongs to no specific subclass of the CDC class.
-	                                */
-  CDC_CSCP_ACMSubclass = 0x02, /**< Descriptor Subclass value indicating that the device or
- interface
-			        *   belongs to the Abstract Control Model CDC subclass.
-			        */
-  CDC_CSCP_ATCommandProtocol = 0x01, /**< Descriptor Protocol value indicating that the device
- or interface
-	                              *   belongs to the AT Command protocol of the CDC class.
-	                              */
-  CDC_CSCP_NoSpecificProtocol = 0x00, /**< Descriptor Protocol value indicating that the device
- or interface
-	                               *   belongs to no specific protocol of the CDC class.
-	                               */
-  CDC_CSCP_VendorSpecificProtocol = 0xFF, /**< Descriptor Protocol value indicating that the
- device or interface
-	                                   *   belongs to a vendor-specific protocol of the CDC class.
-	                                   */
-  CDC_CSCP_CDCDataClass = 0x0A, /**< Descriptor Class value indicating that the device or interface
-			         *   belongs to the CDC Data class.
-			         */
-  CDC_CSCP_NoDataSubclass = 0x00, /**< Descriptor Subclass value indicating that the device or
- interface
-                                   *   belongs to no specific subclass of the CDC data class.
-                                   */
-  CDC_CSCP_NoDataProtocol = 0x00, /**< Descriptor Protocol value indicating that the device
- or interface
-                                  *   belongs to no specific protocol of the CDC data class.
-                                  */
-};
+@ Possible Class, Subclass and Protocol values of device and interface descriptors
+relating to the CDC device class.
 
+@<Header files@>=
+#define CDC_CSCP_CDC_CLASS 0x02 /* device or interface belongs to the CDC class */
+#define CDC_CSCP_NO_SPECIFIC_SUBCLASS 0x00 /* device or interface belongs to no specific
+    subclass of the CDC class */
+#define CDC_CSCP_ACM_SUBCLASS 0x02 /* device or interface belongs to the
+    Abstract Control Model CDC subclass */
+#define CDC_CSCP_AT_COMMAND_PROTOCOL 0x01 /* device
+    or interface belongs to the AT Command protocol of the CDC class */
+#define CDC_CSCP_NO_SPECIFIC_PROTOCOL 0x00 /* device
+    or interface belongs to no specific protocol of the CDC class */
+#define CDC_CSCP_CDC_DATA_CLASS 0x0A /* device or interface
+			       belongs to the CDC Data class */
+#define CDC_CSCP_NO_DATA_SUBCLASS 0x00 /* device or interface belongs to no specific subclass
+  of the CDC data class */
+#define CDC_CSCP_NO_DATA_PROTOCOL 0x00 /* device or interface
+                                  belongs to no specific protocol of the CDC data class */
+
+@ @<Header files@>=
 /** Enum for the CDC class specific control requests that can be issued by the USB bus host. */
 enum CDC_ClassRequests_t
 {
