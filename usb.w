@@ -1459,6 +1459,26 @@ uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 	return ENDPOINT_READYWAIT_NoError;
 }
 
+@ Reads a byte of data from the host. If no data is waiting to be read of if a USB host is
+not connected, the function
+returns a negative value. The \ref CDC_Device_BytesReceived() function may be queried in
+advance to determine how many
+bytes are currently buffered in the CDC interface's data receive endpoint bank, and thus how
+many repeated calls to this
+function which are guaranteed to succeed.
+
+This function must only be called when the Device state machine is in the
+|DEVICE_STATE_CONFIGURED| state or the call will fail.
+
+|CDCInterfaceInfo| -- pointer to a structure containing a CDC Class
+configuration and state.
+
+Returns next received byte from the host, or a negative value if no data received.
+
+@<Func...@>=
+int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
+  ATTR_NON_NULL_PTR_ARG(1);
+
 @ @c
 int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
@@ -5564,26 +5584,6 @@ void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const C
  */
 void EVENT_CDC_Device_BreakSent(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                                const uint8_t Duration) ATTR_CONST ATTR_NON_NULL_PTR_ARG(1);
-
-/** Reads a byte of data from the host. If no data is waiting to be read of if a USB host is
- not connected, the function
- *  returns a negative value. The \ref CDC_Device_BytesReceived() function may be queried in
- advance to determine how many
- *  bytes are currently buffered in the CDC interface's data receive endpoint bank, and thus how
- many repeated calls to this
- *  function which are guaranteed to succeed.
- *
- *  \pre This function must only be called when the Device state machine is in the
- \ref DEVICE_STATE_CONFIGURED state or
- *       the call will fail.
- *
- *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class
- configuration and state.
- *
- *  \return Next received byte from the host, or a negative value if no data received.
- */
-int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
- ATTR_NON_NULL_PTR_ARG(1);
 
 /** Flushes any data waiting to be sent, ensuring that the send buffer is cleared.
  *
