@@ -1503,32 +1503,6 @@ int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInf
 }
 
 @ @c
-void CDC_Device_SendControlLineStateChange(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
-{
-	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
- !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
-	  return;
-
-	Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.NotificationEndpoint.Address);
-
-	USB_Request_Header_t Notification = (USB_Request_Header_t)
-		{
-			.bmRequestType = (REQDIR_DEVICETOHOST | REQTYPE_CLASS | REQREC_INTERFACE),
-			.bRequest      = CDC_NOTIF_SerialState,
-			.wValue        = 0,
-			.wIndex        = 0,
-			.wLength       =
- sizeof CDCInterfaceInfo->State.ControlLineStates.DeviceToHost,
-		};
-
-	Endpoint_Write_Stream_LE(&Notification, sizeof(USB_Request_Header_t), NULL);
-	Endpoint_Write_Stream_LE(&CDCInterfaceInfo->State.ControlLineStates.DeviceToHost,
-	                         sizeof(CDCInterfaceInfo->State.ControlLineStates.DeviceToHost),
-	                         NULL);
-	@<Clear IN packet on endpoint@>@;
-}
-
-@ @c
 void CDC_Device_CreateStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                              FILE* const Stream)
 {
@@ -1885,51 +1859,8 @@ UECONX |= (1 << RSTDT);
 
 @* Endpoint data stream transmission and reception management for the AVR8 microcontrollers.
 
-@ @c
-uint8_t Endpoint_Write_Stream_LE(const void* const Buffer,
-                            uint16_t Length,
-                            uint16_t* const BytesProcessed)
-{
-	uint8_t* DataStream      = ((uint8_t*)Buffer + 0);
-	uint16_t BytesInTransfer = 0;
-	uint8_t  ErrorCode;
-
-	if ((ErrorCode = Endpoint_WaitUntilReady()))
-	  return ErrorCode;
-
-	if (BytesProcessed != NULL)
-	{
-		Length -= *BytesProcessed;
-		DataStream += *BytesProcessed;
-	}
-
-	while (Length)
-	{
-		if (!@<Read-write is allowed for endpoint@>) {
-			@<Clear IN packet on endpoint@>@;
-
-			if (BytesProcessed != NULL)
-			{
-				*BytesProcessed += BytesInTransfer;
-				return ENDPOINT_RWSTREAM_IncompleteTransfer;
-			}
-
-			if ((ErrorCode = Endpoint_WaitUntilReady()))
-			  return ErrorCode;
-		}
-		else
-		{
-			Endpoint_Write_8(*DataStream);
-			DataStream += 1;
-			Length--;
-			BytesInTransfer++;
-		}
-	}
-
-	return ENDPOINT_RWSTREAM_NoError;
-}
-
-@ @c
+@ xxx
+@c
 uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
                             uint16_t Length)
 {
@@ -2026,8 +1957,7 @@ uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer, uint16_t Length)
 	return ENDPOINT_RWCSTREAM_NoError;
 }
 
-@ xxx
-@c
+@ @c
 uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
                             uint16_t Length)
 {
@@ -3506,68 +3436,6 @@ enum Endpoint_ControlStream_RW_ErrorCodes_t
  */
 
 @*4 Stream functions for RAM source/destination data.
-
-@ Writes the given number of bytes to the endpoint from the given buffer in little endian,
-sending full packets to the host as needed. The last packet filled is not automatically sent;
-the user is responsible for manually sending the last written packet to the host via the
-|@<Clear IN packet on endpoint@>| macro.
-
-If the BytesProcessed parameter is \c NULL, the entire stream transfer is attempted at once,
-failing or succeeding as a single unit. If the BytesProcessed parameter points to a valid
-storage location, the transfer will instead be performed as a series of chunks. Each time
-the endpoint bank becomes full while there is still data to process (and after the current
-packet transmission has been initiated) the BytesProcessed location will be updated with the
-total number of bytes processed in the stream, and the function will exit with an error code of
-\ref ENDPOINT_RWSTREAM_IncompleteTransfer. This allows for any abort checking to be performed
-in the user code - to continue the transfer, call the function again with identical parameters
-and it will resume until the BytesProcessed value reaches the total transfer length.
-
- *  <b>Single Stream Transfer Example:</b>
- *  \code
- *  uint8_t DataStream[512];
- *  uint8_t ErrorCode;
- *
- *  if ((ErrorCode = Endpoint_Write_Stream_LE(DataStream, sizeof(DataStream),
- *                                            NULL)) != ENDPOINT_RWSTREAM_NoError)
- *  {
- *       // Stream failed to complete - check ErrorCode here
- *  }
- *  \endcode
- *
- *  <b>Partial Stream Transfers Example:</b>
- *  \code
- *  uint8_t  DataStream[512];
- *  uint8_t  ErrorCode;
- *  uint16_t BytesProcessed;
- *
- *  BytesProcessed = 0;
- *  while ((ErrorCode = Endpoint_Write_Stream_LE(DataStream, sizeof(DataStream),
- *                                 &BytesProcessed)) == ENDPOINT_RWSTREAM_IncompleteTransfer)
- *  {
- *      // Stream not yet complete - do other actions here, abort if required
- *  }
- *
- *  if (ErrorCode != ENDPOINT_RWSTREAM_NoError)
- *  {
- *      // Stream failed to complete - check ErrorCode here
- *  }
- *  \endcode
- *
- *  \note This routine should not be used on CONTROL type endpoints.
- *
- *  \param[in] Buffer          Pointer to the source data buffer to read from.
- *  \param[in] Length          Number of bytes to read for the currently selected endpoint
- into the buffer.
- *  \param[in] BytesProcessed  Pointer to a location where the total number of bytes processed
- in the current
- *                             transaction should be updated, \c NULL if the entire stream
- should be written at once.
- *
-Returns a \.{ENDPOINT\_RWSTREAM\_*} value.
-
-@<Header files@>=
-uint8_t Endpoint_Write_Stream_LE(const void* const Buffer, uint16_t Length,
-                            uint16_t* const BytesProcessed) ATTR_NON_NULL_PTR_ARG(1);
 
 @ Writes the given number of bytes to the CONTROL type endpoint from the given buffer in
  little endian,
@@ -5124,8 +4992,7 @@ typedef struct
 			    */
     uint16_t DeviceToHost; /**< Control line states from the device to host, as a set of
  \c CDC_CONTROL_LINE_IN_*
-		    *   masks - to notify the host of changes to these values, call the
-		    *   \ref CDC_Device_SendControlLineStateChange() function.
+		    *   masks.
 		    */
   } ControlLineStates; /**< Current states of the virtual serial port's control lines between
  the device and host. */
@@ -5231,24 +5098,6 @@ void EVENT_CDC_Device_BreakSent(USB_ClassInfo_CDC_Device_t* const CDCInterfaceIn
  *  \return A value from the |Endpoint_WaitUntilReady_ErrorCodes_t| enum.
  */
 uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
- ATTR_NON_NULL_PTR_ARG(1);
-
-/** Sends a Serial Control Line State Change notification to the host. This should be called
- when the virtual serial
- *  control lines (DCD, DSR, etc.) have changed states, or to give BREAK notifications to
- the host. Line states persist
- *  until they are cleared via a second notification. This should be called each time the CDC
- class driver's
- *  \c ControlLineStates.DeviceToHost value is updated to push the new states to the USB host.
- *
- *  \pre This function must only be called when the Device state machine is in the
- \ref DEVICE_STATE_CONFIGURED state or
- *       the call will fail.
- *
- *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class
- configuration and state.
- */
-void CDC_Device_SendControlLineStateChange(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
  ATTR_NON_NULL_PTR_ARG(1);
 
 /** Creates a standard character stream for the given CDC Device instance so that it can be
