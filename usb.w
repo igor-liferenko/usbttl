@@ -1222,7 +1222,7 @@ uint8_t Endpoint_WaitUntilReady(void)
 		  return ENDPOINT_READYWAIT_DeviceDisconnected;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_Suspended)
 		  return ENDPOINT_READYWAIT_BusSuspended;
-		else if (Endpoint_IsStalled())
+		else if (@<Endpoint is istalled@>)
 		  return ENDPOINT_READYWAIT_EndpointStalled;
 
 		uint16_t CurrentFrameNumber = USB_Device_GetFrameNumber();
@@ -1657,8 +1657,8 @@ void USB_Device_ProcessControlRequest(void)
   }
 
   if (@<Endpoint has received a SETUP packet@>) {
-	@<Clear a received SETUP packet on endpoint@>@;
-	Endpoint_StallTransaction();
+    @<Clear a received SETUP packet on endpoint@>@;
+    @<Stall transaction on endpoint@>@;
   }
 }
 
@@ -1805,7 +1805,7 @@ void USB_Device_GetStatus(void)
 
 			Endpoint_SelectEndpoint(EndpointIndex);
 
-			CurrentStatus = Endpoint_IsStalled();
+			CurrentStatus = @<Endpoint is istalled@>;
 
 			Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
 
@@ -1850,9 +1850,9 @@ void USB_Device_ClearSetFeature(void)
 
         if (@<Endpoint is enabled@>) {
           if (USB_ControlRequest.bRequest == REQ_SetFeature)
-            Endpoint_StallTransaction();
+            @<Stall transaction on endpoint@>@;
           else {
-            Endpoint_ClearStall();
+            @<Clear STALL condition on endpoint@>@;
             Endpoint_ResetEndpoint(EndpointIndex);
             Endpoint_ResetDataToggle();
           }
@@ -3333,47 +3333,30 @@ the endpoint for the next packet and switching to the alternative endpoint bank 
 @<Clear OUT packet on endpoint@>=
 UEINTX &= ~((1 << RXOUTI) | (1 << FIFOCON));
 
+@ Stalls the current endpoint, indicating to the host that a logical problem occurred with the
+indicated endpoint and that the current transfer sequence should be aborted. This provides a
+way for devices to indicate invalid commands to the host so that the current transfer can be
+aborted and the host can begin its own recovery sequence.
+
+The currently selected endpoint remains stalled until either the
+|@<Clear STALL condition on endpoint@>| macro
+is called, or the host issues a CLEAR FEATURE request to the device for the currently selected
+endpoint.
+
+@<Stall transaction on endpoint@>=
+UECONX |= (1 << STALLRQ);
+
+@ Clears the STALL condition on the currently selected endpoint.
+
+@<Clear STALL condition on endpoint@>=
+UECONX |= (1 << STALLRQC);
+
+@ Determines if the currently selected endpoint is stalled.
+
+@<Endpoint is istalled@>=
+(UECONX & (1 << STALLRQ))
+
 @ @<Header files@>=
-/** Stalls the current endpoint, indicating to the host that a logical problem occurred with the
- *  indicated endpoint and that the current transfer sequence should be aborted. This provides a
- *  way for devices to indicate invalid commands to the host so that the current transfer can be
- *  aborted and the host can begin its own recovery sequence.
- *
- *  The currently selected endpoint remains stalled until either the \ref Endpoint_ClearStall()
- macro
- *  is called, or the host issues a CLEAR FEATURE request to the device for the currently selected
- *  endpoint.
- *
- *  \ingroup Group_EndpointPacketManagement_AVR8
- */
-inline void Endpoint_StallTransaction(void) ATTR_ALWAYS_INLINE;
-inline void Endpoint_StallTransaction(void)
-{
-	UECONX |= (1 << STALLRQ);
-}
-
-/** Clears the STALL condition on the currently selected endpoint.
- *
- *  \ingroup Group_EndpointPacketManagement_AVR8
- */
-inline void Endpoint_ClearStall(void) ATTR_ALWAYS_INLINE;
-inline void Endpoint_ClearStall(void)
-{
-	UECONX |= (1 << STALLRQC);
-}
-
-/** Determines if the currently selected endpoint is stalled, \c false otherwise.
- *
- *  \ingroup Group_EndpointPacketManagement_AVR8
- *
- *  \return Boolean \c true if the currently selected endpoint is stalled, \c false otherwise.
- */
-inline bool Endpoint_IsStalled(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline bool Endpoint_IsStalled(void)
-{
-	return ((UECONX & (1 << STALLRQ)) ? true : false);
-}
-
 /** Resets the data toggle of the currently selected endpoint. */
 inline void Endpoint_ResetDataToggle(void) ATTR_ALWAYS_INLINE;
 inline void Endpoint_ResetDataToggle(void)
