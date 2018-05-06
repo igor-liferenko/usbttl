@@ -893,9 +893,6 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 @* USB Event management definitions.
 
 @ @c
-void EVENT_USB_Device_Suspend(void)
-{
-}
 void EVENT_USB_Device_WakeUp(void)
 {
 }
@@ -983,7 +980,6 @@ ISR(USB_GEN_vect, ISR_BLOCK)
     @<USB PLL off@>@;
 
     USB_DeviceState = DEVICE_STATE_SUSPENDED;
-    EVENT_USB_Device_Suspend();
   }
 
   if (USB_INT_HasOccurred(USB_INT_WAKEUPI) && USB_INT_IsEnabled(USB_INT_WAKEUPI)) {
@@ -4463,26 +4459,6 @@ void EVENT_USB_Device_ControlRequest(void);
  */
 void EVENT_USB_Device_ConfigurationChanged(void);
 
-/** Event for USB suspend. This event fires when a the USB host suspends the device by halting its
- *  transmission of Start Of Frame pulses to the device. This is generally hooked in order to move
- *  the device over to a low power state until the host wakes up the device. If the USB interface
- is
- *  enumerated with the \ref USB_OPT_AUTO_PLL option set, the library will automatically suspend
- the
- *  USB PLL before the event is fired to save power.
- *
- *  \note This event does not exist if the \c USB_HOST_ONLY token is supplied to the compiler (see
- *        \ref Group_USBManagement documentation).
- *        \n\n
- *
- *  \note This event does not exist on the microcontrollers with limited USB VBUS sensing abilities
- *        when the \c NO_LIMITED_CONTROLLER_CONNECT compile time token is not set - see
- *        \ref EVENT_USB_Device_Disconnect.
- *
- *  \see \ref EVENT_USB_Device_WakeUp() event for accompanying Wake Up event.
- */
-void EVENT_USB_Device_Suspend(void) ATTR_CONST;
-
 /** Event for USB wake up. This event fires when a the USB interface is suspended while in device
  *  mode, and the host wakes up the device by supplying Start Of Frame pulses. This is generally
  *  hooked to pull the user application out of a low power state and back into normal operating
@@ -4497,7 +4473,6 @@ void EVENT_USB_Device_Suspend(void) ATTR_CONST;
  *        when the \c NO_LIMITED_CONTROLLER_CONNECT compile time token is not set - see
  *        \ref EVENT_USB_Device_Disconnect.
  *
- *  \see \ref EVENT_USB_Device_Suspend() event for accompanying Suspend event.
  */
 void EVENT_USB_Device_WakeUp(void) ATTR_CONST;
 
