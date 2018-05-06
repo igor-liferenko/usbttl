@@ -1854,7 +1854,7 @@ void USB_Device_ClearSetFeature(void)
           else {
             @<Clear STALL condition on endpoint@>@;
             Endpoint_ResetEndpoint(EndpointIndex);
-            Endpoint_ResetDataToggle();
+            @<Reset data toggle of endpoint@>@;
           }
         }
       }
@@ -1876,7 +1876,12 @@ void USB_Device_ClearSetFeature(void)
 Returns true if the currently selected endpoint is enabled, false otherwise.
 
 @<Endpoint is enabled@>=
-((UECONX & (1 << EPEN)) ? true : false) 
+(UECONX & (1 << EPEN))
+
+@ Resets the data toggle of the currently selected endpoint.
+
+@<Reset data toggle of endpoint@>=
+UECONX |= (1 << RSTDT);
 
 @* Endpoint data stream transmission and reception management for the AVR8 microcontrollers.
 
@@ -3357,13 +3362,6 @@ UECONX |= (1 << STALLRQC);
 (UECONX & (1 << STALLRQ))
 
 @ @<Header files@>=
-/** Resets the data toggle of the currently selected endpoint. */
-inline void Endpoint_ResetDataToggle(void) ATTR_ALWAYS_INLINE;
-inline void Endpoint_ResetDataToggle(void)
-{
-	UECONX |= (1 << RSTDT);
-}
-
 /** Sets the direction of the currently selected endpoint.
  *
  *  \param[in] DirectionMask  New endpoint direction, as a \c ENDPOINT_DIR_* mask.
