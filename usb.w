@@ -896,9 +896,6 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 void EVENT_USB_Device_Suspend(void)
 {
 }
-void EVENT_USB_Device_StartOfFrame(void)
-{
-}
 void EVENT_USB_Device_WakeUp(void)
 {
 }
@@ -956,10 +953,8 @@ void USB_INT_ClearAllInterrupts(void)
 
 ISR(USB_GEN_vect, ISR_BLOCK)
 {
-  if (USB_INT_HasOccurred(USB_INT_SOFI) && USB_INT_IsEnabled(USB_INT_SOFI)) {
+  if (USB_INT_HasOccurred(USB_INT_SOFI) && USB_INT_IsEnabled(USB_INT_SOFI))
     USB_INT_Clear(USB_INT_SOFI);
-    EVENT_USB_Device_StartOfFrame();
-  }
 
   if (USB_INT_HasOccurred(USB_INT_VBUSTI) && USB_INT_IsEnabled(USB_INT_VBUSTI)) {
     USB_INT_Clear(USB_INT_VBUSTI);
@@ -3611,30 +3606,6 @@ the selected microcontroller model.
 #define INTERNAL_SERIAL_START_ADDRESS  0x0E
 
 @ @<Header files@>=
-/* Enables the device mode Start Of Frame events. When enabled, this causes the
-  \ref EVENT_USB_Device_StartOfFrame() event to fire once per millisecond, synchronized to the
- USB bus,
-  at the start of each USB frame when enumerated in device mode.
-
-  \note This function is not available when the \c NO_SOF_EVENTS compile time token is defined.
-*/
-inline void USB_Device_EnableSOFEvents(void) ATTR_ALWAYS_INLINE;
-inline void USB_Device_EnableSOFEvents(void)
-{
-	USB_INT_Enable(USB_INT_SOFI);
-}
-
-/* Disables the device mode Start Of Frame events. When disabled, this stops the firing of the
-  \ref EVENT_USB_Device_StartOfFrame() event when enumerated in device mode.
-
-  \note This function is not available when the \c NO_SOF_EVENTS compile time token is defined.
-*/
-inline void USB_Device_DisableSOFEvents(void) ATTR_ALWAYS_INLINE;
-inline void USB_Device_DisableSOFEvents(void)
-{
-	USB_INT_Disable(USB_INT_SOFI);
-}
-
 inline void USB_Device_GetSerialString(uint16_t* const UnicodeString) ATTR_NON_NULL_PTR_ARG(1);
 inline void USB_Device_GetSerialString(uint16_t* const UnicodeString)
 {
@@ -4627,25 +4598,6 @@ void EVENT_USB_Device_WakeUp(void) ATTR_CONST;
  */
 void EVENT_USB_Device_Reset(void) ATTR_CONST;
 
-/** Event for USB Start Of Frame detection, when enabled. This event fires at the start of each USB
- *  frame, once per millisecond, and is synchronized to the USB bus. This can be used as an
- accurate
- *  millisecond timer source when the USB bus is enumerated in device mode to a USB host.
- *
- *  This event is time-critical; it is run once per millisecond and thus long handlers will
- significantly
- *  degrade device performance. This event should only be enabled when needed to reduce
- device wake-ups.
- *
- *  \pre This event is not normally active - it must be manually enabled and disabled via the
- *       \ref USB_Device_EnableSOFEvents() and \ref USB_Device_DisableSOFEvents() commands
- after enumeration.
- *       \n\n
- *
- *  \note This event does not exist if the \c USB_HOST_ONLY token is supplied to the compiler (see
- *        \ref Group_USBManagement documentation).
- */
-void EVENT_USB_Device_StartOfFrame(void) ATTR_CONST;
 @* StdDescriptors.
 Common standard USB Descriptor definitions.
 Standard USB device descriptor defines and retrieval routines. This contains
