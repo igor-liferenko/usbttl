@@ -817,27 +817,16 @@ descriptors, or as defined in a class-specific standards.
 |DescriptorAddress| -- pointer to the descriptor in memory. This should be
 set by the routine to the address of the descriptor.
 
-|DescriptorMemorySpace| -- a value from the
-|USB_DescriptorMemorySpaces_t| enum to indicate the memory
-space in which the descriptor is stored.
-This parameter does not exist when one
-of the \.{USE\_*\_DESCRIPTORS} compile time options is used,
-or on architectures which use a unified address space.
-
-Note, that by default, the library expects all descriptors to be located in flash memory via
-the |PROGMEM| attribute.
-If descriptors should be located in RAM or EEPROM instead (to speed up access in
-the case of RAM, or to allow the descriptors to be changed dynamically at runtime) either the
-|USE_RAM_DESCRIPTORS| or the |USE_EEPROM_DESCRIPTORS| tokens may be defined in the project
-makefile and passed to the compiler by the -D switch.
+Note, that all descriptors are located in FLASH memory
+(i.e., not in RAM or EEPROM) via the |PROGMEM| attribute.
 
 Returns size in bytes of the descriptor if it exists, zero or |NO_DESCRIPTOR| otherwise.
 
 @<Func...@>=
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
                                     const uint16_t wIndex,
-                                    const void** const DescriptorAddress
-                                    ) ATTR_WARN_UNUSED_RESULT ATTR_NON_NULL_PTR_ARG(3);
+                                    const void** const DescriptorAddress)
+  ATTR_WARN_UNUSED_RESULT ATTR_NON_NULL_PTR_ARG(3);
 
 @ @dSTRING_ID_LANGUAGE 0 /* Supported Languages string descriptor
     ID (must be zero) */
@@ -3755,42 +3744,21 @@ enable remote wakeup.
 #define FEATURE_SELFPOWERED_ENABLED     (1 << 0)
 #define FEATURE_REMOTE_WAKEUP_ENABLED   (1 << 1)
 
-@* DeviceStandardReq.
-@<Header files@>=
-/** USB device standard request management.
- *
+@* USB device standard request management.
 This contains the function prototypes necessary for the processing of incoming standard
- control requests
- *  when the library is in USB device mode.
- */
+control requests.
 
-/** Enum for the possible descriptor memory spaces, for the \c MemoryAddressSpace parameter of the
- *  |CALLBACK_USB_GetDescriptor| function. This can be used when none of the
- \c USE_*_DESCRIPTORS
- *  compile time options are used, to indicate in which memory space the descriptor is stored.
- *
- *  \ingroup Group_Device
- */
-enum USB_DescriptorMemorySpaces_t
-{
-  MEMSPACE_FLASH    = 0, /**< Indicates the requested descriptor is located in FLASH memory. */
-  MEMSPACE_EEPROM   = 1, /**< Indicates the requested descriptor is located in EEPROM memory. */
-  MEMSPACE_RAM      = 2, /**< Indicates the requested descriptor is located in RAM memory. */
-};
+@ Indicates the currently set configuration number of the device. USB devices may have several
+different configurations which the host can select between; this indicates the currently
+selected value, or 0 if no configuration has been selected.
 
-/** Indicates the currently set configuration number of the device. USB devices may have several
- *  different configurations which the host can select between; this indicates the currently
- selected
- *  value, or 0 if no configuration has been selected.
- *
- *  \attention This variable should be treated as read-only in the user application, and never
- manually
- *             changed in value.
- *
- *  \ingroup Group_Device
- */
+This variable should be treated as read-only in the user application, and never
+manually changed in value.
+
+@<Global var...@>=
 uint8_t USB_Device_ConfigurationNumber;
 
+@ @<Header...@>=
 /** Indicates if the host is currently allowing the device to issue remote wakeup events. If this
  *  flag is cleared, the device should not issue remote wakeup events to the host.
  *
