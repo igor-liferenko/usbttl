@@ -3938,80 +3938,63 @@ typedef struct {
 	                     */
 } ATTR_PACKED USB_StdDescriptor_Interface_t;
 
-@ \brief Standard USB Endpoint Descriptor (LUFA naming conventions).
+@ Standard USB Endpoint Descriptor (LUFA naming conventions).
 
 Type define for a standard Endpoint Descriptor. This structure uses LUFA-specific element names
 to make each element's purpose clearer.
 
-\see \ref USB_StdDescriptor_Endpoint_t for the version of this type with standard element
+See |USB_StdDescriptor_Endpoint_t| for the version of this type with standard element
 names.
 
-\note Regardless of CPU architecture, these values should be stored as little endian.
+Regardless of CPU architecture, these values should be stored as little endian.
 
 @<Header files@>=
-typedef struct
-{
+typedef struct {
 	USB_Descriptor_Header_t Header; /**< Descriptor header, including type and size. */
 
-	uint8_t  EndpointAddress; /**< Logical address of the endpoint within the device for
- the current
-	                           *   configuration, including direction mask.
+  uint8_t  EndpointAddress; /**< Logical address of the endpoint within the device for
+    the current configuration, including direction mask.
 	                           */
-	uint8_t  Attributes; /**< Endpoint attributes, comprised of a mask of the endpoint
- type (EP_TYPE_*)
-	                      *   and attributes (ENDPOINT_ATTR_*) masks.
-	                      */
-	uint16_t EndpointSize; /**< Size of the endpoint bank, in bytes. This indicates the
- maximum packet
-	                        *   size that the endpoint can receive at a time.
-	                        */
-	uint8_t  PollingIntervalMS; /**< Polling interval in milliseconds for the endpoint
- if it is an INTERRUPT
-	                             *   or ISOCHRONOUS type.
-	                             */
+  uint8_t  Attributes; /**< Endpoint attributes, comprised of a mask of the endpoint
+    type (\.{EP\_TYPE\_*}) and attributes (ENDPOINT_ATTR_*) masks */
+  uint16_t EndpointSize; /**< Size of the endpoint bank, in bytes. This indicates the
+    maximum packet size that the endpoint can receive at a time */
+  uint8_t  PollingIntervalMS; /**< Polling interval in milliseconds for the endpoint
+    if it is an INTERRUPT or ISOCHRONOUS type */
 } ATTR_PACKED USB_Descriptor_Endpoint_t;
 
-@ \brief Standard USB Endpoint Descriptor (USB-IF naming conventions).
+@ Standard USB Endpoint Descriptor (USB-IF naming conventions).
 
 Type define for a standard Endpoint Descriptor. This structure uses the relevant
 standard's given
 element names to ensure compatibility with the standard.
 
-\see \ref USB_Descriptor_Endpoint_t for the version of this type with non-standard LUFA
-specific
-element names.
+See |USB_Descriptor_Endpoint_t| for the version of this type with non-standard LUFA
+specific element names.
 
-\note Regardless of CPU architecture, these values should be stored as little endian.
+Regardless of CPU architecture, these values should be stored as little endian.
 
 @<Header files@>=
 typedef struct
 {
-	uint8_t  bLength; /**< Size of the descriptor, in bytes. */
+  uint8_t  bLength; /**< Size of the descriptor, in bytes. */
   uint8_t  bDescriptorType; /* type of the descriptor, either a value in
     \.{DTYPE\_*} or a value given by the specific class */
-	uint8_t  bEndpointAddress; /**< Logical address of the endpoint within the
- device for the current
-	                            *   configuration, including direction mask.
-	                            */
-	uint8_t  bmAttributes; /**< Endpoint attributes, comprised of a mask of the
- endpoint type (EP_TYPE_*)
-	                        *   and attributes (ENDPOINT_ATTR_*) masks.
-	                        */
-	uint16_t wMaxPacketSize; /**< Size of the endpoint bank, in bytes. This indicates
- the maximum packet size
-	                          *   that the endpoint can receive at a time.
-	                          */
-	uint8_t  bInterval; /**< Polling interval in milliseconds for the endpoint if it is
- an INTERRUPT or
-	                     *   ISOCHRONOUS type.
-	                     */
+  uint8_t  bEndpointAddress; /**< Logical address of the endpoint within the
+    device for the current configuration, including direction mask */
+  uint8_t  bmAttributes; /**< Endpoint attributes, comprised of a mask of the
+    endpoint type (\.{EP\_TYPE\_*}) and attributes (ENDPOINT_ATTR_*) masks */
+  uint16_t wMaxPacketSize; /**< Size of the endpoint bank, in bytes. This indicates
+    the maximum packet size that the endpoint can receive at a time */
+  uint8_t  bInterval; /**< Polling interval in milliseconds for the endpoint if it is
+    an INTERRUPT or ISOCHRONOUS type */
 } ATTR_PACKED USB_StdDescriptor_Endpoint_t;
 
-@ \brief Standard USB String Descriptor (LUFA naming conventions).
+@ Standard USB String Descriptor (LUFA naming conventions).
 
 Type define for a standard string descriptor. Unlike other standard descriptors, the length
 of the descriptor for placement in the descriptor header must be determined by the
-\ref USB_STRING_LEN()
+|USB_STRING_LEN|
 macro rather than by the size of the descriptor structure, as the length is not fixed.
 
 This structure should also be used for string index 0, which contains the supported
@@ -4020,9 +4003,9 @@ the device as an array.
 
 This structure uses LUFA-specific element names to make each element's purpose clearer.
 
-\see \ref USB_StdDescriptor_String_t for the version of this type with standard element names.
+See |USB_StdDescriptor_String_t| for the version of this type with standard element names.
 
-\note Regardless of CPU architecture, these values should be stored as little endian.
+Regardless of CPU architecture, these values should be stored as little endian.
 
 @<Header files@>=
 typedef struct
@@ -4032,11 +4015,11 @@ typedef struct
 	wchar_t  UnicodeString[];
 } ATTR_PACKED USB_Descriptor_String_t;
 
-@ \brief Standard USB String Descriptor (USB-IF naming conventions).
+@ Standard USB String Descriptor (USB-IF naming conventions).
 
 Type define for a standard string descriptor. Unlike other standard descriptors, the length
 of the descriptor for placement in the descriptor header must be determined by the
-\ref USB_STRING_LEN()
+|USB_STRING_LEN|
 macro rather than by the size of the descriptor structure, as the length is not fixed.
 
 This structure should also be used for string index 0, which contains the supported
@@ -4046,34 +4029,23 @@ the device as an array.
 This structure uses the relevant standard's given element names to ensure compatibility
 with the standard.
 
-\see \ref USB_Descriptor_String_t for the version of this type with with non-standard
-LUFA specific
-element names.
+See |USB_Descriptor_String_t| for the version of this type with with non-standard
+LUFA specific element names.
 
-\note Regardless of CPU architecture, these values should be stored as little endian.
+Regardless of CPU architecture, these values should be stored as little endian.
 
 @<Header files@>=
 typedef struct
 {
-	uint8_t bLength; /**< Size of the descriptor, in bytes. */
-	uint8_t bDescriptorType; /**< Type of the descriptor, either a value in
-  \.{DTYPE\_*}
-	                          *   or a value given by the specific class.
-	                          */
-	uint16_t bString[]; /**< String data, as unicode characters (alternatively, string
- language IDs).
-	                     *   If normal ASCII characters are to be used, they must be
- added as an array
-	                     *   of characters rather than a normal C string so that they
- are widened to
-	                     *   Unicode size.
-	                     *
-	                     *   Under GCC, strings prefixed with the "L" character (before
- the opening string
-	                     *   quotation mark) are considered to be Unicode strings, and may
- be used instead
-	                     *   of an explicit array of ASCII characters.
-	                     */
+  uint8_t bLength; /**< Size of the descriptor, in bytes. */
+  uint8_t bDescriptorType; /**< Type of the descriptor, either a value in
+    \.{DTYPE\_*} or a value given by the specific class */
+  uint16_t bString[]; /**< String data, as unicode characters (alternatively, string
+    language IDs); if normal ASCII characters are to be used, they must be
+    added as an array of characters rather than a normal C string so that they
+    are widened to Unicode size; under GCC, strings prefixed with the "L" character
+    are considered to be Unicode strings, and may be used instead
+    of an explicit array of ASCII characters */
 } ATTR_PACKED USB_StdDescriptor_String_t;
 
 @** CDC Class Driver module. This module contains an
