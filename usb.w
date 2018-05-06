@@ -3493,25 +3493,16 @@ changed in value.
 #define USB_Device_ControlEndpointSize FIXED_CONTROL_ENDPOINT_SIZE
 
 @* Device.
+USB Device management definitions.
+
+@ Enum for the various states of the USB Device state machine. Only some states are
+implemented in the LUFA library - other states are left to the user to implement.
+
+For information on each possible USB device state, refer to the USB 2.0 specification.
+
+See |USB_DeviceState|, which stores the current device state machine state.
+
 @<Header files@>=
-/** Common USB Device definitions for all architectures.
- */
-
-/** USB Device management definitions for USB device mode.
- *
- *  USB Device mode related definitions common to all architectures. This contains
- definitions which
- *  are used when the USB controller is initialized in device mode.
- *
- */
-
-/** Enum for the various states of the USB Device state machine. Only some states are
- *  implemented in the LUFA library - other states are left to the user to implement.
- *
- *  For information on each possible USB device state, refer to the USB 2.0 specification.
- *
- *  \see \ref USB_DeviceState, which stores the current device state machine state.
- */
 enum USB_Device_States_t
 {
   DEVICE_STATE_Unattached = 0, /* Internally implemented by the library. This state indicates
@@ -3540,76 +3531,48 @@ enum USB_Device_States_t
                               */
 };
 
-/** Function to retrieve a given descriptor's size and memory location from the given
- descriptor type value,
- *  index and language ID. This function MUST be overridden in the user application
- (added with full, identical
- *  prototype and name so that the library can call it to retrieve descriptor data.
- *
- *  \param[in] wValue                  The type of the descriptor to retrieve in the upper
- byte, and the index in the
- *                                     lower byte (when more than one descriptor of the given
- type exists, such as the
- *                                     case of string descriptors). The type may be one of
- the standard types defined
- *                                     in the DescriptorTypes_t enum, or may be a
- class-specific descriptor type value.
- *  \param[in] wIndex                  The language ID of the string to return if the
- \c wValue type indicates
- *                                     \ref DTYPE_String, otherwise zero for standard
- descriptors, or as defined in a
- *                                     class-specific standards.
- *  \param[out] DescriptorAddress      Pointer to the descriptor in memory. This should be
- set by the routine to
- *                                     the address of the descriptor.
- *  \param[out] DescriptorMemorySpace  A value from the
- \ref USB_DescriptorMemorySpaces_t enum to indicate the memory
- *                                     space in which the descriptor is stored.
- This parameter does not exist when one
- *                                     of the \c USE_*_DESCRIPTORS compile time options is used,
- or on architectures which
- *                                     use a unified address space.
- *
- *  \note By default, the library expects all descriptors to be located in flash memory via
- the \c PROGMEM attribute.
- *        If descriptors should be located in RAM or EEPROM instead (to speed up access in
- the case of RAM, or to
- *        allow the descriptors to be changed dynamically at runtime) either the
- \c USE_RAM_DESCRIPTORS or the
- *        \c USE_EEPROM_DESCRIPTORS tokens may be defined in the project makefile and
- passed to the compiler by the -D
- *        switch.
- *
- *  \return Size in bytes of the descriptor if it exists, zero or \ref NO_DESCRIPTOR otherwise.
- */
+@ Function to retrieve a given descriptor's size and memory location from the given
+descriptor type value,
+index and language ID. This function MUST be overridden in the user application
+(added with full, identical
+prototype and name so that the library can call it to retrieve descriptor data.
+
+|wValue| -- The type of the descriptor to retrieve in the upper
+byte, and the index in the lower byte (when more than one descriptor of the given
+type exists, such as the case of string descriptors). The type may be one of
+the standard types defined in the |DescriptorTypes_t| enum, or may be a
+class-specific descriptor type value.
+
+|wIndex| -- The language ID of the string to return if the
+|wValue| type indicates |DTYPE_String|, otherwise zero for standard
+descriptors, or as defined in a class-specific standards.
+
+|DescriptorAddress| -- pointer to the descriptor in memory. This should be
+set by the routine to the address of the descriptor.
+
+|DescriptorMemorySpace| -- a value from the
+|USB_DescriptorMemorySpaces_t| enum to indicate the memory
+space in which the descriptor is stored.
+This parameter does not exist when one
+of the \.{USE\_*\_DESCRIPTORS} compile time options is used,
+or on architectures which use a unified address space.
+
+Note, that by default, the library expects all descriptors to be located in flash memory via
+the |PROGMEM| attribute.
+If descriptors should be located in RAM or EEPROM instead (to speed up access in
+the case of RAM, or to allow the descriptors to be changed dynamically at runtime) either the
+|USE_RAM_DESCRIPTORS| or the |USE_EEPROM_DESCRIPTORS| tokens may be defined in the project
+makefile and passed to the compiler by the -D switch.
+
+Returns size in bytes of the descriptor if it exists, zero or |NO_DESCRIPTOR| otherwise.
+
+@<Header files@>=
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
                                     const uint16_t wIndex,
                                     const void** const DescriptorAddress
                                     ) ATTR_WARN_UNUSED_RESULT ATTR_NON_NULL_PTR_ARG(3);
-@* Device AVR8.
-@<Header files@>=
-/** USB Device definitions for the AVR8 microcontrollers.
- */
-
-/** USB Device definitions for the AVR8 microcontrollers.
- *
- *  Architecture specific USB Device definitions for the Atmel 8-bit AVR microcontrollers.
- *
- */
 
 @*4 USB Device Mode Option Masks.
-
-@ Mask for the Options parameter of the |USB_Init| function. This indicates that the
-USB interface should be initialized in low speed (1.5Mb/s) mode.
-
-\note Low Speed mode is not available on all USB AVR models.
-        \n
-
-\note Restrictions apply on the number, size and type of endpoints which can be used
-        when running in low speed mode - please refer to the USB 2.0 specification.
-
-@<Header files@>=
-#define USB_DEVICE_OPT_LOWSPEED            (1 << 0)
 
 @ Mask for the Options parameter of the |USB_Init| function. This indicates that the
 USB interface should be initialized in full speed (12Mb/s) mode.
