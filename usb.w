@@ -1277,20 +1277,16 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 					  return;
 				}
 
-				CDCInterfaceInfo->State.LineEncoding.BaudRateBPS
- = Endpoint_Read_32_LE();
-				CDCInterfaceInfo->State.LineEncoding.CharFormat
-  = Endpoint_Read_8();
-				CDCInterfaceInfo->State.LineEncoding.ParityType
-  = Endpoint_Read_8();
-				CDCInterfaceInfo->State.LineEncoding.DataBits
-    = Endpoint_Read_8();
+        CDCInterfaceInfo->State.LineEncoding.BaudRateBPS = Endpoint_Read_32_LE();
+        CDCInterfaceInfo->State.LineEncoding.CharFormat = @<Read one byte from endpoint@>;
+        CDCInterfaceInfo->State.LineEncoding.ParityType = @<Read one byte from endpoint@>;
+        CDCInterfaceInfo->State.LineEncoding.DataBits = @<Read one byte from endpoint@>;
 
         @<Clear OUT packet on endpoint@>@;
-				Endpoint_ClearStatusStage();
+        Endpoint_ClearStatusStage();
 
-				EVENT_CDC_Device_LineEncodingChanged(CDCInterfaceInfo);
-			}
+        EVENT_CDC_Device_LineEncodingChanged(CDCInterfaceInfo);
+      }
 
 			break;
 		case CDC_REQ_SetControlLineState:
@@ -1495,7 +1491,7 @@ int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInf
 
 	if (@<Endpoint received an OUT packet@>) {
 		if (@<Number of bytes in endpoint@> != 0)
-		  ReceivedByte = Endpoint_Read_8();
+		  ReceivedByte = @<Read one byte from endpoint@>;
 
 		if (@<Number of bytes in endpoint@>
                     == 0)
@@ -1614,7 +1610,7 @@ void USB_Device_ProcessControlRequest(void)
 
   for (uint8_t RequestHeaderByte = 0; RequestHeaderByte < sizeof(USB_Request_Header_t);
     RequestHeaderByte++)
-	  *(RequestHeader++) = Endpoint_Read_8();
+	  *(RequestHeader++) = @<Read one byte from endpoint@>;
 
   EVENT_USB_Device_ControlRequest();
 
@@ -2084,7 +2080,7 @@ uint8_t Endpoint_Read_Stream_LE(void* const Buffer,
 		}
 		else
 		{
-			*DataStream = Endpoint_Read_8();
+			*DataStream = @<Read one byte from endpoint@>;
 			DataStream += 1;
 			Length--;
 			BytesInTransfer++;
@@ -2128,7 +2124,7 @@ uint8_t Endpoint_Read_Stream_BE(void* const Buffer,
 		}
 		else
 		{
-			*DataStream = Endpoint_Read_8();
+			*DataStream = @<Read one byte from endpoint@>;
 			DataStream -= 1;
 			Length--;
 			BytesInTransfer++;
@@ -2313,7 +2309,7 @@ uint8_t Endpoint_Read_Control_Stream_LE(void* const Buffer, uint16_t Length)
 
 		if (@<Endpoint received an OUT packet@>) {
 			while (Length && @<Number of bytes in endpoint@> != 0) {
-				*DataStream = Endpoint_Read_8();
+				*DataStream = @<Read one byte from endpoint@>;
 				DataStream += 1;
 				Length--;
 			}
@@ -2355,7 +2351,7 @@ uint8_t Endpoint_Read_Control_Stream_BE(void* const Buffer, uint16_t Length)
 
 		if (@<Endpoint received an OUT packet@>) {
 			while (Length && @<Number of bytes in endpoint@> != 0) {
-				*DataStream = Endpoint_Read_8();
+				*DataStream = @<Read one byte from endpoint@>;
 				DataStream -= 1;
 				Length--;
 			}
@@ -3361,29 +3357,14 @@ UECONX |= (1 << STALLRQC);
 @<Endpoint is istalled@>=
 (UECONX & (1 << STALLRQ))
 
+@ Reads one byte from the currently selected endpoint's bank, for OUT direction endpoints.
+
+Returns next byte in the currently selected endpoint's FIFO buffer.
+
+@<Read one byte from endpoint@>=
+UEDATX
+
 @ @<Header files@>=
-/** Sets the direction of the currently selected endpoint.
- *
- *  \param[in] DirectionMask  New endpoint direction, as a \c ENDPOINT_DIR_* mask.
- */
-inline void Endpoint_SetEndpointDirection(const uint8_t DirectionMask) ATTR_ALWAYS_INLINE;
-inline void Endpoint_SetEndpointDirection(const uint8_t DirectionMask)
-{
-	UECFG0X = ((UECFG0X & ~(1 << EPDIR)) | (DirectionMask ? (1 << EPDIR) : 0));
-}
-
-/** Reads one byte from the currently selected endpoint's bank, for OUT direction endpoints.
- *
- *  \ingroup Group_EndpointPrimitiveRW_AVR8
- *
- *  \return Next byte in the currently selected endpoint's FIFO buffer.
- */
-inline uint8_t Endpoint_Read_8(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline uint8_t Endpoint_Read_8(void)
-{
-	return UEDATX;
-}
-
 /** Writes one byte to the currently selected endpoint's bank, for IN direction endpoints.
  *
  *  \ingroup Group_EndpointPrimitiveRW_AVR8
