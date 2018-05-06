@@ -1143,6 +1143,22 @@ UDCON &= ~(1 << LSM);
 
 @* USB Endpoint definitions for the AVR8 microcontrollers.
 
+@ Configures a table of endpoint descriptions, in sequence. This function can be used to
+configure multiple
+endpoints at the same time.
+
+Note, that endpoints with a zero address will be ignored, thus this function cannot be used
+to configure the control endpoint.
+
+|Table| -- pointer to a table of endpoint descriptions.
+|Entries| -- number of entries in the endpoint table to configure.
+
+Return true if all endpoints configured successfully, false otherwise.
+
+@<Func...@>=
+bool Endpoint_ConfigureEndpointTable(const USB_Endpoint_Table_t* const Table,
+                                     const uint8_t Entries);
+
 @ @c
 bool Endpoint_ConfigureEndpointTable(const USB_Endpoint_Table_t* const Table,
                                      const uint8_t Entries)
@@ -3423,37 +3439,10 @@ inline uint32_t Endpoint_Read_32_LE(void)
 	return Data.Value;
 }
 
-/** Reads four bytes from the currently selected endpoint's bank in big endian format, for OUT
- *  direction endpoints.
- *
- *  \ingroup Group_EndpointPrimitiveRW_AVR8
- *
- *  \return Next four bytes in the currently selected endpoint's FIFO buffer.
- */
-inline uint32_t Endpoint_Read_32_BE(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
-inline uint32_t Endpoint_Read_32_BE(void)
-{
-	union
-	{
-		uint32_t Value;
-		uint8_t  Bytes[4];
-	} Data;
+@ Writes four bytes to the currently selected endpoint's bank (i.e., FIFO buffer)
+in little endian format, for IN direction endpoints.
 
-	Data.Bytes[3] = UEDATX;
-	Data.Bytes[2] = UEDATX;
-	Data.Bytes[1] = UEDATX;
-	Data.Bytes[0] = UEDATX;
-
-	return Data.Value;
-}
-
-/** Writes four bytes to the currently selected endpoint's bank in little endian format, for IN
- *  direction endpoints.
- *
- *  \ingroup Group_EndpointPrimitiveRW_AVR8
- *
- *  \param[in] Data  Data to write to the currently selected endpoint's FIFO buffer.
- */
+@<Header files@>=
 inline void Endpoint_Write_32_LE(const uint32_t Data) ATTR_ALWAYS_INLINE;
 inline void Endpoint_Write_32_LE(const uint32_t Data)
 {
@@ -3463,77 +3452,28 @@ inline void Endpoint_Write_32_LE(const uint32_t Data)
 	UEDATX = (Data >> 24);
 }
 
-/** Writes four bytes to the currently selected endpoint's bank in big endian format, for IN
- *  direction endpoints.
- *
- *  \ingroup Group_EndpointPrimitiveRW_AVR8
- *
- *  \param[in] Data  Data to write to the currently selected endpoint's FIFO buffer.
- */
-inline void Endpoint_Write_32_BE(const uint32_t Data) ATTR_ALWAYS_INLINE;
-inline void Endpoint_Write_32_BE(const uint32_t Data)
-{
-	UEDATX = (Data >> 24);
-	UEDATX = (Data >> 16);
-	UEDATX = (Data >> 8);
-	UEDATX = (Data &  0xFF);
-}
+@ Global indicating the maximum packet size of the default control endpoint located at address
+0 in the device. This value is set to the value indicated in the device descriptor in the user
+project once the USB interface is initialized into device mode.
 
-/** Discards four bytes from the currently selected endpoint's bank, for OUT direction endpoints.
- *
- *  \ingroup Group_EndpointPrimitiveRW_AVR8
- */
-inline void Endpoint_Discard_32(void) ATTR_ALWAYS_INLINE;
-inline void Endpoint_Discard_32(void)
-{
-	uint8_t Dummy;
+If space is an issue, it is possible to fix this to a static value by defining the control
+endpoint size in the |FIXED_CONTROL_ENDPOINT_SIZE| token passed to the compiler in the
+makefile
+via the -D switch. When a fixed control endpoint size is used, the size is no longer
+dynamically
+read from the descriptors at runtime and instead fixed to the given value. When used, it is
+important that the descriptor control endpoint size value matches the size given as the
+|FIXED_CONTROL_ENDPOINT_SIZE| token - it is recommended that the
+|FIXED_CONTROL_ENDPOINT_SIZE| token
+be used in the device descriptors to ensure this.
 
-	Dummy = UEDATX;
-	Dummy = UEDATX;
-	Dummy = UEDATX;
-	Dummy = UEDATX;
+This variable should be treated as read-only, and never manually
+changed in value.
 
-	(void)Dummy;
-}
-
-/** Global indicating the maximum packet size of the default control endpoint located at address
- *  0 in the device. This value is set to the value indicated in the device descriptor in the user
- *  project once the USB interface is initialized into device mode.
- *
- *  If space is an issue, it is possible to fix this to a static value by defining the control
- *  endpoint size in the \c FIXED_CONTROL_ENDPOINT_SIZE token passed to the compiler in the
- makefile
- *  via the -D switch. When a fixed control endpoint size is used, the size is no longer
- dynamically
- *  read from the descriptors at runtime and instead fixed to the given value. When used, it is
- *  important that the descriptor control endpoint size value matches the size given as the
- *  \c FIXED_CONTROL_ENDPOINT_SIZE token - it is recommended that the
- \c FIXED_CONTROL_ENDPOINT_SIZE token
- *  be used in the device descriptors to ensure this.
- *
- *  \attention This variable should be treated as read-only in the user application, and never
- manually
- *             changed in value.
- */
-
+@<Header files@>=
 #define USB_Device_ControlEndpointSize FIXED_CONTROL_ENDPOINT_SIZE
 
-/** Configures a table of endpoint descriptions, in sequence. This function can be used to
- configure multiple
- *  endpoints at the same time.
- *
- *  \note Endpoints with a zero address will be ignored, thus this function cannot be used
- to configure the
- *        control endpoint.
- *
- *  \param[in] Table    Pointer to a table of endpoint descriptions.
- *  \param[in] Entries  Number of entries in the endpoint table to configure.
- *
- *  \return Boolean \c true if all endpoints configured successfully, \c false otherwise.
- */
-bool Endpoint_ConfigureEndpointTable(const USB_Endpoint_Table_t* const Table,
-                                     const uint8_t Entries);
-
+@ @<Header files@>=
 /** Completes the status stage of a control transfer on a CONTROL type endpoint automatically,
  *  with respect to the data direction. This is a convenience function which can be used to
  *  simplify user control request handling.
