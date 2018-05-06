@@ -1460,32 +1460,6 @@ uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 }
 
 @ @c
-uint16_t CDC_Device_BytesReceived(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
-{
-	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
- !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
-	  return 0;
-
-	Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataOUTEndpoint.Address);
-
-	if (@<Endpoint received an OUT packet@>) {
-		if (@<Number of bytes in endpoint@>
-                    == 0) {
-      @<Clear OUT packet on endpoint@>@;
-			return 0;
-		}
-		else
-		{
-			return @<Number of bytes in endpoint@>;
-		}
-	}
-	else
-	{
-		return 0;
-	}
-}
-
-@ @c
 int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
@@ -5590,26 +5564,6 @@ void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const C
  */
 void EVENT_CDC_Device_BreakSent(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                                const uint8_t Duration) ATTR_CONST ATTR_NON_NULL_PTR_ARG(1);
-
-/** Determines the number of bytes received by the CDC interface from the host, waiting
- to be read. This indicates the number
- *  of bytes in the OUT endpoint bank only, and thus the number of calls to
- \ref CDC_Device_ReceiveByte() which are guaranteed to
- *  succeed immediately. If multiple bytes are to be received, they should be buffered by
- the user application, as the endpoint
- *  bank will not be released back to the USB controller until all bytes are read.
- *
- *  \pre This function must only be called when the Device state machine is in the
- \ref DEVICE_STATE_CONFIGURED state or
- *       the call will fail.
- *
- *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class
- configuration and state.
- *
- *  \return Total number of buffered bytes received from the host.
- */
-uint16_t CDC_Device_BytesReceived(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
- ATTR_NON_NULL_PTR_ARG(1);
 
 /** Reads a byte of data from the host. If no data is waiting to be read of if a USB host is
  not connected, the function
