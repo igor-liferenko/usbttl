@@ -1434,6 +1434,20 @@ uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 	return ENDPOINT_READYWAIT_NoError;
 }
 
+@ Flushes any data waiting to be sent, ensuring that the send buffer is cleared.
+
+This function must only be called when the Device state machine is in the
+|DEVICE_STATE_CONFIGURED| state or the call will fail.
+
+|CDCInterfaceInfo| -- pointer to a structure containing a CDC Class configuration
+and state.
+
+Returns a \.{ENDPOINT\_READYWAIT\_*} value.
+
+@<Func...@>=
+uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
+  ATTR_NON_NULL_PTR_ARG(1);
+
 @ @c
 uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
@@ -5052,20 +5066,6 @@ void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const C
  */
 void EVENT_CDC_Device_BreakSent(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                                const uint8_t Duration) ATTR_CONST ATTR_NON_NULL_PTR_ARG(1);
-
-/** Flushes any data waiting to be sent, ensuring that the send buffer is cleared.
- *
- *  \pre This function must only be called when the Device state machine is in the
- \ref DEVICE_STATE_CONFIGURED state or
- *       the call will fail.
- *
- *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration
- and state.
- *
- *  \return A value from the |Endpoint_WaitUntilReady_ErrorCodes_t| enum.
- */
-uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
- ATTR_NON_NULL_PTR_ARG(1);
 
 /** Creates a standard character stream for the given CDC Device instance so that it can be
  used with all the regular
