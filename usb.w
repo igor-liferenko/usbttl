@@ -1639,6 +1639,9 @@ void EVENT_CDC_Device_BreakSent(USB_ClassInfo_CDC_Device_t* const CDCInterfaceIn
 
 @* USB device standard request management.
 
+@ @<Func...@>=
+void USB_Device_ProcessControlRequest(void);
+
 @ @c
 void USB_Device_ProcessControlRequest(void)
 {
@@ -3752,33 +3755,22 @@ control requests.
 different configurations which the host can select between; this indicates the currently
 selected value, or 0 if no configuration has been selected.
 
-This variable should be treated as read-only in the user application, and never
-manually changed in value.
-
 @<Global var...@>=
 uint8_t USB_Device_ConfigurationNumber;
 
-@ @<Header...@>=
-/** Indicates if the host is currently allowing the device to issue remote wakeup events. If this
- *  flag is cleared, the device should not issue remote wakeup events to the host.
- *
- *  \attention This variable should be treated as read-only in the user application, and never
- manually
- *             changed in value.
- *
- *  \ingroup Group_Device
- */
+@ Indicates if the host is currently allowing the device to issue remote wakeup events. If this
+flag is cleared, the device should not issue remote wakeup events to the host.
+
+@<Global var...@>=
 bool USB_Device_RemoteWakeupEnabled;
 
-/** Indicates if the device is currently being powered by its own power supply, rather than being
- *  powered by the host's USB supply. This flag should remain cleared if the device does not
- *  support self powered mode, as indicated in the device descriptors.
- *
- *  \ingroup Group_Device
- */
+@ Indicates if the device is currently being powered by its own power supply, rather than being
+powered by the host's USB supply. This flag should remain cleared if the device does not
+support self powered mode, as indicated in the device descriptors.
+
+@<Global var...@>=
 bool USB_Device_CurrentlySelfPowered;
 
-void USB_Device_ProcessControlRequest(void);
 @* EndpointStream.
 @<Header files@>=
 /** Endpoint data stream transmission and reception management.
