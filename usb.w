@@ -4450,53 +4450,36 @@ Following is an example of how this module may be used within a typical
 application.
 
 @(/dev/null@>=
-// Initialize the board LED driver before first use
-LEDs_Init();
+LEDs_Init(); /* initialize the board LED driver before first use */
 
-// Turn on each of the four LEDs in turn
-LEDs_SetAllLEDs(LEDS_LED1);
-LEDs_SetAllLEDs(LEDS_LED2);
-LEDs_SetAllLEDs(LEDS_LED3);
-LEDs_SetAllLEDs(LEDS_LED4);
+LEDs_SetAllLEDs(LEDS_LED1); /* turn on LED 1 */
 
-// Turn on all LEDs
-LEDs_SetAllLEDs(LEDS_ALL_LEDS);
+LEDs_SetAllLEDs(LEDS_ALL_LEDS); /* turn on all LEDs */
 
-// Turn on LED 1, turn off LED 2, leaving LEDs 3 and 4 in their current state
-LEDs_ChangeLEDs((LEDS_LED1 | LEDS_LED2), LEDS_LED1);
+LEDs_ChangeLEDs((LEDS_LED1 | LEDS_LED2), LEDS_LED1); /* turn on LED 1, turn off LED 2,
+  leaving LEDs 3 and 4 in their current state */
 
 @* USBKEY LEDs.
+
+$$\vbox{\halign{\tt#\cr
+
+
+Name       Color    Info               Active Level   Port Pin\cr
+LEDS_LED1  Red    Bicolor Indicator 1  High           PORTD.4\cr
+LEDS_LED2  Green  Bicolor Indicator 1  High           PORTD.5\cr
+LEDS_LED3  Red    Bicolor Indicator 2  High           PORTD.6\cr
+LEDS_LED4  Green  Bicolor Indicator 2  High           PORTD.7\cr
+}}$$
+
 @<Header files@>=
-/** Board specific LED driver header for the Atmel USBKEY.
-
-<table>
- <tr><th>Name</th><th>Color</th><th>Info</th><th>Active Level</th><th>Port Pin</th></tr>
- <tr><td>LEDS_LED1</td><td>Red</td><td>Bicolor Indicator 1</td><td>High</td><td>PORTD.4</td></tr>
- <tr><td>LEDS_LED2</td><td>Green</td><td>Bicolor Indicator 1</td><td>High</td><td>PORTD.5</td></tr>
- <tr><td>LEDS_LED3</td><td>Red</td><td>Bicolor Indicator 2</td><td>High</td><td>PORTD.6</td></tr>
- <tr><td>LEDS_LED4</td><td>Green</td><td>Bicolor Indicator 2</td><td>High</td><td>PORTD.7</td></tr>
-</table>
-
- */
-
-/** LED mask for the first LED on the board */
-#define LEDS_LED1        (1 << 4)
-
-/** LED mask for the second LED on the board */
-#define LEDS_LED2        (1 << 5)
-
-/** LED mask for the third LED on the board */
-#define LEDS_LED3        (1 << 7)
-
-/** LED mask for the fourth LED on the board */
-#define LEDS_LED4        (1 << 6)
-
-/** LED mask for all the LEDs on the board */
-#define LEDS_ALL_LEDS    (LEDS_LED1 | LEDS_LED2 | LEDS_LED3 | LEDS_LED4)
-
-/** LED mask for none of the board LEDs */
+#define LEDS_LED1 (1 << 4)
+#define LEDS_LED2 (1 << 5)
+#define LEDS_LED3 (1 << 7)
+#define LEDS_LED4 (1 << 6)
+#define LEDS_ALL_LEDS (LEDS_LED1 | LEDS_LED2 | LEDS_LED3 | LEDS_LED4)
 #define LEDS_NO_LEDS     0
 
+@ @<Header files@>=
 inline void LEDs_Init(void)
 {
 	DDRD  |=  LEDS_ALL_LEDS;
