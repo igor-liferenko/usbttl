@@ -2687,8 +2687,9 @@ with the \.{EP\_TYPE\_*} masks to determine the exact type of the endpoint.
 @<Header files@>=
 #define EP_TYPE_MASK                       0x03
 
-@ Mask for a CONTROL type endpoint or pipe.
-Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pipe functions.
+@ {\emergencystretch=2cm Mask for a CONTROL type endpoint or pipe.
+Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pipe
+functions.\par}
 
 @<Header files@>=
 #define EP_TYPE_CONTROL                    0x00
@@ -2699,8 +2700,9 @@ Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pip
 @<Header files@>=
 #define EP_TYPE_ISOCHRONOUS                0x01
 
-@ Mask for a BULK type endpoint or pipe.
-Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pipe functions.
+@ {\emergencystretch=2cm Mask for a BULK type endpoint or pipe.
+Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pipe
+functions.\par}
 
 @<Header files@>=
 #define EP_TYPE_BULK                       0x02
@@ -2761,8 +2763,8 @@ Functions, macros and enums related to endpoint management. This
 contains the endpoint management macros, as well as endpoint interrupt and data
 send/receive functions for various data types.
 
-@ Type define for a endpoint table entry, used to configure endpoints in groups via
-|Endpoint_ConfigureEndpointTable|.
+@ {\emergencystretch=2cm Type define for a endpoint table entry, used to configure endpoints
+in groups via |Endpoint_ConfigureEndpointTable|.\par}
 
 @<Header files@>=
 typedef struct
@@ -3541,8 +3543,8 @@ This contains the function definitions required for the main USB service task,
 which must be called to ensure that the USB connection to a connected USB device
 is maintained.
 
-@ Structure containing the last received Control request for use
-inside of the |EVENT_USB_Device_ControlRequest| event.
+@ {\emergencystretch=3cm Structure containing the last received Control request for use
+inside of the |EVENT_USB_Device_ControlRequest| event.\par}
 
 @<Global variables@>=
 USB_Request_Header_t USB_ControlRequest;
@@ -3650,10 +3652,10 @@ which must be set on all devices for historical purposes.
 @<Header files@>=
 #define USB_CONFIG_ATTR_RESERVED          0x80
 
-@ Can be masked with other configuration descriptor attributes for a
+@ {\emergencystretch=4cm Can be masked with other configuration descriptor attributes for a
 |USB_Descriptor_Config_Header_t|
 descriptor's |ConfigAttributes| value to indicate that the specified configuration
-can draw its power from the device's own power source.
+can draw its power from the device's own power source.\par}
 
 @<Header files@>=
 #define USB_CONFIG_ATTR_SELFPOWERED 0x40
