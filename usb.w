@@ -1363,9 +1363,6 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
  (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE)) {
 				@<Clear a received SETUP packet on endpoint@>@;
 				Endpoint_ClearStatusStage();
-
-				EVENT_CDC_Device_BreakSent(CDCInterfaceInfo,
- (uint8_t)USB_ControlRequest.wValue);
 			}
 
 			break;
@@ -1623,12 +1620,6 @@ int CDC_Device_getchar_Blocking(FILE* Stream)
 	}
 
 	return ReceivedByte;
-}
-
-@ @c
-void EVENT_CDC_Device_BreakSent(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
-  const uint8_t Duration)
-{
 }
 
 @* USB device standard request management.
@@ -4410,19 +4401,7 @@ typedef struct {
 } USB_ClassInfo_CDC_Device_t;
 
 @ @<Header files@>=
-/** CDC class driver event for a send break request sent to the device from the host. This is
- generally used to separate
- *  data or to indicate a special condition to the receiving device.
- *
- *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration
- and state.
- *  \param[in]     Duration          Duration of the break that has been sent by the host,
- in milliseconds.
- */
-void EVENT_CDC_Device_BreakSent(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
-                               const uint8_t Duration) ATTR_CONST ATTR_NON_NULL_PTR_ARG(1);
-
-/** Creates a standard character stream for the given CDC Device instance so that it can be
+/** yyy Creates a standard character stream for the given CDC Device instance so that it can be
  used with all the regular
  *  functions in the standard <stdio.h> library that accept a \c FILE stream as a destination
  (e.g. \c fprintf()). The created
