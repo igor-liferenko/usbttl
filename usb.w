@@ -4616,7 +4616,7 @@ be tested before removing data from the buffer, to ensure that the buffer does n
 underflow.
 
 If the data is to be removed in a loop, store the total number of bytes stored in the
-buffer (via a call to the \ref RingBuffer_GetCount() function) in a temporary variable
+buffer (via a call to the |RingBuffer_GetCount| function) in a temporary variable
 to reduce the time spent in atomicity locks.
 
 |Buffer| is a pointer to a ring buffer structure to insert into.
