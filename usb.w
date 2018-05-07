@@ -1396,6 +1396,17 @@ bool CDC_Device_ConfigureEndpoints(USB_ClassInfo_CDC_Device_t* const CDCInterfac
 	return true;
 }
 
+@ General management task for a given CDC class interface, required for the correct operation
+of the interface. This should
+be called frequently in the main program loop, before the master USB management task
+|USB_DeviceTask|.
+
+|CDCInterfaceInfo| -- pointer to a structure containing a CDC Class configuration and state.
+
+@<Func...@>=
+void CDC_DeviceTask(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
+  ATTR_NON_NULL_PTR_ARG(1);
+
 @ @c
 void CDC_DeviceTask(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
@@ -4394,17 +4405,6 @@ typedef struct {
 } USB_ClassInfo_CDC_Device_t;
 
 @ @<Header files@>=
-/** General management task for a given CDC class interface, required for the correct operation
- of the interface. This should
- *  be called frequently in the main program loop, before the master USB management task
-|USB_DeviceTask|.
- *
- *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration
- and state.
- */
-void CDC_DeviceTask(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
- ATTR_NON_NULL_PTR_ARG(1);
-
 /** CDC class driver event for a line encoding change on a CDC interface. This event fires each
  time the host requests a
  *  line encoding change (containing the serial parity, baud and other configuration information)
