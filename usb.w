@@ -468,11 +468,23 @@ ISR(USART1_RX_vect, ISR_BLOCK)
 	  RingBuffer_Insert(&USARTtoUSB_Buffer, ReceivedByte);
 }
 
-@ Event handler for the CDC Class driver Line Encoding Changed event.
-|CDCInterfaceInfo| is a pointer to the CDC
-class interface configuration structure.
+@ CDC class driver event handler for a line encoding change event on a CDC interface. This
+event fires each time the host requests a
+line encoding change (containing the serial parity, baud and other configuration information)
+and may be hooked in the
+user program by declaring a handler function with the same name and parameters listed here.
+The new line encoding
+settings are available in the \c LineEncoding structure inside the CDC interface structure
+passed as a parameter.
 
-@c
+|CDCInterfaceInfo| -- pointer to a structure containing a CDC Class interface configuration
+and state.
+
+@<Func...@>=
+void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
+  ATTR_NON_NULL_PTR_ARG(1);
+
+@ @c
 void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 	uint8_t ConfigMask = 0;
@@ -4405,22 +4417,7 @@ typedef struct {
 } USB_ClassInfo_CDC_Device_t;
 
 @ @<Header files@>=
-/** CDC class driver event for a line encoding change on a CDC interface. This event fires each
- time the host requests a
- *  line encoding change (containing the serial parity, baud and other configuration information)
- and may be hooked in the
- *  user program by declaring a handler function with the same name and parameters listed here.
- The new line encoding
- *  settings are available in the \c LineEncoding structure inside the CDC interface structure
- passed as a parameter.
- *
- *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration
- and state.
- */
-void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
- ATTR_NON_NULL_PTR_ARG(1);
-
-/** CDC class driver event for a control line state change on a CDC interface. This event fires
+/** yyy CDC class driver event for a control line state change on a CDC interface. This event fires
  each time the host requests a
  *  control line state change (containing the virtual serial control line states, such as DTR)
  and may be hooked in the
