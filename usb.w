@@ -305,7 +305,7 @@ while (BytesToSend--) {
     transmission error occurred@>@;
 }
 
-@ @d ENDPOINT_READYWAIT_NO_ERROR 0 /* Endpoint is ready for next packet, no error */
+@
 
 @<Try to send the next byte of data to the host, abort if there is an error without
     dequeuing@>=
@@ -1237,7 +1237,19 @@ of data to be read or written to it.
 
 Note, that this routine should not be called on CONTROL type endpoints.
 
-Returns A value from the |Endpoint_WaitUntilReady_ErrorCodes_t| enum.
+Returns one of the following values:
+
+@d ENDPOINT_READYWAIT_NO_ERROR 0 /* endpoint is ready for next packet, no error */
+@d ENDPOINT_READYWAIT_ENDPOINT_STALLED 1 /* endpoint was stalled during the stream transfer
+  by the host or device */
+@d ENDPOINT_READYWAIT_DEVICE_DISCONNECTED 2 /* device was disconnected from the host while
+                                              waiting for the endpoint to become ready */
+@d ENDPOINT_READYWAIT_BUS_SUSPENDED 3 /* the USB bus has been suspended by the host and
+                                        no USB endpoint traffic can occur until the bus
+                                        has resumed */
+@d ENDPOINT_READYWAIT_TIMEOUT 4 /* the host failed to accept or send the next packet
+                                      within the software timeout period set by the
+                                      |USB_STREAM_TIMEOUT_MS| macro */
 
 @<Func...@>=
 uint8_t Endpoint_WaitUntilReady(void);
@@ -1253,21 +1265,21 @@ uint8_t Endpoint_WaitUntilReady(void)
 		if (@<Get endpoint direction@>
                     == ENDPOINT_DIR_IN)	{
 			if (@<Endpoint is ready for an IN packet@>)
-			  return ENDPOINT_READYWAIT_NoError;
+			  return ENDPOINT_READYWAIT_NO_ERROR;
 		}
 		else {
 			if (@<Endpoint received an OUT packet@>)
-			  return ENDPOINT_READYWAIT_NoError;
+			  return ENDPOINT_READYWAIT_NO_ERROR;
 		}
 
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_READYWAIT_DeviceDisconnected;
+		  return ENDPOINT_READYWAIT_DEVICE_DISCONNECTED;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
-		  return ENDPOINT_READYWAIT_BusSuspended;
+		  return ENDPOINT_READYWAIT_BUS_SUSPENDED;
 		else if (@<Endpoint is istalled@>)
-		  return ENDPOINT_READYWAIT_EndpointStalled;
+		  return ENDPOINT_READYWAIT_ENDPOINT_STALLED;
 
 		uint16_t CurrentFrameNumber = @<Get USB frame number@>;
 
@@ -1276,7 +1288,7 @@ uint8_t Endpoint_WaitUntilReady(void)
 			PreviousFrameNumber = CurrentFrameNumber;
 
 			if (!(TimeoutMSRem--))
-			  return ENDPOINT_READYWAIT_Timeout;
+			  return ENDPOINT_READYWAIT_TIMEOUT;
 		}
 	}
 }
@@ -1449,7 +1461,7 @@ This function must only be called when the Device state machine is in the
 configuration and state.
 |Data| -- byte of data to send to the host.
 
-Returns a value from the |Endpoint_WaitUntilReady_ErrorCodes_t| enum.
+Returns a \.{ENDPOINT\_READYWAIT\_*} value.
 
 @<Func...@>=
 uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
@@ -1472,12 +1484,12 @@ uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 
 		uint8_t ErrorCode;
 
-		if ((ErrorCode = Endpoint_WaitUntilReady()) != ENDPOINT_READYWAIT_NoError)
+		if ((ErrorCode = Endpoint_WaitUntilReady()) != ENDPOINT_READYWAIT_NO_ERROR)
 		  return ErrorCode;
 	}
 
 	Endpoint_Write_8(Data);
-	return ENDPOINT_READYWAIT_NoError;
+	return ENDPOINT_READYWAIT_NO_ERROR;
 }
 
 @ Flushes any data waiting to be sent, ensuring that the send buffer is cleared.
@@ -1507,20 +1519,20 @@ uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 
 	if (@<Number of bytes in endpoint@>
             == 0)
-	  return ENDPOINT_READYWAIT_NoError;
+	  return ENDPOINT_READYWAIT_NO_ERROR;
 
 	bool BankFull = !@<Read-write is allowed for endpoint@>;
 
 	@<Clear IN packet on endpoint@>@;
 
 	if (BankFull) {
-		if ((ErrorCode = Endpoint_WaitUntilReady()) != ENDPOINT_READYWAIT_NoError)
+		if ((ErrorCode = Endpoint_WaitUntilReady()) != ENDPOINT_READYWAIT_NO_ERROR)
 		  return ErrorCode;
 
 	  @<Clear IN packet on endpoint@>@;
 	}
 
-	return ENDPOINT_READYWAIT_NoError;
+	return ENDPOINT_READYWAIT_NO_ERROR;
 }
 
 @ Reads a byte of data from the host. If no data is waiting to be read of if a USB host is
@@ -2884,27 +2896,6 @@ this value reflects the maximum number of endpoints for the currently selected A
 @<Header files@>=
 #define ENDPOINT_TOTAL_ENDPOINTS 7
 
-@ Enum for the possible error return codes of the |Endpoint_WaitUntilReady| function.
-
-@<Header files@>=
-enum Endpoint_WaitUntilReady_ErrorCodes_t
-{
-  ENDPOINT_READYWAIT_NoError = 0, /* Endpoint is ready for next packet, no error */
-  ENDPOINT_READYWAIT_EndpointStalled = 1, /* The endpoint was stalled during the stream
-    transfer by the host or device */
-  ENDPOINT_READYWAIT_DeviceDisconnected = 2, /* Device was disconnected from the host while
-                                                   waiting for the endpoint to become ready.
-                                                */
-  ENDPOINT_READYWAIT_BusSuspended = 3, /* The USB bus has been suspended by the host and
-                                          no USB endpoint traffic can occur until the bus
-                                          has resumed.
-                                       */
-  ENDPOINT_READYWAIT_Timeout = 4, /* The host failed to accept or send the next packet
-                                      within the software timeout period set by the
-                                      |USB_STREAM_TIMEOUT_MS| macro.
-                                   */
-};
-
 @ Configures the specified endpoint address with the given endpoint type, bank size and
 number of hardware
 banks. Once configured, the endpoint may be read from or written to, depending on its
@@ -4249,7 +4240,7 @@ contains one or more CDC functional data descriptors, which give the CDC interfa
 capabilities and configuration.
 See the CDC class specification for more details.
 
-See |USB_CDC_StdDescriptor_FunctionalHeader_t| for the version of this type with
+See |USB_CDC_StdDescriptor_Func_Header_t| for the version of this type with
 standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
@@ -4286,7 +4277,7 @@ typedef struct {
     class-specific descriptors, must be |CDC_DSUBTYPE_CS_INTERFACE_HEADER| */
   uint16_t bcdCDC; /* version number of the CDC specification implemented by the device,
     encoded in BCD format; see |VERSION_BCD| utility macro */
-} ATTR_PACKED USB_CDC_StdDescriptor_FunctionalHeader_t;
+} ATTR_PACKED USB_CDC_StdDescriptor_Func_Header_t;
 
 @ CDC class-specific Functional ACM Descriptor (LUFA naming conventions).
 
@@ -4295,7 +4286,7 @@ host that the CDC interface
 supports the CDC ACM subclass of the CDC specification. See the CDC class specification
 for more details.
 
-See |USB_CDC_StdDescriptor_FunctionalACM_t| for the version of this type with
+See |USB_CDC_StdDescriptor_Func_ACM_t| for the version of this type with
 standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
@@ -4331,7 +4322,7 @@ typedef struct {
 	uint8_t bmCapabilities; /* capabilities of the ACM interface, given as a bit mask;
     for most devices, this should be set to a fixed value of |0x06| --- for other
     capabilities, refer to the CDC ACM specification */
-} ATTR_PACKED USB_CDC_StdDescriptor_FunctionalACM_t;
+} ATTR_PACKED USB_CDC_StdDescriptor_Func_ACM_t;
 
 @ CDC class-specific Functional Union Descriptor (LUFA naming conventions).
 
@@ -4339,7 +4330,7 @@ Type define for a CDC class-specific functional Union descriptor. This indicates
 host that specific
 CDC control and data interfaces are related. See the CDC class specification for more details.
 
-See |USB_CDC_StdDescriptor_FunctionalUnion_t| for the version of this type with
+See |USB_CDC_StdDescriptor_Func_Union_t| for the version of this type with
 standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
@@ -4374,7 +4365,7 @@ typedef struct {
     class-specific descriptors, must be |CDC_DSUBTYPE_CS_INTERFACE_UNION| */
 	uint8_t bMasterInterface; /* interface number of the CDC Control interface */
 	uint8_t bSlaveInterface0; /* interface number of the CDC Data interface */
-} ATTR_PACKED USB_CDC_StdDescriptor_FunctionalUnion_t;
+} ATTR_PACKED USB_CDC_StdDescriptor_Func_Union_t;
 
 @ CDC Virtual Serial Port Line Encoding Settings Structure.
 
