@@ -838,7 +838,7 @@ Returns size in bytes of the descriptor if it exists, zero or |NO_DESCRIPTOR| ot
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
                                     const uint16_t wIndex,
                                     const void** const DescriptorAddress)
-  ATTR_WARN_UNUSED_RESULT ATTR_NON_NULL_PTR_ARG(3);
+  ATTR_NON_NULL_PTR_ARG(3);
 
 @ @dSTRING_ID_LANGUAGE 0 /* Supported Languages string descriptor
     ID (must be zero) */
@@ -2396,12 +2396,6 @@ On incompatible versions of GCC or on other compilers, these macros evaluate to 
 unless they are
 critical to the code's function and thus must throw a compile error when used.
 
-@ Indicates that the function returns a value which should not be ignored by the user code. When
-applied, any ignored return value from calling the function will produce a compiler warning.
-
-@<Header files@>=
-#define ATTR_WARN_UNUSED_RESULT      __attribute__ ((warn_unused_result))
-
 @ Indicates that the specified parameters of the function are pointers which should never
 be \.{NULL}.
 When applied as a 1-based comma separated list the compiler will emit a warning if
@@ -2591,7 +2585,7 @@ inline void USB_INT_Clear(const uint8_t Interrupt)
 }
 
 @ @<Func...@>=
-inline bool USB_INT_IsEnabled(const uint8_t Interrupt) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
+inline bool USB_INT_IsEnabled(const uint8_t Interrupt) ATTR_ALWAYS_INLINE;
 
 @ @c
 inline bool USB_INT_IsEnabled(const uint8_t Interrupt)
@@ -2614,8 +2608,7 @@ inline bool USB_INT_IsEnabled(const uint8_t Interrupt)
 }
 
 @ @<Func...@>=
-inline bool USB_INT_HasOccurred(const uint8_t Interrupt) ATTR_ALWAYS_INLINE
-  ATTR_WARN_UNUSED_RESULT;
+inline bool USB_INT_HasOccurred(const uint8_t Interrupt) ATTR_ALWAYS_INLINE;
 
 @ @c
 inline bool USB_INT_HasOccurred(const uint8_t Interrupt)
@@ -2794,7 +2787,7 @@ defined for convenience to give more readable code when used with the endpoint m
 #define ENDPOINT_CONTROLEP                      0
 
 @ @<Func...@>=
-inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes) ATTR_WARN_UNUSED_RESULT
+inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes)
   ATTR_CONST ATTR_ALWAYS_INLINE;
 @ @c
 inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes)
@@ -3084,7 +3077,7 @@ UECONX |= (1 << STALLRQC);
 for OUT direction endpoints.
 
 @<Header files@>=
-inline uint8_t Endpoint_Read_8(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+inline uint8_t Endpoint_Read_8(void) ATTR_ALWAYS_INLINE;
 inline uint8_t Endpoint_Read_8(void)
 {
   return UEDATX;
@@ -3125,7 +3118,7 @@ inline void Endpoint_Write_16_LE(const uint16_t Data)
 in little endian format, for OUT direction endpoints.
 
 @<Header files@>=
-inline uint32_t Endpoint_Read_32_LE(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+inline uint32_t Endpoint_Read_32_LE(void) ATTR_ALWAYS_INLINE;
 inline uint32_t Endpoint_Read_32_LE(void)
 {
 	union
@@ -4594,8 +4587,7 @@ be performed on the buffer.
 Returns number of bytes currently stored in the buffer.
 
 @<Header files@>=
-inline uint16_t RingBuffer_GetCount(RingBuffer_t* const Buffer) ATTR_WARN_UNUSED_RESULT
-  ATTR_NON_NULL_PTR_ARG(1);
+inline uint16_t RingBuffer_GetCount(RingBuffer_t* const Buffer) ATTR_NON_NULL_PTR_ARG(1);
 inline uint16_t RingBuffer_GetCount(RingBuffer_t* const Buffer)
 {
   uint16_t Count;
@@ -4623,8 +4615,7 @@ be performed on the buffer when there is a single writer thread.
 Returns number of free bytes in the buffer.
 
 @<Header files@>=
-inline uint16_t RingBuffer_GetFreeCount(RingBuffer_t* const Buffer) ATTR_WARN_UNUSED_RESULT
-  ATTR_NON_NULL_PTR_ARG(1);
+inline uint16_t RingBuffer_GetFreeCount(RingBuffer_t* const Buffer) ATTR_NON_NULL_PTR_ARG(1);
 inline uint16_t RingBuffer_GetFreeCount(RingBuffer_t* const Buffer)
 {
 	return (Buffer->Size - RingBuffer_GetCount(Buffer));
@@ -4643,8 +4634,7 @@ to reduce the time spent in atomicity locks.
 Returns true if the buffer contains no free space, false otherwise.
 
 @<Header files@>=
-inline bool RingBuffer_IsEmpty(RingBuffer_t* const Buffer) ATTR_WARN_UNUSED_RESULT
-  ATTR_NON_NULL_PTR_ARG(1);
+inline bool RingBuffer_IsEmpty(RingBuffer_t* const Buffer) ATTR_NON_NULL_PTR_ARG(1);
 inline bool RingBuffer_IsEmpty(RingBuffer_t* const Buffer)
 {
 	return (RingBuffer_GetCount(Buffer) == 0);
@@ -4659,8 +4649,7 @@ buffer overrun.
 Returns true if the buffer contains no free space, false otherwise.
 
 @<Header files@>=
-inline bool RingBuffer_IsFull(RingBuffer_t* const Buffer) ATTR_WARN_UNUSED_RESULT
-  ATTR_NON_NULL_PTR_ARG(1);
+inline bool RingBuffer_IsFull(RingBuffer_t* const Buffer) ATTR_NON_NULL_PTR_ARG(1);
 inline bool RingBuffer_IsFull(RingBuffer_t* const Buffer)
 {
   return (RingBuffer_GetCount(Buffer) == Buffer->Size);
@@ -4734,8 +4723,7 @@ inline uint8_t RingBuffer_Remove(RingBuffer_t* Buffer)
 Returns next data element stored in the buffer.
 
 @<Header files@>=
-inline uint8_t RingBuffer_Peek(RingBuffer_t* const Buffer) ATTR_WARN_UNUSED_RESULT
-  ATTR_NON_NULL_PTR_ARG(1);
+inline uint8_t RingBuffer_Peek(RingBuffer_t* const Buffer) ATTR_NON_NULL_PTR_ARG(1);
 inline uint8_t RingBuffer_Peek(RingBuffer_t* const Buffer)
 {
 	return *Buffer->Out;
