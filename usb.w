@@ -1355,8 +1355,6 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 
 				CDCInterfaceInfo->State.ControlLineStates.HostToDevice
  = USB_ControlRequest.wValue;
-
-				EVENT_CDC_Device_ControLineStateChanged(CDCInterfaceInfo);
 			}
 
 			break;
@@ -1625,11 +1623,6 @@ int CDC_Device_getchar_Blocking(FILE* Stream)
 	}
 
 	return ReceivedByte;
-}
-
-@ @c
-void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
-{
 }
 
 @ @c
@@ -4417,22 +4410,6 @@ typedef struct {
 } USB_ClassInfo_CDC_Device_t;
 
 @ @<Header files@>=
-/** yyy CDC class driver event for a control line state change on a CDC interface. This event fires
- each time the host requests a
- *  control line state change (containing the virtual serial control line states, such as DTR)
- and may be hooked in the
- *  user program by declaring a handler function with the same name and parameters listed here.
- The new control line states
- *  are available in the \c ControlLineStates.HostToDevice value inside the CDC interface
- structure passed as a parameter, set as
- *  a mask of \c CDC_CONTROL_LINE_OUT_* masks.
- *
- *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration
- and state.
- */
-void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
- ATTR_CONST ATTR_NON_NULL_PTR_ARG(1);
-
 /** CDC class driver event for a send break request sent to the device from the host. This is
  generally used to separate
  *  data or to indicate a special condition to the receiving device.
