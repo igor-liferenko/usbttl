@@ -2822,9 +2822,9 @@ this value reflects the maximum number of endpoints for the currently selected A
 @<Header files@>=
 enum Endpoint_WaitUntilReady_ErrorCodes_t
 {
-  ENDPOINT_READYWAIT_NoError = 0, /* Endpoint is ready for next packet, no error. */
+  ENDPOINT_READYWAIT_NoError = 0, /* Endpoint is ready for next packet, no error */
   ENDPOINT_READYWAIT_EndpointStalled = 1, /* The endpoint was stalled during the stream
-    transfer by the host or device. */
+    transfer by the host or device */
   ENDPOINT_READYWAIT_DeviceDisconnected = 2, /* Device was disconnected from the host while
                                                    waiting for the endpoint to become ready.
                                                 */
@@ -3652,7 +3652,7 @@ specific element names.
 @<Header files@>=
 typedef struct
 {
-  uint8_t bLength; /* size of the descriptor, in bytes. */
+  uint8_t bLength; /* size of the descriptor, in bytes */
   uint8_t bDescriptorType; /* type of the descriptor, either a value in
   \.{DTYPE\_*} or a value given by the specific class */
 } ATTR_PACKED USB_StdDescriptor_Header_t;
@@ -3673,14 +3673,14 @@ typedef struct {
 
   uint16_t USBSpecification; /* BCD of the supported USB specification;
     see |VERSION_BCD| utility macro */
-  uint8_t  Class; /* USB device class. */
-  uint8_t  SubClass; /* USB device subclass. */
-  uint8_t  Protocol; /* USB device protocol. */
+  uint8_t  Class; /* USB device class */
+  uint8_t  SubClass; /* USB device subclass */
+  uint8_t  Protocol; /* USB device protocol */
 
-  uint8_t  Endpoint0Size; /* size of the control (address 0) endpoint's bank in bytes. */
+  uint8_t  Endpoint0Size; /* size of the control (address 0) endpoint's bank in bytes */
 
-  uint16_t VendorID; /* vendor ID for the USB product. */
-  uint16_t ProductID; /* unique product ID for the USB product. */
+  uint16_t VendorID; /* vendor ID for the USB product */
+  uint16_t ProductID; /* unique product ID for the USB product */
   uint16_t ReleaseNumber; /* product release (version) number;
     see |VERSION_BCD| utility macro */
   uint8_t  ManufacturerStrIndex; /* string index for the manufacturer's name; the
@@ -3715,17 +3715,17 @@ Regardless of CPU architecture, these values should be stored as little endian.
 @<Header files@>=
 typedef struct
 {
-  uint8_t  bLength; /* size of the descriptor, in bytes. */
+  uint8_t  bLength; /* size of the descriptor, in bytes */
   uint8_t  bDescriptorType; /* type of the descriptor, either a value in
           \.{DTYPE\_*} or a value given by the specific class */
   uint16_t bcdUSB; /* BCD of the supported USB specification;
     see |VERSION_BCD| utility macro */
-  uint8_t  bDeviceClass; /* USB device class. */
-  uint8_t  bDeviceSubClass; /* USB device subclass. */
-  uint8_t  bDeviceProtocol; /* USB device protocol. */
-  uint8_t  bMaxPacketSize0; /* size of the control (address 0) endpoint's bank in bytes. */
-  uint16_t idVendor; /* vendor ID for the USB product. */
-  uint16_t idProduct; /* unique product ID for the USB product. */
+  uint8_t  bDeviceClass; /* USB device class */
+  uint8_t  bDeviceSubClass; /* USB device subclass */
+  uint8_t  bDeviceProtocol; /* USB device protocol */
+  uint8_t  bMaxPacketSize0; /* size of the control (address 0) endpoint's bank in bytes */
+  uint16_t idVendor; /* vendor ID for the USB product */
+  uint16_t idProduct; /* unique product ID for the USB product */
   uint16_t bcdDevice; /* product release (version) number;
     see |VERSION_BCD| utility macro */
   uint8_t  iManufacturer; /* string index for the manufacturer's name; the
@@ -3756,19 +3756,19 @@ element names.
 
 @<Header files@>=
 typedef struct {
-	USB_Descriptor_Header_t Header; /* descriptor header, including type and size. */
+	USB_Descriptor_Header_t Header; /* descriptor header, including type and size */
 
 	uint16_t USBSpecification; /* BCD of the supported USB specification;
           see |VERSION_BCD| utility macro */
-	uint8_t  Class; /* USB device class. */
-	uint8_t  SubClass; /* USB device subclass. */
-	uint8_t  Protocol; /* USB device protocol. */
+	uint8_t  Class; /* USB device class */
+	uint8_t  SubClass; /* USB device subclass */
+	uint8_t  Protocol; /* USB device protocol */
 
-	uint8_t  Endpoint0Size; /* size of the control (address 0) endpoint's bank in bytes. */
+	uint8_t  Endpoint0Size; /* size of the control (address 0) endpoint's bank in bytes */
 	uint8_t  NumberOfConfigurations; /* total number of configurations supported by
 	                                     the device.
                                 */
-	uint8_t  Reserved; /* reserved for future use, must be 0. */
+	uint8_t  Reserved; /* reserved for future use, must be 0 */
 } ATTR_PACKED USB_Descriptor_DeviceQualifier_t;
 
 @ Standard USB Device Qualifier Descriptor (USB-IF naming conventions).
@@ -3782,19 +3782,19 @@ non-standard LUFA specific element names.
 
 @<Header files@>=
 typedef struct {
-	uint8_t  bLength; /* size of the descriptor, in bytes. */
+	uint8_t  bLength; /* size of the descriptor, in bytes */
   uint8_t  bDescriptorType; /* type of the descriptor, either a value in
     \.{DTYPE\_*} or a value given by the specific class */
 	uint16_t bcdUSB; /* BCD of the supported USB specification;
           see |VERSION_BCD| utility macro */
-	uint8_t  bDeviceClass; /* USB device class. */
-	uint8_t  bDeviceSubClass; /* USB device subclass. */
-	uint8_t  bDeviceProtocol; /* USB device protocol. */
-	uint8_t  bMaxPacketSize0; /* size of the control (address 0) endpoint's bank in bytes. */
+	uint8_t  bDeviceClass; /* USB device class */
+	uint8_t  bDeviceSubClass; /* USB device subclass */
+	uint8_t  bDeviceProtocol; /* USB device protocol */
+	uint8_t  bMaxPacketSize0; /* size of the control (address 0) endpoint's bank in bytes */
 	uint8_t  bNumConfigurations; /* total number of configurations supported by
 	                              *   the device.
 	                              */
-	uint8_t  bReserved; /* reserved for future use, must be 0. */
+	uint8_t  bReserved; /* reserved for future use, must be 0 */
 } ATTR_PACKED USB_StdDescriptor_DeviceQualifier_t;
 
 @ Standard USB Configuration Descriptor (LUFA naming conventions).
@@ -3810,14 +3810,14 @@ Regardless of CPU architecture, these values should be stored as little endian.
 
 @<Header files@>=
 typedef struct {
-	USB_Descriptor_Header_t Header; /* descriptor header, including type and size. */
+	USB_Descriptor_Header_t Header; /* descriptor header, including type and size */
 
 	uint16_t TotalConfigurationSize; /* size of the configuration descriptor header,
 	                                     and all sub descriptors inside the configuration.
 	                                  */
-	uint8_t  TotalInterfaces; /* total number of interfaces in the configuration. */
+	uint8_t  TotalInterfaces; /* total number of interfaces in the configuration */
 
-	uint8_t  ConfigurationNumber; /* configuration index of the current configuration. */
+	uint8_t  ConfigurationNumber; /* configuration index of the current configuration */
   uint8_t  ConfigurationStrIndex; /* Index of a string descriptor describing the configuration */
 
 	uint8_t  ConfigAttributes; /* configuration attributes, comprised of a mask of
@@ -3844,15 +3844,15 @@ Regardless of CPU architecture, these values should be stored as little endian.
 @<Header files@>=
 typedef struct
 {
-	uint8_t  bLength; /* size of the descriptor, in bytes. */
+	uint8_t  bLength; /* size of the descriptor, in bytes */
   uint8_t  bDescriptorType; /* type of the descriptor, either a value in
     \.{DTYPE\_*} or a value given by the specific class */
 	uint16_t wTotalLength; /* size of the configuration descriptor header,
                               and all sub descriptors inside the configuration.
                            */
-	uint8_t  bNumInterfaces; /* total number of interfaces in the configuration. */
-	uint8_t  bConfigurationValue; /* configuration index of the current configuration. */
-	uint8_t  iConfiguration; /* index of a string descriptor describing the configuration. */
+	uint8_t  bNumInterfaces; /* total number of interfaces in the configuration */
+	uint8_t  bConfigurationValue; /* configuration index of the current configuration */
+	uint8_t  iConfiguration; /* index of a string descriptor describing the configuration */
 	uint8_t  bmAttributes; /* configuration attributes, comprised of a mask of
   \.{USB\_CONFIG\_ATTR\_*} masks; on all devices, this should include
   |USB_CONFIG_ATTR_RESERVED| at a minimum */
@@ -3873,21 +3873,21 @@ Regardless of CPU architecture, these values should be stored as little endian.
 
 @<Header files@>=
 typedef struct {
-	USB_Descriptor_Header_t Header; /* descriptor header, including type and size. */
+	USB_Descriptor_Header_t Header; /* descriptor header, including type and size */
 
-	uint8_t InterfaceNumber; /* index of the interface in the current configuration. */
+	uint8_t InterfaceNumber; /* index of the interface in the current configuration */
 	uint8_t AlternateSetting; /* alternate setting for the interface number. The same
 	                              interface number can have multiple alternate settings
 	                              with different endpoint configurations, which can be
 	                              selected by the host.
 	                           */
-	uint8_t TotalEndpoints; /* total number of endpoints in the interface. */
+	uint8_t TotalEndpoints; /* total number of endpoints in the interface */
 
-	uint8_t Class; /* interface class ID. */
-	uint8_t SubClass; /* interface subclass ID. */
-	uint8_t Protocol; /* interface protocol ID. */
+	uint8_t Class; /* interface class ID */
+	uint8_t SubClass; /* interface subclass ID */
+	uint8_t Protocol; /* interface protocol ID */
 
-	uint8_t InterfaceStrIndex; /* index of the string descriptor describing the interface. */
+	uint8_t InterfaceStrIndex; /* index of the string descriptor describing the interface */
 } ATTR_PACKED USB_Descriptor_Interface_t;
 
 @ Standard USB Interface Descriptor (USB-IF naming conventions).
@@ -3901,19 +3901,19 @@ specific element names.
 
 @<Header files@>=
 typedef struct {
-  uint8_t bLength; /* size of the descriptor, in bytes. */
+  uint8_t bLength; /* size of the descriptor, in bytes */
   uint8_t bDescriptorType; /* type of the descriptor, either a value in
     \.{DTYPE\_*} or a value given by the specific class */
-	uint8_t bInterfaceNumber; /* index of the interface in the current configuration. */
+	uint8_t bInterfaceNumber; /* index of the interface in the current configuration */
 	uint8_t bAlternateSetting; /* alternate setting for the interface number. The same
 	                               interface number can have multiple alternate settings
 	                               with different endpoint configurations, which can be
 	                               selected by the host.
 	                            */
-	uint8_t bNumEndpoints; /* total number of endpoints in the interface. */
-	uint8_t bInterfaceClass; /* interface class ID. */
-	uint8_t bInterfaceSubClass; /* interface subclass ID. */
-	uint8_t bInterfaceProtocol; /* interface protocol ID. */
+	uint8_t bNumEndpoints; /* total number of endpoints in the interface */
+	uint8_t bInterfaceClass; /* interface class ID */
+	uint8_t bInterfaceSubClass; /* interface subclass ID */
+	uint8_t bInterfaceProtocol; /* interface protocol ID */
 	uint8_t iInterface; /* index of the string descriptor describing the
 	                        interface.
 	                     */
@@ -3931,7 +3931,7 @@ Regardless of CPU architecture, these values should be stored as little endian.
 
 @<Header files@>=
 typedef struct {
-	USB_Descriptor_Header_t Header; /* descriptor header, including type and size. */
+	USB_Descriptor_Header_t Header; /* descriptor header, including type and size */
 
   uint8_t  EndpointAddress; /* logical address of the endpoint within the device for
     the current configuration, including direction mask.
@@ -3958,7 +3958,7 @@ Regardless of CPU architecture, these values should be stored as little endian.
 @<Header files@>=
 typedef struct
 {
-  uint8_t  bLength; /* size of the descriptor, in bytes. */
+  uint8_t  bLength; /* size of the descriptor, in bytes */
   uint8_t  bDescriptorType; /* type of the descriptor, either a value in
     \.{DTYPE\_*} or a value given by the specific class */
   uint8_t  bEndpointAddress; /* logical address of the endpoint within the
@@ -3991,7 +3991,7 @@ Regardless of CPU architecture, these values should be stored as little endian.
 @<Header files@>=
 typedef struct
 {
-	USB_Descriptor_Header_t Header; /* descriptor header, including type and size. */
+	USB_Descriptor_Header_t Header; /* descriptor header, including type and size */
 
 	wchar_t  UnicodeString[];
 } ATTR_PACKED USB_Descriptor_String_t;
@@ -4018,7 +4018,7 @@ Regardless of CPU architecture, these values should be stored as little endian.
 @<Header files@>=
 typedef struct
 {
-  uint8_t bLength; /* size of the descriptor, in bytes. */
+  uint8_t bLength; /* size of the descriptor, in bytes */
   uint8_t bDescriptorType; /* type of the descriptor, either a value in
     \.{DTYPE\_*} or a value given by the specific class */
   uint16_t bString[]; /* string data, as unicode characters (alternatively, string
@@ -4163,22 +4163,22 @@ notification structure when sent to the host via the CDC notification endpoint.
 #define CDC_DSUBTYPE_CS_INTERFACE_UNION 0x06 /* Union functional descriptor */
 
 @ @<Header files@>=
-/** Enum for the possible line encoding formats of a virtual serial port. */
+/** Enum for the possible line encoding formats of a virtual serial port */
 enum CDC_LineEncodingFormats_t
 {
-  CDC_LINEENCODING_OneStopBit          = 0, /* each frame contains one stop bit. */
-  CDC_LINEENCODING_OneAndAHalfStopBits = 1, /* each frame contains one and a half stop bits. */
-  CDC_LINEENCODING_TwoStopBits         = 2, /* each frame contains two stop bits. */
+  CDC_LINEENCODING_OneStopBit          = 0, /* each frame contains one stop bit */
+  CDC_LINEENCODING_OneAndAHalfStopBits = 1, /* each frame contains one and a half stop bits */
+  CDC_LINEENCODING_TwoStopBits         = 2, /* each frame contains two stop bits */
 };
 
-/** Enum for the possible line encoding parity settings of a virtual serial port. */
+/** Enum for the possible line encoding parity settings of a virtual serial port */
 enum CDC_LineEncodingParity_t
 {
-	CDC_PARITY_None  = 0, /* no parity bit mode on each frame. */
-	CDC_PARITY_Odd   = 1, /* odd parity bit mode on each frame. */
-	CDC_PARITY_Even  = 2, /* even parity bit mode on each frame. */
-	CDC_PARITY_Mark  = 3, /* mark parity bit mode on each frame. */
-	CDC_PARITY_Space = 4, /* space parity bit mode on each frame. */
+	CDC_PARITY_None  = 0, /* no parity bit mode on each frame */
+	CDC_PARITY_Odd   = 1, /* odd parity bit mode on each frame */
+	CDC_PARITY_Even  = 2, /* even parity bit mode on each frame */
+	CDC_PARITY_Mark  = 3, /* mark parity bit mode on each frame */
+	CDC_PARITY_Space = 4, /* space parity bit mode on each frame */
 };
 
 /** \brief CDC class-specific Functional Header Descriptor (LUFA naming conventions).
@@ -4197,7 +4197,7 @@ enum CDC_LineEncodingParity_t
 typedef struct
 {
   USB_Descriptor_Header_t Header; /* regular descriptor header containing the descriptor's
- type and length. */
+ type and length */
   uint8_t Subtype; /* sub type value used to distinguish between CDC class-specific descriptors,
                     *   must be \ref CDC_DSUBTYPE_CS_INTERFACE_HEADER.
                     */
@@ -4225,7 +4225,7 @@ typedef struct
  */
 typedef struct
 {
-  uint8_t  bFunctionLength; /* size of the descriptor, in bytes. */
+  uint8_t  bFunctionLength; /* size of the descriptor, in bytes */
   uint8_t  bDescriptorType; /* type of the descriptor, either a value in
     \.{DTYPE\_*} or a value
                            *   given by the specific class.
@@ -4256,7 +4256,7 @@ typedef struct
 typedef struct
 {
   USB_Descriptor_Header_t Header; /* regular descriptor header containing the descriptor's
- type and length. */
+ type and length */
   uint8_t                 Subtype; /* sub type value used to distinguish between CDC
  class-specific descriptors,
 	                             *   must be \ref CDC_DSUBTYPE_CS_INTERFACE_ACM.
@@ -4284,7 +4284,7 @@ typedef struct
  */
 typedef struct
 {
-	uint8_t bFunctionLength; /* size of the descriptor, in bytes. */
+	uint8_t bFunctionLength; /* size of the descriptor, in bytes */
 	uint8_t bDescriptorType; /* type of the descriptor, either a value in
   \.{DTYPE\_*} or a value
 	                          *   given by the specific class.
@@ -4315,15 +4315,15 @@ typedef struct
 typedef struct
 {
 	USB_Descriptor_Header_t Header; /* regular descriptor header containing the
- descriptor's type and length. */
+ descriptor's type and length */
 	uint8_t                 Subtype; /* sub type value used to distinguish between CDC
  class-specific descriptors,
 	                                  *   must be \ref CDC_DSUBTYPE_CS_INTERFACE_UNION.
 	                                  */
 	uint8_t                 MasterInterfaceNumber; /* interface number of the CDC
- Control interface. */
+ Control interface */
 	uint8_t                 SlaveInterfaceNumber; /* interface number of the CDC Data
- interface. */
+ interface */
 } ATTR_PACKED USB_CDC_Descriptor_Func_Union_t;
 
 /** \brief CDC class-specific Functional Union Descriptor (USB-IF naming conventions).
@@ -4340,7 +4340,7 @@ typedef struct
  */
 typedef struct
 {
-	uint8_t bFunctionLength; /* size of the descriptor, in bytes. */
+	uint8_t bFunctionLength; /* size of the descriptor, in bytes */
 	uint8_t bDescriptorType; /* type of the descriptor, either a value in
   \.{DTYPE\_*} or a value
 	                          *   given by the specific class.
@@ -4349,8 +4349,8 @@ typedef struct
  class-specific descriptors,
 	                             *   must be \ref CDC_DSUBTYPE_CS_INTERFACE_UNION.
 	                             */
-	uint8_t bMasterInterface; /* interface number of the CDC Control interface. */
-	uint8_t bSlaveInterface0; /* interface number of the CDC Data interface. */
+	uint8_t bMasterInterface; /* interface number of the CDC Control interface */
+	uint8_t bSlaveInterface0; /* interface number of the CDC Data interface */
 } ATTR_PACKED USB_CDC_StdDescriptor_FunctionalUnion_t;
 
 /** \brief CDC Virtual Serial Port Line Encoding Settings Structure.
@@ -4363,14 +4363,14 @@ typedef struct
  */
 typedef struct
 {
-	uint32_t BaudRateBPS; /* baud rate of the virtual serial port, in bits per second. */
+	uint32_t BaudRateBPS; /* baud rate of the virtual serial port, in bits per second */
 	uint8_t  CharFormat; /* character format of the virtual serial port, a value from the
 			  *   \ref CDC_LineEncodingFormats_t enum.
 		  */
 	uint8_t  ParityType; /* parity setting of the virtual serial port, a value from the
 		  *   \ref CDC_LineEncodingParity_t enum.
 		  */
-	uint8_t  DataBits; /* bits of data per character of the virtual serial port. */
+	uint8_t  DataBits; /* bits of data per character of the virtual serial port */
 } ATTR_PACKED CDC_LineEncoding_t;
 @* CDCClassDevice.
 @<Header files@>=
@@ -4416,12 +4416,12 @@ typedef struct
   struct
   {
     uint8_t ControlInterfaceNumber; /* interface number of the CDC control interface within
- the device. */
+ the device */
 
-    USB_Endpoint_Table_t DataINEndpoint; /* data IN endpoint configuration table. */
-    USB_Endpoint_Table_t DataOUTEndpoint; /* data OUT endpoint configuration table. */
+    USB_Endpoint_Table_t DataINEndpoint; /* data IN endpoint configuration table */
+    USB_Endpoint_Table_t DataOUTEndpoint; /* data OUT endpoint configuration table */
     USB_Endpoint_Table_t NotificationEndpoint; /* notification IN Endpoint configuration
- table. */
+ table */
   } Config; /* config data for the USB class interface within the device. All elements in
  this section
            *   <b>must</b> be set or the interface will fail to enumerate and operate correctly.
@@ -4440,7 +4440,7 @@ typedef struct
 		    *   masks.
 		    */
   } ControlLineStates; /* current states of the virtual serial port's control lines between
- the device and host. */
+ the device and host */
 
   CDC_LineEncoding_t LineEncoding; /* line encoding used in the virtual serial port, for the
  device's information.
@@ -4606,22 +4606,22 @@ LEDs_ChangeLEDs((LEDS_LED1 | LEDS_LED2), LEDS_LED1);
 
  */
 
-/** LED mask for the first LED on the board. */
+/** LED mask for the first LED on the board */
 #define LEDS_LED1        (1 << 4)
 
-/** LED mask for the second LED on the board. */
+/** LED mask for the second LED on the board */
 #define LEDS_LED2        (1 << 5)
 
-/** LED mask for the third LED on the board. */
+/** LED mask for the third LED on the board */
 #define LEDS_LED3        (1 << 7)
 
-/** LED mask for the fourth LED on the board. */
+/** LED mask for the fourth LED on the board */
 #define LEDS_LED4        (1 << 6)
 
-/** LED mask for all the LEDs on the board. */
+/** LED mask for all the LEDs on the board */
 #define LEDS_ALL_LEDS    (LEDS_LED1 | LEDS_LED2 | LEDS_LED3 | LEDS_LED4)
 
-/** LED mask for none of the board LEDs. */
+/** LED mask for none of the board LEDs */
 #define LEDS_NO_LEDS     0
 
 inline void LEDs_Init(void)
@@ -4723,12 +4723,12 @@ Type define for a new ring buffer object. Buffers should be initialized via a ca
 
 @<Header files@>=
 typedef struct {
-	uint8_t* In; /* current storage location in the circular buffer. */
-	uint8_t* Out; /* current retrieval location in the circular buffer. */
-	uint8_t* Start; /* pointer to the start of the buffer's underlying storage array. */
-	uint8_t* End; /* pointer to the end of the buffer's underlying storage array. */
-	uint16_t Size; /* size of the buffer's underlying storage array. */
-	uint16_t Count; /* number of bytes currently stored in the buffer. */
+	uint8_t* In; /* current storage location in the circular buffer */
+	uint8_t* Out; /* current retrieval location in the circular buffer */
+	uint8_t* Start; /* pointer to the start of the buffer's underlying storage array */
+	uint8_t* End; /* pointer to the end of the buffer's underlying storage array */
+	uint16_t Size; /* size of the buffer's underlying storage array */
+	uint16_t Count; /* number of bytes currently stored in the buffer */
 } RingBuffer_t;
 
 @ Initializes a ring buffer ready for use. Buffers must be initialized via this function
