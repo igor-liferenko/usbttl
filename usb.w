@@ -1362,6 +1362,19 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 	}
 }
 
+@ Configures the endpoints of a given CDC interface, ready for use. This should be linked to
+the library
+|EVENT_USB_Device_ConfigurationChanged| event so that the endpoints are configured when
+the configuration containing the given CDC interface is selected.
+
+|CDCInterfaceInfo| -- pointer to a structure containing a CDC Class configuration and state.
+
+Returns true if the endpoints were successfully configured, false otherwise.
+
+@<Func...@>=
+bool CDC_Device_ConfigureEndpoints(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
+  ATTR_NON_NULL_PTR_ARG(1);
+
 @ @c
 bool CDC_Device_ConfigureEndpoints(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
@@ -4381,20 +4394,6 @@ typedef struct {
 } USB_ClassInfo_CDC_Device_t;
 
 @ @<Header files@>=
-/** Configures the endpoints of a given CDC interface, ready for use. This should be linked to
- the library
- *  \ref EVENT_USB_Device_ConfigurationChanged() event so that the endpoints are configured when
- the configuration containing
- *  the given CDC interface is selected.
- *
- *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class configuration
- and state.
- *
- *  \return Boolean \c true if the endpoints were successfully configured, \c false otherwise.
- */
-bool CDC_Device_ConfigureEndpoints(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
- ATTR_NON_NULL_PTR_ARG(1);
-
 /** General management task for a given CDC class interface, required for the correct operation
  of the interface. This should
  *  be called frequently in the main program loop, before the master USB management task
