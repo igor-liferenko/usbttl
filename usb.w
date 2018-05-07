@@ -330,7 +330,7 @@ Return true if a character can be queued for transmission immediately, false oth
 @ LED mask for the library LED driver, to indicate that the USB interface is not ready.
 
 @<Indicate that USB device is disconnected@>=
-LEDs_SetAllLEDs(LEDS_LED1);
+set_only_these_leds(LEDS_LED1);
 
 @ Circular buffer to hold data from the host before it is sent to the device via the
 serial port.
@@ -412,7 +412,7 @@ void EVENT_USB_Device_Connect(void);
 @ @c
 void EVENT_USB_Device_Connect(void)
 {
-	LEDs_SetAllLEDs(LEDS_LED2 | LEDS_LED3);
+	set_only_these_leds(LEDS_LED2 | LEDS_LED3);
 }
 
 @ Event handler for USB device disconnect event. This event fires when the microcontroller is in
@@ -2236,9 +2236,9 @@ void EVENT_USB_Device_ConfigurationChanged(void);
 void EVENT_USB_Device_ConfigurationChanged(void)
 {
   if (CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface))
-    LEDs_SetAllLEDs(LEDMASK_USB_READY);
+    set_only_these_leds(LEDMASK_USB_READY);
   else
-    LEDs_SetAllLEDs(LEDMASK_USB_ERROR);
+    set_only_these_leds(LEDMASK_USB_ERROR);
 }
 
 @ Once initialized, it is important to maintain the class driver's state by repeatedly
@@ -2256,7 +2256,7 @@ int main(void)
 {
       SetupHardware();
 
-      LEDs_SetAllLEDs(LEDMASK_USB_NOTREADY);
+      set_only_these_leds(LEDMASK_USB_NOTREADY);
 
       for (;;) {
           if (USB_DeviceState != DEVICE_STATE_CONFIGURED)
@@ -4456,7 +4456,6 @@ LEDS\_LED4  Green  Bicolor Indicator 2  High           PORTD.7\cr
 #define LEDS_LED3 (1 << 7)
 #define LEDS_LED4 (1 << 6)
 #define LEDS_ALL_LEDS (LEDS_LED1 | LEDS_LED2 | LEDS_LED3 | LEDS_LED4)
-#define LEDS_NO_LEDS     0
 
 @ Initialize the board LED driver before first use.
 
@@ -4464,14 +4463,8 @@ LEDS\_LED4  Green  Bicolor Indicator 2  High           PORTD.7\cr
 DDRD  |=  LEDS_ALL_LEDS;
 PORTD &= ~LEDS_ALL_LEDS;
 
-@ @<Func...@>=
-inline void LEDs_SetAllLEDs(const uint8_t LEDMask) ATTR_ALWAYS_INLINE;
-
-@ @c
-inline void LEDs_SetAllLEDs(const uint8_t LEDMask)
-{
-	PORTD = ((PORTD & ~LEDS_ALL_LEDS) | LEDMask);
-}
+@ @<Header files@>=
+#define set_only_these_leds(mask) PORTD = ((PORTD & ~LEDS_ALL_LEDS) | mask)
 
 @** RingBuffer.
 Lightweight ring (circular) buffer, for fast insertion/deletion of bytes.
