@@ -925,6 +925,9 @@ void USB_DeviceTask(void)
 
 @* USB controller interrupt service routine management.
 
+@ @<Func...@>=
+void USB_INT_DisableAllInterrupts(void);
+
 @ @c
 void USB_INT_DisableAllInterrupts(void)
 {
@@ -932,6 +935,10 @@ void USB_INT_DisableAllInterrupts(void)
 	UDIEN   = 0;
 }
 
+@ @<Func...@>=
+void USB_INT_ClearAllInterrupts(void);
+
+@ @c
 void USB_INT_ClearAllInterrupts(void)
 {
 	USBINT = 0;
@@ -2268,13 +2275,14 @@ int main(void)
       }
 }
 
-@ The final standardized Device Class Driver function is the Control Request handler function
+@ {\emergencystretch=2cm The final standardized Device Class Driver function is the Control
+Request handler function
 |CDC_Device_ProcessControlRequest|, which should be called when the
 |EVENT_USB_Device_ControlRequest| event fires. This function should also be called for
 each class driver instance, using the address of the instance to operate on as the function's
 parameter. The request handler will abort if it is determined that the current request is not
 targeted at the given class driver instance, thus these methods can safely be called
-one-after-another in the event handler with no form of error checking.
+one-after-another in the event handler with no form of error checking.\par}
 
 Event handler for USB Control Request reception event.
 This event fires when a the USB host issues a control request
@@ -2314,13 +2322,14 @@ also define a set of events (identifiable by their prefix of \\{EVENT\_*} in the
 function's name), which
 the user application may choose to implement, or ignore if not needed.
 
-The individual Device Mode Class Driver documentation contains more information on the
+{\emergencystretch=2cm The individual Device Mode Class Driver documentation contains more
+information on the
 non-standardized,
 class-specific functions which the user application can then use on the driver instances,
 such as data
 read and write routines. See each driver's individual documentation for more information
 on the
-class-specific functions.
+class-specific functions.\par}
 
 @* CompilerSpecific.
 Compiler specific definitions for code optimization and correctness.
@@ -2482,25 +2491,23 @@ GCC_MEMORY_BARRIER();
 cli();
 GCC_MEMORY_BARRIER();
 
-@* USBInterrupt AVR8.
+@* USBInterrupt.
+USB Controller Interrupt definitions.
+
+Contains definitions required for the correct handling of low level USB
+service routine interrupts from the USB controller.
+
 @<Header files@>=
-/** USB Controller Interrupt definitions for the AVR8 microcontrollers.
- *
- *  This file contains definitions required for the correct handling of low level USB
- service routine interrupts
- *  from the USB controller.
- */
+#define USB_INT_VBUSTI 0
+#define USB_INT_WAKEUPI 2
+#define USB_INT_SUSPI 3
+#define USB_INT_EORSTI 4
+#define USB_INT_RXSTPI 6
 
-enum USB_Interrupts_t
-{
-	USB_INT_VBUSTI  = 0,
-	USB_INT_WAKEUPI = 2,
-	USB_INT_SUSPI   = 3,
-	USB_INT_EORSTI  = 4,
-	USB_INT_RXSTPI  = 6,
-};
-
+@ @<Func...@>=
 inline void USB_INT_Enable(const uint8_t Interrupt) ATTR_ALWAYS_INLINE;
+
+@ @c
 inline void USB_INT_Enable(const uint8_t Interrupt)
 {
 	switch (Interrupt)
@@ -2527,7 +2534,10 @@ inline void USB_INT_Enable(const uint8_t Interrupt)
 	}
 }
 
+@ @<Func...@>=
 inline void USB_INT_Disable(const uint8_t Interrupt) ATTR_ALWAYS_INLINE;
+
+@ @c
 inline void USB_INT_Disable(const uint8_t Interrupt)
 {
 	switch (Interrupt)
@@ -2552,7 +2562,10 @@ inline void USB_INT_Disable(const uint8_t Interrupt)
 	}
 }
 
+@ @<Func...@>=
 inline void USB_INT_Clear(const uint8_t Interrupt) ATTR_ALWAYS_INLINE;
+
+@ @c
 inline void USB_INT_Clear(const uint8_t Interrupt)
 {
 	switch (Interrupt)
@@ -2577,7 +2590,10 @@ inline void USB_INT_Clear(const uint8_t Interrupt)
 	}
 }
 
+@ @<Func...@>=
 inline bool USB_INT_IsEnabled(const uint8_t Interrupt) ATTR_ALWAYS_INLINE ATTR_WARN_UNUSED_RESULT;
+
+@ @c
 inline bool USB_INT_IsEnabled(const uint8_t Interrupt)
 {
 	switch (Interrupt)
@@ -2597,8 +2613,11 @@ inline bool USB_INT_IsEnabled(const uint8_t Interrupt)
 	}
 }
 
+@ @<Func...@>=
 inline bool USB_INT_HasOccurred(const uint8_t Interrupt) ATTR_ALWAYS_INLINE
   ATTR_WARN_UNUSED_RESULT;
+
+@ @c
 inline bool USB_INT_HasOccurred(const uint8_t Interrupt)
 {
 	switch (Interrupt)
@@ -2618,8 +2637,6 @@ inline bool USB_INT_HasOccurred(const uint8_t Interrupt)
 	}
 }
 
-void USB_INT_ClearAllInterrupts(void);
-void USB_INT_DisableAllInterrupts(void);
 @* USBController.
 USB Controller definitions for general USB controller management.
 Functions, macros, variables, enums and types related to the setup and management of the USB
