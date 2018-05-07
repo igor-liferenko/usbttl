@@ -1143,7 +1143,7 @@ UDCON  &= ~(1 << DETACH);
 @ @<Set full speed@>=
 UDCON &= ~(1 << LSM);
 
-@* USB Endpoint definitions for the AVR8 microcontrollers.
+@* USB Endpoint definitions.
 
 @ Configures a table of endpoint descriptions, in sequence. This function can be used to
 configure multiple
@@ -1152,7 +1152,7 @@ endpoints at the same time.
 Note, that endpoints with a zero address will be ignored, thus this function cannot be used
 to configure the control endpoint.
 
-|Table| -- pointer to a table of endpoint descriptions.
+|Table| -- pointer to a table of endpoint descriptions. \par
 |Entries| -- number of entries in the endpoint table to configure.
 
 Return true if all endpoints configured successfully, false otherwise.
@@ -1280,7 +1280,7 @@ is active (i.e. enumerated to a host) the frame number is incremented by one.
 @<Get USB frame number@>=
 UDFNUM
 
-@* Device mode driver for the library USB CDC Class driver.
+@* USB CDC Class driver.
 
 @ Processes incoming control requests from the host, that are directed to the given CDC
 class interface. This should be
@@ -1941,7 +1941,8 @@ Returns true if the currently selected endpoint is enabled, false otherwise.
 @<Reset data toggle of endpoint@>=
 UECONX |= (1 << RSTDT);
 
-@* Endpoint data stream transmission and reception management for the AVR8 microcontrollers.
+@* Endpoint data stream.
+Endpoint data stream transmission and reception management.
 
 @ Writes the given number of bytes to the CONTROL type endpoint from the given buffer in
 little endian,
@@ -2165,7 +2166,7 @@ slightly differently, and thus will be explained separately. For information on 
 specific class driver, read
 the class driver's module documentation.
 
-@*2 Device Mode Class Drivers
+@*2 Device Mode Class Drivers.
 Implementing a Device Mode Class Driver in a user application requires a number of steps
 to be followed. Firstly,
 the module configuration and state structure must be added to the project source.
@@ -3506,7 +3507,8 @@ support self powered mode, as indicated in the device descriptors.
 @<Global var...@>=
 bool USB_Device_CurrentlySelfPowered;
 
-@* Endpoint data stream transmission and reception management.
+@* Endpoint data stream.
+Endpoint data stream transmission and reception management.
 
 Functions, macros, variables, enums and types related to data reading and writing of
 data streams from and to endpoints.
