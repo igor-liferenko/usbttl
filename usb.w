@@ -374,7 +374,7 @@ MCUSR &= ~(1 << WDRF);
 wdt_disable();
 
 @ @<Hardware initialization@>=
-LEDs_Init();
+@<Init LEDs@>@;
 USB_Init();
 
 @ Event handler for the library USB Connection event.
@@ -4439,27 +4439,6 @@ typedef struct {
 } USB_ClassInfo_CDC_Device_t;
 
 @** LEDs.
-LED board hardware driver for user controllable LEDs.
-
-Hardware LEDs driver. This provides an easy to use driver for the hardware LEDs. It
-provides an interface to configure, test and change the status of all the board LEDs.
-
-It will include the appropriate built-in board driver header file.
-
-Following is an example of how this module may be used within a typical
-application.
-
-@(/dev/null@>=
-LEDs_Init(); /* initialize the board LED driver before first use */
-
-LEDs_SetAllLEDs(LEDS_LED1); /* turn on LED 1 */
-
-LEDs_SetAllLEDs(LEDS_ALL_LEDS); /* turn on all LEDs */
-
-LEDs_ChangeLEDs((LEDS_LED1 | LEDS_LED2), LEDS_LED1); /* turn on LED 1, turn off LED 2,
-  leaving LEDs 3 and 4 in their current state */
-
-@* USBKEY LEDs.
 
 $$\vbox{\halign{\tt#\cr
 
@@ -4479,48 +4458,19 @@ LEDS\_LED4  Green  Bicolor Indicator 2  High           PORTD.7\cr
 #define LEDS_ALL_LEDS (LEDS_LED1 | LEDS_LED2 | LEDS_LED3 | LEDS_LED4)
 #define LEDS_NO_LEDS     0
 
-@ @<Header files@>=
-inline void LEDs_Init(void)
-{
-	DDRD  |=  LEDS_ALL_LEDS;
-	PORTD &= ~LEDS_ALL_LEDS;
-}
+@ Initialize the board LED driver before first use.
 
-inline void LEDs_Disable(void)
-{
-	DDRD  &= ~LEDS_ALL_LEDS;
-	PORTD &= ~LEDS_ALL_LEDS;
-}
+@<Init LEDs@>=
+DDRD  |=  LEDS_ALL_LEDS;
+PORTD &= ~LEDS_ALL_LEDS;
 
-inline void LEDs_TurnOnLEDs(const uint8_t LEDMask)
-{
-	PORTD |= LEDMask;
-}
+@ @<Func...@>=
+inline void LEDs_SetAllLEDs(const uint8_t LEDMask) ATTR_ALWAYS_INLINE;
 
-inline void LEDs_TurnOffLEDs(const uint8_t LEDMask)
-{
-	PORTD &= ~LEDMask;
-}
-
+@ @c
 inline void LEDs_SetAllLEDs(const uint8_t LEDMask)
 {
 	PORTD = ((PORTD & ~LEDS_ALL_LEDS) | LEDMask);
-}
-
-inline void LEDs_ChangeLEDs(const uint8_t LEDMask, const uint8_t ActiveMask)
-{
-	PORTD = ((PORTD & ~LEDMask) | ActiveMask);
-}
-
-inline void LEDs_ToggleLEDs(const uint8_t LEDMask)
-{
-	PIND  = LEDMask;
-}
-
-inline uint8_t LEDs_GetLEDs(void) ATTR_WARN_UNUSED_RESULT;
-inline uint8_t LEDs_GetLEDs(void)
-{
-	return (PORTD & LEDS_ALL_LEDS);
 }
 
 @** RingBuffer.
