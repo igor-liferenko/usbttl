@@ -1593,6 +1593,18 @@ void CDC_Device_CreateStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 	fdev_set_udata(Stream, CDCInterfaceInfo);
 }
 
+@ Identical to |CDC_Device_CreateStream|, except that reads are blocking until the
+calling stream function terminates
+the transfer. While blocking, the USB and CDC service tasks are called repeatedly to
+maintain USB communications.
+
+|CDCInterfaceInfo| -- pointer to a structure containing a CDC Class configuration and state. \par
+|Stream| -- pointer to a FILE structure where the created stream should be placed.
+
+@<Func...@>=
+void CDC_Device_CreateBlockingStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
+                           FILE* const Stream) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
+
 @ @c
 void CDC_Device_CreateBlockingStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                                      FILE* const Stream)
@@ -4425,22 +4437,6 @@ typedef struct {
   } State; /* state data for the USB class interface within the device. All elements in this
     section are reset to their defaults when the interface is enumerated */
 } USB_ClassInfo_CDC_Device_t;
-
-@ @<Header files@>=
-/** yyy Identical to \ref CDC_Device_CreateStream(), except that reads are blocking until the
- calling stream function terminates
- *  the transfer. While blocking, the USB and CDC service tasks are called repeatedly to
- maintain USB communications.
- *
- *  \note This function is not available on all microcontroller architectures.
- *
- *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class
- configuration and state.
- *  \param[in,out] Stream            Pointer to a FILE structure where the created stream
- should be placed.
- */
-void CDC_Device_CreateBlockingStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
-                           FILE* const Stream) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
 
 @** LEDs.
 LED board hardware driver for user controllable LEDs.
