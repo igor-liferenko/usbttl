@@ -4304,17 +4304,15 @@ typedef struct {
 	uint8_t bSlaveInterface0; /* interface number of the CDC Data interface */
 } ATTR_PACKED USB_CDC_StdDescriptor_FunctionalUnion_t;
 
-@ @<Header files@>=
-/** \brief CDC Virtual Serial Port Line Encoding Settings Structure.
- *
- *  Type define for a CDC Line Encoding structure, used to hold the various encoding
- parameters for a virtual
- *  serial port.
- *
- *  \note Regardless of CPU architecture, these values should be stored as little endian.
- */
-typedef struct
-{
+@ CDC Virtual Serial Port Line Encoding Settings Structure.
+
+Type define for a CDC Line Encoding structure, used to hold the various encoding
+parameters for a virtual serial port.
+
+Regardless of CPU architecture, these values should be stored as little endian.
+
+@<Header files@>=
+typedef struct {
   uint32_t BaudRateBPS; /* baud rate of the virtual serial port, in bits per second */
   uint8_t  CharFormat; /* character format of the virtual serial port, a
     \.{CDC\_LINEENCODING\_*} value */
@@ -4323,87 +4321,66 @@ typedef struct
   uint8_t  DataBits; /* bits of data per character of the virtual serial port */
 } ATTR_PACKED CDC_LineEncoding_t;
 
-@* CDCClassDevice.
+@* CDC Class driver.
+
+There are several major drawbacks to the CDC-ACM standard USB class, however
+it is very standardized and thus usually available as a built-in driver on
+most platforms, and so is a better choice than a proprietary serial class.
+
+One major issue with CDC-ACM is that it requires two Interface descriptors,
+which will upset most hosts when part of a multi-function "Composite" USB
+device. This is because each interface will be loaded into a separate driver
+instance, causing the two interfaces be become unlinked. To prevent this, you
+should use the "Interface Association Descriptor" addendum to the USB 2.0 standard
+which is available on most OSes when creating Composite devices.
+
+Another major oversight is that there is no mechanism for the host to notify the
+device that there is a data sink on the host side ready to accept data. This
+means that the device may try to send data while the host isn't listening, causing
+lengthy blocking timeouts in the transmission routines. It is thus highly recommended
+that the virtual serial line DTR (Data Terminal Ready) signal be used where possible
+to determine if a host application is ready for data.
+
+http://www.recursion.jp/prose/avrcdc/
+
+@ CDC Class Device Mode Configuration and State Structure.
+
+Class state structure. An instance of this structure should be made for each CDC interface
+within the user application, and passed to each of the CDC class driver functions as the
+CDCInterfaceInfo parameter. This stores each CDC interface's configuration and state
+information.
+
 @<Header files@>=
-/** Device mode driver for the library USB CDC Class driver.
- *
- *  Device mode driver for the library USB CDC Class driver.
- *
- */
-
-/** \section Sec_USBClassCDCDevice_ModDescription Module Description
- *  Device Mode USB Class driver framework interface, for the CDC USB Class driver.
- *
- *  \note There are several major drawbacks to the CDC-ACM standard USB class, however
- *        it is very standardized and thus usually available as a built-in driver on
- *        most platforms, and so is a better choice than a proprietary serial class.
- *
- *        One major issue with CDC-ACM is that it requires two Interface descriptors,
- *        which will upset most hosts when part of a multi-function "Composite" USB
- *        device. This is because each interface will be loaded into a separate driver
- *        instance, causing the two interfaces be become unlinked. To prevent this, you
- *        should use the "Interface Association Descriptor" addendum to the USB 2.0 standard
- *        which is available on most OSes when creating Composite devices.
- *
- *        Another major oversight is that there is no mechanism for the host to notify the
- *        device that there is a data sink on the host side ready to accept data. This
- *        means that the device may try to send data while the host isn't listening, causing
- *        lengthy blocking timeouts in the transmission routines. It is thus highly recommended
- *        that the virtual serial line DTR (Data Terminal Ready) signal be used where possible
- *        to determine if a host application is ready for data.
- *
- *   http://www.recursion.jp/prose/avrcdc/
- */
-
-/** \brief CDC Class Device Mode Configuration and State Structure.
- *
- *  Class state structure. An instance of this structure should be made for each CDC interface
- *  within the user application, and passed to each of the CDC class driver functions as the
- *  CDCInterfaceInfo parameter. This stores each CDC interface's configuration and state
- information.
- */
-typedef struct
-{
+typedef struct {
   struct
   {
     uint8_t ControlInterfaceNumber; /* interface number of the CDC control interface within
- the device */
+      the device */
 
     USB_Endpoint_Table_t DataINEndpoint; /* data IN endpoint configuration table */
     USB_Endpoint_Table_t DataOUTEndpoint; /* data OUT endpoint configuration table */
     USB_Endpoint_Table_t NotificationEndpoint; /* notification IN Endpoint configuration
- table */
+      table */
   } Config; /* config data for the USB class interface within the device. All elements in
- this section
-           *   <b>must</b> be set or the interface will fail to enumerate and operate correctly.
-           */
-  struct
-  {
-    struct
-    {
+    this section must be set or the interface will fail to enumerate and operate correctly */
+  struct {
+    struct {
       uint16_t HostToDevice; /* control line states from the host to device, as a set of
- \c CDC_CONTROL_LINE_OUT_*
-			    *   masks. This value is updated each time
- \ref CDC_DeviceTask() is called.
-			    */
-    uint16_t DeviceToHost; /* control line states from the device to host, as a set of
- \c CDC_CONTROL_LINE_IN_*
-		    *   masks.
-		    */
+        \.{CDC\_CONTROL\_LINE\_OUT\_*} masks. This value is updated each time
+        |CDC_DeviceTask| is called */
+      uint16_t DeviceToHost; /* control line states from the device to host, as a set of
+        \.{CDC\_CONTROL\_LINE\_IN\_*} masks */
   } ControlLineStates; /* current states of the virtual serial port's control lines between
- the device and host */
+    the device and host */
 
   CDC_LineEncoding_t LineEncoding; /* line encoding used in the virtual serial port, for the
- device's information.
-                         *   This is generally only used if the virtual serial port data is to be
-                                  *   reconstructed on a physical UART.
-                                  */
+    device's information; this is generally only used if the virtual serial port data is to be
+    reconstructed on a physical UART */
   } State; /* state data for the USB class interface within the device. All elements in this
- section
-	          *   are reset to their defaults when the interface is enumerated.
-	          */
+    section are reset to their defaults when the interface is enumerated */
 } USB_ClassInfo_CDC_Device_t;
 
+@ @<Header files@>=
 /** Configures the endpoints of a given CDC interface, ready for use. This should be linked to
  the library
  *  \ref EVENT_USB_Device_ConfigurationChanged() event so that the endpoints are configured when
