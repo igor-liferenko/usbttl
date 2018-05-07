@@ -472,10 +472,6 @@ ISR(USART1_RX_vect, ISR_BLOCK)
 |CDCInterfaceInfo| is a pointer to the CDC
 class interface configuration structure.
 
-@d CDC_LINEENCODING_TWO_STOP_BITS 2 /* each frame contains two stop bits */
-@d CDC_PARITY_EVEN 2
-@d CDC_PARITY_ODD 1
-
 @c
 void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
@@ -4162,25 +4158,18 @@ notification structure when sent to the host via the CDC notification endpoint.
 #define CDC_DSUBTYPE_CS_INTERFACE_ACM 0x02 /* Abstract Control Model functional descriptor */
 #define CDC_DSUBTYPE_CS_INTERFACE_UNION 0x06 /* Union functional descriptor */
 
+@ Possible line encoding formats of a virtual serial port.
+
+@<Header files@>=
+#define CDC_LINEENCODING_TWO_STOP_BITS 2 /* each frame contains two stop bits */
+
+@ Possible line encoding parity settings of a virtual serial port.
+
+@<Header files@>=
+#define CDC_PARITY_EVEN 2 /* even parity bit mode on each frame */
+#define CDC_PARITY_ODD 1 /* odd parity bit mode on each frame */
+
 @ @<Header files@>=
-/** Enum for the possible line encoding formats of a virtual serial port */
-enum CDC_LineEncodingFormats_t
-{
-  CDC_LINEENCODING_OneStopBit          = 0, /* each frame contains one stop bit */
-  CDC_LINEENCODING_OneAndAHalfStopBits = 1, /* each frame contains one and a half stop bits */
-  CDC_LINEENCODING_TwoStopBits         = 2, /* each frame contains two stop bits */
-};
-
-/** Enum for the possible line encoding parity settings of a virtual serial port */
-enum CDC_LineEncodingParity_t
-{
-	CDC_PARITY_None  = 0, /* no parity bit mode on each frame */
-	CDC_PARITY_Odd   = 1, /* odd parity bit mode on each frame */
-	CDC_PARITY_Even  = 2, /* even parity bit mode on each frame */
-	CDC_PARITY_Mark  = 3, /* mark parity bit mode on each frame */
-	CDC_PARITY_Space = 4, /* space parity bit mode on each frame */
-};
-
 /** \brief CDC class-specific Functional Header Descriptor (LUFA naming conventions).
  *
  *  Type define for a CDC class-specific functional header descriptor. This indicates to the
@@ -4363,15 +4352,14 @@ typedef struct
  */
 typedef struct
 {
-	uint32_t BaudRateBPS; /* baud rate of the virtual serial port, in bits per second */
-	uint8_t  CharFormat; /* character format of the virtual serial port, a value from the
-			  *   \ref CDC_LineEncodingFormats_t enum.
-		  */
-	uint8_t  ParityType; /* parity setting of the virtual serial port, a value from the
-		  *   \ref CDC_LineEncodingParity_t enum.
-		  */
-	uint8_t  DataBits; /* bits of data per character of the virtual serial port */
+  uint32_t BaudRateBPS; /* baud rate of the virtual serial port, in bits per second */
+  uint8_t  CharFormat; /* character format of the virtual serial port, a
+    \.{CDC\_LINEENCODING\_*} value */
+  uint8_t  ParityType; /* parity setting of the virtual serial port, a
+    \.{CDC\_PARITY\_*} value */
+  uint8_t  DataBits; /* bits of data per character of the virtual serial port */
 } ATTR_PACKED CDC_LineEncoding_t;
+
 @* CDCClassDevice.
 @<Header files@>=
 /** Device mode driver for the library USB CDC Class driver.
