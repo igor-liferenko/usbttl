@@ -1559,6 +1559,32 @@ int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInf
 	return ReceivedByte;
 }
 
+@ Creates a standard character stream for the given CDC Device instance so that it can be
+used with all the regular
+functions in the standard <stdio.h> library that accept a file stream as a destination
+(e.g. \\{fprintf}). The created
+stream is bidirectional and can be used for both input and output functions.
+
+Reading data from this stream is non-blocking, i.e. in most instances, complete strings
+cannot be read in by a single
+fetch, as the endpoint will not be ready at some point in the transmission, aborting the
+transfer. However, this may
+be used when the read data is processed byte-per-bye (via \c getc()) or when the user
+application will implement its own
+line buffering.
+
+The created stream can be given as \\{stdout} if desired to direct the standard
+output from all \.{<stdio.h>} functions to the given CDC interface.
+
+|CDCInterfaceInfo| -- pointer to a structure containing a CDC Class
+configuration and state. \par
+|Stream| -- pointer to a FILE structure where the created stream
+should be placed.
+
+@<Func...@>=
+void CDC_Device_CreateStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
+                         FILE* const Stream) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
+
 @ @c
 void CDC_Device_CreateStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                              FILE* const Stream)
@@ -4401,36 +4427,7 @@ typedef struct {
 } USB_ClassInfo_CDC_Device_t;
 
 @ @<Header files@>=
-/** yyy Creates a standard character stream for the given CDC Device instance so that it can be
- used with all the regular
- *  functions in the standard <stdio.h> library that accept a \c FILE stream as a destination
- (e.g. \c fprintf()). The created
- *  stream is bidirectional and can be used for both input and output functions.
- *
- *  Reading data from this stream is non-blocking, i.e. in most instances, complete strings
- cannot be read in by a single
- *  fetch, as the endpoint will not be ready at some point in the transmission, aborting the
- transfer. However, this may
- *  be used when the read data is processed byte-per-bye (via \c getc()) or when the user
- application will implement its own
- *  line buffering.
- *
- *  \note The created stream can be given as \c stdout if desired to direct the standard
- output from all \c <stdio.h> functions
- *        to the given CDC interface.
- *        \n\n
- *
- *  \note This function is not available on all microcontroller architectures.
- *
- *  \param[in,out] CDCInterfaceInfo  Pointer to a structure containing a CDC Class
- configuration and state.
- *  \param[in,out] Stream            Pointer to a FILE structure where the created stream
- should be placed.
- */
-void CDC_Device_CreateStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
-                         FILE* const Stream) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
-
-/** Identical to \ref CDC_Device_CreateStream(), except that reads are blocking until the
+/** yyy Identical to \ref CDC_Device_CreateStream(), except that reads are blocking until the
  calling stream function terminates
  *  the transfer. While blocking, the USB and CDC service tasks are called repeatedly to
  maintain USB communications.
