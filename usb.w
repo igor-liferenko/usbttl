@@ -4465,10 +4465,10 @@ $$\vbox{\halign{\tt#\cr
 
 
 Name       Color    Info               Active Level   Port Pin\cr
-LEDS_LED1  Red    Bicolor Indicator 1  High           PORTD.4\cr
-LEDS_LED2  Green  Bicolor Indicator 1  High           PORTD.5\cr
-LEDS_LED3  Red    Bicolor Indicator 2  High           PORTD.6\cr
-LEDS_LED4  Green  Bicolor Indicator 2  High           PORTD.7\cr
+LEDS\_LED1  Red    Bicolor Indicator 1  High           PORTD.4\cr
+LEDS\_LED2  Green  Bicolor Indicator 1  High           PORTD.5\cr
+LEDS\_LED3  Red    Bicolor Indicator 2  High           PORTD.6\cr
+LEDS\_LED4  Green  Bicolor Indicator 2  High           PORTD.7\cr
 }}$$
 
 @<Header files@>=
