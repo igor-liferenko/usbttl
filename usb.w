@@ -9,12 +9,6 @@
 %until you do everything in one file (even when you do all in one file, think
 %if doing via |USB_StdDescriptor_Config_Header_t| is better than default)
 
-% TODO: make DTR work (see arduino's modification of this firmware at
-% https://github.com/arduino/Arduino/tree/master/hardware/arduino/%
-%   avr/firmwares/atmegaxxu2)
-
-%TODO put here info from https://en.wikipedia.org/wiki/Circular_buffer
-
 \let\lheader\rheader
 
 \secpagedepth=1 % begin new page only on **
@@ -4381,6 +4375,8 @@ or deletions) must not overlap. If there is possibility of two or more of the sa
 operating occurring at the same point in time, atomic (mutex) locking should be used.
 
 @* Generic Byte Ring Buffer.
+TODO: put here info from {\tt\catcode`_11 https://en.wikipedia.org/wiki/Circular_buffer}
+
 Lightweight ring buffer, for fast insertion/deletion of bytes.
 Multiple buffers can be created of
 different sizes to suit different needs.
