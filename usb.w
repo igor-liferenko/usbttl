@@ -1376,7 +1376,7 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 
         CDCInterfaceInfo->State.ControlLineStates.HostToDevice = USB_ControlRequest.wValue;
 
-        EVENT_CDC_Device_ControLineStateChanged(CDCInterfaceInfo);
+        @<Set \.{DTR}@>@;
       }
       break;
     case CDC_REQ_SEND_BREAK:
@@ -1388,6 +1388,21 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
       break;
   }
 }
+
+@ Control line state changed on a CDC interface. This fires
+each time the host requests a
+control line state change (containing the virtual serial control line states, such as DTR).
+The new control line states
+are available in the |ControlLineStates.HostToDevice| value inside the CDC interface
+structure passed as a parameter, set as a mask of \.{CDC\_CONTROL\_LINE\_OUT\_*} masks.
+
+@<Set \.{DTR}@>=
+bool CurrentDTRState =
+  (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR);
+if (CurrentDTRState)
+  AVR_RESET_LINE_PORT &= ~AVR_RESET_LINE_MASK;
+else
+  AVR_RESET_LINE_PORT |= AVR_RESET_LINE_MASK;
 
 @ Configures the endpoints of a given CDC interface, ready for use. This should be linked to
 the library
@@ -1678,33 +1693,6 @@ int CDC_Device_getchar_Blocking(FILE* Stream)
 	}
 
 	return ReceivedByte;
-}
-
-@ CDC class driver event for a control line state change on a CDC interface. This event fires
-each time the host requests a
-control line state change (containing the virtual serial control line states, such as DTR)
-and may be hooked in the
-user program by declaring a handler function with the same name and parameters listed here.
-The new control line states
-are available in the |ControlLineStates.HostToDevice| value inside the CDC interface
-structure passed as a parameter, set as a mask of \.{CDC\_CONTROL\_LINE\_OUT\_*} masks.
-
-|CDCInterfaceInfo| -- pointer to a structure containing a CDC Class configuration and state.
-
-@<Func...@>=
-void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
-  ATTR_CONST ATTR_NON_NULL_PTR_ARG(1);
-
-@ @c
-void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
-{
-  bool CurrentDTRState =
-    (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR);
-
-  if (CurrentDTRState)
-    AVR_RESET_LINE_PORT &= ~AVR_RESET_LINE_MASK;
-  else
-    AVR_RESET_LINE_PORT |= AVR_RESET_LINE_MASK;
 }
 
 @* USB device standard request management.
