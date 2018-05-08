@@ -1341,9 +1341,9 @@ structure passed as a parameter, set as a mask of \.{CDC\_CONTROL\_LINE\_OUT\_*}
 
 @<Set |DTR| pin@>=
 if (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR)
-  PORTD &= ~DTR_MASK; /* |DTR| pin low */
+  PORTD &= ~(1 << 7); /* |DTR| pin low */
 else
-  PORTD |= DTR_MASK; /* |DTR| pin high */
+  PORTD |= 1 << 7; /* |DTR| pin high */
 
 @ Configures the endpoints of a given CDC interface, ready for use. This should be linked to
 the library
@@ -2129,8 +2129,8 @@ TODO: ensure that watchdog is disabled in fuses
 @<Main program loop@>=
 int main(void)
 {
-  DDRD |= DTR_MASK;
-  PORTD |= DTR_MASK; /* |DTR| pin high */
+  DDRD |= 1 << 7;
+  PORTD |= 1 << 7; /* |DTR| pin high */
 
   DDRB |= 1 << 0;
   DDRD |= 1 << 5;
@@ -4320,11 +4320,6 @@ typedef struct {
   } State; /* state data for the USB class interface within the device. All elements in this
     section are reset to their defaults when the interface is enumerated */
 } USB_ClassInfo_CDC_Device_t;
-
-@** DTR.
-
-@<Header files@>=
-#define DTR_MASK (1 << 3)
 
 @** RingBuffer.
 Lightweight ring (circular) buffer, for fast insertion/deletion of bytes.
