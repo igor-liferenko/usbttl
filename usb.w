@@ -299,7 +299,7 @@ Return true if a character can be queued for transmission immediately, false oth
 @ LED mask for the library LED driver, to indicate that the USB interface is not ready.
 
 @<Indicate that USB device is disconnected@>=
-set_only_these_leds(LEDS_LED1);
+set_only_these_leds(LEDMASK_USB_NOTREADY);
 
 @ Circular buffer to hold data from the host before it is sent to the device via the
 serial port.
@@ -390,7 +390,7 @@ void EVENT_USB_Device_Connect(void);
 @ @c
 void EVENT_USB_Device_Connect(void)
 {
-	set_only_these_leds(LEDS_LED2 | LEDS_LED3);
+	set_only_these_leds(LEDMASK_USB_ENUMERATING);
 }
 
 @ Event handler for USB device disconnect event. This event fires when the microcontroller is in
@@ -4344,12 +4344,13 @@ LEDS\_LED3  Red    Bicolor Indicator 2  High           PORTD.6\cr
 LEDS\_LED4  Green  Bicolor Indicator 2  High           PORTD.7\cr
 }}$$
 
+@d LEDS_LED1 (1 << 4)
+@d LEDS_LED2 (1 << 5)
+@d LEDS_LED3 (1 << 7)
+@d LEDS_LED4 (1 << 6)
+
 @<Header files@>=
-#define LEDS_LED1 (1 << 4)
-#define LEDS_LED2 (1 << 5)
-#define LEDS_LED3 (1 << 7)
-#define LEDS_LED4 (1 << 6)
-#define LEDS_ALL_LEDS (LEDS_LED1 | LEDS_LED2 | LEDS_LED3 | LEDS_LED4)
+#define LEDMASK_ALL_LEDS (LEDS_LED1 | LEDS_LED2 | LEDS_LED3 | LEDS_LED4)
 #define LEDMASK_USB_NOTREADY LEDS_LED1 /* USB interface is not ready */
 #define LEDMASK_USB_ENUMERATING (LEDS_LED2 | LEDS_LED3) /* USB interface is enumerating */
 #define LEDMASK_USB_READY (LEDS_LED2 | LEDS_LED4) /* USB interface is ready */
@@ -4358,11 +4359,11 @@ LEDS\_LED4  Green  Bicolor Indicator 2  High           PORTD.7\cr
 @ Initialize the board LED driver before first use.
 
 @<Init LEDs@>=
-DDRD  |=  LEDS_ALL_LEDS;
-PORTD &= ~LEDS_ALL_LEDS;
+DDRD |= LEDMASK_ALL_LEDS;
+PORTD &= ~LEDMASK_ALL_LEDS;
 
 @ @<Header files@>=
-#define set_only_these_leds(mask) PORTD = ((PORTD & ~LEDS_ALL_LEDS) | mask)
+#define set_only_these_leds(mask) PORTD = ((PORTD & ~LEDMASK_ALL_LEDS) | mask)
 
 @** RingBuffer.
 Lightweight ring (circular) buffer, for fast insertion/deletion of bytes.
