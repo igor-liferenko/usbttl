@@ -261,7 +261,7 @@ int main(void)
       @<Try to send more data@>@;
     }
     @<Load the next byte from the USART transmit buffer into the USART if transmit...@>@;
-    CDC_DeviceTask(&VirtualSerial_CDC_Interface);
+    CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
     USB_DeviceTask();
   }
 }
@@ -1446,11 +1446,11 @@ be called frequently in the main program loop, before the master USB management 
 |CDCInterfaceInfo| -- pointer to a structure containing a CDC Class configuration and state.
 
 @<Func...@>=
-void CDC_DeviceTask(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
+void CDC_Device_USBTask(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
   ATTR_NON_NULL_PTR_ARG(1);
 
 @ @c
-void CDC_DeviceTask(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
+void CDC_Device_USBTask(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
@@ -2178,7 +2178,7 @@ void EVENT_USB_Device_ConfigurationChanged(void)
 
 @ Once initialized, it is important to maintain the class driver's state by repeatedly
 calling the Class Driver's
-|CDC_DeviceTask| function in the main program loop. The
+|CDC_Device_USBTask| function in the main program loop. The
 exact implementation of this
 function varies between class drivers, and can be used for any internal class driver
 purpose to maintain each
@@ -4345,7 +4345,7 @@ typedef struct {
     struct {
       uint16_t HostToDevice; /* control line states from the host to device, as a set of
         \.{CDC\_CONTROL\_LINE\_OUT\_*} masks. This value is updated each time
-        |CDC_DeviceTask| is called */
+        |CDC_Device_USBTask| is called */
       uint16_t DeviceToHost; /* control line states from the device to host, as a set of
         \.{CDC\_CONTROL\_LINE\_IN\_*} masks */
   } ControlLineStates; /* current states of the virtual serial port's control lines between
