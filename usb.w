@@ -232,9 +232,7 @@ of
 graphics activity and data loss will occur if receiving data at 115200 baud (as an example) with no
 handshaking. If the data rate is low or data loss is acceptable then flow control may be omitted.
 
-@* Main program entry point. This routine contains the overall program flow, including
-initial
-setup of all components and the main program loop.
+@* Main program entry point.
 
 @c
 @<Header files@>@;
@@ -344,7 +342,8 @@ void SetupHardware(void)
   clock_prescale_set(clock_div_1); /* disable clock division */
   @<Hardware initialization@>@;
 #if 0==1
-  TCCR0B = (1 << CS02); /* start the flush timer so that overflows occur rapidly to push received bytes to the USB interface */
+  TCCR0B = (1 << CS02); /* start the flush timer so that overflows occur rapidly to push received
+                           bytes to the USB interface */
 #endif
   @<Pull target /RESET line high@>@;
 }
@@ -359,8 +358,8 @@ wdt_disable();
 USB_Init();
 
 @ @<Pull target /RESET line high@>=
-AVR_RESET_LINE_PORT |= AVR_RESET_LINE_MASK;
-AVR_RESET_LINE_DDR  |= AVR_RESET_LINE_MASK;
+PORTD |= 1 << 7; /* |DTR| pin high */
+DDRD |= 1 << 7;
 
 @ Event handler for the library USB Connection event.
 
@@ -1377,9 +1376,9 @@ structure passed as a parameter, set as a mask of \.{CDC\_CONTROL\_LINE\_OUT\_*}
 bool CurrentDTRState =
   (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR);
 if (CurrentDTRState)
-  AVR_RESET_LINE_PORT &= ~AVR_RESET_LINE_MASK;
+  PORTD &= ~(1 << 7); /* |DTR| pin low */
 else
-  AVR_RESET_LINE_PORT |= AVR_RESET_LINE_MASK;
+  PORTD |= 1 << 7; /* |DTR| pin high */
 
 @ Configures the endpoints of a given CDC interface, ready for use. This should be linked to
 the library
