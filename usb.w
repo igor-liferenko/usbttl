@@ -1594,65 +1594,6 @@ int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInf
 	return ReceivedByte;
 }
 
-@ Creates a standard character stream for the given CDC Device instance so that it can be
-used with all the regular
-functions in the standard <stdio.h> library that accept a file stream as a destination
-(e.g. \\{fprintf}). The created
-stream is bidirectional and can be used for both input and output functions.
-
-Reading data from this stream is non-blocking, i.e. in most instances, complete strings
-cannot be read in by a single
-fetch, as the endpoint will not be ready at some point in the transmission, aborting the
-transfer. However, this may
-be used when the read data is processed byte-per-bye (via \c getc()) or when the user
-application will implement its own
-line buffering.
-
-The created stream can be given as \\{stdout} if desired to direct the standard
-output from all \.{<stdio.h>} functions to the given CDC interface.
-
-|CDCInterfaceInfo| -- pointer to a structure containing a CDC Class
-configuration and state. \par
-|Stream| -- pointer to a FILE structure where the created stream
-should be placed.
-
-@<Func...@>=
-void CDC_Device_CreateStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
-                         FILE* const Stream) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
-
-@ @c
-void CDC_Device_CreateStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
-                             FILE* const Stream)
-{
-	*Stream = (FILE)FDEV_SETUP_STREAM(CDC_Device_putchar, CDC_Device_getchar, _FDEV_SETUP_RW);
-	fdev_set_udata(Stream, CDCInterfaceInfo);
-}
-
-@ @<Function prototypes@>=
-int CDC_Device_putchar(char c, FILE* Stream) ATTR_NON_NULL_PTR_ARG(2);
-
-@ @c
-int CDC_Device_putchar(char c, FILE* Stream)
-{
-	return CDC_Device_SendByte((USB_ClassInfo_CDC_Device_t*)fdev_get_udata(Stream), c) ?
- _FDEV_ERR : 0;
-}
-
-@ @<Function prototypes@>=
-int CDC_Device_getchar(FILE* Stream) ATTR_NON_NULL_PTR_ARG(1);
-
-@ @c
-int CDC_Device_getchar(FILE* Stream)
-{
-	int16_t ReceivedByte =
- CDC_Device_ReceiveByte((USB_ClassInfo_CDC_Device_t*)fdev_get_udata(Stream));
-
-	if (ReceivedByte < 0)
-	  return _FDEV_EOF;
-
-	return ReceivedByte;
-}
-
 @* USB device standard request management.
 
 @ @<Func...@>=
