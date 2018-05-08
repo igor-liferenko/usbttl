@@ -299,7 +299,8 @@ Return true if a character can be queued for transmission immediately, false oth
 @ LED mask for the library LED driver, to indicate that the USB interface is not ready.
 
 @<Indicate that USB device is disconnected@>=
-set_only_these_leds(LEDMASK_USB_NOTREADY);
+PORTD &= ~LEDMASK_ALL_LEDS;
+PORTD |= LEDMASK_USB_NOTREADY;
 
 @ Circular buffer to hold data from the host before it is sent to the device via the
 serial port.
@@ -323,37 +324,6 @@ RingBuffer_t USARTtoUSB_Buffer;
 
 @<Global...@>=
 uint8_t      USARTtoUSB_Buffer_Data[128];
-
-@ Configures the board hardware and chip peripherals for the demo's functionality.
-
-@<Function prototypes@>=
-void SetupHardware(void);
-
-@ @c
-void SetupHardware(void)
-{
-  @<Disable watchdog if enabled by bootloader/fuses@>@;
-  clock_prescale_set(clock_div_1); /* disable clock division */
-  @<Hardware initialization@>@;
-#if 0==1
-  TCCR0B = (1 << CS02); /* start the flush timer so that overflows occur rapidly to push received
-                           bytes to the USB interface */
-#endif
-  @<Pull target /RESET line high@>@;
-}
-
-@ @<Disable watchdog if enabled by bootloader/fuses@>=
-MCUSR &= ~(1 << WDRF);
-@^see datasheet@>
-wdt_disable();
-
-@ @<Hardware initialization@>=
-@<Init LEDs@>@;
-USB_Init();
-
-@ @<Pull target /RESET line high@>=
-PORTD |= 1 << 7; /* |DTR| pin high */
-DDRD |= 1 << 7;
 
 @ Event handler for the library USB Connection event.
 
@@ -390,7 +360,8 @@ void EVENT_USB_Device_Connect(void);
 @ @c
 void EVENT_USB_Device_Connect(void)
 {
-	set_only_these_leds(LEDMASK_USB_ENUMERATING);
+  PORTD &= ~LEDMASK_ALL_LEDS;
+  PORTD |= LEDMASK_USB_ENUMERATING;
 }
 
 @ Event handler for USB device disconnect event. This event fires when the microcontroller is in
@@ -2137,10 +2108,14 @@ void EVENT_USB_Device_ConfigurationChanged(void);
 @c
 void EVENT_USB_Device_ConfigurationChanged(void)
 {
-  if (CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface))
-    set_only_these_leds(LEDMASK_USB_READY);
-  else
-    set_only_these_leds(LEDMASK_USB_ERROR);
+  if (CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface)) {
+    PORTD &= ~LEDMASK_ALL_LEDS;
+    PORTD |= LEDMASK_USB_READY;
+  }
+  else {
+    PORTD &= ~LEDMASK_ALL_LEDS;
+    PORTD |= LEDMASK_USB_ERROR;
+  }
 }
 
 @ Once initialized, it is important to maintain the CDC class instance state by repeatedly
@@ -2148,12 +2123,26 @@ calling the Class Driver's |CDC_Device_USBTask| function in the main program loo
 
 It needs to be called together with the main USB maintenance routine |USB_DeviceTask|.
 
-@<Main program loop@>=
-void main(void)
-{
-  SetupHardware();
+TODO: ensure that watchdog is disabled in fuses
+@^TODO@>
 
-  set_only_these_leds(LEDMASK_USB_NOTREADY);
+@<Main program loop@>=
+int main(void)
+{
+  DDRD |= 1 << 7;
+  PORTD |= 1 << 7; /* |DTR| pin high */
+
+  DDRD |= LEDMASK_ALL_LEDS;
+  PORTD |= LEDMASK_USB_NOTREADY;
+
+  clock_prescale_set(clock_div_1); /* disable clock division */
+
+  USB_Init();
+
+#if 0==1
+  TCCR0B = (1 << CS02); /* start the flush timer so that overflows occur rapidly to push received
+                           bytes to the USB interface */
+#endif
 
   RingBuffer_InitBuffer(&USBtoUSART_Buffer, USBtoUSART_Buffer_Data,
     sizeof USBtoUSART_Buffer_Data);
@@ -4355,15 +4344,6 @@ LEDS\_LED4  Green  Bicolor Indicator 2  High           PORTD.7\cr
 #define LEDMASK_USB_ENUMERATING (LEDS_LED2 | LEDS_LED3) /* USB interface is enumerating */
 #define LEDMASK_USB_READY (LEDS_LED2 | LEDS_LED4) /* USB interface is ready */
 #define LEDMASK_USB_ERROR (LEDS_LED1 | LEDS_LED3) /* an error has occurred in the USB interface */
-
-@ Initialize the board LED driver before first use.
-
-@<Init LEDs@>=
-DDRD |= LEDMASK_ALL_LEDS;
-PORTD &= ~LEDMASK_ALL_LEDS;
-
-@ @<Header files@>=
-#define set_only_these_leds(mask) PORTD = ((PORTD & ~LEDMASK_ALL_LEDS) | mask)
 
 @** RingBuffer.
 Lightweight ring (circular) buffer, for fast insertion/deletion of bytes.
