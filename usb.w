@@ -1,3 +1,6 @@
+%TODO: add @[@] around @<@> where it is used after = anf before == or !=
+%TODO: understand why ccw shows two \6\7 line differences
+
 %TODO: convert all functions to lowercase with _
 
 %NOTE: to test, use avr/check.w + see cweb/SERIAL_TODO
