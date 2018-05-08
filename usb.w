@@ -296,11 +296,11 @@ Return true if a character can be queued for transmission immediately, false oth
 @<Serial is send-ready@>=
 (UCSR1A & (1 << UDRE1))
 
-@ LED mask for the library LED driver, to indicate that the USB interface is not ready.
+@ Indicate that the USB interface is not ready.
 
 @<Indicate that USB device is disconnected@>=
-PORTD &= ~LEDMASK_ALL_LEDS;
-PORTD |= LEDMASK_USB_NOTREADY;
+PORTB &= ~(1 << 0);
+PORTD &= ~(1 << 5);
 
 @ Circular buffer to hold data from the host before it is sent to the device via the
 serial port.
@@ -357,11 +357,13 @@ global changed manually.
 @<Func...@>=
 void EVENT_USB_Device_Connect(void);
 
-@ @c
+@ Indicate that USB interface is enumerating.
+
+@c
 void EVENT_USB_Device_Connect(void)
 {
-  PORTD &= ~LEDMASK_ALL_LEDS;
-  PORTD |= LEDMASK_USB_ENUMERATING;
+  PORTB &= ~(1 << 0);
+  PORTD |= 1 << 5;
 }
 
 @ Event handler for USB device disconnect event. This event fires when the microcontroller is in
@@ -1339,9 +1341,9 @@ structure passed as a parameter, set as a mask of \.{CDC\_CONTROL\_LINE\_OUT\_*}
 
 @<Set |DTR| pin@>=
 if (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR)
-  PORTD &= ~(1 << 7); /* |DTR| pin low */
+  PORTD &= ~DTR_MASK; /* |DTR| pin low */
 else
-  PORTD |= 1 << 7; /* |DTR| pin high */
+  PORTD |= DTR_MASK; /* |DTR| pin high */
 
 @ Configures the endpoints of a given CDC interface, ready for use. This should be linked to
 the library
@@ -2106,13 +2108,13 @@ void EVENT_USB_Device_ConfigurationChanged(void);
 @c
 void EVENT_USB_Device_ConfigurationChanged(void)
 {
-  if (CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface)) {
-    PORTD &= ~LEDMASK_ALL_LEDS;
-    PORTD |= LEDMASK_USB_READY;
+  if (CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface)) { /* USB interface is ready */
+    PORTB |= 1 << 0;
+    PORTD &= ~(1 << 5);
   }
-  else {
-    PORTD &= ~LEDMASK_ALL_LEDS;
-    PORTD |= LEDMASK_USB_ERROR;
+  else { /* an error has occurred in the USB interface */
+    PORTB |= 1 << 0;
+    PORTD |= 1 << 5;
   }
 }
 
@@ -2127,11 +2129,11 @@ TODO: ensure that watchdog is disabled in fuses
 @<Main program loop@>=
 int main(void)
 {
-  DDRD |= 1 << 7;
-  PORTD |= 1 << 7; /* |DTR| pin high */
+  DDRD |= DTR_MASK;
+  PORTD |= DTR_MASK; /* |DTR| pin high */
 
-  DDRD |= LEDMASK_ALL_LEDS;
-  PORTD |= LEDMASK_USB_NOTREADY;
+  DDRB |= 1 << 0;
+  DDRD |= 1 << 5;
 
   clock_prescale_set(clock_div_1); /* disable clock division */
 
@@ -4319,29 +4321,10 @@ typedef struct {
     section are reset to their defaults when the interface is enumerated */
 } USB_ClassInfo_CDC_Device_t;
 
-@** LEDs.
-
-$$\vbox{\halign{\tt#\cr
-
-
-Name       Color    Info               Active Level   Port Pin\cr
-LEDS\_LED1  Red    Bicolor Indicator 1  High           PORTD.4\cr
-LEDS\_LED2  Green  Bicolor Indicator 1  High           PORTD.5\cr
-LEDS\_LED3  Red    Bicolor Indicator 2  High           PORTD.6\cr
-LEDS\_LED4  Green  Bicolor Indicator 2  High           PORTD.7\cr
-}}$$
-
-@d LEDS_LED1 (1 << 4)
-@d LEDS_LED2 (1 << 5)
-@d LEDS_LED3 (1 << 7)
-@d LEDS_LED4 (1 << 6)
+@** DTR.
 
 @<Header files@>=
-#define LEDMASK_ALL_LEDS (LEDS_LED1 | LEDS_LED2 | LEDS_LED3 | LEDS_LED4)
-#define LEDMASK_USB_NOTREADY LEDS_LED1 /* USB interface is not ready */
-#define LEDMASK_USB_ENUMERATING (LEDS_LED2 | LEDS_LED3) /* USB interface is enumerating */
-#define LEDMASK_USB_READY (LEDS_LED2 | LEDS_LED4) /* USB interface is ready */
-#define LEDMASK_USB_ERROR (LEDS_LED1 | LEDS_LED3) /* an error has occurred in the USB interface */
+#define DTR_MASK (1 << 3)
 
 @** RingBuffer.
 Lightweight ring (circular) buffer, for fast insertion/deletion of bytes.
