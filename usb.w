@@ -1628,27 +1628,6 @@ void CDC_Device_CreateStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 	fdev_set_udata(Stream, CDCInterfaceInfo);
 }
 
-@ Identical to |CDC_Device_CreateStream|, except that reads are blocking until the
-calling stream function terminates
-the transfer. While blocking, the USB and CDC service tasks are called repeatedly to
-maintain USB communications.
-
-|CDCInterfaceInfo| -- pointer to a structure containing a CDC Class configuration and state. \par
-|Stream| -- pointer to a FILE structure where the created stream should be placed.
-
-@<Func...@>=
-void CDC_Device_CreateBlockingStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
-                           FILE* const Stream) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
-
-@ @c
-void CDC_Device_CreateBlockingStream(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
-                                     FILE* const Stream)
-{
-	*Stream = (FILE)FDEV_SETUP_STREAM(CDC_Device_putchar, CDC_Device_getchar_Blocking,
- _FDEV_SETUP_RW);
-	fdev_set_udata(Stream, CDCInterfaceInfo);
-}
-
 @ @<Function prototypes@>=
 int CDC_Device_putchar(char c, FILE* Stream) ATTR_NON_NULL_PTR_ARG(2);
 
@@ -1670,27 +1649,6 @@ int CDC_Device_getchar(FILE* Stream)
 
 	if (ReceivedByte < 0)
 	  return _FDEV_EOF;
-
-	return ReceivedByte;
-}
-
-@ @<Function prototypes@>=
-int CDC_Device_getchar_Blocking(FILE* Stream) ATTR_NON_NULL_PTR_ARG(1);
-
-@ @c
-int CDC_Device_getchar_Blocking(FILE* Stream)
-{
-	int16_t ReceivedByte;
-
-	while ((ReceivedByte =
- CDC_Device_ReceiveByte((USB_ClassInfo_CDC_Device_t*)fdev_get_udata(Stream))) < 0)
-	{
-		if (USB_DeviceState == DEVICE_STATE_UNATTACHED)
-		  return _FDEV_EOF;
-
-		CDC_DeviceTask((USB_ClassInfo_CDC_Device_t*)fdev_get_udata(Stream));
-		USB_DeviceTask();
-	}
 
 	return ReceivedByte;
 }
@@ -2298,7 +2256,7 @@ int main(void)
           if (USB_DeviceState != DEVICE_STATE_CONFIGURED)
             Create_And_Process_Samples();
 
-          Audio_Device_USBTask(&My_Audio_Interface);
+          Audio_Device_USBTask(&My_Audio_Interfacexxx);
           USB_DeviceTask();
       }
 }
