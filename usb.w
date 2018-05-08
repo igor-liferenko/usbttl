@@ -241,30 +241,7 @@ setup of all components and the main program loop.
 @<Type definitions@>@;
 @<Function prototypes@>@;
 @<Global variables@>@;
-
-int main(void)
-{
-  SetupHardware();
-  RingBuffer_InitBuffer(&USBtoUSART_Buffer, USBtoUSART_Buffer_Data,
-    sizeof USBtoUSART_Buffer_Data);
-  RingBuffer_InitBuffer(&USARTtoUSB_Buffer, USARTtoUSB_Buffer_Data,
-    sizeof USARTtoUSB_Buffer_Data);
-
-  @<Indicate that USB device is disconnected@>@;
-  @<Enable global interrupt@>@;
-
-  while (1) {
-    @<Only try to read in bytes from the CDC interface if the transmit buffer...@>@;
-    uint16_t BufferCount = RingBuffer_GetCount(&USARTtoUSB_Buffer);
-    if (BufferCount) {
-      Endpoint_SelectEndpoint(VirtualSerial_CDC_Interface.Config.DataINEndpoint.Address);
-      @<Try to send more data@>@;
-    }
-    @<Load the next byte from the USART transmit buffer into the USART if transmit...@>@;
-    CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
-    USB_DeviceTask();
-  }
-}
+@<Main program loop@>@;
 
 @ @<Only try to read in bytes from the CDC interface if the transmit buffer is not full@>=
 if (!(RingBuffer_IsFull(&USBtoUSART_Buffer))) {
@@ -2176,30 +2153,37 @@ void EVENT_USB_Device_ConfigurationChanged(void)
     set_only_these_leds(LEDMASK_USB_ERROR);
 }
 
-@ Once initialized, it is important to maintain the class driver's state by repeatedly
-calling the Class Driver's
-|CDC_Device_USBTask| function in the main program loop. The
-exact implementation of this
-function varies between class drivers, and can be used for any internal class driver
-purpose to maintain each
-instance. Again, this function uses the address of the instance to operate on, and thus
-needs to be called for each
-separate instance, just like the main USB maintenance routine |USB_DeviceTask|:
+@ Once initialized, it is important to maintain the CDC class instance state by repeatedly
+calling the Class Driver's |CDC_Device_USBTask| function in the main program loop.
 
-@(/dev/null@>=
+It needs to be called together with the main USB maintenance routine |USB_DeviceTask|.
+
+@<Main program loop@>=
 int main(void)
 {
-      SetupHardware();
+  SetupHardware();
 
-      set_only_these_leds(LEDMASK_USB_NOTREADY);
+  set_only_these_leds(LEDS_LED1);
 
-      for (;;) {
-          if (USB_DeviceState != DEVICE_STATE_CONFIGURED)
-            Create_And_Process_Samples();
+  RingBuffer_InitBuffer(&USBtoUSART_Buffer, USBtoUSART_Buffer_Data,
+    sizeof USBtoUSART_Buffer_Data);
+  RingBuffer_InitBuffer(&USARTtoUSB_Buffer, USARTtoUSB_Buffer_Data,
+    sizeof USARTtoUSB_Buffer_Data);
 
-          Audio_Device_USBTask(&My_Audio_Interfacexxx);
-          USB_DeviceTask();
-      }
+  @<Enable global interrupt@>@;
+
+  while (1) {
+    @<Only try to read in bytes from the CDC interface if the transmit buffer...@>@;
+    uint16_t BufferCount = RingBuffer_GetCount(&USARTtoUSB_Buffer);
+    if (BufferCount) {
+      Endpoint_SelectEndpoint(VirtualSerial_CDC_Interface.Config.DataINEndpoint.Address);
+      @<Try to send more data@>@;
+    }
+    @<Load the next byte from the USART transmit buffer into the USART if transmit...@>@;
+
+    CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
+    USB_DeviceTask();
+  }
 }
 
 @ {\emergencystretch=2cm The final standardized Device Class Driver function is the Control
@@ -4371,10 +4355,10 @@ LEDS\_LED4  Green  Bicolor Indicator 2  High           PORTD.7\cr
 }}$$
 
 @<Header files@>=
-#define LEDS_LED1 (1 << 4)
-#define LEDS_LED2 (1 << 5)
-#define LEDS_LED3 (1 << 7)
-#define LEDS_LED4 (1 << 6)
+#define LEDS_LED1 (1 << 4) /* USB interface is not ready */
+#define LEDS_LED2 (1 << 5) /* FIXME */
+#define LEDS_LED3 (1 << 7) /* FIXME */
+#define LEDS_LED4 (1 << 6) /* FIXME */
 #define LEDS_ALL_LEDS (LEDS_LED1 | LEDS_LED2 | LEDS_LED3 | LEDS_LED4)
 
 @ Initialize the board LED driver before first use.
