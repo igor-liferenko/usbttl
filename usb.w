@@ -2134,9 +2134,6 @@ void EVENT_USB_Device_ConfigurationChanged(void);
 
 @
 
-@d LEDMASK_USB_READY (LEDS_LED2 | LEDS_LED4)
-@d LEDMASK_USB_ERROR (LEDS_LED1 | LEDS_LED3)
-
 @c
 void EVENT_USB_Device_ConfigurationChanged(void)
 {
@@ -2152,11 +2149,11 @@ calling the Class Driver's |CDC_Device_USBTask| function in the main program loo
 It needs to be called together with the main USB maintenance routine |USB_DeviceTask|.
 
 @<Main program loop@>=
-int main(void)
+void main(void)
 {
   SetupHardware();
 
-  set_only_these_leds(LEDS_LED1);
+  set_only_these_leds(LEDMASK_USB_NOTREADY);
 
   RingBuffer_InitBuffer(&USBtoUSART_Buffer, USBtoUSART_Buffer_Data,
     sizeof USBtoUSART_Buffer_Data);
@@ -4348,11 +4345,15 @@ LEDS\_LED4  Green  Bicolor Indicator 2  High           PORTD.7\cr
 }}$$
 
 @<Header files@>=
-#define LEDS_LED1 (1 << 4) /* USB interface is not ready */
-#define LEDS_LED2 (1 << 5) /* FIXME */
-#define LEDS_LED3 (1 << 7) /* FIXME */
-#define LEDS_LED4 (1 << 6) /* FIXME */
+#define LEDS_LED1 (1 << 4)
+#define LEDS_LED2 (1 << 5)
+#define LEDS_LED3 (1 << 7)
+#define LEDS_LED4 (1 << 6)
 #define LEDS_ALL_LEDS (LEDS_LED1 | LEDS_LED2 | LEDS_LED3 | LEDS_LED4)
+#define LEDMASK_USB_NOTREADY LEDS_LED1 /* USB interface is not ready */
+#define LEDMASK_USB_ENUMERATING (LEDS_LED2 | LEDS_LED3) /* USB interface is enumerating */
+#define LEDMASK_USB_READY (LEDS_LED2 | LEDS_LED4) /* USB interface is ready */
+#define LEDMASK_USB_ERROR (LEDS_LED1 | LEDS_LED3) /* an error has occurred in the USB interface */
 
 @ Initialize the board LED driver before first use.
 
