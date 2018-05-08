@@ -366,6 +366,7 @@ void SetupHardware(void)
   @<Disable watchdog if enabled by bootloader/fuses@>@;
   clock_prescale_set(clock_div_1); /* disable clock division */
   @<Hardware initialization@>@;
+  @<Pull target /RESET line high@>@;
 }
 
 @ @<Disable watchdog if enabled by bootloader/fuses@>=
@@ -376,6 +377,10 @@ wdt_disable();
 @ @<Hardware initialization@>=
 @<Init LEDs@>@;
 USB_Init();
+
+@ @<Pull target /RESET line high@>=
+AVR_RESET_LINE_PORT |= AVR_RESET_LINE_MASK;
+AVR_RESET_LINE_DDR  |= AVR_RESET_LINE_MASK;
 
 @ Event handler for the library USB Connection event.
 
@@ -1315,77 +1320,70 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 @ @c
 void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
-	if (!@<Endpoint has received a SETUP packet@>)
-	  return;
+  if (!@<Endpoint has received a SETUP packet@>)
+    return;
 
-	if (USB_ControlRequest.wIndex != CDCInterfaceInfo->Config.ControlInterfaceNumber)
-	  return;
+  if (USB_ControlRequest.wIndex != CDCInterfaceInfo->Config.ControlInterfaceNumber)
+    return;
 
-	switch (USB_ControlRequest.bRequest)
-	{
-		case CDC_REQ_GET_LINE_ENCODING:
-			if (USB_ControlRequest.bmRequestType ==
-                            (REQDIR_DEVICETOHOST | REQTYPE_CLASS | REQREC_INTERFACE)) {
-				@<Clear a received SETUP packet on endpoint@>@;
+  switch (USB_ControlRequest.bRequest)
+  {
+    case CDC_REQ_GET_LINE_ENCODING:
+      if (USB_ControlRequest.bmRequestType ==
+         (REQDIR_DEVICETOHOST | REQTYPE_CLASS | REQREC_INTERFACE)) {
+        @<Clear a received SETUP packet on endpoint@>@;
 
-				while (!@<Endpoint is ready for an IN packet@>);
+        while (!@<Endpoint is ready for an IN packet@>) ;
 
-                            Endpoint_Write_32_LE(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS);
-				Endpoint_Write_8(CDCInterfaceInfo->State.LineEncoding.CharFormat);
-				Endpoint_Write_8(CDCInterfaceInfo->State.LineEncoding.ParityType);
-				Endpoint_Write_8(CDCInterfaceInfo->State.LineEncoding.DataBits);
+        Endpoint_Write_32_LE(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS);
+        Endpoint_Write_8(CDCInterfaceInfo->State.LineEncoding.CharFormat);
+        Endpoint_Write_8(CDCInterfaceInfo->State.LineEncoding.ParityType);
+        Endpoint_Write_8(CDCInterfaceInfo->State.LineEncoding.DataBits);
 
-				@<Clear IN packet on endpoint@>@;
-				Endpoint_ClearStatusStage();
-			}
+        @<Clear IN packet on endpoint@>@;
+        Endpoint_ClearStatusStage();
+      }
+      break;
+    case CDC_REQ_SET_LINE_ENCODING:
+      if (USB_ControlRequest.bmRequestType ==
+         (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE)) {
+        @<Clear a received SETUP packet on endpoint@>@;
 
-			break;
-		case CDC_REQ_SET_LINE_ENCODING:
-			if (USB_ControlRequest.bmRequestType ==
-   (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE)) {
-				@<Clear a received SETUP packet on endpoint@>@;
+        while (!@<Endpoint received an OUT packet@>) {
+          if (USB_DeviceState == DEVICE_STATE_UNATTACHED)
+            return;
+        }
 
-				while (!@<Endpoint received an OUT packet@>) {
-					if (USB_DeviceState == DEVICE_STATE_UNATTACHED)
-					  return;
-				}
-
-				CDCInterfaceInfo->State.LineEncoding.BaudRateBPS
- = Endpoint_Read_32_LE();
-				CDCInterfaceInfo->State.LineEncoding.CharFormat
-  = Endpoint_Read_8();
-				CDCInterfaceInfo->State.LineEncoding.ParityType
-  = Endpoint_Read_8();
-				CDCInterfaceInfo->State.LineEncoding.DataBits
-    = Endpoint_Read_8();
+        CDCInterfaceInfo->State.LineEncoding.BaudRateBPS = Endpoint_Read_32_LE();
+        CDCInterfaceInfo->State.LineEncoding.CharFormat = Endpoint_Read_8();
+        CDCInterfaceInfo->State.LineEncoding.ParityType = Endpoint_Read_8();
+        CDCInterfaceInfo->State.LineEncoding.DataBits = Endpoint_Read_8();
 
         @<Clear OUT packet on endpoint@>@;
-				Endpoint_ClearStatusStage();
+        Endpoint_ClearStatusStage();
 
-				EVENT_CDC_Device_LineEncodingChanged(CDCInterfaceInfo);
-			}
+        EVENT_CDC_Device_LineEncodingChanged(CDCInterfaceInfo);
+      }
+      break;
+    case CDC_REQ_SET_CONTROL_LINE_STATE:
+      if (USB_ControlRequest.bmRequestType ==
+         (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE)) {
+        @<Clear a received SETUP packet on endpoint@>@;
+        Endpoint_ClearStatusStage();
 
-			break;
-		case CDC_REQ_SET_CONTROL_LINE_STATE:
-			if (USB_ControlRequest.bmRequestType ==
- (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE)) {
-				@<Clear a received SETUP packet on endpoint@>@;
-				Endpoint_ClearStatusStage();
+        CDCInterfaceInfo->State.ControlLineStates.HostToDevice = USB_ControlRequest.wValue;
 
-				CDCInterfaceInfo->State.ControlLineStates.HostToDevice
- = USB_ControlRequest.wValue;
-			}
-
-			break;
-		case CDC_REQ_SEND_BREAK:
-			if (USB_ControlRequest.bmRequestType ==
- (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE)) {
-				@<Clear a received SETUP packet on endpoint@>@;
-				Endpoint_ClearStatusStage();
-			}
-
-			break;
-	}
+        EVENT_CDC_Device_ControLineStateChanged(CDCInterfaceInfo);
+      }
+      break;
+    case CDC_REQ_SEND_BREAK:
+      if (USB_ControlRequest.bmRequestType ==
+         (REQDIR_HOSTTODEVICE | REQTYPE_CLASS | REQREC_INTERFACE)) {
+        @<Clear a received SETUP packet on endpoint@>@;
+        Endpoint_ClearStatusStage();
+      }
+      break;
+  }
 }
 
 @ Configures the endpoints of a given CDC interface, ready for use. This should be linked to
@@ -1677,6 +1675,33 @@ int CDC_Device_getchar_Blocking(FILE* Stream)
 	}
 
 	return ReceivedByte;
+}
+
+@ CDC class driver event for a control line state change on a CDC interface. This event fires
+each time the host requests a
+control line state change (containing the virtual serial control line states, such as DTR)
+and may be hooked in the
+user program by declaring a handler function with the same name and parameters listed here.
+The new control line states
+are available in the |ControlLineStates.HostToDevice| value inside the CDC interface
+structure passed as a parameter, set as a mask of \.{CDC\_CONTROL\_LINE\_OUT\_*} masks.
+
+|CDCInterfaceInfo| -- pointer to a structure containing a CDC Class configuration and state.
+
+@<Func...@>=
+void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
+  ATTR_CONST ATTR_NON_NULL_PTR_ARG(1);
+
+@ @c
+void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
+{
+  bool CurrentDTRState =
+    (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR);
+
+  if (CurrentDTRState)
+    AVR_RESET_LINE_PORT &= ~AVR_RESET_LINE_MASK;
+  else
+    AVR_RESET_LINE_PORT |= AVR_RESET_LINE_MASK;
 }
 
 @* USB device standard request management.
