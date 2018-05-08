@@ -864,7 +864,7 @@ void USB_DeviceTask(void)
 	if (USB_DeviceState == DEVICE_STATE_UNATTACHED)
 	  return;
 
-	uint8_t PrevEndpoint = @<Get current endpoint@>;
+	uint8_t PrevEndpoint = @[@<Get current endpoint@>@];
 
 	Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
 
