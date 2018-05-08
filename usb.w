@@ -1,4 +1,4 @@
-%TODO: add @[@] around @<@> where it is used after = anf before == or !=
+%TODO: add @@[@@] around @@<@@> where it is used after = anf before == or !=
 %TODO: understand why ccw shows two \6\7 line differences
 
 %TODO: convert all functions to lowercase with _
@@ -968,7 +968,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 
 ISR(USB_COM_vect, ISR_BLOCK)
 {
-	uint8_t PrevSelectedEndpoint = @<Get current endpoint@>;
+	uint8_t PrevSelectedEndpoint = @[@<Get current endpoint@>@];
 
 	Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
 	USB_INT_Disable(USB_INT_RXSTPI);
@@ -1213,7 +1213,7 @@ uint8_t Endpoint_WaitUntilReady(void)
 {
 	uint8_t  TimeoutMSRem = USB_STREAM_TIMEOUT_MS;
 
-	uint16_t PreviousFrameNumber = @<Get USB frame number@>;
+	uint16_t PreviousFrameNumber = @[@<Get USB frame number@>@];
 
 	for (;;) {
 		if (@<Get endpoint direction@>
@@ -1235,7 +1235,7 @@ uint8_t Endpoint_WaitUntilReady(void)
 		else if (@<Endpoint is istalled@>)
 		  return ENDPOINT_READYWAIT_ENDPOINT_STALLED;
 
-		uint16_t CurrentFrameNumber = @<Get USB frame number@>;
+		uint16_t CurrentFrameNumber = @[@<Get USB frame number@>@];
 
 		if (CurrentFrameNumber != PreviousFrameNumber)
 		{
@@ -1875,7 +1875,7 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 		  break;
 
 		if (@<Endpoint is ready for an IN packet@>) {
-			uint16_t BytesInEndpoint = @<Number of bytes in endpoint@>;
+			uint16_t BytesInEndpoint = @[@<Number of bytes in endpoint@>@];
 
 			while (Length && (BytesInEndpoint < USB_Device_ControlEndpointSize))
 			{
@@ -1952,7 +1952,7 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 		  break;
 
 		if (@<Endpoint is ready for an IN packet@>) {
-			uint16_t BytesInEndpoint = @<Number of bytes in endpoint@>;
+			uint16_t BytesInEndpoint = @[@<Number of bytes in endpoint@>@];
 
 			while (Length && (BytesInEndpoint < USB_Device_ControlEndpointSize))
 			{
