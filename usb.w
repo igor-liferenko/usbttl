@@ -366,6 +366,9 @@ void SetupHardware(void)
   @<Disable watchdog if enabled by bootloader/fuses@>@;
   clock_prescale_set(clock_div_1); /* disable clock division */
   @<Hardware initialization@>@;
+#if 0==1
+  TCCR0B = (1 << CS02); /* start the flush timer so that overflows occur rapidly to push received bytes to the USB interface */
+#endif
   @<Pull target /RESET line high@>@;
 }
 
