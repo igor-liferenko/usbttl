@@ -4333,7 +4333,13 @@ or deletions) must not overlap. If there is possibility of two or more of the sa
 operating occurring at the same point in time, atomic (mutex) locking should be used.
 
 @* Generic Byte Ring Buffer.
-TODO: put here info from {\tt\catcode`_11 https://en.wikipedia.org/wiki/Circular_buffer}
+
+TODO: put here info from
+{\tt\catcode`_11 https://en.wikipedia.org/wiki/Circular_buffer}
+@^TODO@>
+
+TODO: see ring buffer in arduino-usbserial on my github - there another version is used
+@^TODO@>
 
 Lightweight ring buffer, for fast insertion/deletion of bytes.
 Multiple buffers can be created of
@@ -4347,29 +4353,27 @@ operating occurring at the same point in time, atomic (mutex) locking should be 
 @ The following snippet is an example of how this module may be used within a typical
 application.
 
+@s RingBuffer_t int
+
 @(/dev/null@>=
-// Create the buffer structure and its underlying storage array
-RingBuffer_t Buffer;
-uint8_t      BufferData[128];
+RingBuffer_t Buffer; /* create the buffer structure and its underlying storage array */
+uint8_t BufferData[128];
 
-// Initialize the buffer with the created storage array
-RingBuffer_InitBuffer(&Buffer, BufferData, sizeof(BufferData));
+RingBuffer_InitBuffer(&Buffer, BufferData, sizeof(BufferData)); /* initialize the buffer
+  with the created storage array */
 
-// Insert some data into the buffer
 RingBuffer_Insert(&Buffer, 'H');
 RingBuffer_Insert(&Buffer, 'E');
 RingBuffer_Insert(&Buffer, 'L');
 RingBuffer_Insert(&Buffer, 'L');
 RingBuffer_Insert(&Buffer, 'O');
 
-// Cache the number of stored bytes in the buffer
-uint16_t BufferCount = RingBuffer_GetCount(&Buffer);
+uint16_t BufferCount = RingBuffer_GetCount(&Buffer); /* cache the number of stored bytes
+  in the buffer */
 
-// Printer stored data length
-printf("Buffer Length: %d, Buffer Data: \r\n", BufferCount);
+printf("Buffer Length: %d, Buffer Data: \r\n", BufferCount); /* printer stored data length */
 
-// Print contents of the buffer one character at a time
-while (BufferCount--)
+while (BufferCount--) /* print contents of the buffer one character at a time */
   putc(RingBuffer_Remove(&Buffer));
 
 @ Ring Buffer Management Structure.
