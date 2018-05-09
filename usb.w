@@ -501,7 +501,7 @@ UBRR1 = SERIAL_2X_UBBRVAL(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS);
 @ @<Reconfigure the USART in double speed mode for a wider baud rate range at the
     expense of accuracy@>=
 UCSR1C = ConfigMask;
-UCSR1A = (1 << U2X1);
+UCSR1A = (1 << U2X1); /* double speed */
 UCSR1B = ((1 << RXCIE1) | (1 << TXEN1) | (1 << RXEN1));
 @^see datasheet@>
 
@@ -521,6 +521,9 @@ Macro \.{SERIAL\_UBBRVAL} is for calculating the baud value from a given baud ra
 
 @(/dev/null@>=
 UBRR1  = (DoubleSpeed ? SERIAL_2X_UBBRVAL(BaudRate) : SERIAL_UBBRVAL(BaudRate));
+  /* FIXME: why \.{SERIAL\_2X\_UBBRVAL} is not defined? Maybe it is defined in the library?
+     Then \.{SERIAL\_UBBRVAL} must also be defined there, and not here... */
+@^FIXME@>
 
 UCSR1C = ((1 << UCSZ11) | (1 << UCSZ10));
 UCSR1A = (DoubleSpeed ? (1 << U2X1) : 0);
