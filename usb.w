@@ -472,6 +472,11 @@ void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCI
 			break;
 	}
 
+/* FIXME: why |CDC_Device_ProcessControlRequest| from which current function is called,
+is called by |EVENT_USB_Device_ControlRequest| here and by
+|EVENT_USB_Device_UnhandledControlRequest| in \.{arduino-usbserial} */
+@^FIXME@>
+
   PORTD |= (1 << 3); /* keep the TX line held high (idle) while the USART is
                         reconfigured */
 
