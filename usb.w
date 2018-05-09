@@ -1984,25 +1984,6 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 	return ENDPOINT_NO_ERROR;
 }
 
-@ @<Header files@>=
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <string.h>
-#include <stddef.h>
-#include <avr/io.h>
-#include <avr/wdt.h>
-#include <avr/interrupt.h>
-#include <avr/power.h> /* |clock_prescale_set|, |clock_div_1| */
-#include <avr/pgmspace.h>
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <avr/pgmspace.h>
-#include <avr/eeprom.h>
-#include <avr/boot.h>
-#include <math.h>
-#include <util/delay.h>
-
 @** USB.
 The USB functionality.
 
@@ -4587,4 +4568,25 @@ inline uint8_t RingBuffer_Peek(RingBuffer_t* const Buffer)
 	return *Buffer->Out;
 }
 
-@* Index.
+@** Headers.
+
+@<Header files@>=
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include <stddef.h>
+#include <avr/io.h>
+#include <avr/wdt.h>
+#include <avr/interrupt.h>
+#include <avr/power.h> /* |clock_prescale_set|, |clock_div_1| */
+#include <avr/pgmspace.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <avr/pgmspace.h>
+#include <avr/eeprom.h>
+#include <avr/boot.h>
+#include <math.h>
+#include <util/delay.h>
+
+@** Index.
