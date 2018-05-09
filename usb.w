@@ -497,6 +497,9 @@ frequency.
 
 @<Set the new baud rate before configuring the USART@>=
 UBRR1 = SERIAL_2X_UBBRVAL(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS);
+  /* FIXME: where is |DoubleSpeed| defined? And why it is not used here, unlike
+     in /dev/null-section below? */
+@^FIXME@>
 
 @ @<Reconfigure the USART in double speed mode for a wider baud rate range at the
     expense of accuracy@>=
@@ -521,9 +524,6 @@ Macro \.{SERIAL\_UBBRVAL} is for calculating the baud value from a given baud ra
 
 @(/dev/null@>=
 UBRR1  = (DoubleSpeed ? SERIAL_2X_UBBRVAL(BaudRate) : SERIAL_UBBRVAL(BaudRate));
-  /* FIXME: why \.{SERIAL\_2X\_UBBRVAL} is not defined? Maybe it is defined in the library?
-     Then \.{SERIAL\_UBBRVAL} must also be defined there, and not here... */
-@^FIXME@>
 
 UCSR1C = ((1 << UCSZ11) | (1 << UCSZ10));
 UCSR1A = (DoubleSpeed ? (1 << U2X1) : 0);
