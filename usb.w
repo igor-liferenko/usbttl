@@ -4095,6 +4095,9 @@ to a host. Notification type constant for a change in the virtual
 serial port handshake line states, for use with a |USB_Request_Header_t|
 notification structure when sent to the host via the CDC notification endpoint.
 
+FIXME: why it is not used anywhere? see git lg
+@^FIXME@>
+
 @<Header files@>=
 #define CDC_NOTIF_SERIAL_STATE 0x20
 
