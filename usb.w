@@ -233,7 +233,9 @@ handshaking. If the data rate is low or data loss is acceptable then flow contro
 
 @c
 @<Header files@>@;
+@<Macros@>@;
 @<Type definitions@>@;
+@<Type last definitions@>@;
 @<Function prototypes@>@;
 @<Global variables@>@;
 @<Main program loop@>@;
@@ -613,7 +615,7 @@ vary between devices, and which describe the device's usage to the host.
 @s USB_CDC_Descriptor_Func_Union_t int
 @s USB_Descriptor_Endpoint_t int
 
-@<Type definitions@>=
+@<Type last definitions@>=
 typedef struct {
 	USB_Descriptor_Config_Header_t Config; @+@t}\6{@>
 	@<CDC Command Interface@>@;
@@ -2235,7 +2237,7 @@ instructions.
 |StructPtr| is pointer to a structure which is to be forced into indirect
 access mode.
 
-@<Header files@>=
+@<Macros@>=
 #define GCC_FORCE_POINTER_ACCESS(StructPtr) \
   __asm__ __volatile__("" : "=b" (StructPtr) : "0" (StructPtr))
 
@@ -2245,7 +2247,7 @@ This can be used before ordering-critical operations, to ensure that the compile
 not re-order the resulting
 assembly output in an unexpected manner on sections of code that are ordering-specific.
 
-@<Header files@>=
+@<Macros@>=
 #define GCC_MEMORY_BARRIER()                  __asm__ __volatile__("" ::: "memory");
 
 @ Determines if the specified value can be determined at compile-time to be a constant value
@@ -2255,7 +2257,7 @@ when compiling under GCC.
 
 Returns true if the given value is known to be a compile time constant, false otherwise.
 
-@<Header files@>=
+@<Macros@>=
 #define GCC_IS_COMPILE_CONST(x)               __builtin_constant_p(x)
 
 @* Attributes.
@@ -2279,25 +2281,25 @@ When applied as a 1-based comma separated list the compiler will emit a warning 
 the specified
 parameters are known at compiler time to be \.{NULL} at the point of calling the function.
 
-@<Header files@>=
+@<Macros@>=
 #define ATTR_NON_NULL_PTR_ARG(...)   __attribute__ ((nonnull (__VA_ARGS__)))
 
 @ Forces the compiler to inline the specified function. When applied, the given function will be
 in-lined under all circumstances.
 
-@<Header files@>=
+@<Macros@>=
 #define ATTR_ALWAYS_INLINE           __attribute__ ((always_inline))
 
 @ Indicates that the specified function is constant, in that it has no side effects other than
 parameter access.
 
-@<Header files@>=
+@<Macros@>=
 #define ATTR_CONST                   __attribute__ ((const))
 
 @ Marks a variable or struct element for packing into the smallest space available, omitting any
 alignment bytes usually added between fields to optimize field accesses.
 
-@<Header files@>=
+@<Macros@>=
 #define ATTR_PACKED                      __attribute__ ((packed))
 
 @* Configuration.
@@ -2312,7 +2314,7 @@ memory) and reduces code maintenance. However, this token can be defined to a no
 instead to give the size in bytes of the control endpoint, to reduce the size of the compiled
 binary.
 
-@<Header files@>=
+@<Macros@>=
 #define FIXED_CONTROL_ENDPOINT_SIZE      8
 
 @ By default, the library determines the number of configurations a USB device supports by
@@ -2321,7 +2323,7 @@ library, and allows the value to change dynamically (if descriptors are stored i
 rather than flash memory) and reduces code maintenance. However, this value may be fixed via this
 token to reduce the compiled size of the binary at the expense of flexibility.
 
-@<Header files@>=
+@<Macros@>=
 #define FIXED_NUM_CONFIGURATIONS         1
 
 @* Common.
@@ -2368,7 +2370,7 @@ USB Controller Interrupt definitions.
 Contains definitions required for the correct handling of low level USB
 service routine interrupts from the USB controller.
 
-@<Header files@>=
+@<Macros@>=
 #define USB_INT_VBUSTI 0
 #define USB_INT_WAKEUPI 2
 #define USB_INT_SUSPI 3
@@ -2516,21 +2518,21 @@ Functions, macros, variables, enums and types related to the setup and managemen
 @ Endpoint direction mask, for masking against endpoint addresses to retrieve the endpoint's
 direction for comparing with the \.{ENDPOINT\_DIR\_*} masks.
 
-@<Header files@>=
+@<Macros@>=
 #define ENDPOINT_DIR_MASK                  0x80
 
 @ Endpoint address direction mask for an OUT direction (Host to Device) endpoint. This
 may be ORed with
 the index of the address within a device to obtain the full endpoint address.
 
-@<Header files@>=
+@<Macros@>=
 #define ENDPOINT_DIR_OUT                   0x00
 
 @ Endpoint address direction mask for an IN direction (Device to Host) endpoint. This may be
 ORed with
 the index of the address within a device to obtain the full endpoint address.
 
-@<Header files@>=
+@<Macros@>=
 #define ENDPOINT_DIR_IN                    0x80
 
 @*4 Pipe Direction Masks.
@@ -2538,21 +2540,21 @@ the index of the address within a device to obtain the full endpoint address.
 @ Pipe direction mask, for masking against pipe addresses to retrieve the pipe's
 direction for comparing with the \.{PIPE\_DIR\_*} masks.
 
-@<Header files@>=
+@<Macros@>=
 #define PIPE_DIR_MASK                      0x80
 
 @ Endpoint address direction mask for an OUT direction (Host to Device) endpoint. This may
 be ORed with
 the index of the address within a device to obtain the full endpoint address.
 
-@<Header files@>=
+@<Macros@>=
 #define PIPE_DIR_OUT                       0x00
 
 @ Endpoint address direction mask for an IN direction (Device to Host) endpoint. This may be
 ORed with
 the index of the address within a device to obtain the full endpoint address.
 
-@<Header files@>=
+@<Macros@>=
 #define PIPE_DIR_IN                        0x80
 
 @*4 Endpoint/Pipe Type Masks.
@@ -2561,33 +2563,33 @@ the index of the address within a device to obtain the full endpoint address.
 be compared
 with the \.{EP\_TYPE\_*} masks to determine the exact type of the endpoint.
 
-@<Header files@>=
+@<Macros@>=
 #define EP_TYPE_MASK                       0x03
 
 @ {\emergencystretch=2cm Mask for a CONTROL type endpoint or pipe.
 Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pipe
 functions.\par}
 
-@<Header files@>=
+@<Macros@>=
 #define EP_TYPE_CONTROL                    0x00
 
 @ Mask for an ISOCHRONOUS type endpoint or pipe.
 Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pipe functions.
 
-@<Header files@>=
+@<Macros@>=
 #define EP_TYPE_ISOCHRONOUS                0x01
 
 @ {\emergencystretch=2cm Mask for a BULK type endpoint or pipe.
 Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pipe
 functions.\par}
 
-@<Header files@>=
+@<Macros@>=
 #define EP_TYPE_BULK                       0x02
 
 @ Mask for an INTERRUPT type endpoint or pipe.
 Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pipe functions.
 
-@<Header files@>=
+@<Macros@>=
 #define EP_TYPE_INTERRUPT                  0x03
 
 @* USBController AVR8.
@@ -2595,7 +2597,7 @@ USB Controller definitions for the AVR8 microcontrollers.
 Functions, macros, variables, enums and types related to the setup and management of
 the USB interface.
 
-@<Header files@>=
+@<Macros@>=
 #define USB_PLL_PSC                (1 << PINDIV)
 
 @*1 USB Controller Option Masks.
@@ -2607,7 +2609,7 @@ frequency clock
 that the USB controller requires) and ensuring that it is locked at the correct frequency
 for USB operations.
 
-@<Header files@>=
+@<Macros@>=
 #define USB_OPT_MANUAL_PLL                 (1 << 2)
 
 @ Automatic PLL control option mask for |USB_Init|. This indicates to the library that
@@ -2617,14 +2619,14 @@ frequency clock
 that the USB controller requires) and ensuring that it is locked at the correct frequency
 for USB operations.
 
-@<Header files@>=
+@<Macros@>=
 #define USB_OPT_AUTO_PLL                   (0 << 2)
 
 @ Constant for the maximum software timeout period of the USB data stream transfer functions
 (both control and standard). If the next packet of a stream
 is not received or acknowledged within this time period, the stream function will fail.
 
-@<Header files@>=
+@<Macros@>=
 #define USB_STREAM_TIMEOUT_MS       100
 
 @* Endpoint.
@@ -2643,7 +2645,7 @@ send/receive functions for various data types.
 @ {\emergencystretch=2cm Type define for a endpoint table entry, used to configure endpoints
 in groups via |Endpoint_ConfigureEndpointTable|.\par}
 
-@<Header files@>=
+@<Type definitions@>=
 typedef struct
 {
 	uint8_t  Address; /* address of the endpoint to configure, or zero if the table
@@ -2656,13 +2658,13 @@ typedef struct
 @ Endpoint number mask, for masking against endpoint addresses to retrieve the endpoint's
 numerical address in the device.
 
-@<Header files@>=
+@<Macros@>=
 #define ENDPOINT_EPNUM_MASK                     0x0F
 
 @ Endpoint address for the default control endpoint, which always resides in address 0. This is
 defined for convenience to give more readable code when used with the endpoint macros.
 
-@<Header files@>=
+@<Macros@>=
 #define ENDPOINT_CONTROLEP                      0
 
 @ @<Func...@>=
@@ -2758,7 +2760,7 @@ otherwise.
 be used in the device. Different USB AVR models support different amounts of endpoints,
 this value reflects the maximum number of endpoints for the currently selected AVR model.
 
-@<Header files@>=
+@<Macros@>=
 #define ENDPOINT_TOTAL_ENDPOINTS 7
 
 @ Configures the specified endpoint address with the given endpoint type, bank size and
@@ -2838,8 +2840,9 @@ operate on the currently selected endpoint.
 
 |Address| is endpoint address to select.
 
-@<Header files@>=
+@<Func...@>=
 inline void Endpoint_SelectEndpoint(const uint8_t Address) ATTR_ALWAYS_INLINE;
+@ @c
 inline void Endpoint_SelectEndpoint(const uint8_t Address)
 {
 		UENUM = (Address & ENDPOINT_EPNUM_MASK);
@@ -2850,8 +2853,9 @@ controller's data In and Out pointers to the bank's contents.
 
 |Address| is endpoint address whose FIFO buffers are to be reset.
 
-@<Header files@>=
+@<Func...@>=
 inline void Endpoint_ResetEndpoint(const uint8_t Address) ATTR_ALWAYS_INLINE;
+@ @c
 inline void Endpoint_ResetEndpoint(const uint8_t Address)
 {
 	UERST = (1 << (Address & ENDPOINT_EPNUM_MASK));
@@ -2934,8 +2938,9 @@ UECONX |= (1 << STALLRQC);
 @ Reads next byte from the currently selected endpoint's bank (i.e., FIFO buffer),
 for OUT direction endpoints.
 
-@<Header files@>=
+@<Func...@>=
 inline uint8_t Endpoint_Read_8(void) ATTR_ALWAYS_INLINE;
+@ @c
 inline uint8_t Endpoint_Read_8(void)
 {
   return UEDATX;
@@ -2944,8 +2949,9 @@ inline uint8_t Endpoint_Read_8(void)
 @ Writes one byte to the currently selected endpoint's bank (i.e., FIFO buffer),
 for IN direction endpoints.
 
-@<Header files@>=
+@<Func...@>=
 inline void Endpoint_Write_8(const uint8_t Data) ATTR_ALWAYS_INLINE;
+@ @c
 inline void Endpoint_Write_8(const uint8_t Data)
 {
   UEDATX = Data;
@@ -2954,8 +2960,9 @@ inline void Endpoint_Write_8(const uint8_t Data)
 @ Discards one byte from the currently selected endpoint's bank (i.e., FIFO buffer),
 for OUT direction endpoints.
 
-@<Header files@>=
+@<Func...@>=
 inline void Endpoint_Discard_8(void) ATTR_ALWAYS_INLINE;
+@ @c
 inline void Endpoint_Discard_8(void)
 {
   (void) UEDATX;
@@ -2964,8 +2971,9 @@ inline void Endpoint_Discard_8(void)
 @ Writes two bytes to the currently selected endpoint's bank (i.e., FIFO buffer)
 in little endian format, for IN direction endpoints.
 
-@<Header files@>=
+@<Func...@>=
 inline void Endpoint_Write_16_LE(const uint16_t Data) ATTR_ALWAYS_INLINE;
+@ @c
 inline void Endpoint_Write_16_LE(const uint16_t Data)
 {
 	UEDATX = (Data & 0xFF);
@@ -2975,8 +2983,9 @@ inline void Endpoint_Write_16_LE(const uint16_t Data)
 @ Reads next four bytes from the currently selected endpoint's bank (i.e., FIFO buffer)
 in little endian format, for OUT direction endpoints.
 
-@<Header files@>=
+@<Func...@>=
 inline uint32_t Endpoint_Read_32_LE(void) ATTR_ALWAYS_INLINE;
+@ @c
 inline uint32_t Endpoint_Read_32_LE(void)
 {
 	union
@@ -2996,8 +3005,9 @@ inline uint32_t Endpoint_Read_32_LE(void)
 @ Writes four bytes to the currently selected endpoint's bank (i.e., FIFO buffer)
 in little endian format, for IN direction endpoints.
 
-@<Header files@>=
+@<Func...@>=
 inline void Endpoint_Write_32_LE(const uint32_t Data) ATTR_ALWAYS_INLINE;
+@ @c
 inline void Endpoint_Write_32_LE(const uint32_t Data)
 {
 	UEDATX = (Data &  0xFF);
@@ -3024,7 +3034,7 @@ be used in the device descriptors to ensure this.
 This variable should be treated as read-only, and never manually
 changed in value.
 
-@<Header files@>=
+@<Macros@>=
 #define USB_Device_ControlEndpointSize FIXED_CONTROL_ENDPOINT_SIZE
 
 @* Device.
@@ -3039,49 +3049,49 @@ See |USB_DeviceState|, which stores the current device state machine state.
 @ This state indicates
 that the device is not currently connected to a host.
 
-@<Header files@>=
+@<Macros@>=
 #define DEVICE_STATE_UNATTACHED 0
 
 @ This state indicates
 that the device is connected to a host, but enumeration has not
 yet begun.
 
-@<Header files@>=
+@<Macros@>=
 #define DEVICE_STATE_POWERED 1
 
 @ This state indicates
 that the device's USB bus has been reset by the host and it is
 now waiting for the host to begin the enumeration process.
 
-@<Header files@>=
+@<Macros@>=
 #define DEVICE_STATE_DEFAULT 2
 
 @ This state indicates
 that the device has been addressed by the USB Host, but is not
 yet configured.
 
-@<Header files@>=
+@<Macros@>=
 #define DEVICE_STATE_ADDRESSED 3
 
 @ This state indicates
 that the device has been enumerated by the host and is ready
 for USB communications to begin.
 
-@<Header files@>=
+@<Macros@>=
 #define DEVICE_STATE_CONFIGURED 4
 
 @ This state indicates
 that the USB bus has been suspended by the host, and the device
 should power down to a minimal power level until the bus is resumed.
 
-@<Header files@>=
+@<Macros@>=
 #define DEVICE_STATE_SUSPENDED 5
 
 @*1 USB Device Mode Option Masks.
 
 @ Mask for the Options parameter of the |USB_Init| function. This indicates that the
 USB interface should be initialized in full speed (12Mb/s) mode.
-@<Header files@>=
+@<Macros@>=
 #define USB_DEVICE_OPT_FULLSPEED               (0 << 0)
 
 @ String descriptor index for the device's unique serial number string descriptor within
@@ -3096,23 +3106,24 @@ to this value will cause it to use the internal serial number.
 On unsupported devices, this will evaluate to |NO_DESCRIPTOR| and so will force the host to
 create a pseudo-serial number for the device.
 
-@<Header files@>=
+@<Macros@>=
 #define USE_INTERNAL_SERIAL            0xDC
 
 @ Length of the device's unique internal serial number, in bits, if present on the selected
 microcontroller model.
 
-@<Header files@>=
+@<Macros@>=
 #define INTERNAL_SERIAL_LENGTH_BITS    80
 
 @ Start address of the internal serial number, in the appropriate address space, if present on
 the selected microcontroller model.
 
-@<Header files@>=
+@<Macros@>=
 #define INTERNAL_SERIAL_START_ADDRESS  0x0E
 
-@ @<Header files@>=
+@ @<Func...@>=
 inline void USB_Device_GetSerialString(uint16_t* const UnicodeString) ATTR_NON_NULL_PTR_ARG(1);
+@ @c
 inline void USB_Device_GetSerialString(uint16_t* const UnicodeString)
 {
   uint8_t CurrentGlobalInt;
@@ -3152,7 +3163,7 @@ the request direction masks.
 
 See \.{REQDIR\_*} macros for masks indicating the request data direction.
 
-@<Header files@>=
+@<Macros@>=
 #define CONTROL_REQTYPE_DIRECTION  0x80
 
 @ Mask for the request type parameter, to indicate the type of request (Device, Class or Vendor
@@ -3160,7 +3171,7 @@ Specific). The result of this mask should then be compared to the request type m
 
 See \.{REQTYPE\_*} macros for masks indicating the request type.
 
-@<Header files@>=
+@<Macros@>=
 #define CONTROL_REQTYPE_TYPE       0x60
 
 @ Mask for the request type parameter, to indicate the recipient of the request (Device,
@@ -3169,7 +3180,7 @@ recipient masks.
 
 See \.{REQREC\_*} macros for masks indicating the request recipient.
 
-@<Header files@>=
+@<Macros@>=
 #define CONTROL_REQTYPE_RECIPIENT  0x1F
 
 @*1 Control Request Data Direction Masks.
@@ -3178,14 +3189,14 @@ See \.{REQREC\_*} macros for masks indicating the request recipient.
 
 See |CONTROL_REQTYPE_DIRECTION| macro.
 
-@<Header files@>=
+@<Macros@>=
 #define REQDIR_HOSTTODEVICE        (0 << 7)
 
 @ Request data direction mask, indicating that the request data will flow from device to host.
 
 See |CONTROL_REQTYPE_DIRECTION| macro.
 
-@<Header files@>=
+@<Macros@>=
 #define REQDIR_DEVICETOHOST        (1 << 7)
 
 @*1 Control Request Type Masks.
@@ -3194,21 +3205,21 @@ See |CONTROL_REQTYPE_DIRECTION| macro.
 
 See |CONTROL_REQTYPE_TYPE| macro.
 
-@<Header files@>=
+@<Macros@>=
 #define REQTYPE_STANDARD           (0 << 5)
 
 @ Request type mask, indicating that the request is a class-specific request.
 
 See |CONTROL_REQTYPE_TYPE| macro.
 
-@<Header files@>=
+@<Macros@>=
 #define REQTYPE_CLASS              (1 << 5)
 
 @ Request type mask, indicating that the request is a vendor specific request.
 
 See |CONTROL_REQTYPE_TYPE| macro.
 
-@<Header files@>=
+@<Macros@>=
 #define REQTYPE_VENDOR             (2 << 5)
 
 @*1 Control Request Recipient Masks.
@@ -3217,7 +3228,7 @@ See |CONTROL_REQTYPE_TYPE| macro.
 
 See |CONTROL_REQTYPE_RECIPIENT| macro.
 
-@<Header files@>=
+@<Macros@>=
 #define REQREC_DEVICE              (0 << 0)
 
 @ Request recipient mask, indicating that the request is to be issued to an interface in the
@@ -3225,7 +3236,7 @@ currently selected configuration.
 
 See |CONTROL_REQTYPE_RECIPIENT| macro.
 
-@<Header files@>=
+@<Macros@>=
 #define REQREC_INTERFACE           (1 << 0)
 
 @ Request recipient mask, indicating that the request is to be issued to an endpoint in the
@@ -3233,7 +3244,7 @@ currently selected configuration.
 
 See |CONTROL_REQTYPE_RECIPIENT| macro.
 
-@<Header files@>=
+@<Macros@>=
 #define REQREC_ENDPOINT            (2 << 0)
 
 @ Request recipient mask, indicating that the request is to be issued to an unspecified element
@@ -3241,7 +3252,7 @@ in the currently selected configuration.
 
 See |CONTROL_REQTYPE_RECIPIENT| macro.
 
-@<Header files@>=
+@<Macros@>=
 #define REQREC_OTHER               (3 << 0)
 
 @*1 Standard USB Control Request.
@@ -3250,7 +3261,7 @@ Type define for a standard USB control request.
 
 See The USB 2.0 specification for more information on standard control requests.
 
-@<Header files@>=
+@<Type definitions@>=
 typedef struct
 {
 	uint8_t  bmRequestType; /* type of the request */
@@ -3268,63 +3279,63 @@ See Chapter 9 of the USB 2.0 Specification.
 
 @ Passed for other recipients via the |EVENT_USB_Device_ControlRequest| event when received.
 
-@<Header files@>=
+@<Macros@>=
 #define REQ_GET_STATUS 0
 
 @ Passed for other recipients via the |EVENT_USB_Device_ControlRequest|
 event when received.
 
-@<Header files@>=
+@<Macros@>=
 #define REQ_CLEAR_FEATURE 1
 
 @ Passed for other recipients via the
 |EVENT_USB_Device_ControlRequest| event when received.
 
-@<Header files@>=
+@<Macros@>=
 #define REQ_SET_FEATURE 3
 
 @ Passed for other recipients via the
 |EVENT_USB_Device_ControlRequest| event when received.
 
-@<Header files@>=
+@<Macros@>=
 #define REQ_SET_ADDRESS 5
 
 @ Passed for other recipients via the
 |EVENT_USB_Device_ControlRequest| event when received.
 
-@<Header files@>=
+@<Macros@>=
 #define REQ_GET_DESCRIPTOR 6
 
 @ Passed via the |EVENT_USB_Device_ControlRequest| event when received.
 
-@<Header files@>=
+@<Macros@>=
 #define REQ_SET_DESCRIPTOR 7
 
 @ Passed for other recipients via the
 |EVENT_USB_Device_ControlRequest| event when received.
 
-@<Header files@>=
+@<Macros@>=
 #define REQ_GET_CONFIGURATION 8
 
 @ Passed for other recipients via the
 |EVENT_USB_Device_ControlRequest| event when received.
 
-@<Header files@>=
+@<Macros@>=
 #define REQ_SET_CONFIGURATION 9
 
 @ Passed via the |EVENT_USB_Device_ControlRequest| event when received.
 
-@<Header files@>=
+@<Macros@>=
 #define REQ_GET_NITERFACE 10
 
 @ Passed via the |EVENT_USB_Device_ControlRequest| event when received.
 
-@<Header files@>=
+@<Macros@>=
 #define REQ_SET_INTERFACE 11
 
 @ Passed via the |EVENT_USB_Device_ControlRequest| event when received.
 
-@<Header files@>=
+@<Macros@>=
 #define REQ_SYNCH_FRAME 12
 
 @*1 Feature Selector values.
@@ -3336,7 +3347,7 @@ used in a Set Feature or Clear Feature request this indicates that an
 endpoint (whose address is given elsewhere in the request) should have
 its stall condition changed.
 
-@<Header files@>=
+@<Macros@>=
 #define FEATURE_SEL_ENDPOINT_HALT 0x00
 
 @ Feature selector for Device level Remote Wakeup enable set or clear.
@@ -3344,10 +3355,10 @@ This feature can be controlled by the host on devices which indicate
 remote wakeup support in their descriptors to selectively disable or
 enable remote wakeup.
 
-@<Header files@>=
+@<Macros@>=
 #define FEATURE_SEL_DEVICE_REMOTE_WAKEUP 0x01
 
-@ @<Header files@>=
+@ @<Macros@>=
 #define FEATURE_SELFPOWERED_ENABLED     (1 << 0)
 #define FEATURE_REMOTE_WAKEUP_ENABLED   (1 << 1)
 
@@ -3383,7 +3394,7 @@ data streams from and to endpoints.
 
 @ Possible error return codes of the \\{Endpoint\_*\_Control\_Stream\_*} functions.
 
-@<Header files@>=
+@<Macros@>=
 #define ENDPOINT_NO_ERROR 0 /* command completed successfully, no error */
 #define ENDPOINT_HOST_ABORTED 1 /* aborted the transfer prematurely */
 #define ENDPOINT_DEVICE_DISCONNECTED 2 /* device was disconnected from the host during
@@ -3415,7 +3426,7 @@ not be used within the user application except implicitly via the library APIs.
 
 @d DEVICE_STATE_AS_GPIOR 0
 
-@<Header files@>=
+@<Macros@>=
 #define CONCAT(x, y)            x ## y
 #define CONCAT_EXPANDED(x, y)   CONCAT(x, y)
 #define USB_DeviceState CONCAT_EXPANDED(GPIOR, DEVICE_STATE_AS_GPIOR) /* expands into
@@ -3450,7 +3461,7 @@ descriptors for string descriptor indexes, or may be use as a return value for
 |CALLBACK_USB_GetDescriptor| when
 the specified descriptor does not exist.
 
-@<Header files@>=
+@<Macros@>=
 #define NO_DESCRIPTOR 0
 
 @ Macro to calculate the power value for the configuration descriptor, from a given number
@@ -3458,7 +3469,7 @@ of milliamperes.
 Parameter is maximum number of milliamps the device consumes when the given
 configuration is selected.
 
-@<Header files@>=
+@<Macros@>=
 #define USB_CONFIG_POWER_MA(mA) ((mA) >> 1)
 
 @ Macro to calculate the Unicode length of a string with a given number of Unicode characters.
@@ -3466,7 +3477,7 @@ Should be used in string descriptor's headers for giving the string descriptor's
 
 Parameter is number of Unicode characters in the string text.
 
-@<Header files@>=
+@<Macros@>=
 #define USB_STRING_LEN(UnicodeChars) (sizeof (USB_Descriptor_Header_t) + ((UnicodeChars) << 1))
 
 @ Convenience macro to easily create |USB_Descriptor_String_t| instances from a wide
@@ -3474,7 +3485,7 @@ character string.
 
 Parameter is string to initialize a USB String Descriptor structure with.
 
-@<Header files@>=
+@<Macros@>=
 #define USB_STRING_DESCRIPTOR(String) { \
   { \
     sizeof (USB_Descriptor_Header_t) + ( sizeof (String) - 2 ), \
@@ -3494,7 +3505,7 @@ inside device descriptors without endianness conversion macros.
 Parameters are: major version number to encode, minor version number to encode,
 revision version number to encode.
 
-@<Header files@>=
+@<Macros@>=
 #define VERSION_BCD(Major, Minor, Revision) \
                                           ((Major & 0xFF) << 8) | \
                                                        ((Minor & 0x0F) << 4) | \
@@ -3505,7 +3516,7 @@ revision version number to encode.
 @ Mask for the reserved bit in the Configuration Descriptor's |ConfigAttributes| field,
 which must be set on all devices for historical purposes.
 
-@<Header files@>=
+@<Macros@>=
 #define USB_CONFIG_ATTR_RESERVED          0x80
 
 @ {\emergencystretch=4cm Can be masked with other configuration descriptor attributes for a
@@ -3513,7 +3524,7 @@ which must be set on all devices for historical purposes.
 descriptor's |ConfigAttributes| value to indicate that the specified configuration
 can draw its power from the device's own power source.\par}
 
-@<Header files@>=
+@<Macros@>=
 #define USB_CONFIG_ATTR_SELFPOWERED 0x40
 
 @*1 Endpoint Descriptor Attribute Masks.
@@ -3524,7 +3535,7 @@ can draw its power from the device's own power source.\par}
 
 See the USB specification for more details on the possible Endpoint attributes.
 
-@<Header files@>=
+@<Macros@>=
 #define ENDPOINT_ATTR_NO_SYNC (0 << 2)
 
 @*1 Endpoint Descriptor Usage Masks.
@@ -3535,12 +3546,12 @@ See the USB specification for more details on the possible Endpoint attributes.
 
 See the USB specification for more details on the possible Endpoint usage attributes.
 
-@<Header files@>=
+@<Macros@>=
 #define ENDPOINT_USAGE_DATA               (0 << 4)
 
 @ Enum for the possible standard descriptor types, as given in each descriptor's header.
 
-@<Header files@>=
+@<Macros@>=
 #define DTYPE_DEVICE 0x01 /* device descriptor */
 #define DTYPE_CONFIGURATION 0x02 /* configuration descriptor */
 #define DTYPE_STRING 0x03 /* string descriptor */
@@ -3556,7 +3567,7 @@ uses LUFA-specific element names to make each element's purpose clearer.
 
 See |USB_StdDescriptor_Header_t| for the version of this type with standard element names.
 
-@<Header files@>=
+@<Type definitions@>=
 typedef struct
 {
   uint8_t Size; /* size of the descriptor, in bytes */
@@ -3573,7 +3584,7 @@ uses the relevant standard's given element names to ensure compatibility with th
 See |USB_Descriptor_Header_t| for the version of this type with non-standard LUFA
 specific element names.
 
-@<Header files@>=
+@(/dev/null@>=
 typedef struct
 {
   uint8_t bLength; /* size of the descriptor, in bytes */
@@ -3591,7 +3602,7 @@ See |USB_StdDescriptor_Device_t| for the version of this type with standard elem
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
-@<Header files@>=
+@<Type definitions@>=
 typedef struct {
   USB_Descriptor_Header_t Header; /* descriptor header, including type and size */
 
@@ -3636,7 +3647,7 @@ LUFA specific element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
-@<Header files@>=
+@(/dev/null@>=
 typedef struct
 {
   uint8_t  bLength; /* size of the descriptor, in bytes */
@@ -3678,7 +3689,7 @@ element names to make each element's purpose clearer.
 See |USB_StdDescriptor_DeviceQualifier_t| for the version of this type with standard
 element names.
 
-@<Header files@>=
+@<Type definitions@>=
 typedef struct {
 	USB_Descriptor_Header_t Header; /* descriptor header, including type and size */
 
@@ -3704,7 +3715,7 @@ to ensure compatibility with the standard.
 See |USB_Descriptor_DeviceQualifier_t| for the version of this type with
 non-standard LUFA specific element names.
 
-@<Header files@>=
+@(/dev/null@>=
 typedef struct {
 	uint8_t  bLength; /* size of the descriptor, in bytes */
   uint8_t  bDescriptorType; /* type of the descriptor, either a value in
@@ -3732,7 +3743,7 @@ element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
-@<Header files@>=
+@<Type definitions@>=
 typedef struct {
 	USB_Descriptor_Header_t Header; /* descriptor header, including type and size */
 
@@ -3765,7 +3776,7 @@ specific element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
-@<Header files@>=
+@(/dev/null@>=
 typedef struct
 {
 	uint8_t  bLength; /* size of the descriptor, in bytes */
@@ -3795,7 +3806,7 @@ names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
-@<Header files@>=
+@<Type definitions@>=
 typedef struct {
 	USB_Descriptor_Header_t Header; /* descriptor header, including type and size */
 
@@ -3823,7 +3834,7 @@ to ensure compatibility with the standard.
 See |USB_Descriptor_Interface_t| for the version of this type with non-standard LUFA
 specific element names.
 
-@<Header files@>=
+@(/dev/null@>=
 typedef struct {
   uint8_t bLength; /* size of the descriptor, in bytes */
   uint8_t bDescriptorType; /* type of the descriptor, either a value in
@@ -3853,7 +3864,7 @@ names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
-@<Header files@>=
+@<Type definitions@>=
 typedef struct {
 	USB_Descriptor_Header_t Header; /* descriptor header, including type and size */
 
@@ -3879,7 +3890,7 @@ specific element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
-@<Header files@>=
+@(/dev/null@>=
 typedef struct
 {
   uint8_t  bLength; /* size of the descriptor, in bytes */
@@ -3912,7 +3923,7 @@ See |USB_StdDescriptor_String_t| for the version of this type with standard elem
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
-@<Header files@>=
+@<Type definitions@>=
 typedef struct
 {
 	USB_Descriptor_Header_t Header; /* descriptor header, including type and size */
@@ -3939,7 +3950,7 @@ LUFA specific element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
-@<Header files@>=
+@(/dev/null@>=
 typedef struct
 {
   uint8_t bLength; /* size of the descriptor, in bytes */
@@ -3968,60 +3979,60 @@ Constants, Types and Enum definitions for the USB CDC Class.
 class-specific request
 from the host, to indicate that the DTR line state should be high.
 
-@<Header files@>=
+@<Macros@>=
 #define CDC_CONTROL_LINE_OUT_DTR         (1 << 0)
 
 @ Mask for the RTS handshake line for use with the |CDC_REQ_SET_CONTROL_LINE_STATE|
 class-specific request
 from the host, to indicate that the RTS line state should be high.
 
-@<Header files@>=
+@<Macros@>=
 #define CDC_CONTROL_LINE_OUT_RTS         (1 << 1)
 
 @ Mask for the DCD handshake line for use with the |CDC_NOTIF_SERIAL_STATE| class-specific
 notification
 from the device to the host, to indicate that the DCD line state is currently high.
 
-@<Header files@>=
+@<Macros@>=
 #define CDC_CONTROL_LINE_IN_DCD          (1 << 0)
 
 @ Mask for the DSR handshake line for use with the |CDC_NOTIF_SERIAL_STATE| class-specific
 notification
 from the device to the host, to indicate that the DSR line state is currently high.
 
-@<Header files@>=
+@<Macros@>=
 #define CDC_CONTROL_LINE_IN_DSR          (1 << 1)
 
 @ Mask for the BREAK handshake line for use with the |CDC_NOTIF_SERIAL_STATE| class-specific
 notification
 from the device to the host, to indicate that the BREAK line state is currently high.
 
-@<Header files@>=
+@<Macros@>=
 #define CDC_CONTROL_LINE_IN_BREAK        (1 << 2)
 
 @ Mask for the RING handshake line for use with the |CDC_NOTIF_SERIAL_STATE| class-specific
 notification
 from the device to the host, to indicate that the RING line state is currently high.
 
-@<Header files@>=
+@<Macros@>=
 #define CDC_CONTROL_LINE_IN_RING         (1 << 3)
 
 @ Mask for use with the |CDC_NOTIF_SERIAL_STATE| class-specific notification from the device
 to the host, to indicate that a framing error has occurred on the virtual serial port.
 
-@<Header files@>=
+@<Macros@>=
 #define CDC_CONTROL_LINE_IN_FRAMEERROR   (1 << 4)
 
 @ Mask for use with the |CDC_NOTIF_SERIAL_STATE| class-specific notification from the device
 to the host, to indicate that a parity error has occurred on the virtual serial port.
 
-@<Header files@>=
+@<Macros@>=
 #define CDC_CONTROL_LINE_IN_PARITYERROR  (1 << 5)
 
 @ Mask for use with the |CDC_NOTIF_SERIAL_STATE| class-specific notification from the device
 to the host, to indicate that a data overrun error has occurred on the virtual serial port.
 
-@<Header files@>=
+@<Macros@>=
 #define CDC_CONTROL_LINE_IN_OVERRUNERROR (1 << 6)
 
 @ Macro to define a CDC class-specific functional descriptor. CDC functional descriptors have a
@@ -4032,7 +4043,7 @@ easily by specifying the size of the payload. This allows \c sizeof() to work co
 
 |DataSize| -- size in bytes of the CDC functional descriptor's data payload.
 
-@<Header files@>=
+@<Macros@>=
 #define CDC_FUNCTIONAL_DESCRIPTOR(DataSize)        \
      struct {                                      \
           USB_Descriptor_Header_t Header;          \
@@ -4043,7 +4054,7 @@ easily by specifying the size of the payload. This allows \c sizeof() to work co
 @ Possible Class, Subclass and Protocol values of device and interface descriptors
 relating to the CDC device class.
 
-@<Header files@>=
+@<Macros@>=
 #define CDC_CSCP_CDC_CLASS 0x02 /* device or interface belongs to the CDC class */
 #define CDC_CSCP_NO_SPECIFIC_SUBCLASS 0x00 /* device or interface belongs to no specific
     subclass of the CDC class */
@@ -4062,7 +4073,7 @@ relating to the CDC device class.
 
 @ CDC class specific control requests that can be issued by the USB bus host.
 
-@<Header files@>=
+@<Macros@>=
 #define CDC_REQ_SET_LINE_ENCODING 0x20 /* set the current virtual serial port configuration
   settings */
 #define CDC_REQ_GET_LINE_ENCODING 0x21 /* get the current virtual serial port configuration
@@ -4079,24 +4090,24 @@ notification structure when sent to the host via the CDC notification endpoint.
 FIXME: why it is not used anywhere? see git lg
 @^FIXME@>
 
-@<Header files@>=
+@<Macros@>=
 #define CDC_NOTIF_SERIAL_STATE 0x20
 
 @ CDC class specific interface descriptor subtypes.
 
-@<Header files@>=
+@<Macros@>=
 #define CDC_DSUBTYPE_CS_INTERFACE_HEADER 0x00 /* Header functional descriptor */
 #define CDC_DSUBTYPE_CS_INTERFACE_ACM 0x02 /* Abstract Control Model functional descriptor */
 #define CDC_DSUBTYPE_CS_INTERFACE_UNION 0x06 /* Union functional descriptor */
 
 @ Possible line encoding formats of a virtual serial port.
 
-@<Header files@>=
+@<Macros@>=
 #define CDC_LINEENCODING_TWO_STOP_BITS 2 /* each frame contains two stop bits */
 
 @ Possible line encoding parity settings of a virtual serial port.
 
-@<Header files@>=
+@<Macros@>=
 #define CDC_PARITY_EVEN 2 /* even parity bit mode on each frame */
 #define CDC_PARITY_ODD 1 /* odd parity bit mode on each frame */
 
@@ -4113,7 +4124,7 @@ standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
-@<Header files@>=
+@<Type definitions@>=
 typedef struct {
   USB_Descriptor_Header_t Header; /* regular descriptor header containing the descriptor's
     type and length */
@@ -4136,7 +4147,7 @@ LUFA specific element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
-@<Header files@>=
+@(/dev/null@>=
 typedef struct {
   uint8_t  bFunctionLength; /* size of the descriptor, in bytes */
   uint8_t  bDescriptorType; /* type of the descriptor, either a value in
@@ -4159,7 +4170,7 @@ standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
-@<Header files@>=
+@<Type definitions@>=
 typedef struct {
   USB_Descriptor_Header_t Header; /* regular descriptor header containing the descriptor's
     type and length */
@@ -4180,7 +4191,7 @@ more details.
 See |USB_CDC_Descriptor_Func_ACM_t| for the version of this type with non-standard
 LUFA specific element names.
 
-@<Header files@>=
+@(/dev/null@>=
 typedef struct {
 	uint8_t bFunctionLength; /* size of the descriptor, in bytes */
 	uint8_t bDescriptorType; /* type of the descriptor, either a value in
@@ -4203,7 +4214,7 @@ standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
-@<Header files@>=
+@<Type definitions@>=
 typedef struct {
 	USB_Descriptor_Header_t Header; /* regular descriptor header containing the
     descriptor's type and length */
@@ -4224,7 +4235,7 @@ CDC control and data interfaces are related. See the CDC class specification for
 See |USB_CDC_Descriptor_Func_Union_t| for the version of this type with non-standard
 LUFA specific element names.
 
-@<Header files@>=
+@(/dev/null@>=
 typedef struct {
 	uint8_t bFunctionLength; /* size of the descriptor, in bytes */
 	uint8_t bDescriptorType; /* type of the descriptor, either a value in
@@ -4242,7 +4253,7 @@ parameters for a virtual serial port.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
-@<Header files@>=
+@<Type definitions@>=
 typedef struct {
   uint32_t BaudRateBPS; /* baud rate of the virtual serial port, in bits per second */
   uint8_t  CharFormat; /* character format of the virtual serial port, a
@@ -4281,7 +4292,7 @@ within the user application, and passed to each of the CDC class driver function
 CDCInterfaceInfo parameter. This stores each CDC interface's configuration and state
 information.
 
-@<Header files@>=
+@<Type definitions@>=
 typedef struct {
   struct
   {
@@ -4371,7 +4382,7 @@ while (BufferCount--) /* print contents of the buffer one character at a time */
 Type define for a new ring buffer object. Buffers should be initialized via a call to
 |RingBuffer_InitBuffer| before use.
 
-@<Header files@>=
+@<Type definitions@>=
 typedef struct {
 	uint8_t* In; /* current storage location in the circular buffer */
 	uint8_t* Out; /* current retrieval location in the circular buffer */
@@ -4389,9 +4400,10 @@ by re-initializing them using this function.
 |DataPtr| is a pointer to a global array that will hold the data stored into the ring buffer. \par
 |Size| is a maximum number of bytes that can be stored in the underlying data array. \par
 
-@<Header files@>=
+@<Func...@>=
 inline void RingBuffer_InitBuffer(RingBuffer_t* Buffer, uint8_t* const DataPtr,
                      const uint16_t Size) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
+@ @c
 inline void RingBuffer_InitBuffer(RingBuffer_t* Buffer,
                                         uint8_t* const DataPtr,
                                         const uint16_t Size)
@@ -4425,8 +4437,9 @@ be performed on the buffer.
 
 Returns number of bytes currently stored in the buffer.
 
-@<Header files@>=
+@<Func...@>=
 inline uint16_t RingBuffer_GetCount(RingBuffer_t* const Buffer) ATTR_NON_NULL_PTR_ARG(1);
+@ @c
 inline uint16_t RingBuffer_GetCount(RingBuffer_t* const Buffer)
 {
   uint16_t Count;
@@ -4453,8 +4466,9 @@ be performed on the buffer when there is a single writer thread.
 
 Returns number of free bytes in the buffer.
 
-@<Header files@>=
+@<Func...@>=
 inline uint16_t RingBuffer_GetFreeCount(RingBuffer_t* const Buffer) ATTR_NON_NULL_PTR_ARG(1);
+@ @c
 inline uint16_t RingBuffer_GetFreeCount(RingBuffer_t* const Buffer)
 {
 	return (Buffer->Size - RingBuffer_GetCount(Buffer));
@@ -4472,8 +4486,9 @@ to reduce the time spent in atomicity locks.
 
 Returns true if the buffer contains no free space, false otherwise.
 
-@<Header files@>=
+@<Func...@>=
 inline bool RingBuffer_IsEmpty(RingBuffer_t* const Buffer) ATTR_NON_NULL_PTR_ARG(1);
+@ @c
 inline bool RingBuffer_IsEmpty(RingBuffer_t* const Buffer)
 {
 	return (RingBuffer_GetCount(Buffer) == 0);
@@ -4487,8 +4502,9 @@ buffer overrun.
 
 Returns true if the buffer contains no free space, false otherwise.
 
-@<Header files@>=
+@<Func...@>=
 inline bool RingBuffer_IsFull(RingBuffer_t* const Buffer) ATTR_NON_NULL_PTR_ARG(1);
+@ @c
 inline bool RingBuffer_IsFull(RingBuffer_t* const Buffer)
 {
   return (RingBuffer_GetCount(Buffer) == Buffer->Size);
@@ -4503,8 +4519,9 @@ execution threads.
 |Buffer| is a pointer to a ring buffer structure to insert into.
 |Data| is data element to insert into the buffer.
 
-@<Header files@>=
+@<Func...@>=
 inline void RingBuffer_Insert(RingBuffer_t* Buffer, const uint8_t Data) ATTR_NON_NULL_PTR_ARG(1);
+@ @c
 inline void RingBuffer_Insert(RingBuffer_t* Buffer, const uint8_t Data)
 {
 	GCC_FORCE_POINTER_ACCESS(Buffer);
@@ -4533,8 +4550,9 @@ execution threads.
 
 Returns next data element stored in the buffer.
 
-@<Header files@>=
+@<Func...@>=
 inline uint8_t RingBuffer_Remove(RingBuffer_t* Buffer) ATTR_NON_NULL_PTR_ARG(1);
+@ @c
 inline uint8_t RingBuffer_Remove(RingBuffer_t* Buffer)
 {
 	GCC_FORCE_POINTER_ACCESS(Buffer);
@@ -4561,7 +4579,7 @@ inline uint8_t RingBuffer_Remove(RingBuffer_t* Buffer)
 
 Returns next data element stored in the buffer.
 
-@<Header files@>=
+@<Func...@>=
 inline uint8_t RingBuffer_Peek(RingBuffer_t* const Buffer) ATTR_NON_NULL_PTR_ARG(1);
 inline uint8_t RingBuffer_Peek(RingBuffer_t* const Buffer)
 {
