@@ -245,7 +245,6 @@ handshaking. If the data rate is low or data loss is acceptable then flow contro
 @<Header files@>@;
 @<Macros@>@;
 @<Type definitions@>@;
-@<Type last definitions@>@;
 @<Function prototypes@>@;
 @<Global variables@>@;
 @<Main program loop@>@;
@@ -543,235 +542,6 @@ UCSR1B = ((1 << TXEN1)  | (1 << RXEN1));
 
 DDRD  |= (1 << 3);
 PORTD |= (1 << 2);
-
-@* USB Device Descriptors. Used in USB device mode. Descriptors are special
-computer-readable structures which the host requests upon device enumeration, to determine
-the device's capabilities and functions.
-
-@ Device descriptor structure. This descriptor, located in FLASH memory, describes the
-overall
-device characteristics, including the supported USB version, control endpoint size and the
-number of device configurations.
-The descriptor is read out by the USB host when the enumeration
-process begins.
-
-@<Global...@>=
-const USB_Descriptor_Device_t PROGMEM DeviceDescriptor = {@|
-  @<Initialize header of USB device descriptor@>, @|
-  VERSION_BCD(1,1,0), @|
-  CDC_CSCP_CDC_CLASS, @|
-  CDC_CSCP_NO_SPECIFIC_SUBCLASS, @|
-  CDC_CSCP_NO_SPECIFIC_PROTOCOL, @|
-  FIXED_CONTROL_ENDPOINT_SIZE, @|
-  0x03EB, @|
-  0x204B, @|
-  VERSION_BCD(0,0,1), @|
-  STRING_ID_MANUFACTURER, @|
-  STRING_ID_PRODUCT, @|
-  USE_INTERNAL_SERIAL, @|
-  FIXED_NUM_CONFIGURATIONS @/
-};
-
-@ @<Initialize header of USB device descriptor@>=
-{@, sizeof (USB_Descriptor_Device_t), DTYPE_DEVICE @,}
-
-@ Configuration descriptor structure. This descriptor, located in FLASH memory, describes
-the usage
-of the device in one of its supported configurations, including information about any
-device interfaces
-and endpoints.
-The descriptor is read out by the USB host during the enumeration process when selecting
-a configuration so that the host may correctly communicate with the USB device.
-
-@d CDC_NOTIFICATION_EPADDR (ENDPOINT_DIR_IN  | 2) /* endpoint address of the CDC
-  device-to-host notification IN endpoint */
-@d CDC_TX_EPADDR (ENDPOINT_DIR_IN  | 3) /* endpoint address of the CDC device-to-host
-  data IN endpoint */
-@d CDC_RX_EPADDR (ENDPOINT_DIR_OUT | 4) /* endpoint address of the CDC host-to-device
-  data OUT endpoint */
-@d CDC_NOTIFICATION_EPSIZE 8 /* size in bytes of the CDC device-to-host notification IN
-  endpoint */
-@d CDC_TXRX_EPSIZE 16 /* size in bytes of the CDC data IN and OUT endpoints */
-@s USB_Descriptor_Config_t int
-
-@<Global...@>=
-const USB_Descriptor_Config_t PROGMEM ConfigurationDescriptor = {@|
-  @<Initialize header of standard Configuration Descriptor@>,@|
-  @<Initialize CDC Command Interface@>,@|
-  @<Initialize CDC Data Interface@>@/
-};
-
-@ @<Initialize CDC Command Interface@>=
-@<Initialize |CDC_CCI_Interface|@>,@/
-@<Initialize |CDC_Functional_Header|@>,@/
-@<Initialize |CDC_Functional_ACM|@>,@/
-@<Initialize |CDC_Functional_Union|@>,@/
-@<Initialize |CDC_Notification_Endpoint|@>
-
-@ @<Initialize CDC Data Interface@>=
-@<Initialize |CDC_DCI_Interface|@>,@/
-@<Initialize |CDC_DataOut_Endpoint|@>,@/
-@<Initialize |CDC_DataIn_Endpoint|@>
-
-@ Type define for the device configuration descriptor structure. This must be defined in
-the
-application code, as the configuration descriptor contains several sub-descriptors which
-vary between devices, and which describe the device's usage to the host.
-
-@s USB_Descriptor_Config_Header_t int
-@s USB_Descriptor_Interface_t int
-@s USB_CDC_Descriptor_Func_Header_t int
-@s USB_CDC_Descriptor_Func_ACM_t int
-@s USB_CDC_Descriptor_Func_Union_t int
-@s USB_Descriptor_Endpoint_t int
-
-@<Type last definitions@>=
-typedef struct {
-	USB_Descriptor_Config_Header_t Config; @+@t}\6{@>
-	@<CDC Command Interface@>@;
-	@<CDC Data Interface@>@;
-} USB_Descriptor_Config_t;
-
-@ @<CDC Command Interface@>=
-        USB_Descriptor_Interface_t               CDC_CCI_Interface;
-        USB_CDC_Descriptor_Func_Header_t    CDC_Functional_Header;
-        USB_CDC_Descriptor_Func_ACM_t       CDC_Functional_ACM;
-        USB_CDC_Descriptor_Func_Union_t     CDC_Functional_Union;
-        USB_Descriptor_Endpoint_t                CDC_NotificationEndpoint;
-
-@ @<CDC Data Interface@>=
-        USB_Descriptor_Interface_t               CDC_DCI_Interface;
-        USB_Descriptor_Endpoint_t                CDC_DataOut_Endpoint;
-        USB_Descriptor_Endpoint_t                CDC_DataIn_Endpoint;
-
-@ @<Initialize header of standard Configuration Descriptor@>= {@|
-  {@, sizeof (USB_Descriptor_Config_Header_t), DTYPE_CONFIGURATION @,}, @|
-  sizeof @[@](USB_Descriptor_Config_t),@|
-  2,@|
-  1,@|
-  NO_DESCRIPTOR,@|
-  (USB_CONFIG_ATTR_RESERVED | USB_CONFIG_ATTR_SELFPOWERED),@|
-  USB_CONFIG_POWER_MA(100)@/
-}
-
-@
-
-@<Initialize |CDC_CCI_Interface|@>= {@|
-  {@, sizeof (USB_Descriptor_Interface_t), DTYPE_INTERFACE @,},@|
-  INTERFACE_ID_CDC_CCI,@|
-  0,@|
-  1,@|
-  CDC_CSCP_CDC_CLASS,@|
-  CDC_CSCP_ACM_SUBCLASS,@|
-  CDC_CSCP_AT_COMMAND_PROTOCOL,@|
-  NO_DESCRIPTOR @/
-}
-
-@
-
-@<Initialize |CDC_Functional_Header|@>= {@|
-  {@, sizeof (USB_CDC_Descriptor_Func_Header_t), DTYPE_CS_INTERFACE @,},@|
-  CDC_DSUBTYPE_CS_INTERFACE_HEADER,@|
-  VERSION_BCD(1,1,0) @/
-}
-
-@
-
-@<Initialize |CDC_Functional_ACM|@>= {@|
-  {@, sizeof (USB_CDC_Descriptor_Func_ACM_t), DTYPE_CS_INTERFACE @,},@|
-  CDC_DSUBTYPE_CS_INTERFACE_ACM,@|
-  0x06 @/
-}
-
-@ @d INTERFACE_ID_CDC_CCI 0 /* CDC CCI interface descriptor ID */
-@d INTERFACE_ID_CDC_DCI 1 /* CDC DCI interface descriptor ID */
-
-@<Initialize |CDC_Functional_Union|@>= {@|
-  {@, sizeof (USB_CDC_Descriptor_Func_Union_t), DTYPE_CS_INTERFACE @,},@|
-  CDC_DSUBTYPE_CS_INTERFACE_UNION,@|
-  INTERFACE_ID_CDC_CCI,@|
-  INTERFACE_ID_CDC_DCI @/
-}
-
-@
-
-@<Initialize |CDC_Notification_Endpoint|@>= {@|
-  {@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_ENDPOINT @,},@|
-  CDC_NOTIFICATION_EPADDR,@|
-  (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),@|
-  CDC_NOTIFICATION_EPSIZE,@|
-  0xFF @/
-}
-
-@
-
-@<Initialize |CDC_DCI_Interface|@>= {@|
-  {@, sizeof (USB_Descriptor_Interface_t), DTYPE_INTERFACE @,},@|
-  INTERFACE_ID_CDC_DCI,@|
-  0,@|
-  2,@|
-  CDC_CSCP_CDC_DATA_CLASS,@|
-  CDC_CSCP_NO_DATA_SUBCLASS,@|
-  CDC_CSCP_NO_DATA_PROTOCOL,@|
-  NO_DESCRIPTOR @/
-}
-
-@ @<Initialize |CDC_DataOut_Endpoint|@>= {@|
-  {@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_ENDPOINT @,},@|
-  CDC_RX_EPADDR,@|
-  (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),@|
-  CDC_TXRX_EPSIZE,@|
-  0x05 @/
-}
-
-@ @<Initialize |CDC_DataIn_Endpoint|@>= {@|
-  {@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_ENDPOINT @,},@|
-  CDC_TX_EPADDR,@|
-  (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),@|
-  CDC_TXRX_EPSIZE,@|
-  0x05 @/
-}
-
-@ Language descriptor structure. This descriptor, located in FLASH memory, is returned
-when the host requests
-the string descriptor with index 0 (the first index). It is actually an array of 16-bit
-integers, which indicate
-via the language ID table available at USB.org what languages the device supports for its
-string descriptors.
-
-String language ID for the English language is used
-to indicate that the English language is supported by the device in its string descriptors.
-
-@d LANGUAGE_ID_ENG 0x0409
-
-@<Global...@>=
-const USB_Descriptor_String_t PROGMEM LanguageString = {
-  {
-    sizeof (USB_Descriptor_Header_t) + sizeof ((uint16_t){LANGUAGE_ID_ENG}),
-    DTYPE_STRING
-  },
-  {LANGUAGE_ID_ENG}
-};
-
-@ Manufacturer descriptor string. This is a Unicode string containing the manufacturer's
-details in human readable
-form, and is read out upon request by the host when the appropriate string ID is
-requested, listed in the Device
-Descriptor.
-
-@<Global...@>=
-const USB_Descriptor_String_t PROGMEM ManufacturerString =
-  USB_STRING_DESCRIPTOR(L"Dean Camera");
-
-@ Product descriptor string. This is a Unicode string containing the product's details
-in human readable form,
-and is read out upon request by the host when the appropriate string ID is requested,
-listed in the Device
-Descriptor.
-
-@<Global...@>=
-const USB_Descriptor_String_t PROGMEM ProductString =
-  USB_STRING_DESCRIPTOR(L"LUFA USB-RS232 Adapter");
 
 @ Function to retrieve a given descriptor's size and memory location from the given
 descriptor type value,
@@ -4250,6 +4020,8 @@ CDC control and data interfaces are related. See the CDC class specification for
 See |USB_CDC_Descriptor_Func_Union_t| for the version of this type with non-standard
 LUFA specific element names.
 
+@s USB_CDC_StdDescriptor_Func_Union_t int
+
 @(/dev/null@>=
 typedef struct {
 	uint8_t bFunctionLength; /* size of the descriptor, in bytes */
@@ -4336,6 +4108,227 @@ typedef struct {
   } State; /* state data for the USB class interface within the device. All elements in this
     section are reset to their defaults when the interface is enumerated */
 } USB_ClassInfo_CDC_Device_t;
+
+@** USB Device Descriptors. Used in USB device mode. Descriptors are special
+computer-readable structures which the host requests upon device enumeration, to determine
+the device's capabilities and functions.
+
+@ Device descriptor structure. This descriptor, located in FLASH memory, describes the
+overall
+device characteristics, including the supported USB version, control endpoint size and the
+number of device configurations.
+The descriptor is read out by the USB host when the enumeration
+process begins.
+
+@<Global...@>=
+const USB_Descriptor_Device_t PROGMEM DeviceDescriptor = {@|
+  @<Initialize header of USB device descriptor@>, @|
+  VERSION_BCD(1,1,0), @|
+  CDC_CSCP_CDC_CLASS, @|
+  CDC_CSCP_NO_SPECIFIC_SUBCLASS, @|
+  CDC_CSCP_NO_SPECIFIC_PROTOCOL, @|
+  FIXED_CONTROL_ENDPOINT_SIZE, @|
+  0x03EB, @|
+  0x204B, @|
+  VERSION_BCD(0,0,1), @|
+  STRING_ID_MANUFACTURER, @|
+  STRING_ID_PRODUCT, @|
+  USE_INTERNAL_SERIAL, @|
+  FIXED_NUM_CONFIGURATIONS @/
+};
+
+@ @<Initialize header of USB device descriptor@>=
+{@, sizeof (USB_Descriptor_Device_t), DTYPE_DEVICE @,}
+
+@ Configuration descriptor structure. This descriptor, located in FLASH memory, describes
+the usage
+of the device in one of its supported configurations, including information about any
+device interfaces
+and endpoints.
+The descriptor is read out by the USB host during the enumeration process when selecting
+a configuration so that the host may correctly communicate with the USB device.
+
+@d CDC_NOTIFICATION_EPADDR (ENDPOINT_DIR_IN  | 2) /* endpoint address of the CDC
+  device-to-host notification IN endpoint */
+@d CDC_TX_EPADDR (ENDPOINT_DIR_IN  | 3) /* endpoint address of the CDC device-to-host
+  data IN endpoint */
+@d CDC_RX_EPADDR (ENDPOINT_DIR_OUT | 4) /* endpoint address of the CDC host-to-device
+  data OUT endpoint */
+@d CDC_NOTIFICATION_EPSIZE 8 /* size in bytes of the CDC device-to-host notification IN
+  endpoint */
+@d CDC_TXRX_EPSIZE 16 /* size in bytes of the CDC data IN and OUT endpoints */
+
+@<Global...@>=
+const USB_Descriptor_Config_t PROGMEM ConfigurationDescriptor = {@|
+  @<Initialize header of standard Configuration Descriptor@>,@|
+  @<Initialize CDC Command Interface@>,@|
+  @<Initialize CDC Data Interface@>@/
+};
+
+@ @<Initialize CDC Command Interface@>=
+@<Initialize |CDC_CCI_Interface|@>,@/
+@<Initialize |CDC_Functional_Header|@>,@/
+@<Initialize |CDC_Functional_ACM|@>,@/
+@<Initialize |CDC_Functional_Union|@>,@/
+@<Initialize |CDC_Notification_Endpoint|@>
+
+@ @<Initialize CDC Data Interface@>=
+@<Initialize |CDC_DCI_Interface|@>,@/
+@<Initialize |CDC_DataOut_Endpoint|@>,@/
+@<Initialize |CDC_DataIn_Endpoint|@>
+
+@ Type define for the device configuration descriptor structure. This must be defined in
+the
+application code, as the configuration descriptor contains several sub-descriptors which
+vary between devices, and which describe the device's usage to the host.
+
+@<Type definitions@>=
+typedef struct {
+	USB_Descriptor_Config_Header_t Config; @+@t}\6{@>
+	@<CDC Command Interface@>@;
+	@<CDC Data Interface@>@;
+} USB_Descriptor_Config_t;
+
+@ @<CDC Command Interface@>=
+        USB_Descriptor_Interface_t               CDC_CCI_Interface;
+        USB_CDC_Descriptor_Func_Header_t    CDC_Functional_Header;
+        USB_CDC_Descriptor_Func_ACM_t       CDC_Functional_ACM;
+        USB_CDC_Descriptor_Func_Union_t     CDC_Functional_Union;
+        USB_Descriptor_Endpoint_t                CDC_NotificationEndpoint;
+
+@ @<CDC Data Interface@>=
+        USB_Descriptor_Interface_t               CDC_DCI_Interface;
+        USB_Descriptor_Endpoint_t                CDC_DataOut_Endpoint;
+        USB_Descriptor_Endpoint_t                CDC_DataIn_Endpoint;
+
+@ @<Initialize header of standard Configuration Descriptor@>= {@|
+  {@, sizeof (USB_Descriptor_Config_Header_t), DTYPE_CONFIGURATION @,}, @|
+  sizeof @[@](USB_Descriptor_Config_t),@|
+  2,@|
+  1,@|
+  NO_DESCRIPTOR,@|
+  (USB_CONFIG_ATTR_RESERVED | USB_CONFIG_ATTR_SELFPOWERED),@|
+  USB_CONFIG_POWER_MA(100)@/
+}
+
+@
+
+@<Initialize |CDC_CCI_Interface|@>= {@|
+  {@, sizeof (USB_Descriptor_Interface_t), DTYPE_INTERFACE @,},@|
+  INTERFACE_ID_CDC_CCI,@|
+  0,@|
+  1,@|
+  CDC_CSCP_CDC_CLASS,@|
+  CDC_CSCP_ACM_SUBCLASS,@|
+  CDC_CSCP_AT_COMMAND_PROTOCOL,@|
+  NO_DESCRIPTOR @/
+}
+
+@
+
+@<Initialize |CDC_Functional_Header|@>= {@|
+  {@, sizeof (USB_CDC_Descriptor_Func_Header_t), DTYPE_CS_INTERFACE @,},@|
+  CDC_DSUBTYPE_CS_INTERFACE_HEADER,@|
+  VERSION_BCD(1,1,0) @/
+}
+
+@
+
+@<Initialize |CDC_Functional_ACM|@>= {@|
+  {@, sizeof (USB_CDC_Descriptor_Func_ACM_t), DTYPE_CS_INTERFACE @,},@|
+  CDC_DSUBTYPE_CS_INTERFACE_ACM,@|
+  0x06 @/
+}
+
+@ @d INTERFACE_ID_CDC_CCI 0 /* CDC CCI interface descriptor ID */
+@d INTERFACE_ID_CDC_DCI 1 /* CDC DCI interface descriptor ID */
+
+@<Initialize |CDC_Functional_Union|@>= {@|
+  {@, sizeof (USB_CDC_Descriptor_Func_Union_t), DTYPE_CS_INTERFACE @,},@|
+  CDC_DSUBTYPE_CS_INTERFACE_UNION,@|
+  INTERFACE_ID_CDC_CCI,@|
+  INTERFACE_ID_CDC_DCI @/
+}
+
+@
+
+@<Initialize |CDC_Notification_Endpoint|@>= {@|
+  {@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_ENDPOINT @,},@|
+  CDC_NOTIFICATION_EPADDR,@|
+  (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),@|
+  CDC_NOTIFICATION_EPSIZE,@|
+  0xFF @/
+}
+
+@
+
+@<Initialize |CDC_DCI_Interface|@>= {@|
+  {@, sizeof (USB_Descriptor_Interface_t), DTYPE_INTERFACE @,},@|
+  INTERFACE_ID_CDC_DCI,@|
+  0,@|
+  2,@|
+  CDC_CSCP_CDC_DATA_CLASS,@|
+  CDC_CSCP_NO_DATA_SUBCLASS,@|
+  CDC_CSCP_NO_DATA_PROTOCOL,@|
+  NO_DESCRIPTOR @/
+}
+
+@ @<Initialize |CDC_DataOut_Endpoint|@>= {@|
+  {@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_ENDPOINT @,},@|
+  CDC_RX_EPADDR,@|
+  (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),@|
+  CDC_TXRX_EPSIZE,@|
+  0x05 @/
+}
+
+@ @<Initialize |CDC_DataIn_Endpoint|@>= {@|
+  {@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_ENDPOINT @,},@|
+  CDC_TX_EPADDR,@|
+  (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),@|
+  CDC_TXRX_EPSIZE,@|
+  0x05 @/
+}
+
+@ Language descriptor structure. This descriptor, located in FLASH memory, is returned
+when the host requests
+the string descriptor with index 0 (the first index). It is actually an array of 16-bit
+integers, which indicate
+via the language ID table available at USB.org what languages the device supports for its
+string descriptors.
+
+String language ID for the English language is used
+to indicate that the English language is supported by the device in its string descriptors.
+
+@d LANGUAGE_ID_ENG 0x0409
+
+@<Global...@>=
+const USB_Descriptor_String_t PROGMEM LanguageString = {
+  {
+    sizeof (USB_Descriptor_Header_t) + sizeof ((uint16_t){LANGUAGE_ID_ENG}),
+    DTYPE_STRING
+  },
+  {LANGUAGE_ID_ENG}
+};
+
+@ Manufacturer descriptor string. This is a Unicode string containing the manufacturer's
+details in human readable
+form, and is read out upon request by the host when the appropriate string ID is
+requested, listed in the Device
+Descriptor.
+
+@<Global...@>=
+const USB_Descriptor_String_t PROGMEM ManufacturerString =
+  USB_STRING_DESCRIPTOR(L"Dean Camera");
+
+@ Product descriptor string. This is a Unicode string containing the product's details
+in human readable form,
+and is read out upon request by the host when the appropriate string ID is requested,
+listed in the Device
+Descriptor.
+
+@<Global...@>=
+const USB_Descriptor_String_t PROGMEM ProductString =
+  USB_STRING_DESCRIPTOR(L"LUFA USB-RS232 Adapter");
 
 @** RingBuffer.
 Lightweight ring (circular) buffer, for fast insertion/deletion of bytes.
