@@ -1526,7 +1526,7 @@ void USB_Device_GetStatus(void)
 
 			Endpoint_SelectEndpoint(EndpointIndex);
 
-			CurrentStatus = @<Endpoint is istalled@>;
+			CurrentStatus = @[@<Endpoint is istalled@>@];
 
 			Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
 
