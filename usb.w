@@ -3054,7 +3054,8 @@ typedef struct
 	uint16_t wValue; /* parameter of the request */
 	uint16_t wIndex; /* parameter of the request */
 	uint16_t wLength; /* length of the data to transfer in bytes */
-} @=ATTR_PACKED@> USB_Request_Header_t;
+} @=ATTR_PACKED@>
+  USB_Request_Header_t;
 
 @*1 Enumeration for the various standard request commands. These commands are applicable when the
 request type is |REQTYPE_STANDARD| (with the exception of |REQ_GET_DESCRIPTOR|, which is
@@ -3358,7 +3359,8 @@ typedef struct
   uint8_t Size; /* size of the descriptor, in bytes */
   uint8_t Type; /* type of the descriptor, either a value in \.{DTYPE\_*} or
     a value given by the specific class */
-} @=ATTR_PACKED@> USB_Descriptor_Header_t;
+} @=ATTR_PACKED@>
+  USB_Descriptor_Header_t;
 
 @ Standard USB Descriptor Header (USB-IF naming conventions).
 
@@ -3377,7 +3379,8 @@ typedef struct
   uint8_t bLength; /* size of the descriptor, in bytes */
   uint8_t bDescriptorType; /* type of the descriptor, either a value in
   \.{DTYPE\_*} or a value given by the specific class */
-} @=ATTR_PACKED@> USB_StdDescriptor_Header_t;
+} @=ATTR_PACKED@>
+  USB_StdDescriptor_Header_t;
 
 @ Standard USB Device Descriptor (LUFA naming conventions).
 
@@ -3421,7 +3424,8 @@ typedef struct {
     device upon insertion; see |ManufacturerStrIndex| structure entry */
   uint8_t  NumberOfConfigurations; /* total number of configurations supported by
 	                              the device */
-} @=ATTR_PACKED@> USB_Descriptor_Device_t;
+} @=ATTR_PACKED@>
+  USB_Descriptor_Device_t;
 
 @ Standard USB Device Descriptor (USB-IF naming conventions).
 
@@ -3467,7 +3471,8 @@ typedef struct {
     device upon insertion; see |ManufacturerStrIndex| structure entry */
   uint8_t  bNumConfigurations; /* total number of configurations supported by
 	                          the device */
-} @=ATTR_PACKED@> USB_StdDescriptor_Device_t;
+} @=ATTR_PACKED@>
+  USB_StdDescriptor_Device_t;
 
 @ Standard USB Device Qualifier Descriptor (LUFA naming conventions).
 
@@ -3492,7 +3497,8 @@ typedef struct {
 	                                     the device.
                                 */
 	uint8_t  Reserved; /* reserved for future use, must be 0 */
-} @=ATTR_PACKED@> USB_Descriptor_DeviceQualifier_t;
+} @=ATTR_PACKED@>
+  USB_Descriptor_DeviceQualifier_t;
 
 @ Standard USB Device Qualifier Descriptor (USB-IF naming conventions).
 
@@ -3520,7 +3526,8 @@ typedef struct {
 	                              *   the device.
 	                              */
 	uint8_t  bReserved; /* reserved for future use, must be 0 */
-} @=ATTR_PACKED@> USB_StdDescriptor_DeviceQualifier_t;
+} @=ATTR_PACKED@>
+  USB_StdDescriptor_DeviceQualifier_t;
 
 @ Standard USB Configuration Descriptor (LUFA naming conventions).
 
@@ -3553,7 +3560,8 @@ typedef struct {
 	                                  current configuration, calculated by the
   |USB_CONFIG_POWER_MA|
 	                                  macro */
-} @=ATTR_PACKED@> USB_Descriptor_Config_Header_t;
+} @=ATTR_PACKED@>
+  USB_Descriptor_Config_Header_t;
 
 @ Standard USB Configuration Descriptor (USB-IF naming conventions).
 
@@ -3586,7 +3594,8 @@ typedef struct
 	uint8_t  bMaxPower; /* maximum power consumption of the device while in the
 	                     current configuration, calculated by the |USB_CONFIG_POWER_MA|
 	                     macro */
-} @=ATTR_PACKED@> USB_StdDescriptor_Config_Header_t;
+} @=ATTR_PACKED@>
+  USB_StdDescriptor_Config_Header_t;
 
 @ Standard USB Interface Descriptor (LUFA naming conventions).
 
@@ -3615,7 +3624,8 @@ typedef struct {
 	uint8_t Protocol; /* interface protocol ID */
 
 	uint8_t InterfaceStrIndex; /* index of the string descriptor describing the interface */
-} @=ATTR_PACKED@> USB_Descriptor_Interface_t;
+} @=ATTR_PACKED@>
+  USB_Descriptor_Interface_t;
 
 @ Standard USB Interface Descriptor (USB-IF naming conventions).
 
@@ -3646,7 +3656,8 @@ typedef struct {
 	uint8_t iInterface; /* index of the string descriptor describing the
 	                        interface.
 	                     */
-} @=ATTR_PACKED@> USB_StdDescriptor_Interface_t;
+} @=ATTR_PACKED@>
+  USB_StdDescriptor_Interface_t;
 
 @ Standard USB Endpoint Descriptor (LUFA naming conventions).
 
@@ -3671,7 +3682,8 @@ typedef struct {
     maximum packet size that the endpoint can receive at a time */
   uint8_t  PollingIntervalMS; /* polling interval in milliseconds for the endpoint
     if it is an INTERRUPT or ISOCHRONOUS type */
-} @=ATTR_PACKED@> USB_Descriptor_Endpoint_t;
+} @=ATTR_PACKED@>
+  USB_Descriptor_Endpoint_t;
 
 @ Standard USB Endpoint Descriptor (USB-IF naming conventions).
 
@@ -3699,7 +3711,8 @@ typedef struct {
     the maximum packet size that the endpoint can receive at a time */
   uint8_t  bInterval; /* polling interval in milliseconds for the endpoint if it is
     an INTERRUPT or ISOCHRONOUS type */
-} @=ATTR_PACKED@> USB_StdDescriptor_Endpoint_t;
+} @=ATTR_PACKED@>
+  USB_StdDescriptor_Endpoint_t;
 
 @ Standard USB String Descriptor (LUFA naming conventions).
 
@@ -3724,7 +3737,8 @@ typedef struct
 	USB_Descriptor_Header_t Header; /* descriptor header, including type and size */
 
 	wchar_t  UnicodeString[];
-} @=ATTR_PACKED@> USB_Descriptor_String_t;
+} @=ATTR_PACKED@>
+  USB_Descriptor_String_t;
 
 @ Standard USB String Descriptor (USB-IF naming conventions).
 
@@ -3758,7 +3772,8 @@ typedef struct {
     are widened to Unicode size; under GCC, strings prefixed with the "L" character
     are considered to be Unicode strings, and may be used instead
     of an explicit array of ASCII characters */
-} @=ATTR_PACKED@> USB_StdDescriptor_String_t;
+} @=ATTR_PACKED@>
+  USB_StdDescriptor_String_t;
 
 @** CDC Class Driver module. This module contains an
 implementation of the USB CDC-ACM class Virtual Serial Ports.
@@ -3928,7 +3943,8 @@ typedef struct {
                       must be |CDC_DSUBTYPE_CS_INTERFACE_HEADER| */
   uint16_t CDCSpecification; /* version number of the CDC specification implemented by the
     device, encoded in BCD format; see |VERSION_BCD| utility macro */
-} @=ATTR_PACKED@> USB_CDC_Descriptor_Func_Header_t;
+} @=ATTR_PACKED@>
+  USB_CDC_Descriptor_Func_Header_t;
 
 @ CDC class-specific Functional Header Descriptor (USB-IF naming conventions).
 
@@ -3954,7 +3970,8 @@ typedef struct {
     class-specific descriptors, must be |CDC_DSUBTYPE_CS_INTERFACE_HEADER| */
   uint16_t bcdCDC; /* version number of the CDC specification implemented by the device,
     encoded in BCD format; see |VERSION_BCD| utility macro */
-} @=ATTR_PACKED@> USB_CDC_StdDescriptor_Func_Header_t;
+} @=ATTR_PACKED@>
+  USB_CDC_StdDescriptor_Func_Header_t;
 
 @ CDC class-specific Functional ACM Descriptor (LUFA naming conventions).
 
@@ -3977,7 +3994,8 @@ typedef struct {
   uint8_t Capabilities; /* capabilities of the ACM interface, given as a bit
     mask; for most devices, this should be set to a fixed value of |0x06| --- for
     other capabilities, refer to the CDC ACM specification */
-} @=ATTR_PACKED@> USB_CDC_Descriptor_Func_ACM_t;
+} @=ATTR_PACKED@>
+  USB_CDC_Descriptor_Func_ACM_t;
 
 @ CDC class-specific Functional ACM Descriptor (USB-IF naming conventions).
 
@@ -4001,7 +4019,8 @@ typedef struct {
 	uint8_t bmCapabilities; /* capabilities of the ACM interface, given as a bit mask;
     for most devices, this should be set to a fixed value of |0x06| --- for other
     capabilities, refer to the CDC ACM specification */
-} @=ATTR_PACKED@> USB_CDC_StdDescriptor_Func_ACM_t;
+} @=ATTR_PACKED@>
+  USB_CDC_StdDescriptor_Func_ACM_t;
 
 @ CDC class-specific Functional Union Descriptor (LUFA naming conventions).
 
@@ -4024,7 +4043,8 @@ typedef struct {
     Control interface */
 	uint8_t SlaveInterfaceNumber; /* interface number of the CDC Data
     interface */
-} @=ATTR_PACKED@> USB_CDC_Descriptor_Func_Union_t;
+} @=ATTR_PACKED@>
+  USB_CDC_Descriptor_Func_Union_t;
 
 @ CDC class-specific Functional Union Descriptor (USB-IF naming conventions).
 
@@ -4046,7 +4066,8 @@ typedef struct {
     class-specific descriptors, must be |CDC_DSUBTYPE_CS_INTERFACE_UNION| */
 	uint8_t bMasterInterface; /* interface number of the CDC Control interface */
 	uint8_t bSlaveInterface0; /* interface number of the CDC Data interface */
-} @=ATTR_PACKED@> USB_CDC_StdDescriptor_Func_Union_t;
+} @=ATTR_PACKED@>
+  USB_CDC_StdDescriptor_Func_Union_t;
 
 @ CDC Virtual Serial Port Line Encoding Settings Structure.
 
@@ -4063,7 +4084,8 @@ typedef struct {
   uint8_t  ParityType; /* parity setting of the virtual serial port, a
     \.{CDC\_PARITY\_*} value */
   uint8_t  DataBits; /* bits of data per character of the virtual serial port */
-} @=ATTR_PACKED@> CDC_LineEncoding_t;
+} @=ATTR_PACKED@>
+  CDC_LineEncoding_t;
 
 @* CDC Class driver.
 
@@ -4604,6 +4626,7 @@ Returns next data element stored in the buffer.
 
 @<Func...@>=
 inline uint8_t RingBuffer_Peek(RingBuffer_t* const Buffer) ATTR_NON_NULL_PTR_ARG(1);
+@ @c
 inline uint8_t RingBuffer_Peek(RingBuffer_t* const Buffer)
 {
 	return *Buffer->Out;
