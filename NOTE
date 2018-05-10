@@ -1,0 +1,13 @@
+BUILD:
+sudo apt-get install cmake libjpeg62-turbo-dev
+git clone https://github.com/jacksonliam/mjpg-streamer ~
+cd ~/mjpg-streamer/mjpg-streamer-experimental/
+make
+
+RUN:
+cd ~/mjpg-streamer/mjpg-streamer-experimental/
+export LD_LIBRARY_PATH=. ./mjpg_streamer -o "output_http.so -w ./www -p XXXXX" -i "input_uvc.so -r 160x120"
+
+WARNING: mjpg_streamer exits when webcam connected via monitor (via extension cable also may exit) - direct connection is necessary
+
+NOTE: do not pay attention to errors and warnings which writes mjpg_streamer
