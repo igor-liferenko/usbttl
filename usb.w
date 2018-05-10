@@ -2186,7 +2186,9 @@ request SETUP parameters into the |USB_ControlRequest| structure which should th
 be used by the application to determine how to handle the issued request.
 
 NOTE: |EVENT_USB_Device_ControlRequest| fires before the [request?] [event?] handlers;
-in \.{arduino-usbserial} it fires after [request?] [event?] handlers.
+in \.{arduino-usbserial} it fires after [request?] [event?] handlers --- understand
+if there is any difference. (this function is called slightly different name
+in arduino-usbserial - see changelog in lufa tarball)
 
 @<Func...@>=
 void EVENT_USB_Device_ControlRequest(void);
