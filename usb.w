@@ -2085,7 +2085,7 @@ parameter access.
 alignment bytes usually added between fields to optimize field accesses.
 
 @<Macros@>=
-#define ATTR_PACKED @,@,@, __attribute__ @t\hskip-6pt@> ((packed))
+#define ATTR_PACKED @t\hskip9pt@> __attribute__ @t\hskip-5pt@> ((packed))
 
 @* Configuration.
 Configure compile time options,
