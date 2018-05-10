@@ -4602,6 +4602,7 @@ inline uint8_t RingBuffer_Peek(RingBuffer_t* const Buffer)
 }
 
 @** Headers.
+\secpagedepth=0 % index on current page
 
 @<Header files@>=
 #include <stdio.h>
