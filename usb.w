@@ -16,13 +16,23 @@
 
 \secpagedepth=1 % begin new page only on **
 
-@* Data throughput, latency and handshaking issues.
+@** Observations.
+
+If we use \.{dtr.ch}, the following is observed:
+if, when first green led on, we open \.{acmterm} successfully---speed
+will be broken---in \.{avrterm} will appear question marks when we type in \.{acmterm};
+if, when green led quickly flashes, we open \.{acmterm} successfully---green led will
+not turn on in the end, but everything will be working correctly; and when
+green led turns on in the end, opening \.{acmterm} and working with data is always
+without problems.
+
+@** Data throughput, latency and handshaking issues.
 The Universal Serial Bus may be new to some users and developers. Here are
 described the major architecture differences that need to be considered by both software and
 hardware designers when changing from a traditional RS232 based solution to one that uses
 the USB to serial interface devices.
 
-@*1 The need for handshaking.
+@* The need for handshaking.
 USB data transfer is prone to delays that do not normally appear in systems that have been used
 to transferring data using interrupts. The original COM ports of a PC were directly connected
 to the
@@ -34,7 +44,7 @@ transfer of data could be achieved without any real need for flow control. The h
 ensured that the request would get serviced. Therefore data could be transferred without using
 handshaking and still arrive into the PC without data loss.
 
-@*1 Data transfer comparison.
+@* Data transfer comparison.
 USB does not transfer data using interrupts. It uses a scheduled system and as a result, there can
 be periods when the USB request does not get scheduled and, if handshaking is not used, data
 loss will occur. An example of scheduling delays can be seen if an open application is dragged
@@ -52,7 +62,7 @@ throughput) associated with moving the data from the application to the USB devi
 sent 'a byte at a time' by an application, this would severely limit the overall throughput of the
 system as a whole.
 
-@*1 Continuous data --- smoothing the lumps.
+@* Continuous data --- smoothing the lumps.
 Data is received from USB to the PC by a polling method. The driver will request a certain amount
 of data from the USB scheduler. This is done in multiples of 64 bytes. The 'bulk packet size' on
 USB is a maximum of 64 bytes. The host controller will read data from the device until either:
@@ -69,7 +79,7 @@ data at a time. This can give the effect of 'jerky' data transfer if the USB req
 large
 and the data rate too low (relatively).
 
-@*1 Small amounts of data or end of buffer conditions.
+@* Small amounts of data or end of buffer conditions.
 When transferring data from a USB-Serial or USB-FIFO IC device to the PC, the device will
 send the data given one of the following conditions:
 
@@ -118,7 +128,7 @@ use by the application.
 For application programmers it must be stressed that data should be sent or received using buffers
 and not individual characters.
 
-@* Effect of USB buffer size and the latency timer on data throughput.
+@** Effect of USB buffer size and the latency timer on data throughput.
 An effect that is not immediately obvious is the way the size of the USB total packet request
 has on
 the smoothness of data flow. When a read request is sent to USB, the USB host controller will
@@ -178,7 +188,7 @@ are separate. TODO: read Dimitrov's arduino forum thread about this.
 
 The size of the USB block requested can be adjusted in the chip.
 
-@*1 Event Characters.
+@* Event Characters.
 If the event character is enabled and it is detected in the data stream, then the contents of the
 devices buffer is sent immediately. The event character is not stripped out of the data stream by
 the device or by the drivers, it is up to the application to remove it. Event characters may
@@ -193,7 +203,7 @@ program the event character as `\$7E'. All the data is then sent and received in
 packet with only the starting `\$7E' in it, the event character does not trigger on the first
 position.
 
-@*1 Flushing the receive buffer using the modem status lines.
+@* Flushing the receive buffer using the modem status lines.
 Flow control can be used by some chips to flush
 the buffer in the chip. Changing one of the modem status lines will do this. The modem status
 lines can be controlled by an external device or from the host PC itself. If an unused output line
@@ -201,7 +211,7 @@ lines can be controlled by an external device or from the host PC itself. If an 
 application program from low to high or high to low, this will cause a change on DSR and make it
 flush the buffer.
 
-@*1 Flow Control.
+@* Flow Control.
 Some chips use their own handshaking as an
 integral part of its design, by proper use of the TXE\# line. Such chips can use RTS/CTS,
 DTR/DSR hardware or XOn/XOff software handshaking.
@@ -229,7 +239,7 @@ of
 graphics activity and data loss will occur if receiving data at 115200 baud (as an example) with no
 handshaking. If the data rate is low or data loss is acceptable then flow control may be omitted.
 
-@* Main program entry point.
+@** The program.
 
 @c
 @<Header files@>@;
