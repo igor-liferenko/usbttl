@@ -4143,6 +4143,8 @@ the
 application code, as the configuration descriptor contains several sub-descriptors which
 vary between devices, and which describe the device's usage to the host.
 
+@s USB_Descriptor_Config_t int
+
 @<Type definitions@>=
 typedef struct {
 	USB_Descriptor_Config_Header_t Config; @+@t}\6{@>
@@ -4588,7 +4590,7 @@ inline uint8_t RingBuffer_Peek(RingBuffer_t* const Buffer)
 #include <avr/pgmspace.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <avr/pgmspace.h>
+#include <avr/pgmspace.h> /* |PROGMEM| */
 #include <avr/eeprom.h>
 #include <avr/boot.h> /* |boot_signature_byte_get| */
 #include <math.h>
