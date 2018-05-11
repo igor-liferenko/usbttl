@@ -1,4 +1,3 @@
-%TODO: add @@[@@] around @@<@@> where it is used before == or !=
 %TODO: understand why ccw shows two \6\7 line differences
 
 %TODO: convert all functions to lowercase with _
