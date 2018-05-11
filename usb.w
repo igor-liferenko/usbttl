@@ -4082,7 +4082,9 @@ The descriptor is read out by the USB host when the enumeration
 process begins.
 
 @<Global...@>=
-const USB_Descriptor_Device_t PROGMEM DeviceDescriptor = {@|
+const USB_Descriptor_Device_t
+@=PROGMEM@>@t\hskip3pt@>
+DeviceDescriptor = {@|
   @<Initialize header of USB device descriptor@>, @|
   VERSION_BCD(1,1,0), @|
   CDC_CSCP_CDC_CLASS, @|
@@ -4267,7 +4269,9 @@ to indicate that the English language is supported by the device in its string d
 @d LANGUAGE_ID_ENG 0x0409
 
 @<Global...@>=
-const USB_Descriptor_String_t PROGMEM LanguageString = {
+const USB_Descriptor_String_t
+@=PROGMEM@>@t\hskip3pt@>
+LanguageString = {
   {
     sizeof (USB_Descriptor_Header_t) + sizeof ((uint16_t){LANGUAGE_ID_ENG}),
     DTYPE_STRING
@@ -4282,8 +4286,9 @@ requested, listed in the Device
 Descriptor.
 
 @<Global...@>=
-const USB_Descriptor_String_t PROGMEM ManufacturerString =
-  USB_STRING_DESCRIPTOR(L"Dean Camera");
+const USB_Descriptor_String_t
+@=PROGMEM@>@t\hskip3pt@>
+ManufacturerString = USB_STRING_DESCRIPTOR(L"Dean Camera");
 
 @ Product descriptor string. This is a Unicode string containing the product's details
 in human readable form,
@@ -4292,8 +4297,9 @@ listed in the Device
 Descriptor.
 
 @<Global...@>=
-const USB_Descriptor_String_t PROGMEM ProductString =
-  USB_STRING_DESCRIPTOR(L"LUFA USB-RS232 Adapter");
+const USB_Descriptor_String_t
+@=PROGMEM@>@t\hskip3pt@>
+ProductString = USB_STRING_DESCRIPTOR(L"LUFA USB-RS232 Adapter");
 
 @** RingBuffer.
 Lightweight ring (circular) buffer, for fast insertion/deletion of bytes.
