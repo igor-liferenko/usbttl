@@ -2534,7 +2534,11 @@ Returns the currently selected endpoint's direction, as a \.{ENDPOINT\_DIR\_*} m
 the currently selected endpoint so that it can be restored after another endpoint has been
 manipulated.
 
-Returns index of the currently selected endpoint.
+Returns index of the currently selected endpoint (i.e., full endpoint address).
+
+|UENUM| -- endpoint address.\par
+|(UENUM & ENDPOINT_EPNUM_MASK)| -- the endpoint's numerical address in the device
+(i.e., index of the address within a device).
 
 @<Get current endpoint@>=
 ((UENUM & ENDPOINT_EPNUM_MASK) | @<Get endpoint direction@>)
