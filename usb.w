@@ -1,4 +1,4 @@
-%TODO: add @@[@@] around @@<@@> where it is used after = anf before == or !=
+%TODO: add @@[@@] around @@<@@> where it is used before == or !=
 %TODO: understand why ccw shows two \6\7 line differences
 
 %TODO: convert all functions to lowercase with _
@@ -1001,8 +1001,7 @@ uint8_t Endpoint_WaitUntilReady(void)
 	uint16_t PreviousFrameNumber = @[@<Get USB frame number@>@];
 
 	for (;;) {
-		if (@<Get endpoint direction@>
-                    == ENDPOINT_DIR_IN)	{
+		if (@[@<Get endpoint direction@>@] == ENDPOINT_DIR_IN)	{
 			if (@<Endpoint is ready for an IN packet@>)
 			  return ENDPOINT_READYWAIT_NO_ERROR;
 		}
@@ -1262,8 +1261,7 @@ uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 
 	Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataINEndpoint.Address);
 
-	if (@<Number of bytes in endpoint@>
-            == 0)
+	if (@[@<Number of bytes in endpoint@>@] == 0)
 	  return ENDPOINT_READYWAIT_NO_ERROR;
 
 	bool BankFull = !@<Read-write is allowed for endpoint@>;
@@ -1315,8 +1313,7 @@ int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInf
 		if (@<Number of bytes in endpoint@> != 0)
 		  ReceivedByte = Endpoint_Read_8();
 
-		if (@<Number of bytes in endpoint@>
-                    == 0)
+		if (@[@<Number of bytes in endpoint@>@] == 0)
     @<Clear OUT packet on endpoint@>@;
 	}
 
