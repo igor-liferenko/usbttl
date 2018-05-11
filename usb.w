@@ -1952,12 +1952,10 @@ or appropriate class specification. In all instances, the library has already re
 request SETUP parameters into the |USB_ControlRequest| structure which should then
 be used by the application to determine how to handle the issued request.
 
-{\emergencystretch=2cm
 NOTE: |EVENT_USB_Device_ControlRequest| fires before the [request?] [event?] handlers;
-in \.{arduino-usbserial} it fires after [request?] [event?] handlers --- understand
+in \hfil\break \.{arduino-usbserial} it fires after [request?] [event?] handlers --- understand
 if there is any difference. (this function is called slightly different name
 in arduino-usbserial - see changelog in lufa tarball)
-\par}
 
 @<Func...@>=
 void EVENT_USB_Device_ControlRequest(void);
