@@ -1879,9 +1879,6 @@ calling the Class Driver's |CDC_Device_USBTask| function in the main program loo
 
 It needs to be called together with the main USB maintenance routine |USB_DeviceTask|.
 
-TODO: ensure that watchdog is disabled in fuses
-@^TODO@>
-
 @<Main program loop@>=
 int main(void)
 {
