@@ -3340,7 +3340,7 @@ Type define for all descriptors' standard header, indicating the descriptor's le
 and type. This structure
 uses LUFA-specific element names to make each element's purpose clearer.
 
-See |USB_StdDescriptor_Header_t| for the version of this type with standard element names.
+See \&{USB\_StdDescriptor\_Header\_t} for the version of this type with standard element names.
 
 @<Type definitions@>=
 typedef struct
@@ -3377,7 +3377,7 @@ Type define for a standard Device Descriptor. This structure uses LUFA-specific
 element names to make each
 element's purpose clearer.
 
-See |USB_StdDescriptor_Device_t| for the version of this type with standard element names.
+See \&{USB\_StdDescriptor\_Device\_t} for the version of this type with standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
@@ -3468,7 +3468,7 @@ typedef struct {
 Type define for a standard Device Qualifier Descriptor. This structure uses LUFA-specific
 element names to make each element's purpose clearer.
 
-See |USB_StdDescriptor_DeviceQualifier_t| for the version of this type with standard
+See \&{USB\_StdDescriptor\_DeviceQualifier\_t} for the version of this type with standard
 element names.
 
 @<Type definitions@>=
@@ -3524,7 +3524,7 @@ Type define for a standard Configuration Descriptor header. This structure uses
 LUFA-specific element names
 to make each element's purpose clearer.
 
-See |USB_StdDescriptor_Config_Header_t| for the version of this type with standard
+See \&{USB\_StdDescriptor\_Config\_Header\_t} for the version of this type with standard
 element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
@@ -3591,7 +3591,7 @@ typedef struct
 Type define for a standard Interface Descriptor. This structure uses LUFA-specific element
 names to make each element's purpose clearer.
 
-See |USB_StdDescriptor_Interface_t| for the version of this type with standard element
+See \&{USB\_StdDescriptor\_Interface\_t} for the version of this type with standard element
 names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
@@ -3653,7 +3653,7 @@ typedef struct {
 Type define for a standard Endpoint Descriptor. This structure uses LUFA-specific element names
 to make each element's purpose clearer.
 
-See |USB_StdDescriptor_Endpoint_t| for the version of this type with standard element
+See \&{USB\_StdDescriptor\_Endpoint\_t} for the version of this type with standard element
 names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
@@ -3716,7 +3716,7 @@ the device as an array.
 
 This structure uses LUFA-specific element names to make each element's purpose clearer.
 
-See |USB_StdDescriptor_String_t| for the version of this type with standard element names.
+See \&{USB\_StdDescriptor\_String\_t} for the version of this type with standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
@@ -3919,7 +3919,7 @@ contains one or more CDC functional data descriptors, which give the CDC interfa
 capabilities and configuration.
 See the CDC class specification for more details.
 
-See |USB_CDC_StdDescriptor_Func_Header_t| for the version of this type with
+See \&{USB\_CDC\_StdDescriptor\_Func\_Header\_t} for the version of this type with
 standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
@@ -3969,7 +3969,7 @@ host that the CDC interface
 supports the CDC ACM subclass of the CDC specification. See the CDC class specification
 for more details.
 
-See |USB_CDC_StdDescriptor_Func_ACM_t| for the version of this type with
+See \&{USB\_CDC\_StdDescriptor\_Func\_ACM\_t} for the version of this type with
 standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
@@ -4017,7 +4017,7 @@ Type define for a CDC class-specific functional Union descriptor. This indicates
 host that specific
 CDC control and data interfaces are related. See the CDC class specification for more details.
 
-See |USB_CDC_StdDescriptor_Func_Union_t| for the version of this type with
+See \&{USB\_CDC\_StdDescriptor\_Func\_Union\_t} for the version of this type with
 standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
