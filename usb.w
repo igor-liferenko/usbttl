@@ -4120,7 +4120,9 @@ a configuration so that the host may correctly communicate with the USB device.
 @d CDC_TXRX_EPSIZE 16 /* size in bytes of the CDC data IN and OUT endpoints */
 
 @<Global...@>=
-const USB_Descriptor_Config_t PROGMEM ConfigurationDescriptor = {@|
+const USB_Descriptor_Config_t
+@=PROGMEM@>@t\hskip3pt@>
+ConfigurationDescriptor = {@|
   @<Initialize header of standard Configuration Descriptor@>,@|
   @<Initialize CDC Command Interface@>,@|
   @<Initialize CDC Data Interface@>@/
@@ -4166,7 +4168,7 @@ typedef struct {
 
 @ @<Initialize header of standard Configuration Descriptor@>= {@|
   {@, sizeof (USB_Descriptor_Config_Header_t), DTYPE_CONFIGURATION @,}, @|
-  sizeof @[@](USB_Descriptor_Config_t),@|
+  sizeof (USB_Descriptor_Config_t),@|
   2,@|
   1,@|
   NO_DESCRIPTOR,@|
