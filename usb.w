@@ -1991,23 +1991,6 @@ default to returning a sane value
 so that they can be used in existing code without the need for extra compiler checks in
 the user application code.
 
-@ Forces GCC to use pointer indirection (via the device's pointer register pairs) when
-accessing the given
-struct pointer. In some cases GCC will emit non-optimal assembly code when accessing
-a structure through
-a pointer, resulting in a larger binary. When this macro is used on a (non \c const)
-structure pointer before
-use, it will force GCC to use pointer indirection on the elements rather than direct
-store and load
-instructions.
-
-|StructPtr| is pointer to a structure which is to be forced into indirect
-access mode.
-
-@<Macros@>=
-#define GCC_FORCE_POINTER_ACCESS(StructPtr) \
-  __asm__ __volatile__("" : "=b" (StructPtr) : "0" (StructPtr))
-
 @ Forces GCC to create a memory barrier, ensuring that memory accesses are not reordered
 past the barrier point.
 This can be used before ordering-critical operations, to ensure that the compiler does
@@ -4387,6 +4370,23 @@ typedef struct {
 	uint16_t Size; /* size of the buffer's underlying storage array */
 	uint16_t Count; /* number of bytes currently stored in the buffer */
 } RingBuffer_t;
+
+@ Forces GCC to use pointer indirection (via the device's pointer register pairs) when
+accessing the given
+struct pointer. In some cases GCC will emit non-optimal assembly code when accessing
+a structure through
+a pointer, resulting in a larger binary. When this macro is used on a (non \c const)
+structure pointer before
+use, it will force GCC to use pointer indirection on the elements rather than direct
+store and load
+instructions.
+
+|StructPtr| is pointer to a structure which is to be forced into indirect
+access mode.
+
+@<Macros@>=
+#define GCC_FORCE_POINTER_ACCESS(StructPtr) \
+  __asm__ __volatile__("" : "=b" (StructPtr) : "0" (StructPtr))
 
 @ Initializes a ring buffer ready for use. Buffers must be initialized via this function
 before any operations are called upon them. Already initialized buffers may be reset
