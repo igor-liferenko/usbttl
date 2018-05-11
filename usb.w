@@ -3595,6 +3595,8 @@ names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
+@s USB_Descriptor_Interface_t int
+
 @<Type definitions@>=
 typedef struct {
 	USB_Descriptor_Header_t Header; /* descriptor header, including type and size */
@@ -3657,6 +3659,8 @@ names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
+@s USB_Descriptor_Endpoint_t int
+
 @<Type definitions@>=
 typedef struct {
 	USB_Descriptor_Header_t Header; /* descriptor header, including type and size */
@@ -3718,6 +3722,8 @@ This structure uses LUFA-specific element names to make each element's purpose c
 See \&{USB\_StdDescriptor\_String\_t} for the version of this type with standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
+
+@s USB_Descriptor_String_t int
 
 @<Type definitions@>=
 typedef struct
@@ -3925,6 +3931,8 @@ standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
+@s USB_CDC_Descriptor_Func_Header_t int
+
 @<Type definitions@>=
 typedef struct {
   USB_Descriptor_Header_t Header; /* regular descriptor header containing the descriptor's
@@ -3975,6 +3983,8 @@ standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
+@s USB_CDC_Descriptor_Func_ACM_t int
+
 @<Type definitions@>=
 typedef struct {
   USB_Descriptor_Header_t Header; /* regular descriptor header containing the descriptor's
@@ -4023,6 +4033,8 @@ standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
+@s USB_CDC_Descriptor_Func_Union_t int
+
 @<Type definitions@>=
 typedef struct {
 	USB_Descriptor_Header_t Header; /* regular descriptor header containing the
@@ -4065,6 +4077,8 @@ Type define for a CDC Line Encoding structure, used to hold the various encoding
 parameters for a virtual serial port.
 
 Regardless of CPU architecture, these values should be stored as little endian.
+
+@s CDC_LineEncoding_t int
 
 @<Type definitions@>=
 typedef struct {
