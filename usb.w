@@ -4,13 +4,6 @@
 
 %NOTE: to test, use avr/check.w + see cweb/SERIAL_TODO
 
-%NOTE: do not do via
-% USB_StdDescriptor_Config_Header_t
-%and
-% USB_StdDescriptor_Endpoint_t
-%until you do everything in one file (even when you do all in one file, think
-%if doing via |USB_StdDescriptor_Config_Header_t| is better than default)
-
 \let\lheader\rheader
 
 \secpagedepth=1 % begin new page only on **
