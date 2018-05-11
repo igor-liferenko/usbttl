@@ -3286,7 +3286,7 @@ which must be set on all devices for historical purposes.
 #define USB_CONFIG_ATTR_RESERVED          0x80
 
 @ Can be masked with other configuration descriptor attributes for a
-|USB_Descriptor_Config_Header_t|
+\hfil\break |USB_Descriptor_Config_Header_t|
 descriptor's |ConfigAttributes| value to indicate that the specified configuration
 can draw its power from the device's own power source.
 
