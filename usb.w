@@ -3286,10 +3286,10 @@ which must be set on all devices for historical purposes.
 @<Macros@>=
 #define USB_CONFIG_ATTR_RESERVED          0x80
 
-@ {\emergencystretch=4cm Can be masked with other configuration descriptor attributes for a
+@ Can be masked with other configuration descriptor attributes for a
 |USB_Descriptor_Config_Header_t|
 descriptor's |ConfigAttributes| value to indicate that the specified configuration
-can draw its power from the device's own power source.\par}
+can draw its power from the device's own power source.
 
 @<Macros@>=
 #define USB_CONFIG_ATTR_SELFPOWERED 0x40
