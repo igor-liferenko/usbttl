@@ -1952,10 +1952,12 @@ or appropriate class specification. In all instances, the library has already re
 request SETUP parameters into the |USB_ControlRequest| structure which should then
 be used by the application to determine how to handle the issued request.
 
+{\emergencystretch=2cm
 NOTE: |EVENT_USB_Device_ControlRequest| fires before the [request?] [event?] handlers;
 in \.{arduino-usbserial} it fires after [request?] [event?] handlers --- understand
 if there is any difference. (this function is called slightly different name
 in arduino-usbserial - see changelog in lufa tarball)
+\par}
 
 @<Func...@>=
 void EVENT_USB_Device_ControlRequest(void);
@@ -3880,10 +3882,12 @@ relating to the CDC device class.
   line states */
 #define CDC_REQ_SEND_BREAK 0x23 /* send a break to the receiver via the carrier channel */
 
-@ CDC class specific notification request that can be issued by a CDC device
+@ {\emergencystretch=2cm
+CDC class specific notification request that can be issued by a CDC device
 to a host. Notification type constant for a change in the virtual
 serial port handshake line states, for use with a |USB_Request_Header_t|
 notification structure when sent to the host via the CDC notification endpoint.
+\par}
 
 FIXME: why it is not used anywhere? see git lg
 @^FIXME@>
