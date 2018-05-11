@@ -2408,8 +2408,8 @@ Functions, macros and enums related to endpoint management. This
 contains the endpoint management macros, as well as endpoint interrupt and data
 send/receive functions for various data types.
 
-@ {\emergencystretch=2cm Type define for a endpoint table entry, used to configure endpoints
-in groups via |Endpoint_ConfigureEndpointTable|.\par}
+@ Type define for a endpoint table entry, used to configure endpoints
+in groups via \hfil\break |Endpoint_ConfigureEndpointTable|.
 
 @<Type definitions@>=
 typedef struct
@@ -3177,8 +3177,8 @@ This contains the function definitions required for the main USB service task,
 which must be called to ensure that the USB connection to a connected USB device
 is maintained.
 
-@ {\emergencystretch=3cm Structure containing the last received Control request for use
-inside of the |EVENT_USB_Device_ControlRequest| event.\par}
+@ Structure containing the last received Control request for use
+inside of the \hfil\break |EVENT_USB_Device_ControlRequest| event.
 
 @<Global variables@>=
 USB_Request_Header_t USB_ControlRequest;
