@@ -2338,28 +2338,22 @@ with the \.{EP\_TYPE\_*} masks to determine the exact type of the endpoint.
 @<Macros@>=
 #define EP_TYPE_MASK                       0x03
 
-@ {\emergencystretch=2cm Mask for a CONTROL type endpoint or pipe.
-Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pipe
-functions.\par}
+@ Mask for a CONTROL type endpoint or pipe.
 
 @<Macros@>=
 #define EP_TYPE_CONTROL                    0x00
 
 @ Mask for an ISOCHRONOUS type endpoint or pipe.
-Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pipe functions.
 
 @<Macros@>=
 #define EP_TYPE_ISOCHRONOUS                0x01
 
-@ {\emergencystretch=2cm Mask for a BULK type endpoint or pipe.
-Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pipe
-functions.\par}
+@ Mask for a BULK type endpoint or pipe.
 
 @<Macros@>=
 #define EP_TYPE_BULK                       0x02
 
 @ Mask for an INTERRUPT type endpoint or pipe.
-Note: see |Group_EndpointManagement| and |Group_PipeManagement| for endpoint/pipe functions.
 
 @<Macros@>=
 #define EP_TYPE_INTERRUPT                  0x03
