@@ -2000,16 +2000,6 @@ assembly output in an unexpected manner on sections of code that are ordering-sp
 @<Macros@>=
 #define GCC_MEMORY_BARRIER()                  __asm__ __volatile__("" ::: "memory");
 
-@ Determines if the specified value can be determined at compile-time to be a constant value
-when compiling under GCC.
-
-|x| is value to check compile-time constantness of.
-
-Returns true if the given value is known to be a compile time constant, false otherwise.
-
-@<Macros@>=
-#define GCC_IS_COMPILE_CONST(x)               __builtin_constant_p(x)
-
 @* Attributes.
 Special function/variable attribute macros.
 
@@ -4378,8 +4368,7 @@ a structure through
 a pointer, resulting in a larger binary. When this macro is used on a (non \c const)
 structure pointer before
 use, it will force GCC to use pointer indirection on the elements rather than direct
-store and load
-instructions.
+store and load instructions.
 
 |StructPtr| is pointer to a structure which is to be forced into indirect
 access mode.
