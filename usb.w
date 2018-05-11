@@ -3913,7 +3913,7 @@ contains one or more CDC functional data descriptors, which give the CDC interfa
 capabilities and configuration.
 See the CDC class specification for more details.
 
-See \&{USB\_CDC\_StdDescriptor\_Func\_Header\_t} for the version of this type with
+See \&{USB\_CDC\_StdDescriptor\_Functional\_Header\_t} for the version of this type with
 standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
@@ -3942,7 +3942,7 @@ LUFA specific element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
 
-@s USB_CDC_StdDescriptor_Func_Header_t int
+@s USB_CDC_StdDescriptor_Functional_Header_t int
 
 @(/dev/null@>=
 typedef struct {
@@ -3954,7 +3954,7 @@ typedef struct {
   uint16_t bcdCDC; /* version number of the CDC specification implemented by the device,
     encoded in BCD format; see |VERSION_BCD| utility macro */
 } @=ATTR_PACKED@>
-  USB_CDC_StdDescriptor_Func_Header_t;
+  USB_CDC_StdDescriptor_Functional_Header_t;
 
 @ CDC class-specific Functional ACM Descriptor (LUFA naming conventions).
 
@@ -3963,7 +3963,7 @@ host that the CDC interface
 supports the CDC ACM subclass of the CDC specification. See the CDC class specification
 for more details.
 
-See \&{USB\_CDC\_StdDescriptor\_Func\_ACM\_t} for the version of this type with
+See \&{USB\_CDC\_StdDescriptor\_Functional\_ACM\_t} for the version of this type with
 standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
@@ -3990,7 +3990,7 @@ more details.
 See |USB_CDC_Descriptor_Func_ACM_t| for the version of this type with non-standard
 LUFA specific element names.
 
-@s USB_CDC_StdDescriptor_Func_ACM_t int
+@s USB_CDC_StdDescriptor_Functional_ACM_t int
 
 @(/dev/null@>=
 typedef struct {
@@ -4003,7 +4003,7 @@ typedef struct {
     for most devices, this should be set to a fixed value of |0x06| --- for other
     capabilities, refer to the CDC ACM specification */
 } @=ATTR_PACKED@>
-  USB_CDC_StdDescriptor_Func_ACM_t;
+  USB_CDC_StdDescriptor_Functional_ACM_t;
 
 @ CDC class-specific Functional Union Descriptor (LUFA naming conventions).
 
@@ -4011,7 +4011,7 @@ Type define for a CDC class-specific functional Union descriptor. This indicates
 host that specific
 CDC control and data interfaces are related. See the CDC class specification for more details.
 
-See \&{USB\_CDC\_StdDescriptor\_Func\_Union\_t} for the version of this type with
+See \&{USB\_CDC\_StdDescriptor\_Functional\_Union\_t} for the version of this type with
 standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
@@ -4038,7 +4038,7 @@ CDC control and data interfaces are related. See the CDC class specification for
 See |USB_CDC_Descriptor_Func_Union_t| for the version of this type with non-standard
 LUFA specific element names.
 
-@s USB_CDC_StdDescriptor_Func_Union_t int
+@s USB_CDC_StdDescriptor_Functional_Union_t int
 
 @(/dev/null@>=
 typedef struct {
@@ -4050,7 +4050,7 @@ typedef struct {
 	uint8_t bMasterInterface; /* interface number of the CDC Control interface */
 	uint8_t bSlaveInterface0; /* interface number of the CDC Data interface */
 } @=ATTR_PACKED@>
-  USB_CDC_StdDescriptor_Func_Union_t;
+  USB_CDC_StdDescriptor_Functional_Union_t;
 
 @ CDC Virtual Serial Port Line Encoding Settings Structure.
 
