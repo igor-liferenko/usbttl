@@ -971,7 +971,7 @@ Returns one of the following values:
 @d ENDPOINT_READYWAIT_NO_ERROR 0 /* endpoint is ready for next packet, no error */
 @d ENDPOINT_READYWAIT_ENDPOINT_STALLED 1 /* endpoint was stalled during the stream transfer
   by the host or device */
-@d ENDPOINT_READYWAIT_DEVICE_DISCONNECTED 2 /* device was disconnected from the host while
+@d ENDPOINT_READYWAIT_DEV_DISCONNECTED 2 /* device was disconnected from the host while
                                               waiting for the endpoint to become ready */
 @d ENDPOINT_READYWAIT_BUS_SUSPENDED 3 /* the USB bus has been suspended by the host and
                                         no USB endpoint traffic can occur until the bus
@@ -1003,7 +1003,7 @@ uint8_t Endpoint_WaitUntilReady(void)
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_READYWAIT_DEVICE_DISCONNECTED;
+		  return ENDPOINT_READYWAIT_DEV_DISCONNECTED;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
 		  return ENDPOINT_READYWAIT_BUS_SUSPENDED;
 		else if (@<Endpoint is istalled@>)
@@ -1209,7 +1209,7 @@ uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
 {
 	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
-	  return ENDPOINT_DEVICE_DISCONNECTED;
+	  return ENDPOINT_DEV_DISCONNECTED;
 
 	Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataINEndpoint.Address);
 
@@ -1245,7 +1245,7 @@ uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
-	  return ENDPOINT_DEVICE_DISCONNECTED;
+	  return ENDPOINT_DEV_DISCONNECTED;
 
 	uint8_t ErrorCode;
 
@@ -1638,7 +1638,7 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_DEVICE_DISCONNECTED;
+		  return ENDPOINT_DEV_DISCONNECTED;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
 		  return ENDPOINT_BUS_SUSPENDED;
 		else if (@<Endpoint has received a SETUP packet@>)
@@ -1666,7 +1666,7 @@ uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_DEVICE_DISCONNECTED;
+		  return ENDPOINT_DEV_DISCONNECTED;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
 		  return ENDPOINT_BUS_SUSPENDED;
 		else if (@<Endpoint has received a SETUP packet@>)
@@ -1715,7 +1715,7 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_DEVICE_DISCONNECTED;
+		  return ENDPOINT_DEV_DISCONNECTED;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
 		  return ENDPOINT_BUS_SUSPENDED;
 		else if (@<Endpoint has received a SETUP packet@>)
@@ -1743,7 +1743,7 @@ uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
 		uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
 		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_DEVICE_DISCONNECTED;
+		  return ENDPOINT_DEV_DISCONNECTED;
 		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
 		  return ENDPOINT_BUS_SUSPENDED;
 		else if (@<Endpoint has received a SETUP packet@>)
@@ -3172,7 +3172,7 @@ data streams from and to endpoints.
 @<Macros@>=
 #define ENDPOINT_NO_ERROR 0 /* command completed successfully, no error */
 #define ENDPOINT_HOST_ABORTED 1 /* aborted the transfer prematurely */
-#define ENDPOINT_DEVICE_DISCONNECTED 2 /* device was disconnected from the host during
+#define ENDPOINT_DEV_DISCONNECTED 2 /* device was disconnected from the host during
                                                    the transfer */
 #define ENDPOINT_BUS_SUSPENDED 3 /* the USB bus has been suspended by the host and
 		                             no USB endpoint traffic can occur until the bus
