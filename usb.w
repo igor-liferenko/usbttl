@@ -4590,7 +4590,7 @@ inline uint8_t RingBuffer_Peek(RingBuffer_t* const Buffer)
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
-#include <avr/boot.h>
+#include <avr/boot.h> /* |boot_signature_byte_get| */
 #include <math.h>
 #include <util/delay.h>
 
