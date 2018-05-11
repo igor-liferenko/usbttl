@@ -3024,6 +3024,8 @@ Type define for a standard USB control request.
 
 See The USB 2.0 specification for more information on standard control requests.
 
+@s USB_Request_Header_t int
+
 @<Type definitions@>=
 typedef struct
 {
@@ -3331,6 +3333,8 @@ uses LUFA-specific element names to make each element's purpose clearer.
 
 See \&{USB\_StdDescriptor\_Header\_t} for the version of this type with standard element names.
 
+@s USB_Descriptor_Header_t int
+
 @<Type definitions@>=
 typedef struct
 {
@@ -3369,6 +3373,8 @@ element's purpose clearer.
 See \&{USB\_StdDescriptor\_Device\_t} for the version of this type with standard element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
+
+@s USB_Descriptor_Device_t int
 
 @<Type definitions@>=
 typedef struct {
@@ -3460,6 +3466,8 @@ element names to make each element's purpose clearer.
 See \&{USB\_StdDescriptor\_DeviceQualifier\_t} for the version of this type with standard
 element names.
 
+@s USB_Descriptor_DeviceQualifier_t int
+
 @<Type definitions@>=
 typedef struct {
 	USB_Descriptor_Header_t Header; /* descriptor header, including type and size */
@@ -3517,6 +3525,8 @@ See \&{USB\_StdDescriptor\_Config\_Header\_t} for the version of this type with 
 element names.
 
 Regardless of CPU architecture, these values should be stored as little endian.
+
+@s USB_Descriptor_Config_Header_t int
 
 @<Type definitions@>=
 typedef struct {
