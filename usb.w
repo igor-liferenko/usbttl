@@ -289,15 +289,13 @@ if (CDC_Device_SendByte(&VirtualSerial_CDC_Interface,
     transmission error occurred@>=
 RingBuffer_Remove(&USARTtoUSB_Buffer);
 
-@ @<Load the next byte from the USART transmit buffer into the USART if transmit buffer
-    space is available@>=
-if (@<Serial is send-ready@> && !(RingBuffer_IsEmpty(&USBtoUSART_Buffer)))
+@ @<Load the next byte from ring buffer into the USART transmit buffer@>=
+if (@<USART Data Register Empty@> && !(RingBuffer_IsEmpty(&USBtoUSART_Buffer)))
   UDR1 = RingBuffer_Remove(&USBtoUSART_Buffer); /* transmit a given raw byte through the USART */
 
-@ Indicates whether there is hardware buffer space for a new transmit on the USART.
-Return true if a character can be queued for transmission immediately, false otherwise.
+@ The transmit buffer can only be written when the |UDRE1| flag in the |UCSR1A| register is set.
 
-@<Serial is send-ready@>=
+@<USART Data Register Empty@>=
 (UCSR1A & (1 << UDRE1))
 
 @ Indicate that the USB interface is not ready.
@@ -1911,7 +1909,7 @@ int main(void)
       Endpoint_SelectEndpoint(VirtualSerial_CDC_Interface.Config.DataINEndpoint.Address);
       @<Try to send more data@>@;
     }
-    @<Load the next byte from the USART transmit buffer into the USART if transmit...@>@;
+    @<Load the next byte...@>@;
 
     CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
     USB_DeviceTask();
