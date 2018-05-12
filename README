@@ -1,1 +1,3 @@
 cdc_acm uses usbcore (usbcore: registered new interface driver cdc_acm); usbserial is not used
+
+cdc_acm: USB Abstract Control Model driver for USB modems and ISDN adapters
