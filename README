@@ -1,1 +1,1 @@
-cdc_acm uses usbcore
+cdc_acm uses usbcore (usbserial is not used)
