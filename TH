@@ -1,1 +1,6 @@
 SUBSYSTEM=="usb", ATTRS{idProduct}=="204b", ATTRS{idVendor}=="03eb", MODE:="0666"
+testing on th/ will not work - after power reset on AVR, computer reinumerates the device so settings
+in qemu stop working (it is determined by host), and setting device number in qemu
+in advance does not work (when the device is not connected yet):
+qemu-system-x86_64: -device usb-host,hostbus=3,hostaddr=23: failed to find host usb device 3:23
+
