@@ -7,4 +7,4 @@ sborka za 20180402 - pishet AT#PORTCFG? 3 raza, potom AT 3 raza + garbage
 sbarka za 20180409 - ATE1 E0 3 raza + garbage
 sborka za 20180416 - AT^SQPORT? 1 raz, potom AT 3 raza + garbage
 sborka za 20180430 - AT 3 raza + garbage
-sborka za 20180507 - AT^SQPORT? 1 raz, potom AT 3 raza + garbage (other tries gave random data, like T^PR?A, TSPR?A, etc, but I cannot recall if I did anything special - I could not reproduce such random data on further tries)
+sborka za 20180507 - AT 3 raza + garbage
