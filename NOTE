@@ -1,5 +1,5 @@
 BUILD:
-sudo apt-get install libjpeg62-turbo-dev
+cd
 git clone https://github.com/jacksonliam/mjpg-streamer
 cd ~/mjpg-streamer/mjpg-streamer-experimental/
 make
