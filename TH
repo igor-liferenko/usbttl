@@ -3,6 +3,4 @@ Result: seeing avrterm while starting qemu shows that all is clear
 NOTE: reflash before starting qemu
 NOTE: when "poweroff" in qemu is run, avrterm shows garbage (??? - check again, maybe also it matters if superbuild is used which is normal or with garbage in avrterm)
 
-in snapshot (kernel 4.14.37): all is clear
-
-conclusion: either it is bug in debian or it is fault of kernel > 4.14.37 
+Do not use qemu to test avr firmware, because you will need to reboot qemu after each reflash.
