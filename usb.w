@@ -2324,6 +2324,8 @@ send/receive functions for various data types.
 @ Type define for a endpoint table entry, used to configure endpoints
 in groups via \hfil\break |Endpoint_ConfigureEndpointTable|.
 
+@s USB_Endpoint_Table_t int
+
 @<Type definitions@>=
 typedef struct
 {
@@ -4039,6 +4041,8 @@ Class state structure. An instance of this structure should be made for each CDC
 within the user application, and passed to each of the CDC class driver functions as the
 CDCInterfaceInfo parameter. This stores each CDC interface's configuration and state
 information.
+
+@s USB_ClassInfo_CDC_Device_t int
 
 @<Type definitions@>=
 typedef struct {
