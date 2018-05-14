@@ -1,6 +1,4 @@
 SUBSYSTEM=="usb", ATTRS{idProduct}=="204b", ATTRS{idVendor}=="03eb", MODE:="0666"
-Result: seeing avrterm while starting qemu shows that all is clear
 NOTE: reflash _before_ starting qemu - do not reflash while qemu is running
-NOTE: when "poweroff" in qemu is run, avrterm shows garbage (??? - check again, maybe also it matters if superbuild is used which is normal or with garbage in avrterm)
-
-Do not use qemu to test avr firmware, because you will need to reboot qemu after each reflash.
+NOTE: when "poweroff" in qemu is run, avrterm shows garbage (??? - check again)
+After you check above, remove this file - do not use qemu to test avr firmware, because you will need to reboot qemu after each reflash.
