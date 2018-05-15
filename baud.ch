@@ -1,6 +1,6 @@
 Via green led check if baud is set before acmterm is opened:
 
-Answer: yes, it is
+Answer: yes, it is (strictly speaking, this is wrong - find out what does it and why)
 
 @x
         CDCInterfaceInfo->State.LineEncoding.BaudRateBPS = Endpoint_Read_32_LE();
