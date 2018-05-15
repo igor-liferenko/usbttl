@@ -3733,7 +3733,8 @@ Open the serial port in read write mode using open() system call.
 TIOCM_RTS is a constant defined in the “termios.h” header file to identify the RTS pin of the serial
  port.You can open the header file to see constants corresponding to other pins too.
 
-@(rts.c@>=
+%change /dev/null to rts.c temporarily to test
+@(/dev/null@>=
 //Other header files
 #include <sys/ioctl.h> //ioctl() call defenitions
 main()
