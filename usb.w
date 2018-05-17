@@ -1094,7 +1094,7 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 
         CDCInterfaceInfo->State.ControlLineStates.HostToDevice = USB_ControlRequest.wValue;
 
-        @<Set |DTR| pin@>@;
+        @<Set |RTS| pin@>@;
       }
       break;
     case CDC_REQ_SEND_BREAK:
@@ -1114,11 +1114,11 @@ The new control line states
 are available in the |ControlLineStates.HostToDevice| value inside the CDC interface
 structure passed as a parameter, set as a mask of \.{CDC\_CONTROL\_LINE\_OUT\_*} masks.
 
-@<Set |DTR| pin@>=
-if (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR)
-  PORTD &= ~(1 << 7); /* |DTR| pin low */
+@<Set |RTS| pin@>=
+if (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_RTS)
+  PORTD &= ~(1 << 7); /* |RTS| pin low */
 else
-  PORTD |= 1 << 7; /* |DTR| pin high */
+  PORTD |= 1 << 7; /* |RTS| pin high */
 
 @ Configures the endpoints of a given CDC interface, ready for use. This should be linked to
 the library
@@ -1881,7 +1881,7 @@ It needs to be called together with the main USB maintenance routine |USB_Device
 int main(void)
 {
   DDRD |= 1 << 7;
-  PORTD |= 1 << 7; /* |DTR| pin high */
+  PORTD |= 1 << 7; /* |RTS| pin high */
 
   DDRB |= 1 << 0;
   DDRD |= 1 << 5;
