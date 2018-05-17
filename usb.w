@@ -307,8 +307,6 @@ PORTD &= ~(1 << 5);
 @ Circular buffer to hold data from the host before it is sent to the device via the
 serial port.
 
-@s RingBuffer_t int
-
 @<Global...@>=
 RingBuffer_t USBtoUSART_Buffer;
 
@@ -4364,6 +4362,8 @@ while (BufferCount--) /* print contents of the buffer one character at a time */
 
 Type define for a new ring buffer object. Buffers should be initialized via a call to
 |RingBuffer_InitBuffer| before use.
+
+@s RingBuffer_t int
 
 @<Type definitions@>=
 typedef struct {
