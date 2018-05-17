@@ -6,16 +6,6 @@
 
 \secpagedepth=1 % begin new page only on **
 
-@** Observations.
-
-If we use \.{dtr.ch}, the following is observed:
-if, when first green led on, we open \.{acmterm} successfully---speed
-will be broken---in \.{avrterm} will appear question marks when we type in \.{acmterm};
-if, when green led quickly flashes, we open \.{acmterm} successfully---green led will
-not turn on in the end, but everything will be working correctly; and when
-green led turns on in the end, opening \.{acmterm} and working with data is always
-without problems.
-
 @** Data throughput, latency and handshaking issues.
 The Universal Serial Bus may be new to some users and developers. Here are
 described the major architecture differences that need to be considered by both software and
