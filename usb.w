@@ -3716,40 +3716,6 @@ from the host, to indicate that the RTS line state should be high.
 @<Macros@>=
 #define CDC_CONTROL_LINE_OUT_RTS         (1 << 1)
 
-@ TIOCM_RTS - Constant for RTS line
-TIOCM_DTR – Constant for DTR line
-
-fd as usual is the file descriptor pointing to the opened serial port .
-TIOCMBIS is a command code send to set the bit specified by the argument &RTS_flag.
-TIOCMBIC is a command code used to clear the bit specified by the argument &RTS_flag.
-
-Both TIOCMBIS and TIOCMBIC are defined in the sys/ioctl.h header file.
-
-If you want to control the DTR pin just replace the TIOCM_RTS with TIOCM_DTR in the above program.
-You can control both of them together also.
-
-Open the serial port in read write mode using open() system call.
-
-TIOCM_RTS is a constant defined in the “termios.h” header file to identify the RTS pin of the
-serial port. You can open the header file to see constants corresponding to other pins too.
-
-%change /dev/null to rts.c temporarily to test
-@(/dev/null@>=
-//Other header files
-#include <sys/ioctl.h> //ioctl() call defenitions
-main()
-{
-   int fd;
-   fd = open("/dev/ttyUSB0",O_RDWR | O_NOCTTY );//Open Serial Port
-  
-   int RTS_flag;
-   RTS_flag = TIOCM_RTS;
-   ioctl(fd,TIOCMBIS,&RTS_flag);//Set RTS pin
-   getchar();
-   ioctl(fd,TIOCMBIC,&RTS_flag);//Clear RTS pin
-   close(fd);
-}
-
 @ Mask for the DCD handshake line for use with the |CDC_NOTIF_SERIAL_STATE| class-specific
 notification
 from the device to the host, to indicate that the DCD line state is currently high.
