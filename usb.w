@@ -491,8 +491,10 @@ else if (100 * F_CPU < (16 * (SERIAL_UBBRVAL + 1)) * (100 * BAUD - BAUD * TOLERA
   UBRR1 = SERIAL_2X_UBBRVAL;
   UCSR1A = (1 << U2X1);
 }
-else
+else {
   UBRR1 = SERIAL_UBBRVAL;
+  UCSR1A = 0;
+}
 UCSR1B = ((1 << RXCIE1) | (1 << TXEN1) | (1 << RXEN1));
 UCSR1C = ConfigMask;
 
