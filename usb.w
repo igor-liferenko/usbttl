@@ -471,11 +471,15 @@ UCSR1A = 0;
 UCSR1C = 0;
 @^see datasheet@>
 
-@ 
+@ FIXME: ensure that UART is initialized before first use; if not --- initialize it 
+with 9600 baud and no double-speed mode 
+@^FIXME
 
 @d BAUD CDCInterfaceInfo->State.LineEncoding.BaudRateBPS
-@d SERIAL_UBBRVAL ((F_CPU / 16 + BAUD / 2) / BAUD - 1)
-@d SERIAL_2X_UBBRVAL ((F_CPU / 8 + BAUD / 2) / BAUD - 1)
+@d SERIAL_UBBRVAL ((F_CPU / 16 + BAUD / 2) / BAUD - 1) /* closest \.{UBRR} register value for
+  the given UART frequency */
+@d SERIAL_2X_UBBRVAL ((F_CPU / 8 + BAUD / 2) / BAUD - 1) /* halve the sample time to
+  double the baud rate */
 @d TOLERANCE 2 /* baud rate tolerance (in percent) that is acceptable during the calculations */
 
 @<Configure UART@>=
@@ -491,28 +495,6 @@ else
   UBRR1 = SERIAL_UBBRVAL;
 UCSR1B = ((1 << RXCIE1) | (1 << TXEN1) | (1 << RXEN1));
 UCSR1C = ConfigMask;
-
-@ Initializes the USART, ready for serial data transmission and reception. This initializes
-the interface to standard 8-bit, no parity, 1 stop bit settings suitable for most applications.
-
-\\{BaudRate} (|uint32_t|) is serial baud rate, in bits per second. This should be the target
-baud rate regardless of the \\{DoubleSpeed} parameter's value.
-
-\\{DoubleSpeed} (|bool|) enables double speed mode when set, halving the sample time to
-double the baud rate.
-
-Macro \.{SERIAL\_UBBRVAL} is for calculating the baud value from a given baud rate when the \.{U2X}
-(double speed) bit is not set. Returns closest UBRR register value for the given UART frequency.
-
-@(/dev/null@>=
-UBRR1  = (DoubleSpeed ? SERIAL_2X_UBBRVAL(BaudRate) : SERIAL_UBBRVAL(BaudRate));
-
-UCSR1C = ((1 << UCSZ11) | (1 << UCSZ10));
-UCSR1A = (DoubleSpeed ? (1 << U2X1) : 0);
-UCSR1B = ((1 << TXEN1)  | (1 << RXEN1));
-
-DDRD  |= (1 << 3);
-PORTD |= (1 << 2);
 
 @ Function to retrieve a given descriptor's size and memory location from the given
 descriptor type value,
