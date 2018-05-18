@@ -459,13 +459,8 @@ void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCI
 			break;
 	}
 
-  PORTD |= (1 << 3); /* keep the TX line held high (idle) while the USART is
-                        reconfigured */
-
         @<Turn off USART before reconfiguring it@>@;
-	@<Set the new baud rate before configuring the USART@>@;
-	@<Reconfigure the USART in double speed mode for a wider baud rate range...@>@;
-	PORTD &= ~(1 << 3); /* release the TX line after the USART has been reconfigured */
+	@<Configure UART@>@;
 }
 
 @ Must turn off USART before reconfiguring it, otherwise incorrect operation may occur.
@@ -476,24 +471,26 @@ UCSR1A = 0;
 UCSR1C = 0;
 @^see datasheet@>
 
-@ Macro |SERIAL_2X_UBBRVAL| is for calculating the baud value from a given baud rate when the
-\.{U2X} (double speed) bit is set. Returns closest UBRR register value for the given UART
-frequency.
+@ 
 
-@d SERIAL_2X_UBBRVAL(Baud) ((((F_CPU / 8) + (Baud / 2)) / (Baud)) - 1)
+@d BAUD CDCInterfaceInfo->State.LineEncoding.BaudRateBPS
+@d SERIAL_UBBRVAL ((F_CPU / 16 + BAUD / 2) / BAUD - 1)
+@d SERIAL_2X_UBBRVAL ((F_CPU / 8 + BAUD / 2) / BAUD - 1)
+@d TOLERANCE 2 /* baud rate tolerance (in percent) that is acceptable during the calculations */
 
-@<Set the new baud rate before configuring the USART@>=
-UBRR1 = SERIAL_2X_UBBRVAL(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS);
-  /* FIXME: where is |DoubleSpeed| defined? And why it is not used here, unlike
-     in /dev/null-section below? */
-@^FIXME@>
-
-@ @<Reconfigure the USART in double speed mode for a wider baud rate range at the
-    expense of accuracy@>=
-UCSR1C = ConfigMask;
-UCSR1A = (1 << U2X1); /* double speed */
+@<Configure UART@>=
+if (100 * F_CPU > (16 * (SERIAL_UBBRVAL + 1)) * (100 * BAUD + BAUD * TOLERANCE)) {
+  UBRR1 = SERIAL_2X_UBBRVAL;
+  UCSR1A = (1 << U2X1);
+}
+else if (100 * F_CPU < (16 * (SERIAL_UBBRVAL + 1)) * (100 * BAUD - BAUD * TOLERANCE)) {
+  UBRR1 = SERIAL_2X_UBBRVAL;
+  UCSR1A = (1 << U2X1);
+}
+else
+  UBRR1 = SERIAL_UBBRVAL;
 UCSR1B = ((1 << RXCIE1) | (1 << TXEN1) | (1 << RXEN1));
-@^see datasheet@>
+UCSR1C = ConfigMask;
 
 @ Initializes the USART, ready for serial data transmission and reception. This initializes
 the interface to standard 8-bit, no parity, 1 stop bit settings suitable for most applications.
@@ -506,8 +503,6 @@ double the baud rate.
 
 Macro \.{SERIAL\_UBBRVAL} is for calculating the baud value from a given baud rate when the \.{U2X}
 (double speed) bit is not set. Returns closest UBRR register value for the given UART frequency.
-
-@d SERIAL_UBBRVAL(Baud) ((((F_CPU / 16) + (Baud / 2)) / (Baud)) - 1)
 
 @(/dev/null@>=
 UBRR1  = (DoubleSpeed ? SERIAL_2X_UBBRVAL(BaudRate) : SERIAL_UBBRVAL(BaudRate));
