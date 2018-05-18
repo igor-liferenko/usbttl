@@ -477,20 +477,19 @@ tolerance without setting \.{U2X} (prescaler 25), while 38400 Bd
 require \.{U2X} to be set (prescaler 12).
 
 @d BAUD CDCInterfaceInfo->State.LineEncoding.BaudRateBPS
-@d SERIAL_UBBRVAL ((F_CPU / 16 + BAUD / 2) / BAUD - 1) /* value that is dependent of the
-  baud rate and the CPU frequency */
-@d SERIAL_2X_UBBRVAL ((F_CPU / 8 + BAUD / 2) / BAUD - 1)
+@d UBRRVAL ((F_CPU / 16 + BAUD / 2) / BAUD - 1)
+@d UBRRVAL_2X ((F_CPU / 8 + BAUD / 2) / BAUD - 1)
 @d TOLERANCE 2 /* baud rate tolerance (in percent) that is acceptable during the calculations */
 @d LOWER_LIMIT (16 * (SERIAL_UBBRVAL + 1) * (100 * BAUD + BAUD * TOLERANCE))
 @d UPPER_LIMIT (16 * (SERIAL_UBBRVAL + 1) * (100 * BAUD - BAUD * TOLERANCE))
 
 @<Configure UART@>=
 if (100 * F_CPU > LOWER_LIMIT || 100 * F_CPU < UPPER_LIMIT) {
-  UBRR1 = SERIAL_2X_UBBRVAL;
+  UBRR1 = UBRRVAL_2X;
   UCSR1A = (1 << U2X1); /* use prescaler */
 }
 else {
-  UBRR1 = SERIAL_UBBRVAL;
+  UBRR1 = UBRRVAL;
   UCSR1A = 0; /* no prescaler */
 }
 UCSR1B = ((1 << RXCIE1) | (1 << TXEN1) | (1 << RXEN1));
