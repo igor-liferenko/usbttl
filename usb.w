@@ -471,29 +471,27 @@ UCSR1A = 0;
 UCSR1C = 0;
 @^see datasheet@>
 
-@ FIXME: ensure that UART is initialized before first use; if not --- initialize it 
-with 9600 baud and no double-speed mode 
-@^FIXME
+@ Using a CPU
+clock of 4 MHz, 9600 Bd can be achieved with an acceptable
+tolerance without setting \.{U2X} (prescaler 25), while 38400 Bd
+require \.{U2X} to be set (prescaler 12).
 
 @d BAUD CDCInterfaceInfo->State.LineEncoding.BaudRateBPS
-@d SERIAL_UBBRVAL ((F_CPU / 16 + BAUD / 2) / BAUD - 1) /* closest \.{UBRR} register value for
-  the given UART frequency */
-@d SERIAL_2X_UBBRVAL ((F_CPU / 8 + BAUD / 2) / BAUD - 1) /* halve the sample time to
-  double the baud rate */
+@d SERIAL_UBBRVAL ((F_CPU / 16 + BAUD / 2) / BAUD - 1) /* value that is dependent of the
+  baud rate and the CPU frequency */
+@d SERIAL_2X_UBBRVAL ((F_CPU / 8 + BAUD / 2) / BAUD - 1)
 @d TOLERANCE 2 /* baud rate tolerance (in percent) that is acceptable during the calculations */
+@d LOWER_LIMIT (16 * (SERIAL_UBBRVAL + 1) * (100 * BAUD + BAUD * TOLERANCE))
+@d UPPER_LIMIT (16 * (SERIAL_UBBRVAL + 1) * (100 * BAUD - BAUD * TOLERANCE))
 
 @<Configure UART@>=
-if (100 * F_CPU > (16 * (SERIAL_UBBRVAL + 1)) * (100 * BAUD + BAUD * TOLERANCE)) {
+if (100 * F_CPU > LOWER_LIMIT || 100 * F_CPU < UPPER_LIMIT) {
   UBRR1 = SERIAL_2X_UBBRVAL;
-  UCSR1A = (1 << U2X1);
-}
-else if (100 * F_CPU < (16 * (SERIAL_UBBRVAL + 1)) * (100 * BAUD - BAUD * TOLERANCE)) {
-  UBRR1 = SERIAL_2X_UBBRVAL;
-  UCSR1A = (1 << U2X1);
+  UCSR1A = (1 << U2X1); /* use prescaler */
 }
 else {
   UBRR1 = SERIAL_UBBRVAL;
-  UCSR1A = 0;
+  UCSR1A = 0; /* no prescaler */
 }
 UCSR1B = ((1 << RXCIE1) | (1 << TXEN1) | (1 << RXEN1));
 UCSR1C = ConfigMask;
@@ -1855,6 +1853,8 @@ int main(void)
 
   clock_prescale_set(clock_div_1); /* disable clock division */
 
+  @<Initialize UART@>@;
+
   USB_Init();
 
 #if 0==1
@@ -1882,6 +1882,16 @@ int main(void)
     USB_DeviceTask();
   }
 }
+
+@ Ensure that UART is initialized before first use.
+FIXME: do we really need this?
+@^FIXME@>
+
+@<Initialize UART@>=
+UBRR1 = ((F_CPU / 16 + 9600 / 2) / 9600 - 1); /* 9600 baud */
+UCSR1A = 0; /* no prescaler */
+UCSR1B = ((1 << TXEN1) | (1 << RXEN1)); /* enable rx/tx */
+UCSR1C = ((1 << UCSZ11) | (1 << UCSZ10)); /* 8N1 */
 
 @ {\emergencystretch=2cm The final standardized Device Class Driver function is the Control
 Request handler function
