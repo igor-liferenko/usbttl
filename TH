@@ -2,3 +2,5 @@ SUBSYSTEM=="usb", ATTRS{idProduct}=="204b", ATTRS{idVendor}=="03eb", MODE:="0666
 NOTE: reflash _before_ starting qemu - do not reflash while qemu is running
 NOTE: when "poweroff" in qemu is run, avrterm shows garbage (??? - check again)
 After you check above, remove this file - do not use qemu to test avr firmware, because you will need to reboot qemu after each reflash.
+NOTE: restore build-snapshot.sh from git and diff it with build-x86.sh and change build-x86.sh temporarily to build the image for testing.
+TODO: understand what happens when we set 9600 in avrterm and do "cat /dev/ttyACM0" in qemu and in avrterm type characters - why when we press enter they appear in avrterm?
