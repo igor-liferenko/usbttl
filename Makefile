@@ -5,3 +5,9 @@ all:
 
 flash:
 	avrdude -c usbasp -p m32u4 -U flash:w:usb.hex
+
+.PHONY: $(wildcard *.eps)
+
+baud-rate-calculation.eps: baud-rate-calculation.jpg
+	@convert $< $@
+	@imgsize $@ 16 -

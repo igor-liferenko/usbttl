@@ -484,6 +484,27 @@ Using a CPU clock of 4 MHz, 9600 Bd can be achieved with an acceptable
 tolerance without setting \.{U2X} (prescaler 25), while 38400 Bd
 require \.{U2X} to be set (prescaler 12).
 
+The USART Baud Rate Register (UBRR) and the down-counter connected to it functions
+as a programmable prescaler or baud rate generator. The down-counter, running at
+system clock ($F_{OSC}$), is loaded with the UBRR value each time the counter has counted
+down to zero or when the UBRRL Register is written. A clock is generated each time
+the counter reaches zero.
+
+This clock is the baud rate generator clock output (= $F_{OSC}/(UBRR+1)$). The
+transmitter divides the baud rate generator clock output by 2, 8, or 16 depending
+on mode. The baud rate generator output is used directly by the receiver’s clock
+and data recovery units.
+
+Below are the equations for calculating baud rate and UBRR value:
+
+$$\hbox to16cm{\vbox to5.14cm{\vfil\special{psfile=baud-rate-calculation.eps
+  clip llx=0 lly=0 urx=470 ury=151 rwi=4535}}\hfil}$$
+
+\item{1.} $BAUD$ = Baud Rate in Bits/Second (bps) (Always remember, Bps = Bytes/Second,
+whereas bps = Bits/Second)
+\item{2.} $F_{OSC}$  = System Clock Frequency (1MHz) (or as per use in case of external oscillator)
+\item{3.} $UBRR$ = Contents of |UBRRL| and |UBRRH| registers
+
 @d BAUD CDCInterfaceInfo->State.LineEncoding.BaudRateBPS
 @d UBRRVAL ((F_CPU / 16 + BAUD / 2) / BAUD - 1)
 @d UBRRVAL_2X ((F_CPU / 8 + BAUD / 2) / BAUD - 1)
