@@ -303,7 +303,7 @@ RingBuffer_t USBtoUSART_Buffer;
 @ Underlying data buffer for |USBtoUSART_Buffer|, where the stored bytes are located.
 
 @<Global...@>=
-uint8_t      USBtoUSART_Buffer_Data[128];
+uint8_t USBtoUSART_Buffer_Data[128];
 
 @ Circular buffer to hold data from the serial port before it is sent to the host.
 
@@ -313,7 +313,7 @@ RingBuffer_t USARTtoUSB_Buffer;
 @ Underlying data buffer for |USARTtoUSB_Buffer|, where the stored bytes are located.
 
 @<Global...@>=
-uint8_t      USARTtoUSB_Buffer_Data[128];
+uint8_t USARTtoUSB_Buffer_Data[128];
 
 @ Event handler for the library USB Connection event.
 
