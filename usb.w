@@ -1854,11 +1854,6 @@ int main(void)
 
   clock_prescale_set(clock_div_1); /* disable clock division */
 
-#if 0
-  @<Initialize UART...@>@; /* FIXME: do we really need this? */
-@^FIXME@>
-#endif
-
   USB_Init();
 
 #if 0
@@ -1886,14 +1881,6 @@ int main(void)
     USB_DeviceTask();
   }
 }
-
-@
-
-@<Initialize UART before first use@>=
-UBRR1 = ((F_CPU / 16 + 9600 / 2) / 9600 - 1); /* 9600 baud */
-UCSR1A = 0; /* no prescaler */
-UCSR1B = ((1 << TXEN1) | (1 << RXEN1)); /* enable rx/tx */
-UCSR1C = ((1 << UCSZ11) | (1 << UCSZ10)); /* 8N1 */
 
 @ {\emergencystretch=2cm The final standardized Device Class Driver function is the Control
 Request handler function
