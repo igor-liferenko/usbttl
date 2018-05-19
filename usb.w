@@ -471,9 +471,8 @@ void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCI
 
 @<Turn off USART before reconfiguring it@>=
 UCSR1B = 0;
-UCSR1A = 0;
 UCSR1C = 0;
-@^see datasheet@>
+UCSR1A = 0;
 
 @ Using a CPU
 clock of 4 MHz, 9600 Bd can be achieved with an acceptable
@@ -496,8 +495,8 @@ else { /* within bounds */
   UBRR1 = UBRRVAL;
   UCSR1A = 0; /* no prescaler */
 }
-UCSR1B = ((1 << RXCIE1) | (1 << TXEN1) | (1 << RXEN1));
 UCSR1C = ConfigMask;
+UCSR1B = ((1 << RXCIE1) | (1 << TXEN1) | (1 << RXEN1));
 
 @ Function to retrieve a given descriptor's size and memory location from the given
 descriptor type value,
