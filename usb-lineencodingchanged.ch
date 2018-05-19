@@ -1,3 +1,5 @@
+Determine via green led if EVENT_CDC_Device_LineEncodingChanged is called after opening acmterm.
+
 @x
 	@<Configure UART@>@;
 @y
