@@ -284,13 +284,9 @@ if (@<USART Data Register Empty@> && !(RingBuffer_IsEmpty(&USBtoUSART_Buffer)))
   UDR1 = RingBuffer_Remove(&USBtoUSART_Buffer); /* transmit a given raw byte through the USART */
 
 @ The transmit buffer can only be written when the |UDRE1| flag in the |UCSR1A| register is set.
-The USART module has two transmit-related interrupts: |TXC| and |UDRE|.  |UDRE|
-fires when the transmit buffer is empty (the last byte is on its way out the
-serial port) and |TXC| fires when a byte has been sent.
-Use |TXC| when you want to stuff data as soon as you possibly can (the ``usual'' case).
 
 @<USART Data Register Empty@>=
-(UCSR1A & (1 << TXC1))
+(UCSR1A & (1 << UDRE1))
 
 @ Indicate that the USB interface is not ready.
 
