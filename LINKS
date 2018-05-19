@@ -1,2 +1,2 @@
-https://hackaday.io/project/12727-open-source-debugwire-debugger/log/45678-lessons-learned-regarding-atmega32u4-usart-interrupts - contains false info (in fact, the transmit buffer can only be written when the |UDRE1| flag in the |UCSR1A| register is set)
+https://hackaday.io/project/12727-open-source-debugwire-debugger/log/45678-lessons-learned-regarding-atmega32u4-usart-interrupts - WARNING - contains false info about TXC and UDRE
 http://maxembedded.com/2013/09/the-usart-of-the-avr/
