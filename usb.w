@@ -1852,11 +1852,14 @@ int main(void)
 
   clock_prescale_set(clock_div_1); /* disable clock division */
 
-  @<Initialize UART@>@;
+#if 0
+  @<Initialize UART...@>@; /* FIXME: do we really need this? */
+@^FIXME@>
+#endif
 
   USB_Init();
 
-#if 0==1
+#if 0
   TCCR0B = (1 << CS02); /* start the flush timer so that overflows occur rapidly to push received
                            bytes to the USB interface */
 #endif
@@ -1882,11 +1885,9 @@ int main(void)
   }
 }
 
-@ Ensure that UART is initialized before first use.
-FIXME: do we really need this?
-@^FIXME@>
+@
 
-@<Initialize UART@>=
+@<Initialize UART before first use@>=
 UBRR1 = ((F_CPU / 16 + 9600 / 2) / 9600 - 1); /* 9600 baud */
 UCSR1A = 0; /* no prescaler */
 UCSR1B = ((1 << TXEN1) | (1 << RXEN1)); /* enable rx/tx */
