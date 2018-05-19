@@ -480,8 +480,8 @@ require \.{U2X} to be set (prescaler 12).
 @d UBRRVAL ((F_CPU / 16 + BAUD / 2) / BAUD - 1)
 @d UBRRVAL_2X ((F_CPU / 8 + BAUD / 2) / BAUD - 1)
 @d TOLERANCE 2 /* baud rate tolerance (in percent) that is acceptable during the calculations */
-@d LOWER_LIMIT (16 * (SERIAL_UBBRVAL + 1) * (100 * BAUD + BAUD * TOLERANCE))
-@d UPPER_LIMIT (16 * (SERIAL_UBBRVAL + 1) * (100 * BAUD - BAUD * TOLERANCE))
+@d LOWER_LIMIT (16 * (UBRRVAL + 1) * (100 * BAUD + BAUD * TOLERANCE))
+@d UPPER_LIMIT (16 * (UBRRVAL + 1) * (100 * BAUD - BAUD * TOLERANCE))
 
 @<Configure UART@>=
 if (100 * F_CPU > LOWER_LIMIT || 100 * F_CPU < UPPER_LIMIT) {
