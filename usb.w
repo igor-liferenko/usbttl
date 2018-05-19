@@ -489,11 +489,11 @@ require \.{U2X} to be set (prescaler 12).
 @<Configure UART@>=
 if (100 * F_CPU < LOWER_BOUND || 100 * F_CPU > UPPER_BOUND) {
   UBRR1 = UBRRVAL_2X;
-  UCSR1A = (1 << U2X1); /* use prescaler */
+  UCSR1A = (1 << U2X1); /* double the transfer rate */
 }
 else { /* within bounds */
   UBRR1 = UBRRVAL;
-  UCSR1A = 0; /* no prescaler */
+  UCSR1A = 0; /* normal transfer rate */
 }
 UCSR1C = ConfigMask;
 UCSR1B = ((1 << RXCIE1) | (1 << TXEN1) | (1 << RXEN1));
