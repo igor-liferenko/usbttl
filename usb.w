@@ -422,8 +422,7 @@ passed as a parameter.
 and state.
 
 @<Func...@>=
-void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
-  ATTR_NON_NULL_PTR_ARG(1);
+void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo);
 
 @ @c
 void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
@@ -553,8 +552,7 @@ Returns size in bytes of the descriptor if it exists, zero or |NO_DESCRIPTOR| ot
 @<Func...@>=
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
                                     const uint16_t wIndex,
-                                    const void** const DescriptorAddress)
-  ATTR_NON_NULL_PTR_ARG(3);
+                                    const void** const DescriptorAddress);
 
 @ @dSTRING_ID_LANGUAGE 0 /* Supported Languages string descriptor
     ID (must be zero) */
@@ -1024,8 +1022,7 @@ linked to the |EVENT_USB_Device_ControlRequest| event.
 and state.
 
 @<Func...@>=
-void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
-  ATTR_NON_NULL_PTR_ARG(1);
+void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo);
 
 @ @c
 void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
@@ -1119,8 +1116,7 @@ the configuration containing the given CDC interface is selected.
 Returns true if the endpoints were successfully configured, false otherwise.
 
 @<Func...@>=
-bool CDC_Device_ConfigureEndpoints(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
-  ATTR_NON_NULL_PTR_ARG(1);
+bool CDC_Device_ConfigureEndpoints(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo);
 
 @ @c
 bool CDC_Device_ConfigureEndpoints(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
@@ -1151,8 +1147,7 @@ be called frequently in the main program loop, before the master USB management 
 |CDCInterfaceInfo| -- pointer to a structure containing a CDC Class configuration and state.
 
 @<Func...@>=
-void CDC_Device_USBTask(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
-  ATTR_NON_NULL_PTR_ARG(1);
+void CDC_Device_USBTask(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo);
 
 @ @c
 void CDC_Device_USBTask(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
@@ -1186,7 +1181,7 @@ Returns a \.{ENDPOINT\_READYWAIT\_*} value.
 
 @<Func...@>=
 uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
-                            const uint8_t Data) ATTR_NON_NULL_PTR_ARG(1);
+                            const uint8_t Data);
 
 @
 
@@ -1224,8 +1219,7 @@ and state.
 Returns a \.{ENDPOINT\_READYWAIT\_*} value.
 
 @<Func...@>=
-uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
-  ATTR_NON_NULL_PTR_ARG(1);
+uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo);
 
 @ @c
 uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
@@ -1273,8 +1267,7 @@ configuration and state.
 Returns next received byte from the host, or a negative value if no data received.
 
 @<Func...@>=
-int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
-  ATTR_NON_NULL_PTR_ARG(1);
+int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo);
 
 @ @c
 int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
@@ -1608,8 +1601,7 @@ together; i.e. the entire stream data must be read or written at the one time.
 Returns a \.{ENDPOINT\_RWCSTREAM\_*} value.
 
 @<Func...@>=
-uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
-                                         uint16_t Length) ATTR_NON_NULL_PTR_ARG(1);
+uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer, uint16_t Length);
 @ @c
 uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
                             uint16_t Length)
@@ -1685,8 +1677,7 @@ chained together; i.e. the entire stream data must be read or written at the one
 Returns a \.{ENDPOINT\_RWCSTREAM\_*} value.
 
 @<Func...@>=
-uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
-                                          uint16_t Length) ATTR_NON_NULL_PTR_ARG(1);
+uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer, uint16_t Length);
 @ @c
 uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
                             uint16_t Length)
@@ -1994,38 +1985,14 @@ assembly output in an unexpected manner on sections of code that are ordering-sp
 @* Attributes.
 Special function/variable attribute macros.
 
-This module contains macros for applying specific attributes to functions and variables
-to control various
-optimizer and code generation features of the compiler. Attributes may be placed in the
-function prototype
-or variable declaration in any order, and multiple attributes can be specified for a
-single item via a space
-separated list.
-
-On incompatible versions of GCC or on other compilers, these macros evaluate to nothing
-unless they are
-critical to the code's function and thus must throw a compile error when used.
-
-@ Indicates that the specified parameters of the function are pointers which should never
-be \.{NULL}.
-When applied as a 1-based comma separated list the compiler will emit a warning if
-the specified
-parameters are known at compiler time to be \.{NULL} at the point of calling the function.
-
-@<Macros@>=
-#define ATTR_NON_NULL_PTR_ARG(...)   __attribute__ ((nonnull (__VA_ARGS__)))
+This contains macros for applying specific attributes to functions and variables
+to control various optimizer and code generation features of the compiler.
 
 @ Forces the compiler to inline the specified function. When applied, the given function will be
 in-lined under all circumstances.
 
 @<Macros@>=
 #define ATTR_ALWAYS_INLINE           __attribute__ ((always_inline))
-
-@ Indicates that the specified function is constant, in that it has no side effects other than
-parameter access.
-
-@<Macros@>=
-#define ATTR_CONST                   __attribute__ ((const))
 
 @ Marks a variable or struct element for packing into the smallest space available, omitting any
 alignment bytes usually added between fields to optimize field accesses.
@@ -2341,7 +2308,7 @@ defined for convenience to give more readable code when used with the endpoint m
 
 @ @<Func...@>=
 inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes)
-  ATTR_CONST ATTR_ALWAYS_INLINE;
+  ATTR_ALWAYS_INLINE;
 @ @c
 inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes)
 {
@@ -2798,7 +2765,7 @@ the selected microcontroller model.
 #define INTERNAL_SERIAL_START_ADDRESS  0x0E
 
 @ @<Func...@>=
-inline void USB_Device_GetSerialString(uint16_t* const UnicodeString) ATTR_NON_NULL_PTR_ARG(1);
+inline void USB_Device_GetSerialString(uint16_t* const UnicodeString);
 @ @c
 inline void USB_Device_GetSerialString(uint16_t* const UnicodeString)
 {
@@ -4394,7 +4361,7 @@ by re-initializing them using this function.
 
 @<Func...@>=
 inline void RingBuffer_InitBuffer(RingBuffer_t* Buffer, uint8_t* const DataPtr,
-                     const uint16_t Size) ATTR_NON_NULL_PTR_ARG(1) ATTR_NON_NULL_PTR_ARG(2);
+                     const uint16_t Size);
 @ @c
 inline void RingBuffer_InitBuffer(RingBuffer_t* Buffer,
                                         uint8_t* const DataPtr,
@@ -4430,7 +4397,7 @@ be performed on the buffer.
 Returns number of bytes currently stored in the buffer.
 
 @<Func...@>=
-inline uint16_t RingBuffer_GetCount(RingBuffer_t* const Buffer) ATTR_NON_NULL_PTR_ARG(1);
+inline uint16_t RingBuffer_GetCount(RingBuffer_t* const Buffer);
 @ @c
 inline uint16_t RingBuffer_GetCount(RingBuffer_t* const Buffer)
 {
@@ -4459,7 +4426,7 @@ be performed on the buffer when there is a single writer thread.
 Returns number of free bytes in the buffer.
 
 @<Func...@>=
-inline uint16_t RingBuffer_GetFreeCount(RingBuffer_t* const Buffer) ATTR_NON_NULL_PTR_ARG(1);
+inline uint16_t RingBuffer_GetFreeCount(RingBuffer_t* const Buffer);
 @ @c
 inline uint16_t RingBuffer_GetFreeCount(RingBuffer_t* const Buffer)
 {
@@ -4479,7 +4446,7 @@ to reduce the time spent in atomicity locks.
 Returns true if the buffer contains no free space, false otherwise.
 
 @<Func...@>=
-inline bool RingBuffer_IsEmpty(RingBuffer_t* const Buffer) ATTR_NON_NULL_PTR_ARG(1);
+inline bool RingBuffer_IsEmpty(RingBuffer_t* const Buffer);
 @ @c
 inline bool RingBuffer_IsEmpty(RingBuffer_t* const Buffer)
 {
@@ -4495,7 +4462,7 @@ buffer overrun.
 Returns true if the buffer contains no free space, false otherwise.
 
 @<Func...@>=
-inline bool RingBuffer_IsFull(RingBuffer_t* const Buffer) ATTR_NON_NULL_PTR_ARG(1);
+inline bool RingBuffer_IsFull(RingBuffer_t* const Buffer);
 @ @c
 inline bool RingBuffer_IsFull(RingBuffer_t* const Buffer)
 {
@@ -4512,7 +4479,7 @@ execution threads.
 |Data| is data element to insert into the buffer.
 
 @<Func...@>=
-inline void RingBuffer_Insert(RingBuffer_t* Buffer, const uint8_t Data) ATTR_NON_NULL_PTR_ARG(1);
+inline void RingBuffer_Insert(RingBuffer_t* Buffer, const uint8_t Data);
 @ @c
 inline void RingBuffer_Insert(RingBuffer_t* Buffer, const uint8_t Data)
 {
@@ -4543,7 +4510,7 @@ execution threads.
 Returns next data element stored in the buffer.
 
 @<Func...@>=
-inline uint8_t RingBuffer_Remove(RingBuffer_t* Buffer) ATTR_NON_NULL_PTR_ARG(1);
+inline uint8_t RingBuffer_Remove(RingBuffer_t* Buffer);
 @ @c
 inline uint8_t RingBuffer_Remove(RingBuffer_t* Buffer)
 {
@@ -4572,7 +4539,7 @@ inline uint8_t RingBuffer_Remove(RingBuffer_t* Buffer)
 Returns next data element stored in the buffer.
 
 @<Func...@>=
-inline uint8_t RingBuffer_Peek(RingBuffer_t* const Buffer) ATTR_NON_NULL_PTR_ARG(1);
+inline uint8_t RingBuffer_Peek(RingBuffer_t* const Buffer);
 @ @c
 inline uint8_t RingBuffer_Peek(RingBuffer_t* const Buffer)
 {
