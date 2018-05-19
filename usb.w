@@ -474,8 +474,13 @@ UCSR1B = 0;
 UCSR1C = 0;
 UCSR1A = 0;
 
-@ Using a CPU
-clock of 4 MHz, 9600 Bd can be achieved with an acceptable
+@ Setting |U2X1| bit will reduce the divisor of the baud rate divider from 16 to 8,
+effectively doubling the transfer rate. Note however that the Receiver will in this
+case only use half the number of samples (reduced from 16 to 8) for data sampling
+and clock recovery, and therefore a more accurate baud rate setting and system
+clock are required when this mode is used. For the Transmitter, there are no downsides.
+
+Using a CPU clock of 4 MHz, 9600 Bd can be achieved with an acceptable
 tolerance without setting \.{U2X} (prescaler 25), while 38400 Bd
 require \.{U2X} to be set (prescaler 12).
 
