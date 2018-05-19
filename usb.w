@@ -948,39 +948,39 @@ uint8_t Endpoint_WaitUntilReady(void);
 @ @c
 uint8_t Endpoint_WaitUntilReady(void)
 {
-	uint8_t  TimeoutMSRem = USB_STREAM_TIMEOUT_MS;
+  uint8_t  TimeoutMSRem = USB_STREAM_TIMEOUT_MS;
 
-	uint16_t PreviousFrameNumber = @[@<Get USB frame number@>@];
+  uint16_t PreviousFrameNumber = @[@<Get USB frame number@>@];
 
-	for (;;) {
-		if (@[@<Get endpoint direction@>@] == ENDPOINT_DIR_IN)	{
-			if (@<Endpoint is ready for an IN packet@>)
-			  return ENDPOINT_READYWAIT_NO_ERROR;
-		}
-		else {
-			if (@<Endpoint received an OUT packet@>)
-			  return ENDPOINT_READYWAIT_NO_ERROR;
-		}
+  while (1) {
+    if (@<Get endpoint direction@>
+                                   == ENDPOINT_DIR_IN) {
+      if (@<Endpoint is ready for an IN packet@>)
+        return ENDPOINT_READYWAIT_NO_ERROR;
+    }
+    else {
+      if (@<Endpoint received an OUT packet@>)
+        return ENDPOINT_READYWAIT_NO_ERROR;
+    }
 
-		uint8_t USB_DeviceState_LCL = USB_DeviceState;
+    uint8_t USB_DeviceState_LCL = USB_DeviceState;
 
-		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_READYWAIT_DEV_DISCONNECTED;
-		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
-		  return ENDPOINT_READYWAIT_BUS_SUSPENDED;
-		else if (@<Endpoint is istalled@>)
-		  return ENDPOINT_READYWAIT_ENDPOINT_STALLED;
+    if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
+      return ENDPOINT_READYWAIT_DEV_DISCONNECTED;
+    else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
+      return ENDPOINT_READYWAIT_BUS_SUSPENDED;
+    else if (@<Endpoint is istalled@>)
+      return ENDPOINT_READYWAIT_ENDPOINT_STALLED;
 
-		uint16_t CurrentFrameNumber = @[@<Get USB frame number@>@];
+    uint16_t CurrentFrameNumber = @[@<Get USB frame number@>@];
 
-		if (CurrentFrameNumber != PreviousFrameNumber)
-		{
-			PreviousFrameNumber = CurrentFrameNumber;
+    if (CurrentFrameNumber != PreviousFrameNumber) {
+      PreviousFrameNumber = CurrentFrameNumber;
 
-			if (!(TimeoutMSRem--))
-			  return ENDPOINT_READYWAIT_TIMEOUT;
-		}
-	}
+      if (!(TimeoutMSRem--))
+        return ENDPOINT_READYWAIT_TIMEOUT;
+    }
+  }
 }
 
 @ Returns the current USB frame number from the USB controller. Every millisecond the USB bus
@@ -1205,29 +1205,30 @@ uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 @ @c
 uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
-	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
- !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
-	  return ENDPOINT_DEV_DISCONNECTED;
+  if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
+      !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
+    return ENDPOINT_DEV_DISCONNECTED;
 
-	uint8_t ErrorCode;
+  uint8_t ErrorCode;
 
-	Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataINEndpoint.Address);
+  Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataINEndpoint.Address);
 
-	if (@[@<Number of bytes in endpoint@>@] == 0)
-	  return ENDPOINT_READYWAIT_NO_ERROR;
+  if (@<Number of bytes in endpoint@>
+                                      == 0)
+    return ENDPOINT_READYWAIT_NO_ERROR;
 
-	bool BankFull = !@<Read-write is allowed for endpoint@>;
+  bool BankFull = !@<Read-write is allowed for endpoint@>;
 
-	@<Clear IN packet on endpoint@>@;
+  @<Clear IN packet on endpoint@>@;
 
-	if (BankFull) {
-		if ((ErrorCode = Endpoint_WaitUntilReady()) != ENDPOINT_READYWAIT_NO_ERROR)
-		  return ErrorCode;
+  if (BankFull) {
+    if ((ErrorCode = Endpoint_WaitUntilReady()) != ENDPOINT_READYWAIT_NO_ERROR)
+      return ErrorCode;
 
-	  @<Clear IN packet on endpoint@>@;
-	}
+    @<Clear IN packet on endpoint@>@;
+  }
 
-	return ENDPOINT_READYWAIT_NO_ERROR;
+  return ENDPOINT_READYWAIT_NO_ERROR;
 }
 
 @ Reads a byte of data from the host. If no data is waiting to be read of if a USB host is
@@ -1253,23 +1254,24 @@ int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInf
 @ @c
 int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
-	if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
- !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
-	  return -1;
+  if ((USB_DeviceState != DEVICE_STATE_CONFIGURED) ||
+      !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
+    return -1;
 
-	int16_t ReceivedByte = -1;
+  int16_t ReceivedByte = -1;
 
-	Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataOUTEndpoint.Address);
+  Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataOUTEndpoint.Address);
 
-	if (@<Endpoint received an OUT packet@>) {
-		if (@<Number of bytes in endpoint@> != 0)
-		  ReceivedByte = Endpoint_Read_8();
+  if (@<Endpoint received an OUT packet@>) {
+    if (@<Number of bytes in endpoint@> != 0)
+      ReceivedByte = Endpoint_Read_8();
 
-		if (@[@<Number of bytes in endpoint@>@] == 0)
-    @<Clear OUT packet on endpoint@>@;
-	}
+    if (@<Number of bytes in endpoint@>
+                                        == 0)
+      @<Clear OUT packet on endpoint@>@;
+  }
 
-	return ReceivedByte;
+  return ReceivedByte;
 }
 
 @* USB device standard request management.
