@@ -1873,8 +1873,8 @@ int main(void)
   USB_Init();
 
 #if 0
-  TCCR0B = (1 << CS02); /* start the flush timer so that overflows occur rapidly to push received
-                           bytes to the USB interface */
+  TCCR0B = (1 << CS02); /* from arduino-usbserial; start the flush timer so that overflows occur
+                           rapidly to push received bytes to the USB interface */
 #endif
 
   RingBuffer_InitBuffer(&USBtoUSART_Buffer, USBtoUSART_Buffer_Data,
