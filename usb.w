@@ -1992,7 +1992,7 @@ to control various optimizer and code generation features of the compiler.
 in-lined under all circumstances.
 
 @<Macros@>=
-#define ATTR_ALWAYS_INLINE           __attribute__ ((always_inline))
+#define ALWAYS_INLINE           __attribute__ ((always_inline))
 
 @ Marks a variable or struct element for packing into the smallest space available, omitting any
 alignment bytes usually added between fields to optimize field accesses.
@@ -2076,7 +2076,7 @@ service routine interrupts from the USB controller.
 #define USB_INT_RXSTPI 6
 
 @ @<Func...@>=
-inline void USB_INT_Enable(const uint8_t Interrupt) ATTR_ALWAYS_INLINE;
+inline void USB_INT_Enable(const uint8_t Interrupt) ALWAYS_INLINE;
 
 @ @c
 inline void USB_INT_Enable(const uint8_t Interrupt)
@@ -2106,7 +2106,7 @@ inline void USB_INT_Enable(const uint8_t Interrupt)
 }
 
 @ @<Func...@>=
-inline void USB_INT_Disable(const uint8_t Interrupt) ATTR_ALWAYS_INLINE;
+inline void USB_INT_Disable(const uint8_t Interrupt) ALWAYS_INLINE;
 
 @ @c
 inline void USB_INT_Disable(const uint8_t Interrupt)
@@ -2134,7 +2134,7 @@ inline void USB_INT_Disable(const uint8_t Interrupt)
 }
 
 @ @<Func...@>=
-inline void USB_INT_Clear(const uint8_t Interrupt) ATTR_ALWAYS_INLINE;
+inline void USB_INT_Clear(const uint8_t Interrupt) ALWAYS_INLINE;
 
 @ @c
 inline void USB_INT_Clear(const uint8_t Interrupt)
@@ -2162,7 +2162,7 @@ inline void USB_INT_Clear(const uint8_t Interrupt)
 }
 
 @ @<Func...@>=
-inline bool USB_INT_IsEnabled(const uint8_t Interrupt) ATTR_ALWAYS_INLINE;
+inline bool USB_INT_IsEnabled(const uint8_t Interrupt) ALWAYS_INLINE;
 
 @ @c
 inline bool USB_INT_IsEnabled(const uint8_t Interrupt)
@@ -2185,7 +2185,7 @@ inline bool USB_INT_IsEnabled(const uint8_t Interrupt)
 }
 
 @ @<Func...@>=
-inline bool USB_INT_HasOccurred(const uint8_t Interrupt) ATTR_ALWAYS_INLINE;
+inline bool USB_INT_HasOccurred(const uint8_t Interrupt) ALWAYS_INLINE;
 
 @ @c
 inline bool USB_INT_HasOccurred(const uint8_t Interrupt)
@@ -2308,7 +2308,7 @@ defined for convenience to give more readable code when used with the endpoint m
 
 @ @<Func...@>=
 inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes)
-  ATTR_ALWAYS_INLINE;
+  ALWAYS_INLINE;
 @ @c
 inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes)
 {
@@ -2434,7 +2434,7 @@ Returns true if the configuration succeeded, false otherwise.
 inline bool Endpoint_ConfigureEndpoint(const uint8_t Address,
                                              const uint8_t Type,
                                              const uint16_t Size,
-                                             const uint8_t Banks) ATTR_ALWAYS_INLINE;
+                                             const uint8_t Banks) ALWAYS_INLINE;
 @ @c
 inline bool Endpoint_ConfigureEndpoint(const uint8_t Address,
                                               const uint8_t Type,
@@ -2484,7 +2484,7 @@ operate on the currently selected endpoint.
 |Address| is endpoint address to select.
 
 @<Func...@>=
-inline void Endpoint_SelectEndpoint(const uint8_t Address) ATTR_ALWAYS_INLINE;
+inline void Endpoint_SelectEndpoint(const uint8_t Address) ALWAYS_INLINE;
 @ @c
 inline void Endpoint_SelectEndpoint(const uint8_t Address)
 {
@@ -2497,7 +2497,7 @@ controller's data In and Out pointers to the bank's contents.
 |Address| is endpoint address whose FIFO buffers are to be reset.
 
 @<Func...@>=
-inline void Endpoint_ResetEndpoint(const uint8_t Address) ATTR_ALWAYS_INLINE;
+inline void Endpoint_ResetEndpoint(const uint8_t Address) ALWAYS_INLINE;
 @ @c
 inline void Endpoint_ResetEndpoint(const uint8_t Address)
 {
@@ -2582,7 +2582,7 @@ UECONX |= (1 << STALLRQC);
 for OUT direction endpoints.
 
 @<Func...@>=
-inline uint8_t Endpoint_Read_8(void) ATTR_ALWAYS_INLINE;
+inline uint8_t Endpoint_Read_8(void) ALWAYS_INLINE;
 @ @c
 inline uint8_t Endpoint_Read_8(void)
 {
@@ -2593,7 +2593,7 @@ inline uint8_t Endpoint_Read_8(void)
 for IN direction endpoints.
 
 @<Func...@>=
-inline void Endpoint_Write_8(const uint8_t Data) ATTR_ALWAYS_INLINE;
+inline void Endpoint_Write_8(const uint8_t Data) ALWAYS_INLINE;
 @ @c
 inline void Endpoint_Write_8(const uint8_t Data)
 {
@@ -2604,7 +2604,7 @@ inline void Endpoint_Write_8(const uint8_t Data)
 for OUT direction endpoints.
 
 @<Func...@>=
-inline void Endpoint_Discard_8(void) ATTR_ALWAYS_INLINE;
+inline void Endpoint_Discard_8(void) ALWAYS_INLINE;
 @ @c
 inline void Endpoint_Discard_8(void)
 {
@@ -2615,7 +2615,7 @@ inline void Endpoint_Discard_8(void)
 in little endian format, for IN direction endpoints.
 
 @<Func...@>=
-inline void Endpoint_Write_16_LE(const uint16_t Data) ATTR_ALWAYS_INLINE;
+inline void Endpoint_Write_16_LE(const uint16_t Data) ALWAYS_INLINE;
 @ @c
 inline void Endpoint_Write_16_LE(const uint16_t Data)
 {
@@ -2627,7 +2627,7 @@ inline void Endpoint_Write_16_LE(const uint16_t Data)
 in little endian format, for OUT direction endpoints.
 
 @<Func...@>=
-inline uint32_t Endpoint_Read_32_LE(void) ATTR_ALWAYS_INLINE;
+inline uint32_t Endpoint_Read_32_LE(void) ALWAYS_INLINE;
 @ @c
 inline uint32_t Endpoint_Read_32_LE(void)
 {
@@ -2649,7 +2649,7 @@ inline uint32_t Endpoint_Read_32_LE(void)
 in little endian format, for IN direction endpoints.
 
 @<Func...@>=
-inline void Endpoint_Write_32_LE(const uint32_t Data) ATTR_ALWAYS_INLINE;
+inline void Endpoint_Write_32_LE(const uint32_t Data) ALWAYS_INLINE;
 @ @c
 inline void Endpoint_Write_32_LE(const uint32_t Data)
 {
