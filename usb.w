@@ -2076,7 +2076,7 @@ service routine interrupts from the USB controller.
 #define USB_INT_RXSTPI 6
 
 @ @<Func...@>=
-inline void USB_INT_Enable(const uint8_t Interrupt) ALWAYS_INLINE;
+inline void USB_INT_Enable(const uint8_t Interrupt) @=ALWAYS_INLINE@>;
 
 @ @c
 inline void USB_INT_Enable(const uint8_t Interrupt)
@@ -4045,7 +4045,7 @@ process begins.
 
 @<Global...@>=
 const USB_Descriptor_Device_t
-@=PROGMEM@>@t\hskip3pt@>
+@=PROGMEM@>@,@,
 DeviceDescriptor = {@|
   @<Initialize header of USB device descriptor@>, @|
   VERSION_BCD(1,1,0), @|
@@ -4085,7 +4085,7 @@ a configuration so that the host may correctly communicate with the USB device.
 
 @<Global...@>=
 const USB_Descriptor_Config_t
-@=PROGMEM@>@t\hskip3pt@>
+@=PROGMEM@>@,@,
 ConfigurationDescriptor = {@|
   @<Initialize header of standard Configuration Descriptor@>,@|
   @<Initialize CDC Command Interface@>,@|
@@ -4232,7 +4232,7 @@ to indicate that the English language is supported by the device in its string d
 
 @<Global...@>=
 const USB_Descriptor_String_t
-@=PROGMEM@>@t\hskip3pt@>
+@=PROGMEM@>@,@,
 LanguageString = {
   {
     sizeof (USB_Descriptor_Header_t) + sizeof ((uint16_t){LANGUAGE_ID_ENG}),
@@ -4249,7 +4249,7 @@ Descriptor.
 
 @<Global...@>=
 const USB_Descriptor_String_t
-@=PROGMEM@>@t\hskip3pt@>
+@=PROGMEM@>@,@,
 ManufacturerString = USB_STRING_DESCRIPTOR(L"Dean Camera");
 
 @ Product descriptor string. This is a Unicode string containing the product's details
@@ -4260,7 +4260,7 @@ Descriptor.
 
 @<Global...@>=
 const USB_Descriptor_String_t
-@=PROGMEM@>@t\hskip3pt@>
+@=PROGMEM@>@,@,
 ProductString = USB_STRING_DESCRIPTOR(L"LUFA USB-RS232 Adapter");
 
 @** RingBuffer.
