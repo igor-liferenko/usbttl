@@ -659,6 +659,7 @@ void USB_INT_ClearAllInterrupts(void)
 	UDINT  = 0;
 }
 
+@ @c
 ISR(USB_GEN_vect, ISR_BLOCK)
 {
   if (USB_INT_HasOccurred(USB_INT_VBUSTI) && USB_INT_IsEnabled(USB_INT_VBUSTI)) {
@@ -708,8 +709,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
         DEVICE_STATE_ADDRESSED : DEVICE_STATE_POWERED;
   }
 
-	if (USB_INT_HasOccurred(USB_INT_EORSTI) && USB_INT_IsEnabled(USB_INT_EORSTI))
-	{
+	if (USB_INT_HasOccurred(USB_INT_EORSTI) && USB_INT_IsEnabled(USB_INT_EORSTI)) {
 		USB_INT_Clear(USB_INT_EORSTI);
 
 		USB_DeviceState                = DEVICE_STATE_DEFAULT;
@@ -726,6 +726,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 	}
 }
 
+@ @c
 ISR(USB_COM_vect, ISR_BLOCK)
 {
 	uint8_t PrevSelectedEndpoint = @[@<Get current endpoint@>@];
@@ -2076,10 +2077,7 @@ service routine interrupts from the USB controller.
 #define USB_INT_RXSTPI 6
 
 @ @<Func...@>=
-inline void USB_INT_Enable(const uint8_t Interrupt) @, @=ALWAYS_INLINE@>;
-
-@ @c
-inline void USB_INT_Enable(const uint8_t Interrupt)
+inline ALWAYS_INLINE void USB_INT_Enable(const uint8_t Interrupt)
 {
 	switch (Interrupt)
 	{
