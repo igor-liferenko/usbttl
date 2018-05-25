@@ -226,6 +226,7 @@ handshaking. If the data rate is low or data loss is acceptable then flow contro
 @<Macros@>@;
 @<Type definitions@>@;
 @<Function prototypes@>@;
+@<Inline functions@>@;
 @<Global variables@>@;
 @<Main program loop@>@;
 
@@ -2076,7 +2077,7 @@ service routine interrupts from the USB controller.
 #define USB_INT_EORSTI 4
 #define USB_INT_RXSTPI 6
 
-@ @<Func...@>=
+@ @<Inline...@>=
 inline
 @,@,@=ALWAYS_INLINE@>
 void USB_INT_Enable(const uint8_t Interrupt)
@@ -2105,7 +2106,7 @@ void USB_INT_Enable(const uint8_t Interrupt)
 	}
 }
 
-@ @<Func...@>=
+@ @<Inline...@>=
 inline
 @,@,@=ALWAYS_INLINE@>
 void USB_INT_Disable(const uint8_t Interrupt)
@@ -2132,7 +2133,7 @@ void USB_INT_Disable(const uint8_t Interrupt)
 	}
 }
 
-@ @<Func...@>=
+@ @<Inline...@>=
 inline
 @,@,@=ALWAYS_INLINE@>
 void USB_INT_Clear(const uint8_t Interrupt)
@@ -2159,7 +2160,7 @@ void USB_INT_Clear(const uint8_t Interrupt)
 	}
 }
 
-@ @<Func...@>=
+@ @<Inline...@>=
 inline
 @,@,@=ALWAYS_INLINE@>
 bool USB_INT_IsEnabled(const uint8_t Interrupt)
@@ -2181,7 +2182,7 @@ bool USB_INT_IsEnabled(const uint8_t Interrupt)
 	}
 }
 
-@ @<Func...@>=
+@ @<Inline...@>=
 inline
 @,@,@=ALWAYS_INLINE@>
 bool USB_INT_HasOccurred(const uint8_t Interrupt)
@@ -2302,7 +2303,7 @@ defined for convenience to give more readable code when used with the endpoint m
 @<Macros@>=
 #define ENDPOINT_CONTROLEP                      0
 
-@ @<Func...@>=
+@ @<Inline...@>=
 inline
 @,@,@=ALWAYS_INLINE@>
 uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes)
@@ -2425,7 +2426,7 @@ failure, the endpoint which failed to reconfigure correctly will be selected.
 
 Returns true if the configuration succeeded, false otherwise.
 
-@<Func...@>=
+@<Inline...@>=
 inline
 @,@,@=ALWAYS_INLINE@>
 bool Endpoint_ConfigureEndpoint(const uint8_t Address,
@@ -2475,7 +2476,7 @@ operate on the currently selected endpoint.
 
 |Address| is endpoint address to select.
 
-@<Func...@>=
+@<Inline...@>=
 inline
 @,@,@=ALWAYS_INLINE@>
 void Endpoint_SelectEndpoint(const uint8_t Address)
@@ -2488,7 +2489,7 @@ controller's data In and Out pointers to the bank's contents.
 
 |Address| is endpoint address whose FIFO buffers are to be reset.
 
-@<Func...@>=
+@<Inline...@>=
 inline
 @,@,@=ALWAYS_INLINE@>
 void Endpoint_ResetEndpoint(const uint8_t Address)
@@ -2573,7 +2574,7 @@ UECONX |= (1 << STALLRQC);
 @ Reads next byte from the currently selected endpoint's bank (i.e., FIFO buffer),
 for OUT direction endpoints.
 
-@<Func...@>=
+@<Inline...@>=
 inline
 @,@,@=ALWAYS_INLINE@>
 uint8_t Endpoint_Read_8(void)
@@ -2584,7 +2585,7 @@ uint8_t Endpoint_Read_8(void)
 @ Writes one byte to the currently selected endpoint's bank (i.e., FIFO buffer),
 for IN direction endpoints.
 
-@<Func...@>=
+@<Inline...@>=
 inline
 @,@,@=ALWAYS_INLINE@>
 void Endpoint_Write_8(const uint8_t Data)
@@ -2595,7 +2596,7 @@ void Endpoint_Write_8(const uint8_t Data)
 @ Discards one byte from the currently selected endpoint's bank (i.e., FIFO buffer),
 for OUT direction endpoints.
 
-@<Func...@>=
+@<Inline...@>=
 inline
 @,@,@=ALWAYS_INLINE@>
 void Endpoint_Discard_8(void)
@@ -2606,7 +2607,7 @@ void Endpoint_Discard_8(void)
 @ Writes two bytes to the currently selected endpoint's bank (i.e., FIFO buffer)
 in little endian format, for IN direction endpoints.
 
-@<Func...@>=
+@<Inline...@>=
 inline
 @,@,@=ALWAYS_INLINE@>
 void Endpoint_Write_16_LE(const uint16_t Data)
@@ -2618,7 +2619,7 @@ void Endpoint_Write_16_LE(const uint16_t Data)
 @ Reads next four bytes from the currently selected endpoint's bank (i.e., FIFO buffer)
 in little endian format, for OUT direction endpoints.
 
-@<Func...@>=
+@<Inline...@>=
 inline
 @,@,@=ALWAYS_INLINE@>
 uint32_t Endpoint_Read_32_LE(void)
@@ -2640,7 +2641,7 @@ uint32_t Endpoint_Read_32_LE(void)
 @ Writes four bytes to the currently selected endpoint's bank (i.e., FIFO buffer)
 in little endian format, for IN direction endpoints.
 
-@<Func...@>=
+@<Inline...@>=
 inline
 @,@,@=ALWAYS_INLINE@>
 void Endpoint_Write_32_LE(const uint32_t Data)
