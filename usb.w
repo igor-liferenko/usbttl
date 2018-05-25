@@ -2079,7 +2079,7 @@ service routine interrupts from the USB controller.
 
 @ @<Inline...@>=
 inline
-@,@,@=ALWAYS_INLINE@>
+@,@=ALWAYS_INLINE@>
 void USB_INT_Enable(const uint8_t Interrupt)
 {
 	switch (Interrupt)
@@ -2108,7 +2108,7 @@ void USB_INT_Enable(const uint8_t Interrupt)
 
 @ @<Inline...@>=
 inline
-@,@,@=ALWAYS_INLINE@>
+@,@=ALWAYS_INLINE@>
 void USB_INT_Disable(const uint8_t Interrupt)
 {
 	switch (Interrupt)
@@ -2135,7 +2135,7 @@ void USB_INT_Disable(const uint8_t Interrupt)
 
 @ @<Inline...@>=
 inline
-@,@,@=ALWAYS_INLINE@>
+@,@=ALWAYS_INLINE@>
 void USB_INT_Clear(const uint8_t Interrupt)
 {
 	switch (Interrupt)
@@ -2162,7 +2162,7 @@ void USB_INT_Clear(const uint8_t Interrupt)
 
 @ @<Inline...@>=
 inline
-@,@,@=ALWAYS_INLINE@>
+@,@=ALWAYS_INLINE@>
 bool USB_INT_IsEnabled(const uint8_t Interrupt)
 {
 	switch (Interrupt)
@@ -2184,7 +2184,7 @@ bool USB_INT_IsEnabled(const uint8_t Interrupt)
 
 @ @<Inline...@>=
 inline
-@,@,@=ALWAYS_INLINE@>
+@,@=ALWAYS_INLINE@>
 bool USB_INT_HasOccurred(const uint8_t Interrupt)
 {
 	switch (Interrupt)
@@ -2305,7 +2305,7 @@ defined for convenience to give more readable code when used with the endpoint m
 
 @ @<Inline...@>=
 inline
-@,@,@=ALWAYS_INLINE@>
+@,@=ALWAYS_INLINE@>
 uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes)
 {
 	uint8_t  MaskVal    = 0;
@@ -2428,7 +2428,7 @@ Returns true if the configuration succeeded, false otherwise.
 
 @<Inline...@>=
 inline
-@,@,@=ALWAYS_INLINE@>
+@,@=ALWAYS_INLINE@>
 bool Endpoint_ConfigureEndpoint(const uint8_t Address,
                                               const uint8_t Type,
                                               const uint16_t Size,
@@ -2478,7 +2478,7 @@ operate on the currently selected endpoint.
 
 @<Inline...@>=
 inline
-@,@,@=ALWAYS_INLINE@>
+@,@=ALWAYS_INLINE@>
 void Endpoint_SelectEndpoint(const uint8_t Address)
 {
 		UENUM = (Address & ENDPOINT_EPNUM_MASK);
@@ -2491,7 +2491,7 @@ controller's data In and Out pointers to the bank's contents.
 
 @<Inline...@>=
 inline
-@,@,@=ALWAYS_INLINE@>
+@,@=ALWAYS_INLINE@>
 void Endpoint_ResetEndpoint(const uint8_t Address)
 {
 	UERST = (1 << (Address & ENDPOINT_EPNUM_MASK));
@@ -2576,7 +2576,7 @@ for OUT direction endpoints.
 
 @<Inline...@>=
 inline
-@,@,@=ALWAYS_INLINE@>
+@,@=ALWAYS_INLINE@>
 uint8_t Endpoint_Read_8(void)
 {
   return UEDATX;
@@ -2587,7 +2587,7 @@ for IN direction endpoints.
 
 @<Inline...@>=
 inline
-@,@,@=ALWAYS_INLINE@>
+@,@=ALWAYS_INLINE@>
 void Endpoint_Write_8(const uint8_t Data)
 {
   UEDATX = Data;
@@ -2598,7 +2598,7 @@ for OUT direction endpoints.
 
 @<Inline...@>=
 inline
-@,@,@=ALWAYS_INLINE@>
+@,@=ALWAYS_INLINE@>
 void Endpoint_Discard_8(void)
 {
   (void) UEDATX;
@@ -2609,7 +2609,7 @@ in little endian format, for IN direction endpoints.
 
 @<Inline...@>=
 inline
-@,@,@=ALWAYS_INLINE@>
+@,@=ALWAYS_INLINE@>
 void Endpoint_Write_16_LE(const uint16_t Data)
 {
 	UEDATX = (Data & 0xFF);
@@ -2621,7 +2621,7 @@ in little endian format, for OUT direction endpoints.
 
 @<Inline...@>=
 inline
-@,@,@=ALWAYS_INLINE@>
+@,@=ALWAYS_INLINE@>
 uint32_t Endpoint_Read_32_LE(void)
 {
 	union
@@ -2643,7 +2643,7 @@ in little endian format, for IN direction endpoints.
 
 @<Inline...@>=
 inline
-@,@,@=ALWAYS_INLINE@>
+@,@=ALWAYS_INLINE@>
 void Endpoint_Write_32_LE(const uint32_t Data)
 {
 	UEDATX = (Data &  0xFF);
