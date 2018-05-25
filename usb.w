@@ -269,9 +269,7 @@ while (BytesToSend--) {
     transmission error occurred@>@;
 }
 
-@
-
-@<Try to send the next byte of data to the host, abort if there is an error without
+@ @<Try to send the next byte of data to the host, abort if there is an error without
     dequeuing@>=
 if (CDC_Device_SendByte(&VirtualSerial_CDC_Interface,
     RingBuffer_Peek(&USARTtoUSB_Buffer)) != ENDPOINT_READYWAIT_NO_ERROR) break;
@@ -1185,9 +1183,7 @@ Returns a \.{ENDPOINT\_READYWAIT\_*} value.
 uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                             const uint8_t Data);
 
-@
-
-@c
+@ @c
 uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
                             const uint8_t Data)
 {
@@ -1841,9 +1837,7 @@ This event fires after the value of |USB_Device_ConfigurationNumber| has been ch
 @<Func...@>=
 void EVENT_USB_Device_ConfigurationChanged(void);
 
-@
-
-@c
+@ @c
 void EVENT_USB_Device_ConfigurationChanged(void)
 {
   if (CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface)) { /* USB interface is ready */
@@ -4133,9 +4127,7 @@ typedef struct {
   USB_CONFIG_POWER_MA(100)@/
 }
 
-@
-
-@<Initialize |CDC_CCI_Interface|@>= {@|
+@ @<Initialize |CDC_CCI_Interface|@>= {@|
   {@, sizeof (USB_Descriptor_Interface_t), DTYPE_INTERFACE @,},@|
   INTERFACE_ID_CDC_CCI,@|
   0,@|
@@ -4146,17 +4138,13 @@ typedef struct {
   NO_DESCRIPTOR @/
 }
 
-@
-
-@<Initialize |CDC_Functional_Header|@>= {@|
+@ @<Initialize |CDC_Functional_Header|@>= {@|
   {@, sizeof (USB_CDC_Descriptor_Func_Header_t), DTYPE_CS_INTERFACE @,},@|
   CDC_DSUBTYPE_CS_INTERFACE_HEADER,@|
   VERSION_BCD(1,1,0) @/
 }
 
-@
-
-@<Initialize |CDC_Functional_ACM|@>= {@|
+@ @<Initialize |CDC_Functional_ACM|@>= {@|
   {@, sizeof (USB_CDC_Descriptor_Func_ACM_t), DTYPE_CS_INTERFACE @,},@|
   CDC_DSUBTYPE_CS_INTERFACE_ACM,@|
   0x06 @/
@@ -4172,9 +4160,7 @@ typedef struct {
   INTERFACE_ID_CDC_DCI @/
 }
 
-@
-
-@<Initialize |CDC_Notification_Endpoint|@>= {@|
+@ @<Initialize |CDC_Notification_Endpoint|@>= {@|
   {@, sizeof (USB_Descriptor_Endpoint_t), DTYPE_ENDPOINT @,},@|
   CDC_NOTIFICATION_EPADDR,@|
   (EP_TYPE_INTERRUPT | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),@|
@@ -4182,9 +4168,7 @@ typedef struct {
   0xFF @/
 }
 
-@
-
-@<Initialize |CDC_DCI_Interface|@>= {@|
+@ @<Initialize |CDC_DCI_Interface|@>= {@|
   {@, sizeof (USB_Descriptor_Interface_t), DTYPE_INTERFACE @,},@|
   INTERFACE_ID_CDC_DCI,@|
   0,@|
