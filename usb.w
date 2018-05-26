@@ -1099,10 +1099,14 @@ are available in the |ControlLineStates.HostToDevice| value inside the CDC inter
 structure passed as a parameter, set as a mask of \.{CDC\_CONTROL\_LINE\_OUT\_*} masks.
 
 @<Set |DTR| pin@>=
-if (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR)
-  PORTD &= ~(1 << PD5); /* |DTR| pin low */
-else
-  PORTD |= 1 << PD5; /* |DTR| pin high */
+if (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR) {
+  PORTE &= ~(1 << PE6); /* |DTR| pin low */
+  PORTD |= 1 << PD5; /* led off */
+}
+else {
+  PORTE |= 1 << PE6; /* |DTR| pin high */
+  PORTD &= ~(1 << PD5); /* led on */
+}
 
 @ Configures the endpoints of a given CDC interface, ready for use. This should be linked to
 the library
@@ -1854,8 +1858,9 @@ It needs to be called together with the main USB maintenance routine |USB_Device
 @<Main program loop@>=
 int main(void)
 {
-  DDRD |= 1 << PD5;
-  PORTD |= 1 << PD5; /* |DTR| */
+  DDRE |= 1 << PE6;
+  PORTE |= 1 << PE6; /* |DTR| pin high */
+  DDRD |= 1 << PD5; /* led on */
 
   DDRB |= 1 << PB0;
 
