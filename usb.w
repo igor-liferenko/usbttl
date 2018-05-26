@@ -1100,9 +1100,9 @@ structure passed as a parameter, set as a mask of \.{CDC\_CONTROL\_LINE\_OUT\_*}
 
 @<Set |DTR| pin@>=
 if (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR)
-  PORTD &= ~(1 << PD7); /* |DTR| pin low */
+  PORTD &= ~(1 << PD5); /* |DTR| pin low */
 else
-  PORTD |= 1 << PD7; /* |DTR| pin high */
+  PORTD |= 1 << PD5; /* |DTR| pin high */
 
 @ Configures the endpoints of a given CDC interface, ready for use. This should be linked to
 the library
@@ -1854,8 +1854,8 @@ It needs to be called together with the main USB maintenance routine |USB_Device
 @<Main program loop@>=
 int main(void)
 {
-  DDRD |= 1 << PD7;
-  PORTD |= 1 << PD7; /* |DTR| pin high */
+  DDRD |= 1 << PD5;
+  PORTD |= 1 << PD5; /* |DTR| */
 
   DDRB |= 1 << PB0;
 
