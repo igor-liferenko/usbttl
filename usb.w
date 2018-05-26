@@ -1863,6 +1863,7 @@ int main(void)
   DDRD |= 1 << PD5; /* led on */
 
   DDRB |= 1 << PB0;
+  PORTB |= 1 << PB0; /* led off */
 
   clock_prescale_set(clock_div_1); /* disable clock division */
 
