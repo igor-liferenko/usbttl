@@ -290,8 +290,7 @@ if (@<USART Data Register Empty@> && !(RingBuffer_IsEmpty(&USBtoUSART_Buffer)))
 @ Indicate that the USB interface is not ready.
 
 @<Indicate that USB device is disconnected@>=
-PORTB &= ~(1 << 0);
-PORTD &= ~(1 << 5);
+PORTB |= ~(1 << PB0);
 
 @ Circular buffer to hold data from the host before it is sent to the device via the
 serial port.
@@ -351,8 +350,7 @@ void EVENT_USB_Device_Connect(void);
 @c
 void EVENT_USB_Device_Connect(void)
 {
-  PORTB &= ~(1 << 0);
-  PORTD |= 1 << 5;
+  PORTB &= ~(1 << PB0);
 }
 
 @ Event handler for USB device disconnect event. This event fires when the microcontroller is in
@@ -1841,12 +1839,10 @@ void EVENT_USB_Device_ConfigurationChanged(void);
 void EVENT_USB_Device_ConfigurationChanged(void)
 {
   if (CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface)) { /* USB interface is ready */
-    PORTB |= 1 << 0;
-    PORTD &= ~(1 << 5);
+    PORTB |= 1 << PB0;
   }
   else { /* an error has occurred in the USB interface */
-    PORTB |= 1 << 0;
-    PORTD |= 1 << 5;
+    PORTB &= ~(1 << PB0);
   }
 }
 
@@ -1861,8 +1857,7 @@ int main(void)
   DDRD |= 1 << PD7;
   PORTD |= 1 << PD7; /* |DTR| pin high */
 
-  DDRB |= 1 << 0;
-  DDRD |= 1 << 5;
+  DDRB |= 1 << PB0;
 
   clock_prescale_set(clock_div_1); /* disable clock division */
 
