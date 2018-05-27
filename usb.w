@@ -290,7 +290,7 @@ if (@<USART Data Register Empty@> && !(RingBuffer_IsEmpty(&USBtoUSART_Buffer)))
 @ Indicate that the USB interface is not ready.
 
 @<Indicate that USB device is disconnected@>=
-PORTD |= 1 << PD5;
+PORTD &= ~(1 << PD5);
 
 @ Circular buffer to hold data from the host before it is sent to the device via the
 serial port.
@@ -350,7 +350,7 @@ void EVENT_USB_Device_Connect(void);
 @c
 void EVENT_USB_Device_Connect(void)
 {
-  PORTD &= ~(1 << PD5);
+  PORTD |= 1 << PD5;
 }
 
 @ Event handler for USB device disconnect event. This event fires when the microcontroller is in
@@ -1101,11 +1101,11 @@ structure passed as a parameter, set as a mask of \.{CDC\_CONTROL\_LINE\_OUT\_*}
 @<Set |DTR| pin@>=
 if (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR) {
   PORTE &= ~(1 << PE6); /* |DTR| pin low */
-  PORTB |= 1 << PB0; /* led off */
+  PORTB &= ~(1 << PB0); /* led off */
 }
 else {
   PORTE |= 1 << PE6; /* |DTR| pin high */
-  PORTB &= ~(1 << PB0); /* led on */
+  PORTB |= 1 << PB0; /* led on */
 }
 
 @ Configures the endpoints of a given CDC interface, ready for use. This should be linked to
@@ -1843,10 +1843,10 @@ void EVENT_USB_Device_ConfigurationChanged(void);
 void EVENT_USB_Device_ConfigurationChanged(void)
 {
   if (CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface)) { /* USB interface is ready */
-    PORTD |= 1 << PD5;
+    PORTD &= ~(1 << PD5);
   }
   else { /* an error has occurred in the USB interface */
-    PORTD &= ~(1 << PD5);
+    PORTD |= 1 << PD5;
   }
 }
 
@@ -1860,10 +1860,10 @@ int main(void)
 {
   DDRE |= 1 << PE6;
   PORTE |= 1 << PE6; /* |DTR| pin high */
-  DDRB |= 1 << PB0; /* led on by default */
+  DDRB |= 1 << PB0;
+  PORTB |= 1 << PB0; /* led on */
 
-  PORTD |= 1 << PD5; /* led off */
-  DDRD |= 1 << PD5;
+  DDRD |= 1 << PD5; /* led off by default */
 
   clock_prescale_set(clock_div_1); /* disable clock division */
 
