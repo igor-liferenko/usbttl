@@ -290,7 +290,7 @@ if (@<USART Data Register Empty@> && !(RingBuffer_IsEmpty(&USBtoUSART_Buffer)))
 @ Indicate that the USB interface is not ready.
 
 @<Indicate that USB device is disconnected@>=
-PORTD |= ~(1 << PD5);
+PORTD |= 1 << PD5;
 
 @ Circular buffer to hold data from the host before it is sent to the device via the
 serial port.
