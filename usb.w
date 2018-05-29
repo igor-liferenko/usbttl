@@ -923,8 +923,7 @@ void Endpoint_ClearStatusStage(void);
 @ @c
 void Endpoint_ClearStatusStage(void)
 {
-	if (USB_ControlRequest.bmRequestType & REQDIR_DEVICETOHOST)
-	{
+	if (USB_ControlRequest.bmRequestType & REQDIR_DEVICETOHOST) {
 		while (!@<Endpoint received an OUT packet@>) {
 			if (USB_DeviceState == DEVICE_STATE_UNATTACHED)
 			  return;
@@ -932,10 +931,8 @@ void Endpoint_ClearStatusStage(void)
 
 		@<Clear OUT packet on endpoint@>@;
 	}
-	else
-	{
-		while (!@<Endpoint is ready for an IN packet@>)
-		{
+	else {
+		while (!@<Endpoint is ready for an IN packet@>) {
 			if (USB_DeviceState == DEVICE_STATE_UNATTACHED)
 			  return;
 		}
