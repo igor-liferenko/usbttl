@@ -2230,16 +2230,6 @@ the USB interface.
 
 @*1 USB Controller Option Masks.
 
-@ Automatic PLL control option mask for |USB_Init|. This indicates to the library that
-the library should
-take full responsibility for controlling the AVR's PLL (used to generate the high
-frequency clock
-that the USB controller requires) and ensuring that it is locked at the correct frequency
-for USB operations.
-
-@<Macros@>=
-#define USB_OPT_AUTO_PLL                   (0 << 2)
-
 @ Constant for the maximum software timeout period of the USB data stream transfer functions
 (both control and standard). If the next packet of a stream
 is not received or acknowledged within this time period, the stream function will fail.
