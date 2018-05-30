@@ -2285,22 +2285,19 @@ bool Endpoint_ConfigureEndpoint_Prv(const uint8_t Number,
                                     const uint8_t UECFG0XData,
                                     const uint8_t UECFG1XData)
 {
-        for (uint8_t EPNum = Number; EPNum < ENDPOINT_TOTAL_ENDPOINTS; EPNum++)
-        {
+        for (uint8_t EPNum = Number; EPNum < ENDPOINT_TOTAL_ENDPOINTS; EPNum++) {
                 uint8_t UECFG0XTemp;
                 uint8_t UECFG1XTemp;
                 uint8_t UEIENXTemp;
 
                 Endpoint_SelectEndpoint(EPNum);
 
-                if (EPNum == Number)
-                {
+                if (EPNum == Number) {
                         UECFG0XTemp = UECFG0XData;
                         UECFG1XTemp = UECFG1XData;
                         UEIENXTemp  = 0;
                 }
-                else
-                {
+                else {
                         UECFG0XTemp = UECFG0X;
                         UECFG1XTemp = UECFG1X;
                         UEIENXTemp  = UEIENX;
