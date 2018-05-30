@@ -534,10 +534,6 @@ type exists, such as the case of string descriptors). The type may be one of
 the standard types defined in the |DescriptorTypes_t| enum, or may be a
 class-specific descriptor type value.
 
-|wIndex| -- The language ID of the string to return if the
-|wValue| type indicates |DTYPE_STRING|, otherwise zero for standard
-descriptors, or as defined in a class-specific standards.
-
 |DescriptorAddress| -- pointer to the descriptor in memory. This should be
 set by the routine to the address of the descriptor.
 
@@ -548,7 +544,6 @@ Returns size in bytes of the descriptor if it exists, zero or |NO_DESCRIPTOR| ot
 
 @<Func...@>=
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
-                                    const uint16_t wIndex,
                                     const void** const DescriptorAddress);
 
 @ @dSTRING_ID_LANGUAGE 0 /* Supported Languages string descriptor
@@ -558,7 +553,6 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 
 @c
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
-                                    const uint16_t wIndex,
                                     const void** const DescriptorAddress)
 {
 	const uint8_t  DescriptorType   = (wValue >> 8);
@@ -994,7 +988,7 @@ uint8_t Endpoint_WaitUntilReady(void)
       return ENDPOINT_READYWAIT_DEV_DISCONNECTED;
     else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
       return ENDPOINT_READYWAIT_BUS_SUSPENDED;
-    else if (@<Endpoint is istalled@>)
+    else if (@<Endpoint is stalled@>)
       return ENDPOINT_READYWAIT_ENDPOINT_STALLED;
 
     uint16_t CurrentFrameNumber = @[@<Get USB frame number@>@];
@@ -1394,7 +1388,7 @@ void USB_Device_SetConfiguration(void)
 
   @<Clear a received SETUP packet on endpoint@>@;
 
-  USB_Device_ConfigurationNumber = (uint8_t)USB_ControlRequest.wValue;
+  USB_Device_ConfigurationNumber = (uint8_t) USB_ControlRequest.wValue;
 
   Endpoint_ClearStatusStage();
 
@@ -1460,7 +1454,7 @@ void USB_Device_GetDescriptor(void)
 	}
 
 	if ((DescriptorSize = CALLBACK_USB_GetDescriptor(USB_ControlRequest.wValue,
-             USB_ControlRequest.wIndex, &DescriptorPointer)) == NO_DESCRIPTOR)
+             &DescriptorPointer)) == NO_DESCRIPTOR)
 		return;
 
   @<Clear a received SETUP packet on endpoint@>@;
@@ -1491,15 +1485,14 @@ void USB_Device_GetStatus(void)
 		}
 		case (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_ENDPOINT):
 		{
-			uint8_t EndpointIndex =
- ((uint8_t)USB_ControlRequest.wIndex & ENDPOINT_EPNUM_MASK);
+			uint8_t endpoint_index = USB_ControlRequest.wIndex;
 
-			if (EndpointIndex >= ENDPOINT_TOTAL_ENDPOINTS)
+			if (endpoint_index >= ENDPOINT_TOTAL_ENDPOINTS)
 				return;
 
-			Endpoint_SelectEndpoint(EndpointIndex);
+			Endpoint_SelectEndpoint(endpoint_index);
 
-			CurrentStatus = @[@<Endpoint is istalled@>@];
+			CurrentStatus = @[@<Endpoint is stalled@>@];
 
 			Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
 
@@ -1527,7 +1520,7 @@ void USB_Device_ClearSetFeature(void)
   {
     case REQREC_DEVICE:
     {
-	if ((uint8_t)USB_ControlRequest.wValue == FEATURE_SEL_DEVICE_REMOTE_WAKEUP) {
+	if ((uint8_t) USB_ControlRequest.wValue == FEATURE_SEL_DEVICE_REMOTE_WAKEUP) {
 	  USB_Device_RemoteWakeupEnabled = (USB_ControlRequest.bRequest == REQ_SET_FEATURE);
           PORTC |= 1 << PC7;
         }
@@ -1536,20 +1529,20 @@ void USB_Device_ClearSetFeature(void)
     }
     case REQREC_ENDPOINT:
     {
-      if ((uint8_t)USB_ControlRequest.wValue == FEATURE_SEL_ENDPOINT_HALT) {
-        uint8_t EndpointIndex = ((uint8_t)USB_ControlRequest.wIndex & ENDPOINT_EPNUM_MASK);
+      if ((uint8_t) USB_ControlRequest.wValue == FEATURE_SEL_ENDPOINT_HALT) {
+        uint8_t endpoint_index = USB_ControlRequest.wIndex;
 
-        if (EndpointIndex == ENDPOINT_CONTROLEP || EndpointIndex >= ENDPOINT_TOTAL_ENDPOINTS)
+        if (endpoint_index == ENDPOINT_CONTROLEP || endpoint_index >= ENDPOINT_TOTAL_ENDPOINTS)
 		  return;
 
-        Endpoint_SelectEndpoint(EndpointIndex);
+        Endpoint_SelectEndpoint(endpoint_index);
 
         if (@<Endpoint is enabled@>) {
           if (USB_ControlRequest.bRequest == REQ_SET_FEATURE)
             @<Stall transaction on endpoint@>@;
           else {
             @<Clear STALL condition on endpoint@>@;
-            Endpoint_ResetEndpoint(EndpointIndex);
+            Endpoint_ResetEndpoint(endpoint_index);
             @<Reset data toggle of endpoint@>@;
           }
         }
@@ -2425,12 +2418,10 @@ manipulated.
 
 Returns index of the currently selected endpoint (i.e., full endpoint address).
 
-|UENUM| -- endpoint address.\par
-|(UENUM & ENDPOINT_EPNUM_MASK)| -- the endpoint's numerical address in the device
-(i.e., index of the address within a device).
+|UENUM| -- endpoint index.\par
 
 @<Get current endpoint@>=
-((UENUM & ENDPOINT_EPNUM_MASK) | @<Get endpoint direction@>)
+(UENUM | @<Get endpoint direction@>)
 
 @ Selects the given endpoint address.
 
@@ -2444,7 +2435,7 @@ inline
 @,@=ALWAYS@>
 void Endpoint_SelectEndpoint(const uint8_t Address)
 {
-		UENUM = (Address & ENDPOINT_EPNUM_MASK);
+  UENUM = (Address & ENDPOINT_EPNUM_MASK);
 }
 
 @ Resets the endpoint bank FIFO. This clears all the endpoint banks and resets the USB
@@ -2457,7 +2448,7 @@ inline
 @,@=ALWAYS@>
 void Endpoint_ResetEndpoint(const uint8_t Address)
 {
-	UERST = (1 << (Address & ENDPOINT_EPNUM_MASK));
+	UERST = 1 << Address;
 	UERST = 0;
 }
 
@@ -2531,7 +2522,7 @@ UECONX |= (1 << STALLRQC);
 
 @ Determines if the currently selected endpoint is stalled.
 
-@<Endpoint is istalled@>=
+@<Endpoint is stalled@>=
 (UECONX & (1 << STALLRQ))
 
 @ Reads next byte from the currently selected endpoint's bank (i.e., FIFO buffer),
@@ -2868,7 +2859,7 @@ typedef struct
 	uint8_t  bmRequestType; /* type of the request */
 	uint8_t  bRequest; /* request command code */
 	uint16_t wValue; /* parameter of the request */
-	uint16_t wIndex; /* parameter of the request */
+	uint8_t wIndex; /* endpoint index */
 	uint16_t wLength; /* length of the data to transfer in bytes */
 } @=PACKED@>
   USB_Request_Header_t;
