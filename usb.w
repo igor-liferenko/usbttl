@@ -1329,9 +1329,6 @@ void USB_Device_GetStatus(void)
 	{
 		case (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_DEVICE):
 		{
-			if (USB_Device_CurrentlySelfPowered)
-			  CurrentStatus |= FEATURE_SELFPOWERED_ENABLED;
-
 			if (USB_Device_RemoteWakeupEnabled)
 			  CurrentStatus |= FEATURE_REMOTE_WAKEUP_ENABLED;
 			break;
@@ -1726,7 +1723,6 @@ int main(void)
   USB_DeviceState = DEVICE_STATE_POWERED;
   USB_Device_ConfigurationNumber = 0;
   USB_Device_RemoteWakeupEnabled = false; /* debugged */
-  USB_Device_CurrentlySelfPowered = false;
 
 #if 0
   TCCR0B = (1 << CS02); /* from arduino-usbserial; start the flush timer so that overflows occur
@@ -2787,7 +2783,6 @@ enable remote wakeup.
 #define FEATURE_SEL_DEVICE_REMOTE_WAKEUP 0x01
 
 @ @<Macros@>=
-#define FEATURE_SELFPOWERED_ENABLED     (1 << 0)
 #define FEATURE_REMOTE_WAKEUP_ENABLED   (1 << 1)
 
 @* USB device standard request management.
@@ -2806,13 +2801,6 @@ flag is cleared, the device should not issue remote wakeup events to the host.
 
 @<Global var...@>=
 bool USB_Device_RemoteWakeupEnabled;
-
-@ Indicates if the device is currently being powered by its own power supply, rather than being
-powered by the host's USB supply. This flag should remain cleared if the device does not
-support self powered mode, as indicated in the device descriptors.
-
-@<Global var...@>=
-bool USB_Device_CurrentlySelfPowered;
 
 @* Endpoint data stream.
 Endpoint data stream transmission and reception management.
