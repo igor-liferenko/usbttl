@@ -287,11 +287,6 @@ if (@<USART Data Register Empty@> && !(RingBuffer_IsEmpty(&USBtoUSART_Buffer)))
 @<USART Data Register Empty@>=
 (UCSR1A & (1 << UDRE1))
 
-@ Indicate that the USB interface is not ready.
-
-@<Indicate that USB device is disconnected@>=
-PORTD &= ~(1 << PD5);
-
 @ Circular buffer to hold data from the host before it is sent to the device via the
 serial port.
 
@@ -644,13 +639,6 @@ ISR(USB_COM_vect, ISR_BLOCK)
 	USB_INT_Enable(USB_INT_RXSTPI);
 	Endpoint_SelectEndpoint(PrevSelectedEndpoint);
 }
-
-@ Determine if the VBUS line is currently high (i.e. the USB host is supplying power).
-True if the VBUS line is currently detecting power from a host,
-false otherwise.
-
-@<VBUS line is high@>=
-(USBSTA & (1 << VBUS))
 
 @ PLL (Phase-Locked Loop) is used to generate the high frequency clock that the USB controller
 requires.
@@ -1792,7 +1780,8 @@ int main(void)
   DDRB |= 1 << PB0;
   PORTB |= 1 << PB0; /* led on */
 
-  DDRD |= 1 << PD5; /* led off by default */
+  DDRD |= 1 << PD5;
+  PORTD |= 1 << PD5; /* indicate that microcontroller is connecting */
 
   DDRC |= 1 << PC7;
 
