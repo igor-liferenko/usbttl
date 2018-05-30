@@ -741,7 +741,8 @@ false otherwise.
 @<VBUS line is high@>=
 (USBSTA & (1 << VBUS))
 
-@ PLL is used to generate the high frequency clock that the USB controller requires.
+@ PLL (Phase-Locked Loop) is used to generate the high frequency clock that the USB controller
+requires.
 
 Modern SoCs use so-called PLL to generate (almost) any clock that might be needed for
 interfaces. In simplified terms, the PLL circuit employs a high-frequency VCO
