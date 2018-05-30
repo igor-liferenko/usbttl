@@ -707,7 +707,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
   }
 
 	if (USB_INT_HasOccurred(USB_INT_EORSTI) && USB_INT_IsEnabled(USB_INT_EORSTI)) {
-		USB_INT_Clear(USB_INT_EORSTI);
+                UDINT &= ~(1 << EORSTI); /* clear reset interrupt ??? */
 
 		USB_DeviceState                = DEVICE_STATE_DEFAULT;
 		USB_Device_ConfigurationNumber = 0;
@@ -2149,9 +2149,6 @@ void USB_INT_Clear(const uint8_t Interrupt)
 			break;
 		case USB_INT_SUSPI:
 			UDINT  &= ~(1 << SUSPI);
-			break;
-		case USB_INT_EORSTI:
-			UDINT  &= ~(1 << EORSTI);
 			break;
 		case USB_INT_RXSTPI:
 			UEINTX &= ~(1 << RXSTPI);
