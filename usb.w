@@ -743,6 +743,12 @@ false otherwise.
 
 @ PLL is used to generate the high frequency clock that the USB controller requires.
 
+Modern SoCs use so-called PLL to generate (almost) any clock that might be needed for
+interfaces. In simplified terms, the PLL circuit employs a high-frequency VCO
+(Voltage-controlled oscillator), then uses difital frequency dividers on both VCO and
+input clock, and generates a voltage feedback based on the frequency ratio. This feedback
+controls the VCO, such that the entire loop is locked to the desired frequency.
+
 Set |PINDIV| to configure the PLL input prescaler to generate the 8MHz input clock for the
 PLL from 16 MHz clock source.
 
@@ -783,7 +789,23 @@ interface reset and re-enumeration.
 @<Function prototypes@>=
 void USB_Init(void);
 
-@ @c
+@ The VBUS (+5V from cable) must be connected to the device. The reason is as follows:
+To start the connect process on host side, the device must pull up D+ (in case of
+full-speed/high-speed mode), or D- (in case of low-speed mode).
+However, USB specifications have a mandatory requirement that no USB device should source
+any current on any interface pin unless it is connected to a cable, see section 7.1.5.1,
+which reads: the voltage source on the pull-up resistor\footnote*{With a pull-up resistor
+a small amount of current is flowing between VCC
+and the input pin (not to ground), thus the input pin reads close to VCC.} must be derived
+from or controlled by the power supplied on the USB cable such that when VBUS is removed, the
+pull-up resistor does not supply current on the data line to which it is attached.
+
+Regarding the USB connect ``handshake'' protocol, USB doesn't rely on current drawn from VBUS.
+The protocol is this: Host port must have VBUS active; VBUS is connected to device; device sees
+the VBUS and pulls-up 1.5k on one of D+/D- wires; host sees this connect, and after a 100ms delay
+asserts USB\_RESET signaling (SE0 etc.).
+
+@c
 void USB_Init(void)
 {
   @<USB REG on@>@;
