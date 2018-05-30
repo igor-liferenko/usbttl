@@ -2075,7 +2075,6 @@ service routine interrupts from the USB controller.
 #define USB_INT_VBUSTI 0
 #define USB_INT_WAKEUPI 2
 #define USB_INT_SUSPI 3
-#define USB_INT_EORSTI 4
 #define USB_INT_RXSTPI 6
 
 @ @<Inline...@>=
@@ -2085,7 +2084,6 @@ void USB_INT_Enable(const uint8_t Interrupt)
 {
 	switch (Interrupt)
 	{
-
 		case USB_INT_VBUSTI:
 			USBCON |= (1 << VBUSTE);
 			break;
@@ -2119,9 +2117,6 @@ void USB_INT_Disable(const uint8_t Interrupt)
 			break;
 		case USB_INT_SUSPI:
 			UDIEN  &= ~(1 << SUSPE);
-			break;
-		case USB_INT_EORSTI:
-			UDIEN  &= ~(1 << EORSTE);
 			break;
 		case USB_INT_RXSTPI:
 			UEIENX &= ~(1 << RXSTPE);
