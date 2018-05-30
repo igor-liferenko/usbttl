@@ -854,7 +854,7 @@ void USB_Init_Device(void)
 
 	USB_INT_Clear(USB_INT_SUSPI);
 	USB_INT_Enable(USB_INT_SUSPI);
-	USB_INT_Enable(USB_INT_EORSTI);
+	UDIEN |= 1 << EORSTE;
 
   @<Attach the device to the USB bus@>@;
 }
@@ -2095,9 +2095,6 @@ void USB_INT_Enable(const uint8_t Interrupt)
 			break;
 		case USB_INT_SUSPI:
 			UDIEN  |= (1 << SUSPE);
-			break;
-		case USB_INT_EORSTI:
-			UDIEN  |= (1 << EORSTE);
 			break;
 		case USB_INT_RXSTPI:
 			UEIENX |= (1 << RXSTPE);
