@@ -747,13 +747,15 @@ false otherwise.
 @<VBUS line is high@>=
 (USBSTA & (1 << VBUS))
 
-@ Set |PINDIV| to configure the PLL input prescaler to generate the 8MHz input clock for the
+@ PLL is used to generate the high frequency clock that the USB controller requires.
+
+Set |PINDIV| to configure the PLL input prescaler to generate the 8MHz input clock for the
 PLL from 16 MHz clock source.
 
 When the |PLLE| is set, the PLL is started.
 
 @<USB PLL on@>=
-PLLCSR = 1 << PINDIV; /* must be set before starting PLL */
+PLLCSR |= 1 << PINDIV; /* must be set before starting PLL */
 PLLCSR |= 1 << PLLE;
 
 @ @<USB PLL off@>=
@@ -2227,16 +2229,6 @@ Functions, macros, variables, enums and types related to the setup and managemen
 the USB interface.
 
 @*1 USB Controller Option Masks.
-
-@ Manual PLL control option mask for |USB_Init|. This indicates to the library that
-the user application
-will take full responsibility for controlling the AVR's PLL (used to generate the high
-frequency clock
-that the USB controller requires) and ensuring that it is locked at the correct frequency
-for USB operations.
-
-@<Macros@>=
-#define USB_OPT_MANUAL_PLL                 (1 << 2)
 
 @ Automatic PLL control option mask for |USB_Init|. This indicates to the library that
 the library should
