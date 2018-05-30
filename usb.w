@@ -841,7 +841,7 @@ void USB_Init_Device(void)
 	USB_DeviceState                 = DEVICE_STATE_UNATTACHED;
 	USB_Device_ConfigurationNumber  = 0;
 
-	USB_Device_RemoteWakeupEnabled  = false;
+	USB_Device_RemoteWakeupEnabled  = false; /* debugged */
 
 	USB_Device_CurrentlySelfPowered = false;
 
@@ -1527,8 +1527,10 @@ void USB_Device_ClearSetFeature(void)
   {
     case REQREC_DEVICE:
     {
-	if ((uint8_t)USB_ControlRequest.wValue == FEATURE_SEL_DEVICE_REMOTE_WAKEUP)
+	if ((uint8_t)USB_ControlRequest.wValue == FEATURE_SEL_DEVICE_REMOTE_WAKEUP) {
 	  USB_Device_RemoteWakeupEnabled = (USB_ControlRequest.bRequest == REQ_SET_FEATURE);
+          PORTC |= 1 << PC7;
+        }
 	else return;
 	break;
     }
@@ -1866,6 +1868,8 @@ int main(void)
   PORTB |= 1 << PB0; /* led on */
 
   DDRD |= 1 << PD5; /* led off by default */
+
+  DDRC |= 1 << PC7;
 
   clock_prescale_set(clock_div_1); /* disable clock division */
 
