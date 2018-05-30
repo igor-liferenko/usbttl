@@ -790,10 +790,19 @@ void USB_Init(void);
 @ @c
 void USB_Init(void)
 {
+  @<USB REG on@>@;
+
   PLLFRQ = (1 << PDIV2);
 
   USB_ResetInterface();
 }
+
+@ Enable internal 3.3V USB data pad regulator to regulate the data pin voltages from the
+VBUS level down to a level within the range allowable by the USB standard
+(i.e., don't use AVR's VCC level for the data pads).
+
+@<USB REG on@>=
+UHWCON |=  (1 << UVREGE);
 
 @ Resets the interface, when already initialized. This will re-enumerate the device if
 already connected to a host.
