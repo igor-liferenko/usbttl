@@ -751,8 +751,14 @@ false otherwise.
 VBUS level down to a level within the range allowable by the USB standard
 (i.e., don't use AVR's VCC level for the data pads).
 
+Set |PINDIV| to configure the PLL input prescaler to generate the 8MHz input clock for the
+PLL from 16 MHz clock source.
+
+When the |PLLE| is set, the PLL is started.
+
 @<USB PLL on@>=
-PLLCSR = (USB_PLL_PSC | (1 << PLLE));
+PLLCSR = 1 << PINDIV; /* must be set before starting PLL */
+PLLCSR |= 1 << PLLE;
 
 @ @<USB PLL off@>=
 PLLCSR = 0;
@@ -2220,9 +2226,6 @@ Functions, macros, variables, enums and types related to the setup and managemen
 USB Controller definitions for the AVR8 microcontrollers.
 Functions, macros, variables, enums and types related to the setup and management of
 the USB interface.
-
-@<Macros@>=
-#define USB_PLL_PSC                (1 << PINDIV)
 
 @*1 USB Controller Option Masks.
 
