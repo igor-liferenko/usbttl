@@ -313,75 +313,6 @@ RingBuffer_t USARTtoUSB_Buffer;
 @<Global...@>=
 uint8_t USARTtoUSB_Buffer_Data[128];
 
-@ Event handler for the library USB Connection event.
-
-LED mask for the library LED driver, to indicate that the USB interface is enumerating.
-
-Event for USB device connection. This event fires when the microcontroller is in USB
-Device mode
-and the device is connected to a USB host, beginning the enumeration process measured
-by a rising
-level on the microcontroller's VBUS sense pin.
-
-This event is time-critical; exceeding OS-specific delays within this event handler
-(typically of around
-two seconds) will prevent the device from enumerating correctly.
-
-This event may fire multiple times during device enumeration on the
-microcontrollers with limited USB controllers.
-
-For the microcontrollers with limited USB controller functionality, VBUS sensing
-is not available.
-this means that the current connection state is derived from the bus suspension
-and wake up events by default,
-which is not always accurate (host may suspend the bus while still connected).
-If the actual connection state
-needs to be determined, VBUS should be routed to an external pin, and the
-auto-detect behavior turned off (see \.{NO\_LIMITED\_CONTROLLER\_CONNECT} in git lg).
-The connection
-and disconnection events may be manually fired, and the |USB_DeviceState|
-global changed manually.
-
-@<Func...@>=
-void EVENT_USB_Device_Connect(void);
-
-@ Indicate that USB interface is enumerating.
-
-@c
-void EVENT_USB_Device_Connect(void)
-{
-  PORTD |= 1 << PD5;
-}
-
-@ Event handler for USB device disconnect event. This event fires when the microcontroller is in
-USB Device mode and the device is
-disconnected from a host, measured by a falling level on the microcontroller's VBUS
-sense pin.
-
-This event may fire multiple times during device enumeration on the
-microcontrollers with limited USB controllers.
-
-For the microcontrollers with limited USB controllers, VBUS sense is not
-available to the USB controller.
-this means that the current connection state is derived from the bus suspension
-and wake up events by default,
-which is not always accurate (host may suspend the bus while still connected).
-If the actual connection state
-needs to be determined, VBUS should be routed to an external pin, and the
-auto-detect behavior turned off (see \.{NO\_LIMITED\_CONTROLLER\_CONNECT} in git lg).
-The connection
-and disconnection events may be manually fired, and the |USB_DeviceState|
-global changed manually.
-
-@<Func...@>=
-void EVENT_USB_Device_Disconnect(void);
-
-@ @c
-void EVENT_USB_Device_Disconnect(void)
-{
-  @<Indicate that USB device is disconnected@>@;
-}
-
 @ ISR to manage the reception of data from the serial port, placing received bytes into
 a circular buffer
 for later transmission to the host.
@@ -603,9 +534,7 @@ in order to manage USB communications. This task may be executed inside an RTOS,
 fast timer ISR or the main user application loop.
 
 The USB task must be serviced within 30ms.
-The task may be serviced at all times, or (for minimum CPU consumption)
-it may be disabled at start-up, enabled on the firing of the |EVENT_USB_Device_Connect|
-event and disabled again on the firing of the |EVENT_USB_Device_Disconnect| event.
+The task must be serviced at all times.
 
 In this program the control endpoint is instead managed via interrupts entirely.
 
@@ -653,24 +582,6 @@ void USB_INT_ClearAllInterrupts(void)
 @ @c
 ISR(USB_GEN_vect, ISR_BLOCK)
 {
-  if (USB_INT_HasOccurred(USB_INT_VBUSTI) && USB_INT_IsEnabled(USB_INT_VBUSTI)) {
-    USB_INT_Clear(USB_INT_VBUSTI);
-
-    if (@<VBUS line is high@>) {
-      @<USB PLL on@>@;
-      while (!@<USB PLL is ready@>) ;
-
-      USB_DeviceState = DEVICE_STATE_POWERED;
-      EVENT_USB_Device_Connect();
-    }
-    else {
-      @<USB PLL off@>@;
-
-      USB_DeviceState = DEVICE_STATE_UNATTACHED;
-      EVENT_USB_Device_Disconnect();
-    }
-  }
-
   if (USB_INT_HasOccurred(USB_INT_SUSPI) && USB_INT_IsEnabled(USB_INT_SUSPI)) {
     USB_INT_Disable(USB_INT_SUSPI);
     USB_INT_Enable(USB_INT_WAKEUPI);
@@ -863,8 +774,6 @@ void USB_Init_Device(void)
 	USB_Device_CurrentlySelfPowered = false;
 
     @<Set full speed@>@;
-
-	USB_INT_Enable(USB_INT_VBUSTI);
 
 	Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
 							   USB_Device_ControlEndpointSize, 1);
@@ -2088,7 +1997,6 @@ Contains definitions required for the correct handling of low level USB
 service routine interrupts from the USB controller.
 
 @<Macros@>=
-#define USB_INT_VBUSTI 0
 #define USB_INT_WAKEUPI 2
 #define USB_INT_SUSPI 3
 #define USB_INT_RXSTPI 6
@@ -2100,10 +2008,6 @@ void USB_INT_Enable(const uint8_t Interrupt)
 {
 	switch (Interrupt)
 	{
-		case USB_INT_VBUSTI:
-			USBCON |= (1 << VBUSTE);
-			break;
-
 		case USB_INT_WAKEUPI:
 			UDIEN  |= (1 << WAKEUPE);
 			break;
@@ -2125,9 +2029,6 @@ void USB_INT_Disable(const uint8_t Interrupt)
 {
 	switch (Interrupt)
 	{
-		case USB_INT_VBUSTI:
-			USBCON &= ~(1 << VBUSTE);
-			break;
 		case USB_INT_WAKEUPI:
 			UDIEN  &= ~(1 << WAKEUPE);
 			break;
@@ -2149,9 +2050,6 @@ void USB_INT_Clear(const uint8_t Interrupt)
 {
 	switch (Interrupt)
 	{
-		case USB_INT_VBUSTI:
-			USBINT &= ~(1 << VBUSTI);
-			break;
 		case USB_INT_WAKEUPI:
 			UDINT  &= ~(1 << WAKEUPI);
 			break;
@@ -2173,8 +2071,6 @@ bool USB_INT_IsEnabled(const uint8_t Interrupt)
 {
 	switch (Interrupt)
 	{
-		case USB_INT_VBUSTI:
-			return (USBCON & (1 << VBUSTE));
 		case USB_INT_WAKEUPI:
 			return (UDIEN  & (1 << WAKEUPE));
 		case USB_INT_SUSPI:
@@ -2193,8 +2089,6 @@ bool USB_INT_HasOccurred(const uint8_t Interrupt)
 {
 	switch (Interrupt)
 	{
-		case USB_INT_VBUSTI:
-			return (USBINT & (1 << VBUSTI));
 		case USB_INT_WAKEUPI:
 			return (UDINT  & (1 << WAKEUPI));
 		case USB_INT_SUSPI:
