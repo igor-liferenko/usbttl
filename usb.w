@@ -675,21 +675,10 @@ USBCON &= ~(1 << FRZCLK);
 
 @* USB Controller definitions for the AVR8 microcontrollers.
 
-@ Main function to initialize and start the USB interface. Once active, the USB interface will
-allow for device connection to a host.
+@ The code relies on interrupts for the enumeration processes,
+so global interrupts must be enabled before this code is called.
 
-As the USB library relies on interrupts for the enumeration processes,
-the user must enable global interrupts before or shortly after this function is called.
-Interrupts must be enabled within 500ms of this function being called to ensure
-that the host does not time out whilst enumerating the device.
-
-Calling this function when the USB interface is already initialized will cause a complete USB
-interface reset and re-enumeration.
-
-@<Function prototypes@>=
-void USB_Init(void);
-
-@ The VBUS (+5V from cable) must be connected to the device. The reason is as follows:
+The VBUS (+5V from cable) must be connected to the device. The reason is as follows:
 To start the connect process on host side, the device must pull up D+ (in case of
 full-speed/high-speed mode), or D- (in case of low-speed mode).
 However, USB specifications have a mandatory requirement that no USB device should source
@@ -705,15 +694,12 @@ The protocol is this: Host port must have VBUS active; VBUS is connected to devi
 the VBUS and pulls-up 1.5k on one of D+/D- wires; host sees this connect, and after a 100ms delay
 asserts USB\_RESET signaling (SE0 etc.).
 
-@c
-void USB_Init(void)
-{
-  @<USB REG on@>@;
+@<Initialize USB@>=
+@<USB REG on@>@;
 
-  PLLFRQ = (1 << PDIV2);
+PLLFRQ = (1 << PDIV2);
 
-  USB_ResetInterface();
-}
+USB_ResetInterface();
 
 @ Enable internal 3.3V USB data pad regulator to regulate the voltage of the D+/D- pads,
 which must be within a 3.0-3.6V range.
@@ -1787,7 +1773,8 @@ int main(void)
 
   clock_prescale_set(clock_div_1); /* disable clock division */
 
-  USB_Init();
+  @<Enable global interrupt@>@;
+  @<Initialize USB@>@;
 
 #if 0
   TCCR0B = (1 << CS02); /* from arduino-usbserial; start the flush timer so that overflows occur
@@ -1798,8 +1785,6 @@ int main(void)
     sizeof USBtoUSART_Buffer_Data);
   RingBuffer_InitBuffer(&USARTtoUSB_Buffer, USARTtoUSB_Buffer_Data,
     sizeof USARTtoUSB_Buffer_Data);
-
-  @<Enable global interrupt@>@;
 
   while (1) {
     @<Only try to read in bytes from the CDC interface if the transmit buffer...@>@;
@@ -2581,11 +2566,6 @@ should power down to a minimal power level until the bus is resumed.
 #define DEVICE_STATE_SUSPENDED 5
 
 @*1 USB Device Mode Option Masks.
-
-@ Mask for the Options parameter of the |USB_Init| function. This indicates that the
-USB interface should be initialized in full speed (12Mb/s) mode.
-@<Macros@>=
-#define USB_DEVICE_OPT_FULLSPEED               (0 << 0)
 
 @ String descriptor index for the device's unique serial number string descriptor within
 the device.
