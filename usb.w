@@ -695,79 +695,26 @@ the VBUS and pulls-up 1.5k on one of D+/D- wires; host sees this connect, and af
 asserts USB\_RESET signaling (SE0 etc.).
 
 @<Initialize USB@>=
-@<USB REG on@>@;
+  UHWCON |= 1 << UVREGE; /* enable pad regulator */
 
-PLLFRQ = (1 << PDIV2);
+  PLLCSR |= 1 << PINDIV; /* 16 MHz input frequency */
+  PLLCSR |= 1 << PLLE; /* start PLL */
+  while (!(PLLCSR & (1 << PLOCK))) ; /* wait until PLL is started */
 
-USB_ResetInterface();
+  USBCON |= 1 << USBE; /* enable USB interface */
+  USBCON &= ~(1 << FRZCLK); /* enable clock input */
+  UDCON &= ~(1 << LSM); /* set full speed */
+  Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
+    USB_Device_ControlEndpointSize, 1);
+  USB_INT_Clear(USB_INT_SUSPI);
+  USB_INT_Enable(USB_INT_SUSPI);
+  UDIEN |= 1 << EORSTE; /* trigger interrupt when ``End Of Reset'' flag is set */
 
-@ Enable internal 3.3V USB data pad regulator to regulate the voltage of the D+/D- pads,
-which must be within a 3.0-3.6V range.
-
-@<USB REG on@>=
-UHWCON |= 1 << UVREGE;
-
-@ Resets the interface, when already initialized. This will re-enumerate the device if
-already connected to a host.
-
-@<Function prototypes@>=
-void USB_ResetInterface(void);
-
-@ @c
-void USB_ResetInterface(void)
-{
-	USB_INT_DisableAllInterrupts();
-	USB_INT_ClearAllInterrupts();
-
-	@<Reset USB controller@>@;
-
-	@<USB CLK unfreeze@>@;
-
-	@<USB PLL off@>@;
-
-	USB_Init_Device();
-
-	USBCON |=  (1 << OTGPADE); /* enable VBUS pad */
-}
-
-@ @<Reset USB controller@>=
-USBCON &= ~(1 << USBE);
-USBCON |=  (1 << USBE);
-
-@ @<Function prototypes@>=
-void USB_Init_Device(void);
-
-@ @c
-void USB_Init_Device(void)
-{
-	USB_DeviceState                 = DEVICE_STATE_UNATTACHED;
-	USB_Device_ConfigurationNumber  = 0;
-
-	USB_Device_RemoteWakeupEnabled  = false; /* debugged */
-
-	USB_Device_CurrentlySelfPowered = false;
-
-    @<Set full speed@>@;
-
-	Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
-							   USB_Device_ControlEndpointSize, 1);
-
-	USB_INT_Clear(USB_INT_SUSPI);
-	USB_INT_Enable(USB_INT_SUSPI);
-	UDIEN |= 1 << EORSTE; /* trigger interrupt when ``End Of Reset'' flag is set */
-
-  @<Attach the device to the USB bus@>@;
-}
-
-@ Announce the device's presence to any attached
-USB host, starting the enumeration process. If no host is present, attaching the device
-will allow for enumeration once a host is connected to the device.
-
-@<Attach the device to the USB bus@>=
-UDCON  &= ~(1 << DETACH);
-
-@ @<Set full speed@>=
-UDCON &= ~(1 << LSM);
+  USBCON |= 1 << OTGPADE; /* enable VBUS pin to sense the presence of USB host
+    (to allow D+ or D- pull-up to be activated) */
+  UDCON &= ~(1 << DETACH); /* activate D+ or D- pull-up
+    (attach the device to the USB bus, announcing device's
+    presence to host and allowing for enumeration by host) */
 
 @* USB Endpoint definitions.
 
@@ -1774,7 +1721,12 @@ int main(void)
   clock_prescale_set(clock_div_1); /* disable clock division */
 
   @<Enable global interrupt@>@;
+
   @<Initialize USB@>@;
+  USB_DeviceState = DEVICE_STATE_POWERED;
+  USB_Device_ConfigurationNumber = 0;
+  USB_Device_RemoteWakeupEnabled = false; /* debugged */
+  USB_Device_CurrentlySelfPowered = false;
 
 #if 0
   TCCR0B = (1 << CS02); /* from arduino-usbserial; start the flush timer so that overflows occur
