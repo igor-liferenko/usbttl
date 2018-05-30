@@ -747,11 +747,7 @@ false otherwise.
 @<VBUS line is high@>=
 (USBSTA & (1 << VBUS))
 
-@ Enable internal 3.3V USB data pad regulator to regulate the data pin voltages from the
-VBUS level down to a level within the range allowable by the USB standard
-(i.e., don't use AVR's VCC level for the data pads).
-
-Set |PINDIV| to configure the PLL input prescaler to generate the 8MHz input clock for the
+@ Set |PINDIV| to configure the PLL input prescaler to generate the 8MHz input clock for the
 PLL from 16 MHz clock source.
 
 When the |PLLE| is set, the PLL is started.
@@ -801,7 +797,11 @@ void USB_Init(void)
   USB_ResetInterface();
 }
 
-@ @<USB REG on@>=
+@ Enable internal 3.3V USB data pad regulator to regulate the data pin voltages from the
+VBUS level down to a level within the range allowable by the USB standard
+(i.e., don't use AVR's VCC level for the data pads).
+
+@<USB REG on@>=
 UHWCON |=  (1 << UVREGE);
 
 @ Resets the interface, when already initialized. This will re-enumerate the device if
