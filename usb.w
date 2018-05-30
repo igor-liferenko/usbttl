@@ -460,6 +460,10 @@ type exists, such as the case of string descriptors). The type may be one of
 the standard types defined in the |DescriptorTypes_t| enum, or may be a
 class-specific descriptor type value.
 
+|wIndex| -- The language ID of the string to return if the
+|wValue| type indicates |DTYPE_STRING|, otherwise zero for standard
+descriptors, or as defined in a class-specific standards.
+
 |DescriptorAddress| -- pointer to the descriptor in memory. This should be
 set by the routine to the address of the descriptor.
 
@@ -470,6 +474,7 @@ Returns size in bytes of the descriptor if it exists, zero or |NO_DESCRIPTOR| ot
 
 @<Func...@>=
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
+                                    const uint16_t wIndex,
                                     const void** const DescriptorAddress);
 
 @ @dSTRING_ID_LANGUAGE 0 /* Supported Languages string descriptor
@@ -479,6 +484,7 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 
 @c
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
+                                    const uint16_t wIndex,
                                     const void** const DescriptorAddress)
 {
 	const uint8_t  DescriptorType   = (wValue >> 8);
@@ -1307,7 +1313,7 @@ void USB_Device_GetDescriptor(void)
 	}
 
 	if ((DescriptorSize = CALLBACK_USB_GetDescriptor(USB_ControlRequest.wValue,
-             &DescriptorPointer)) == NO_DESCRIPTOR)
+             USB_ControlRequest.wIndex, &DescriptorPointer)) == NO_DESCRIPTOR)
 		return;
 
   @<Clear a received SETUP packet on endpoint@>@;
@@ -1335,7 +1341,8 @@ void USB_Device_GetStatus(void)
 		}
 		case (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_ENDPOINT):
 		{
-			uint8_t endpoint_index = USB_ControlRequest.wIndex;
+			uint8_t endpoint_index =
+ ((uint8_t)USB_ControlRequest.wIndex & ENDPOINT_EPNUM_MASK);
 
 			if (endpoint_index >= ENDPOINT_TOTAL_ENDPOINTS)
 				return;
@@ -1379,8 +1386,8 @@ void USB_Device_ClearSetFeature(void)
     }
     case REQREC_ENDPOINT:
     {
-      if ((uint8_t) USB_ControlRequest.wValue == FEATURE_SEL_ENDPOINT_HALT) {
-        uint8_t endpoint_index = USB_ControlRequest.wIndex;
+      if ((uint8_t)USB_ControlRequest.wValue == FEATURE_SEL_ENDPOINT_HALT) {
+        uint8_t endpoint_index = ((uint8_t)USB_ControlRequest.wIndex & ENDPOINT_EPNUM_MASK);
 
         if (endpoint_index == ENDPOINT_CONTROLEP || endpoint_index >= ENDPOINT_TOTAL_ENDPOINTS)
 		  return;
@@ -2257,7 +2264,7 @@ Returns index of the currently selected endpoint (i.e., full endpoint address).
 |UENUM| -- endpoint index.\par
 
 @<Get current endpoint@>=
-(UENUM | @<Get endpoint direction@>)
+((UENUM & ENDPOINT_EPNUM_MASK) | @<Get endpoint direction@>)
 
 @ Selects the given endpoint address.
 
@@ -2284,7 +2291,7 @@ inline
 @,@=ALWAYS@>
 void Endpoint_ResetEndpoint(const uint8_t Address)
 {
-	UERST = 1 << Address;
+	UERST = (1 << (Address & ENDPOINT_EPNUM_MASK));
 	UERST = 0;
 }
 
@@ -2690,7 +2697,7 @@ typedef struct
 	uint8_t  bmRequestType; /* type of the request */
 	uint8_t  bRequest; /* request command code */
 	uint16_t wValue; /* parameter of the request */
-	uint8_t wIndex; /* endpoint index */
+	uint16_t wIndex; /* parameter of the request */
 	uint16_t wLength; /* length of the data to transfer in bytes */
 } @=PACKED@>
   USB_Request_Header_t;
