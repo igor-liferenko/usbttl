@@ -706,8 +706,8 @@ ISR(USB_GEN_vect, ISR_BLOCK)
         DEVICE_STATE_ADDRESSED : DEVICE_STATE_POWERED;
   }
 
-	if ((UDINT & (1 << EORSTI)) && (UDIEN & (1 << EORSTE))) {
-                UDINT &= ~(1 << EORSTI); /* clear reset interrupt ??? */
+	if (UDINT & (1 << EORSTI)) {
+                UDINT &= ~(1 << EORSTI); /* clear ``End Of Reset'' flag */
 
 		USB_DeviceState                = DEVICE_STATE_DEFAULT;
 		USB_Device_ConfigurationNumber = 0;
@@ -854,7 +854,7 @@ void USB_Init_Device(void)
 
 	USB_INT_Clear(USB_INT_SUSPI);
 	USB_INT_Enable(USB_INT_SUSPI);
-	UDIEN |= 1 << EORSTE;
+	UDIEN |= 1 << EORSTE; /* trigger interrupt when ``End Of Reset'' flag is set */
 
   @<Attach the device to the USB bus@>@;
 }
