@@ -797,12 +797,11 @@ void USB_Init(void)
   USB_ResetInterface();
 }
 
-@ Enable internal 3.3V USB data pad regulator to regulate the data pin voltages from the
-VBUS level down to a level within the range allowable by the USB standard
-(i.e., don't use AVR's VCC level for the data pads).
+@ Enable internal 3.3V USB data pad regulator to regulate the voltage of the D+/D- pads,
+which must be within a 3.0-3.6V range.
 
 @<USB REG on@>=
-UHWCON |=  (1 << UVREGE);
+UHWCON |= 1 << UVREGE;
 
 @ Resets the interface, when already initialized. This will re-enumerate the device if
 already connected to a host.
