@@ -706,7 +706,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
         DEVICE_STATE_ADDRESSED : DEVICE_STATE_POWERED;
   }
 
-	if (USB_INT_HasOccurred(USB_INT_EORSTI) && USB_INT_IsEnabled(USB_INT_EORSTI)) {
+	if ((UDINT & (1 << EORSTI)) && (UDIEN & (1 << EORSTE))) {
                 UDINT &= ~(1 << EORSTI); /* clear reset interrupt ??? */
 
 		USB_DeviceState                = DEVICE_STATE_DEFAULT;
@@ -2171,8 +2171,6 @@ bool USB_INT_IsEnabled(const uint8_t Interrupt)
 			return (UDIEN  & (1 << WAKEUPE));
 		case USB_INT_SUSPI:
 			return (UDIEN  & (1 << SUSPE));
-		case USB_INT_EORSTI:
-			return (UDIEN  & (1 << EORSTE));
 		case USB_INT_RXSTPI:
 			return (UEIENX & (1 << RXSTPE));
 		default:
@@ -2193,8 +2191,6 @@ bool USB_INT_HasOccurred(const uint8_t Interrupt)
 			return (UDINT  & (1 << WAKEUPI));
 		case USB_INT_SUSPI:
 			return (UDINT  & (1 << SUSPI));
-		case USB_INT_EORSTI:
-			return (UDINT  & (1 << EORSTI));
 		case USB_INT_RXSTPI:
 			return (UEINTX & (1 << RXSTPI));
 		default:
