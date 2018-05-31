@@ -627,22 +627,12 @@ ISR(USB_COM_vect, ISR_BLOCK)
 
 @* USB Controller definitions for the AVR8 microcontrollers.
 
-@ The code relies on interrupts for the enumeration processes,
-so global interrupts must be enabled before this code is called.
+@ This section relies on interrupts for the enumeration processes,
+so global interrupts must be enabled before this section is called.
 
-The VBUS (+5V from cable) must be connected to the device. The reason is as follows:
-To start the connect process on host side, the device must pull up D+.
-However, USB specifications have a mandatory requirement that no USB device should source
-any current on any interface pin unless it is connected to a cable, see section 7.1.5.1,
-which reads: the voltage source on the pull-up resistor\footnote*{With a pull-up resistor
-a small amount of current is flowing between VCC
-and the input pin (not to ground), thus the input pin reads close to VCC.} must be derived
-from or controlled by the power supplied on the USB cable such that when VBUS is removed, the
-pull-up resistor does not supply current on the data line to which it is attached.
-
-Regarding the USB connect ``handshake'' protocol, USB doesn't rely on current drawn from VBUS.
-The protocol is this: Host port must have VBUS active; VBUS is connected to device; device sees
-the VBUS and pulls-up 1.5k on D+ wire; host sees this connect, and starts enumeration.
+The voltage source on the pull-up resistor is taken from VBUS (+5V).
+Thus, connecting VBUS to the device (i.e., enabling VBUS pad) is necessary for pull-up to work.
+Host port activates VBUS. When host sees the pull-up, it starts enumeration.
 
 PLL (Phase-Locked Loop) is used to generate the high frequency clock that the USB controller
 requires.
@@ -673,8 +663,8 @@ Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL, USB_Device_Contr
 UDIEN |= 1 << SUSPE; /* enable suspend interrupt */
 UDIEN |= 1 << EORSTE; /* trigger interrupt when ``End Of Reset'' flag is set */
 @#
-USBCON |= 1 << OTGPADE; /* enable sensing of VBUS */
-UDCON &= ~(1 << DETACH); /* pull-up on D+ when VBUS is detected to be active */
+USBCON |= 1 << OTGPADE; /* enable VBUS pad */
+UDCON &= ~(1 << DETACH); /* enable pull-up on D+ */
 
 @* USB Endpoint definitions.
 
