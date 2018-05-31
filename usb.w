@@ -679,8 +679,7 @@ USBCON &= ~(1 << FRZCLK);
 so global interrupts must be enabled before this code is called.
 
 The VBUS (+5V from cable) must be connected to the device. The reason is as follows:
-To start the connect process on host side, the device must pull up D+ (in case of
-full-speed/high-speed mode), or D- (in case of low-speed mode).
+To start the connect process on host side, the device must pull up D+.
 However, USB specifications have a mandatory requirement that no USB device should source
 any current on any interface pin unless it is connected to a cable, see section 7.1.5.1,
 which reads: the voltage source on the pull-up resistor\footnote*{With a pull-up resistor
@@ -691,30 +690,25 @@ pull-up resistor does not supply current on the data line to which it is attache
 
 Regarding the USB connect ``handshake'' protocol, USB doesn't rely on current drawn from VBUS.
 The protocol is this: Host port must have VBUS active; VBUS is connected to device; device sees
-the VBUS and pulls-up 1.5k on one of D+/D- wires; host sees this connect, and after a 100ms delay
-asserts USB\_RESET signaling (SE0 etc.).
+the VBUS and pulls-up 1.5k on D+ wire; host sees this connect, and starts enumeration.
 
 @<Initialize USB@>=
 UHWCON |= 1 << UVREGE; /* enable pad regulator */
-
+@#
 PLLCSR |= 1 << PINDIV; /* 16 MHz input frequency */
 PLLCSR |= 1 << PLLE; /* start PLL */
 while (!(PLLCSR & (1 << PLOCK))) ; /* wait until PLL is started */
-
+@#
 USBCON |= 1 << USBE; /* enable USB interface */
 USBCON &= ~(1 << FRZCLK); /* enable clock input */
-UDCON &= ~(1 << LSM); /* set full speed */
-Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
-  USB_Device_ControlEndpointSize, 1);
+UDCON &= ~(1 << LSM); /* set full-speed mode */
+Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL, USB_Device_ControlEndpointSize, 1);
 USB_INT_Clear(USB_INT_SUSPI);
 USB_INT_Enable(USB_INT_SUSPI);
 UDIEN |= 1 << EORSTE; /* trigger interrupt when ``End Of Reset'' flag is set */
-
-USBCON |= 1 << OTGPADE; /* enable VBUS pin to sense the presence of USB host
-  (to allow D+ or D- pull-up to be activated) */
-UDCON &= ~(1 << DETACH); /* activate D+ or D- pull-up
-  (attach the device to the USB bus, announcing device's
-  presence to host and allowing for enumeration by host) */
+@#
+USBCON |= 1 << OTGPADE; /* enable sensing of VBUS */
+UDCON &= ~(1 << DETACH); /* pull-up on D+ when VBUS is detected to be active */
 
 @* USB Endpoint definitions.
 
