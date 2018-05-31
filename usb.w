@@ -1913,9 +1913,6 @@ void USB_INT_Disable(const uint8_t Interrupt)
 {
 	switch (Interrupt)
 	{
-		case USB_INT_WAKEUPI:
-			UDIEN &= ~(1 << WAKEUPE);
-			break;
 		case USB_INT_RXSTPI:
 			UEIENX &= ~(1 << RXSTPE);
 			break;
