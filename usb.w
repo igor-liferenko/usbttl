@@ -1341,8 +1341,7 @@ void USB_Device_GetStatus(void)
 		}
 		case (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_ENDPOINT):
 		{
-			uint8_t endpoint_index =
- ((uint8_t)USB_ControlRequest.wIndex & ENDPOINT_EPNUM_MASK);
+			uint8_t endpoint_index = USB_ControlRequest.wIndex;
 
 			if (endpoint_index >= ENDPOINT_TOTAL_ENDPOINTS)
 				return;
@@ -1387,7 +1386,7 @@ void USB_Device_ClearSetFeature(void)
     case REQREC_ENDPOINT:
     {
       if ((uint8_t)USB_ControlRequest.wValue == FEATURE_SEL_ENDPOINT_HALT) {
-        uint8_t endpoint_index = ((uint8_t)USB_ControlRequest.wIndex & ENDPOINT_EPNUM_MASK);
+        uint8_t endpoint_index = USB_ControlRequest.wIndex;
 
         if (endpoint_index == ENDPOINT_CONTROLEP || endpoint_index >= ENDPOINT_TOTAL_ENDPOINTS)
 		  return;
@@ -2264,7 +2263,7 @@ Returns index of the currently selected endpoint (i.e., full endpoint address).
 |UENUM| -- endpoint index.\par
 
 @<Get current endpoint@>=
-((UENUM & ENDPOINT_EPNUM_MASK) | @<Get endpoint direction@>)
+(UENUM | @<Get endpoint direction@>)
 
 @ Selects the given endpoint address.
 
