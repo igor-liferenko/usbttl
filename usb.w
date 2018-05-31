@@ -631,21 +631,17 @@ ISR(USB_COM_vect, ISR_BLOCK)
 so global interrupts must be enabled before this section is called.
 
 The voltage source on the pull-up resistor is taken from VBUS (+5V).
-Thus, connecting VBUS to the device (i.e., enabling VBUS pad) is necessary for pull-up to work.
 Host port activates VBUS. When host sees the pull-up, it starts enumeration.
 
 PLL (Phase-Locked Loop) is used to generate the high frequency clock that the USB controller
 requires.
-
 Modern SoCs use PLL to generate (almost) any clock that might be needed for
 interfaces. In simplified terms, the PLL circuit employs a high-frequency VCO
 (Voltage-controlled oscillator), then uses difital frequency dividers on both VCO and
 input clock, and generates a voltage feedback based on the frequency ratio. This feedback
 controls the VCO, such that the entire loop is locked to the desired frequency.
-
 Set |PINDIV| to configure the PLL input prescaler to generate the 8MHz input clock for the
 PLL from 16 MHz clock source.
-
 When the |PLLE| is set, the PLL is started.
 
 @<Initialize USB@>=
@@ -663,7 +659,7 @@ Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL, USB_Device_Contr
 UDIEN |= 1 << SUSPE; /* enable suspend interrupt */
 UDIEN |= 1 << EORSTE; /* trigger interrupt when ``End Of Reset'' flag is set */
 @#
-USBCON |= 1 << OTGPADE; /* enable VBUS pad */
+USBCON |= 1 << OTGPADE; /* connect device to VBUS */
 UDCON &= ~(1 << DETACH); /* enable pull-up on D+ */
 
 @* USB Endpoint definitions.
