@@ -695,6 +695,7 @@ the VBUS and pulls-up 1.5k on D+ wire; host sees this connect, and starts enumer
 @<Initialize USB@>=
 UHWCON |= 1 << UVREGE; /* enable pad regulator */
 @#
+PLLFRQ |= (1 << PDIV2); /* default */
 PLLCSR |= 1 << PINDIV; /* 16 MHz input frequency */
 PLLCSR |= 1 << PLLE; /* start PLL */
 while (!(PLLCSR & (1 << PLOCK))) ; /* wait until PLL is started */
