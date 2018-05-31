@@ -554,49 +554,16 @@ void USB_DeviceTask(void)
 
 @* USB controller interrupt service routine management.
 
-@ @c
+@ Handle ``End Of Reset'' interrupt.
+
+@c
 ISR(USB_GEN_vect)
 {
-  if ((UDINT & (1 << SUSPI)) && (UDIEN & (1 << SUSPE))) {
-    UDIEN &= ~(1 << SUSPE); /* disable suspend interrupt */
-    UDIEN |= 1 << WAKEUPE; /* trigger interrupt when ``Wakeup'' bit is set in |UDINT| register */
-
-    USBCON |= 1 << FRZCLK;
-
-    PLLCSR = 0; /* PLL off */
-
-    USB_DeviceState = DEVICE_STATE_SUSPENDED;
-    PORTB |= 1 << PB0;
-  }
-
-  if ((UDINT & (1 << WAKEUPI)) && (UDIEN & (1 << WAKEUPE))) {
-    PLLCSR |= 1 << PINDIV; /* must be set before starting PLL */
-    PLLCSR |= 1 << PLLE; /* start PLL */
-    while (!(PLLCSR & (1 << PLOCK))) ; /* wait until PLL is ready */
-
-    USBCON &= ~(1 << FRZCLK);
-
-    UDINT &= ~(1 << WAKEUPI); /* clear wakeup bit */
-    UDIEN &= ~(1 << WAKEUPE); /* disable wakeup interrupt */
-    UDIEN |= 1 << SUSPE; /* enable suspend interrupt */
-
-    if (USB_Device_ConfigurationNumber)
-      USB_DeviceState = DEVICE_STATE_CONFIGURED;
-    else
-      USB_DeviceState = @<Address of USB Device is set@> ?
-        DEVICE_STATE_ADDRESSED : DEVICE_STATE_POWERED;
-    PORTB |= 1 << PB0;
-  }
-
   if (UDINT & (1 << EORSTI)) {
     UDINT &= ~(1 << EORSTI); /* clear ``End Of Reset'' bit */
 
     USB_DeviceState = DEVICE_STATE_DEFAULT;
     USB_Device_ConfigurationNumber = 0;
-
-    UDINT &= ~(1 << SUSPI); /* clear ``Suspend'' bit */
-    UDIEN &= ~(1 << SUSPE); /* disable suspend interrupt */
-    UDIEN |= 1 << WAKEUPE; /* enable wakeup interrupt */
 
     Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
       USB_Device_ControlEndpointSize, 1);
@@ -605,7 +572,8 @@ ISR(USB_GEN_vect)
   }
 }
 
-@ Handle endpoint interrupts. Enabled by ``End Of Reset'' interrupt handler.
+@ Handle endpoint interrupts. Enabled by ``End Of Reset'' interrupt handler. (Why not in
+|@<Initialize USB@>|?)
 
 @c
 ISR(USB_COM_vect)
@@ -661,7 +629,6 @@ USBCON |= 1 << USBE; /* enable USB controller */
 USBCON &= ~(1 << FRZCLK); /* enable clock input */
 UDCON &= ~(1 << LSM); /* set full-speed mode */
 Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL, USB_Device_ControlEndpointSize, 1);
-UDIEN |= 1 << SUSPE; /* trigger interrupt when ``Suspend'' bit is set in |UDINT| register */
 UDIEN |= 1 << EORSTE; /* trigger interrupt when ``End Of Reset'' bit is set in |UDINT| register */
 @#
 USBCON |= 1 << OTGPADE; /* connect device to VBUS */
@@ -1269,41 +1236,38 @@ void USB_Device_GetStatus(void);
 @ @c
 void USB_Device_GetStatus(void)
 {
-	uint8_t CurrentStatus = 0;
+  uint8_t CurrentStatus = 0;
 
-	switch (USB_ControlRequest.bmRequestType)
-	{
-		case (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_DEVICE):
-		{
-			if (USB_Device_RemoteWakeupEnabled)
-			  CurrentStatus |= FEATURE_REMOTE_WAKEUP_ENABLED;
-			break;
-		}
-		case (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_ENDPOINT):
-		{
-			uint8_t endpoint_index = USB_ControlRequest.wIndex;
+  switch (USB_ControlRequest.bmRequestType)
+  {
+	case (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_DEVICE):
+		/* FIXME: can this be removed? */
+		break;
+	case (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_ENDPOINT):
+        {
+		uint8_t endpoint_index = USB_ControlRequest.wIndex;
 
-			if (endpoint_index >= ENDPOINT_TOTAL_ENDPOINTS)
-				return;
-
-			Endpoint_SelectEndpoint(endpoint_index);
-
-			CurrentStatus = @[@<Endpoint is stalled@>@];
-
-			Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
-
-			break;
-		}
-		default:
+		if (endpoint_index >= ENDPOINT_TOTAL_ENDPOINTS)
 			return;
-	}
+
+		Endpoint_SelectEndpoint(endpoint_index);
+
+		CurrentStatus = @[@<Endpoint is stalled@>@];
+
+		Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
+
+		break;
+        }
+	default:
+		return;
+  }
 
   @<Clear a received SETUP packet on endpoint@>@;
 
-	Endpoint_Write_16_LE(CurrentStatus);
+  Endpoint_Write_16_LE(CurrentStatus);
   @<Clear IN packet on endpoint@>@;
 
-	Endpoint_ClearStatusStage();
+  Endpoint_ClearStatusStage();
 }
 
 @ @<Function prototypes@>=
@@ -1315,16 +1279,9 @@ void USB_Device_ClearSetFeature(void)
   switch (USB_ControlRequest.bmRequestType & CONTROL_REQTYPE_RECIPIENT)
   {
     case REQREC_DEVICE:
-    {
-	if ((uint8_t) USB_ControlRequest.wValue == FEATURE_SEL_DEVICE_REMOTE_WAKEUP) {
-	  USB_Device_RemoteWakeupEnabled = (USB_ControlRequest.bRequest == REQ_SET_FEATURE);
-          PORTB |= 1 << PB0;
-        }
-	else return;
+	/* FIXME: can we remove this? */
 	break;
-    }
     case REQREC_ENDPOINT:
-    {
       if ((uint8_t) USB_ControlRequest.wValue == FEATURE_SEL_ENDPOINT_HALT) {
         uint8_t endpoint_index = USB_ControlRequest.wIndex;
 
@@ -1344,7 +1301,6 @@ void USB_Device_ClearSetFeature(void)
         }
       }
       break;
-    }
     default:
       return;
   }
@@ -1666,7 +1622,6 @@ int main(void)
   @<Initialize USB@>@;
   USB_DeviceState = DEVICE_STATE_POWERED;
   USB_Device_ConfigurationNumber = 0;
-  USB_Device_RemoteWakeupEnabled = false; /* debugged */
 
 #if 0
   TCCR0B = (1 << CS02); /* from arduino-usbserial; start the flush timer so that overflows occur
@@ -2608,17 +2563,6 @@ its stall condition changed.
 @<Macros@>=
 #define FEATURE_SEL_ENDPOINT_HALT 0x00
 
-@ Feature selector for Device level Remote Wakeup enable set or clear.
-This feature can be controlled by the host on devices which indicate
-remote wakeup support in their descriptors to selectively disable or
-enable remote wakeup.
-
-@<Macros@>=
-#define FEATURE_SEL_DEVICE_REMOTE_WAKEUP 0x01
-
-@ @<Macros@>=
-#define FEATURE_REMOTE_WAKEUP_ENABLED   (1 << 1)
-
 @* USB device standard request management.
 This contains the function prototypes necessary for the processing of incoming standard
 control requests.
@@ -2629,12 +2573,6 @@ selected value, or 0 if no configuration has been selected.
 
 @<Global var...@>=
 uint8_t USB_Device_ConfigurationNumber;
-
-@ Indicates if the host is currently allowing the device to issue remote wakeup events. If this
-flag is cleared, the device should not issue remote wakeup events to the host.
-
-@<Global var...@>=
-bool USB_Device_RemoteWakeupEnabled;
 
 @* Endpoint data stream.
 Endpoint data stream transmission and reception management.
