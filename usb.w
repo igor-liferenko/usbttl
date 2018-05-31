@@ -557,26 +557,26 @@ void USB_DeviceTask(void)
 @ @c
 ISR(USB_GEN_vect, ISR_BLOCK)
 {
-  if ((UDINT  & (1 << SUSPI)) && (UDIEN  & (1 << SUSPE))) {
+  if ((UDINT & (1 << SUSPI)) && (UDIEN & (1 << SUSPE))) {
     UDIEN &= ~(1 << SUSPE); /* disable suspend interrupt */
     UDIEN |= 1 << WAKEUPE; /* enable wakeup interrupt */
 
-    @<USB CLK freeze@>@;
+    USBCON |= 1 << FRZCLK;
 
-    @<USB PLL off@>@;
+    PLLCSR = 0; /* PLL off */
 
     USB_DeviceState = DEVICE_STATE_SUSPENDED;
     PORTB |= 1 << PB0;
   }
 
   if ((UDINT & (1 << WAKEUPI)) && (UDIEN & (1 << WAKEUPE))) {
-    @<USB PLL on@>@;
-    while (!@<USB PLL is ready@>) ;
+    PLLCSR |= 1 << PINDIV; /* must be set before starting PLL */
+    PLLCSR |= 1 << PLLE; /* start PLL */
+    while (!(PLLCSR & (1 << PLOCK))) ; /* wait until PLL is ready */
 
-    @<USB CLK unfreeze@>@;
+    USBCON &= ~(1 << FRZCLK);
 
     UDINT &= ~(1 << WAKEUPI); /* clear wakeup flag */
-
     UDIEN &= ~(1 << WAKEUPE); /* disable wakeup interrupt */
     UDIEN |= 1 << SUSPE; /* enable suspend interrupt */
 
@@ -622,36 +622,6 @@ ISR(USB_COM_vect, ISR_BLOCK)
 	Endpoint_SelectEndpoint(PrevSelectedEndpoint);
 }
 
-@ PLL (Phase-Locked Loop) is used to generate the high frequency clock that the USB controller
-requires.
-
-Modern SoCs use so-called PLL to generate (almost) any clock that might be needed for
-interfaces. In simplified terms, the PLL circuit employs a high-frequency VCO
-(Voltage-controlled oscillator), then uses difital frequency dividers on both VCO and
-input clock, and generates a voltage feedback based on the frequency ratio. This feedback
-controls the VCO, such that the entire loop is locked to the desired frequency.
-
-Set |PINDIV| to configure the PLL input prescaler to generate the 8MHz input clock for the
-PLL from 16 MHz clock source.
-
-When the |PLLE| is set, the PLL is started.
-
-@<USB PLL on@>=
-PLLCSR |= 1 << PINDIV; /* must be set before starting PLL */
-PLLCSR |= 1 << PLLE;
-
-@ @<USB PLL off@>=
-PLLCSR = 0;
-
-@ @<USB PLL is ready@>=
-(PLLCSR & (1 << PLOCK))
-
-@ @<USB CLK freeze@>=
-USBCON |=  (1 << FRZCLK);
-
-@ @<USB CLK unfreeze@>=
-USBCON &= ~(1 << FRZCLK);
-
 @ @<Address of USB Device is set@>=
 (UDADDR & (1 << ADDEN))
 
@@ -674,13 +644,27 @@ Regarding the USB connect ``handshake'' protocol, USB doesn't rely on current dr
 The protocol is this: Host port must have VBUS active; VBUS is connected to device; device sees
 the VBUS and pulls-up 1.5k on D+ wire; host sees this connect, and starts enumeration.
 
+PLL (Phase-Locked Loop) is used to generate the high frequency clock that the USB controller
+requires.
+
+Modern SoCs use PLL to generate (almost) any clock that might be needed for
+interfaces. In simplified terms, the PLL circuit employs a high-frequency VCO
+(Voltage-controlled oscillator), then uses difital frequency dividers on both VCO and
+input clock, and generates a voltage feedback based on the frequency ratio. This feedback
+controls the VCO, such that the entire loop is locked to the desired frequency.
+
+Set |PINDIV| to configure the PLL input prescaler to generate the 8MHz input clock for the
+PLL from 16 MHz clock source.
+
+When the |PLLE| is set, the PLL is started.
+
 @<Initialize USB@>=
 UHWCON |= 1 << UVREGE; /* enable pad regulator */
 @#
 PLLFRQ |= (1 << PDIV2); /* default */
-PLLCSR |= 1 << PINDIV; /* 16 MHz input frequency */
+PLLCSR |= 1 << PINDIV; /* must be set before starting PLL */
 PLLCSR |= 1 << PLLE; /* start PLL */
-while (!(PLLCSR & (1 << PLOCK))) ; /* wait until PLL is started */
+while (!(PLLCSR & (1 << PLOCK))) ; /* wait until PLL is ready */
 @#
 USBCON |= 1 << USBE; /* enable USB interface */
 USBCON &= ~(1 << FRZCLK); /* enable clock input */
