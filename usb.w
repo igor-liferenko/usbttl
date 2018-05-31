@@ -601,7 +601,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 		Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
 		                           USB_Device_ControlEndpointSize, 1);
 
-		USB_INT_Enable(USB_INT_RXSTPI);
+		UEIENX |= 1 << RXSTPE; /* enable endpoint interrupt */
 	}
 }
 
@@ -611,14 +611,14 @@ ISR(USB_COM_vect, ISR_BLOCK)
 	uint8_t PrevSelectedEndpoint = get_current_endpoint();
 
 	Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
-	USB_INT_Disable(USB_INT_RXSTPI);
+	UEIENX &= ~(1 << RXSTPE); /* disable endpoint interrupt */
 
   @<Enable global interrupt@>@;
 
 	USB_Device_ProcessControlRequest();
 
 	Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
-	USB_INT_Enable(USB_INT_RXSTPI);
+	UEIENX |= 1 << RXSTPE; /* enable endpoint interrupt */
 	Endpoint_SelectEndpoint(PrevSelectedEndpoint);
 }
 
@@ -1853,88 +1853,6 @@ GCC_MEMORY_BARRIER();
 GCC_MEMORY_BARRIER();
 cli();
 GCC_MEMORY_BARRIER();
-
-@* USBInterrupt.
-USB Controller Interrupt definitions.
-
-Contains definitions required for the correct handling of low level USB
-service routine interrupts from the USB controller.
-
-@<Macros@>=
-#define USB_INT_RXSTPI 6
-
-@ @<Inline...@>=
-inline
-@,@=ALWAYS@>
-void USB_INT_Enable(const uint8_t Interrupt)
-{
-	switch (Interrupt)
-	{
-		case USB_INT_RXSTPI:
-			UEIENX |= (1 << RXSTPE);
-			break;
-		default:
-			break;
-	}
-}
-
-@ @<Inline...@>=
-inline
-@,@=ALWAYS@>
-void USB_INT_Disable(const uint8_t Interrupt)
-{
-	switch (Interrupt)
-	{
-		case USB_INT_RXSTPI:
-			UEIENX &= ~(1 << RXSTPE);
-			break;
-		default:
-			break;
-	}
-}
-
-@ @<Inline...@>=
-inline
-@,@=ALWAYS@>
-void USB_INT_Clear(const uint8_t Interrupt)
-{
-	switch (Interrupt)
-	{
-		case USB_INT_RXSTPI:
-			UEINTX &= ~(1 << RXSTPI);
-			break;
-		default:
-			break;
-	}
-}
-
-@ @<Inline...@>=
-inline
-@,@=ALWAYS@>
-bool USB_INT_IsEnabled(const uint8_t Interrupt)
-{
-	switch (Interrupt)
-	{
-		case USB_INT_RXSTPI:
-			return (UEIENX & (1 << RXSTPE));
-		default:
-			return false;
-	}
-}
-
-@ @<Inline...@>=
-inline
-@,@=ALWAYS@>
-bool USB_INT_HasOccurred(const uint8_t Interrupt)
-{
-	switch (Interrupt)
-	{
-		case USB_INT_RXSTPI:
-			return (UEINTX & (1 << RXSTPI));
-		default:
-			return false;
-	}
-}
 
 @* USBController.
 USB Controller definitions for general USB controller management.
