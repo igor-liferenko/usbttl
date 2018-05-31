@@ -557,8 +557,8 @@ void USB_DeviceTask(void)
 @ @c
 ISR(USB_GEN_vect, ISR_BLOCK)
 {
-  if (USB_INT_HasOccurred(USB_INT_SUSPI) && USB_INT_IsEnabled(USB_INT_SUSPI)) {
-    USB_INT_Disable(USB_INT_SUSPI);
+  if ((UDINT  & (1 << SUSPI)) && (UDIEN  & (1 << SUSPE))) {
+    UDIEN &= ~(1 << SUSPE); /* disable suspend interrupt */
     USB_INT_Enable(USB_INT_WAKEUPI);
 
     @<USB CLK freeze@>@;
@@ -578,7 +578,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
     USB_INT_Clear(USB_INT_WAKEUPI);
 
     USB_INT_Disable(USB_INT_WAKEUPI);
-    USB_INT_Enable(USB_INT_SUSPI);
+    UDIEN |= 1 << SUSPE; /* enable suspend interrupt */
 
     if (USB_Device_ConfigurationNumber)
       USB_DeviceState = DEVICE_STATE_CONFIGURED;
@@ -594,8 +594,8 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 		USB_DeviceState                = DEVICE_STATE_DEFAULT;
 		USB_Device_ConfigurationNumber = 0;
 
-		USB_INT_Clear(USB_INT_SUSPI);
-		USB_INT_Disable(USB_INT_SUSPI);
+		UDINT &= ~(1 << SUSPI); /* clear suspend interrupt */
+		UDIEN &= ~(1 << SUSPE); /* disable suspend interrupt */
 		USB_INT_Enable(USB_INT_WAKEUPI);
 
 		Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
@@ -686,8 +686,7 @@ USBCON |= 1 << USBE; /* enable USB interface */
 USBCON &= ~(1 << FRZCLK); /* enable clock input */
 UDCON &= ~(1 << LSM); /* set full-speed mode */
 Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL, USB_Device_ControlEndpointSize, 1);
-USB_INT_Clear(USB_INT_SUSPI);
-USB_INT_Enable(USB_INT_SUSPI);
+UDIEN |= 1 << SUSPE; /* enable suspend interrupt */
 UDIEN |= 1 << EORSTE; /* trigger interrupt when ``End Of Reset'' flag is set */
 @#
 USBCON |= 1 << OTGPADE; /* enable sensing of VBUS */
@@ -1891,7 +1890,6 @@ service routine interrupts from the USB controller.
 
 @<Macros@>=
 #define USB_INT_WAKEUPI 2
-#define USB_INT_SUSPI 3
 #define USB_INT_RXSTPI 6
 
 @ @<Inline...@>=
@@ -1903,9 +1901,6 @@ void USB_INT_Enable(const uint8_t Interrupt)
 	{
 		case USB_INT_WAKEUPI:
 			UDIEN  |= (1 << WAKEUPE);
-			break;
-		case USB_INT_SUSPI:
-			UDIEN  |= (1 << SUSPE);
 			break;
 		case USB_INT_RXSTPI:
 			UEIENX |= (1 << RXSTPE);
@@ -1925,9 +1920,6 @@ void USB_INT_Disable(const uint8_t Interrupt)
 		case USB_INT_WAKEUPI:
 			UDIEN  &= ~(1 << WAKEUPE);
 			break;
-		case USB_INT_SUSPI:
-			UDIEN  &= ~(1 << SUSPE);
-			break;
 		case USB_INT_RXSTPI:
 			UEIENX &= ~(1 << RXSTPE);
 			break;
@@ -1946,9 +1938,6 @@ void USB_INT_Clear(const uint8_t Interrupt)
 		case USB_INT_WAKEUPI:
 			UDINT  &= ~(1 << WAKEUPI);
 			break;
-		case USB_INT_SUSPI:
-			UDINT  &= ~(1 << SUSPI);
-			break;
 		case USB_INT_RXSTPI:
 			UEINTX &= ~(1 << RXSTPI);
 			break;
@@ -1966,8 +1955,6 @@ bool USB_INT_IsEnabled(const uint8_t Interrupt)
 	{
 		case USB_INT_WAKEUPI:
 			return (UDIEN  & (1 << WAKEUPE));
-		case USB_INT_SUSPI:
-			return (UDIEN  & (1 << SUSPE));
 		case USB_INT_RXSTPI:
 			return (UEIENX & (1 << RXSTPE));
 		default:
@@ -1984,8 +1971,6 @@ bool USB_INT_HasOccurred(const uint8_t Interrupt)
 	{
 		case USB_INT_WAKEUPI:
 			return (UDINT  & (1 << WAKEUPI));
-		case USB_INT_SUSPI:
-			return (UDINT  & (1 << SUSPI));
 		case USB_INT_RXSTPI:
 			return (UEINTX & (1 << RXSTPI));
 		default:
