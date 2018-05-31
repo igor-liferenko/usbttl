@@ -542,7 +542,7 @@ void USB_DeviceTask(void)
 	if (USB_DeviceState == DEVICE_STATE_UNATTACHED)
 	  return;
 
-	uint8_t PrevEndpoint = @[@<Get current endpoint@>@];
+	uint8_t PrevEndpoint = get_current_endpoint();
 
 	Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
 
@@ -608,7 +608,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 @ @c
 ISR(USB_COM_vect, ISR_BLOCK)
 {
-	uint8_t PrevSelectedEndpoint = @[@<Get current endpoint@>@];
+	uint8_t PrevSelectedEndpoint = get_current_endpoint();
 
 	Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
 	USB_INT_Disable(USB_INT_RXSTPI);
@@ -785,8 +785,7 @@ uint8_t Endpoint_WaitUntilReady(void)
   uint16_t PreviousFrameNumber = @[@<Get USB frame number@>@];
 
   while (1) {
-    if (@<Get endpoint direction@>
-                                   == ENDPOINT_DIR_IN) {
+    if (@<Endpoint's direction is IN@>) {
       if (@<Endpoint is ready for an IN packet@>)
         return ENDPOINT_READYWAIT_NO_ERROR;
     }
@@ -1956,9 +1955,6 @@ Functions, macros, variables, enums and types related to the setup and managemen
 @ Endpoint direction masks.
 
 @<Macros@>=
-#define ENDPOINT_DIR_OUT 0x00 /* endpoint address direction mask for an OUT direction (Host to
-  Device) endpoint; it may be ORed with the index of the address within a device to obtain the
-  full endpoint address */
 #define ENDPOINT_DIR_IN 0x80 /* endpoint address direction mask for an IN direction (Device to
   Host) endpoint; it may be ORed with the index of the address within a device to obtain the full
   endpoint address */
@@ -2169,21 +2165,23 @@ Returns total number of bytes in the currently selected Endpoint's FIFO buffer.
 (((uint16_t)UEBCHX << 8) | UEBCLX)
 
 @ Determines the currently selected endpoint's direction.
-Returns the currently selected endpoint's direction, as a \.{ENDPOINT\_DIR\_*} mask.
 
-@<Get endpoint direction@>=
-((UECFG0X & (1 << EPDIR)) ? ENDPOINT_DIR_IN : ENDPOINT_DIR_OUT)
+@<Endpoint's direction is IN@>=
+(UECFG0X & (1 << EPDIR))
 
 @ Get the endpoint address of the currently selected endpoint. This is typically used to save
 the currently selected endpoint so that it can be restored after another endpoint has been
 manipulated.
 
-Returns index of the currently selected endpoint (i.e., full endpoint address).
-
 |UENUM| -- endpoint index.\par
 
-@<Get current endpoint@>=
-(UENUM | @<Get endpoint direction@>)
+@<Inline...@>=
+inline
+@,@=ALWAYS@>
+uint8_t get_current_endpoint(void)
+{
+  return @<Endpoint's direction is IN@> ? (UENUM | ENDPOINT_DIR_IN) : UENUM;
+}
 
 @ Selects the given endpoint address.
 
@@ -3770,11 +3768,11 @@ and endpoints.
 The descriptor is read out by the USB host during the enumeration process when selecting
 a configuration so that the host may correctly communicate with the USB device.
 
-@d CDC_NOTIFICATION_EPADDR (ENDPOINT_DIR_IN  | 2) /* endpoint address of the CDC
+@d CDC_NOTIFICATION_EPADDR (ENDPOINT_DIR_IN | 2) /* endpoint address of the CDC
   device-to-host notification IN endpoint */
-@d CDC_TX_EPADDR (ENDPOINT_DIR_IN  | 3) /* endpoint address of the CDC device-to-host
+@d CDC_TX_EPADDR (ENDPOINT_DIR_IN | 3) /* endpoint address of the CDC device-to-host
   data IN endpoint */
-@d CDC_RX_EPADDR (ENDPOINT_DIR_OUT | 4) /* endpoint address of the CDC host-to-device
+@d CDC_RX_EPADDR 4 /* endpoint address of the CDC host-to-device
   data OUT endpoint */
 @d CDC_NOTIFICATION_EPSIZE 8 /* size in bytes of the CDC device-to-host notification IN
   endpoint */
