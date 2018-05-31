@@ -594,7 +594,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 		USB_DeviceState                = DEVICE_STATE_DEFAULT;
 		USB_Device_ConfigurationNumber = 0;
 
-		UDINT &= ~(1 << SUSPI); /* clear suspend flag */
+		UDINT &= ~(1 << SUSPI); /* clear ``Suspend'' flag */
 		UDIEN &= ~(1 << SUSPE); /* disable suspend interrupt */
 		UDIEN |= 1 << WAKEUPE; /* enable wakeup interrupt */
 
@@ -627,11 +627,11 @@ ISR(USB_COM_vect, ISR_BLOCK)
 
 @* USB Controller definitions for the AVR8 microcontrollers.
 
-@ This section relies on interrupts for the enumeration processes,
+@ This section relies on interrupts,
 so global interrupts must be enabled before this section is called.
 
-The voltage source on the pull-up resistor is taken from VBUS (+5V).
-Host port activates VBUS. When host sees the pull-up, it starts enumeration.
+Enable internal 3.3V USB data pad regulator to regulate the voltage of the D+/D- pads,
+which must be within a 3.0-3.6V range.
 
 PLL (Phase-Locked Loop) is used to generate the high frequency clock that the USB controller
 requires.
@@ -644,20 +644,23 @@ Set |PINDIV| to configure the PLL input prescaler to generate the 8MHz input clo
 PLL from 16 MHz clock source.
 When the |PLLE| is set, the PLL is started.
 
+The voltage source on the pull-up resistor is taken from VBUS (+5V).
+Host port activates VBUS. When host sees the pull-up, it starts enumeration.
+
 @<Initialize USB@>=
-UHWCON |= 1 << UVREGE; /* enable pad regulator */
+UHWCON |= 1 << UVREGE; /* enable data pad regulator */
 @#
 PLLFRQ |= (1 << PDIV2); /* default */
 PLLCSR |= 1 << PINDIV; /* must be set before starting PLL */
 PLLCSR |= 1 << PLLE; /* start PLL */
 while (!(PLLCSR & (1 << PLOCK))) ; /* wait until PLL is ready */
 @#
-USBCON |= 1 << USBE; /* enable USB interface */
+USBCON |= 1 << USBE; /* enable USB controller */
 USBCON &= ~(1 << FRZCLK); /* enable clock input */
 UDCON &= ~(1 << LSM); /* set full-speed mode */
 Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL, USB_Device_ControlEndpointSize, 1);
-UDIEN |= 1 << SUSPE; /* enable suspend interrupt */
-UDIEN |= 1 << EORSTE; /* trigger interrupt when ``End Of Reset'' flag is set */
+UDIEN |= 1 << SUSPE; /* trigger interrupt when ``Suspend'' flag is set in |UDINT| register */
+UDIEN |= 1 << EORSTE; /* trigger interrupt when ``End Of Reset'' flag is set in |UDINT| register */
 @#
 USBCON |= 1 << OTGPADE; /* connect device to VBUS */
 UDCON &= ~(1 << DETACH); /* enable pull-up on D+ */
