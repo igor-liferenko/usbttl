@@ -555,7 +555,7 @@ void USB_DeviceTask(void)
 @* USB controller interrupt service routine management.
 
 @ @c
-ISR(USB_GEN_vect, ISR_BLOCK)
+ISR(USB_GEN_vect)
 {
   if ((UDINT & (1 << SUSPI)) && (UDIEN & (1 << SUSPE))) {
     UDIEN &= ~(1 << SUSPE); /* disable suspend interrupt */
@@ -605,8 +605,10 @@ ISR(USB_GEN_vect, ISR_BLOCK)
   }
 }
 
-@ @c
-ISR(USB_COM_vect, ISR_BLOCK)
+@ Handle endpoint interrupts. Enabled by ``End Of Reset'' interrupt handler.
+
+@c
+ISR(USB_COM_vect)
 {
   uint8_t PrevSelectedEndpoint = get_current_endpoint();
 
