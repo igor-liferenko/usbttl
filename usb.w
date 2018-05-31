@@ -2687,11 +2687,12 @@ See The USB 2.0 specification for more information on standard control requests.
 @<Type definitions@>=
 typedef struct
 {
-	uint8_t  bmRequestType; /* type of the request */
-	uint8_t  bRequest; /* request command code */
-	uint16_t wValue; /* parameter of the request */
-	uint16_t wIndex; /* parameter of the request */
-	uint16_t wLength; /* length of the data to transfer in bytes */
+  uint8_t  bmRequestType; /* type of the request */
+  uint8_t  bRequest; /* request command code */
+  uint16_t wValue; /* parameter of the request */
+  uint16_t wIndex; /* parameter of the request (endpoint index; FIXME: why if
+    it is |uint8_t| it does not work?) */
+  uint16_t wLength; /* length of the data to transfer in bytes */
 } @=PACKED@>
   USB_Request_Header_t;
 
