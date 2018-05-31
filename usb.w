@@ -695,26 +695,26 @@ the VBUS and pulls-up 1.5k on one of D+/D- wires; host sees this connect, and af
 asserts USB\_RESET signaling (SE0 etc.).
 
 @<Initialize USB@>=
-  UHWCON |= 1 << UVREGE; /* enable pad regulator */
+UHWCON |= 1 << UVREGE; /* enable pad regulator */
 
-  PLLCSR |= 1 << PINDIV; /* 16 MHz input frequency */
-  PLLCSR |= 1 << PLLE; /* start PLL */
-  while (!(PLLCSR & (1 << PLOCK))) ; /* wait until PLL is started */
+PLLCSR |= 1 << PINDIV; /* 16 MHz input frequency */
+PLLCSR |= 1 << PLLE; /* start PLL */
+while (!(PLLCSR & (1 << PLOCK))) ; /* wait until PLL is started */
 
-  USBCON |= 1 << USBE; /* enable USB interface */
-  USBCON &= ~(1 << FRZCLK); /* enable clock input */
-  UDCON &= ~(1 << LSM); /* set full speed */
-  Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
-    USB_Device_ControlEndpointSize, 1);
-  USB_INT_Clear(USB_INT_SUSPI);
-  USB_INT_Enable(USB_INT_SUSPI);
-  UDIEN |= 1 << EORSTE; /* trigger interrupt when ``End Of Reset'' flag is set */
+USBCON |= 1 << USBE; /* enable USB interface */
+USBCON &= ~(1 << FRZCLK); /* enable clock input */
+UDCON &= ~(1 << LSM); /* set full speed */
+Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
+  USB_Device_ControlEndpointSize, 1);
+USB_INT_Clear(USB_INT_SUSPI);
+USB_INT_Enable(USB_INT_SUSPI);
+UDIEN |= 1 << EORSTE; /* trigger interrupt when ``End Of Reset'' flag is set */
 
-  USBCON |= 1 << OTGPADE; /* enable VBUS pin to sense the presence of USB host
-    (to allow D+ or D- pull-up to be activated) */
-  UDCON &= ~(1 << DETACH); /* activate D+ or D- pull-up
-    (attach the device to the USB bus, announcing device's
-    presence to host and allowing for enumeration by host) */
+USBCON |= 1 << OTGPADE; /* enable VBUS pin to sense the presence of USB host
+  (to allow D+ or D- pull-up to be activated) */
+UDCON &= ~(1 << DETACH); /* activate D+ or D- pull-up
+  (attach the device to the USB bus, announcing device's
+  presence to host and allowing for enumeration by host) */
 
 @* USB Endpoint definitions.
 
