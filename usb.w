@@ -566,6 +566,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
     @<USB PLL off@>@;
 
     USB_DeviceState = DEVICE_STATE_SUSPENDED;
+    PORTB |= 1 << PB0;
   }
 
   if (USB_INT_HasOccurred(USB_INT_WAKEUPI) && USB_INT_IsEnabled(USB_INT_WAKEUPI)) {
@@ -584,6 +585,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
     else
       USB_DeviceState = @<Address of USB Device is set@> ?
         DEVICE_STATE_ADDRESSED : DEVICE_STATE_POWERED;
+    PORTB |= 1 << PB0;
   }
 
 	if (UDINT & (1 << EORSTI)) {
@@ -925,14 +927,10 @@ are available in the |ControlLineStates.HostToDevice| value inside the CDC inter
 structure passed as a parameter, set as a mask of \.{CDC\_CONTROL\_LINE\_OUT\_*} masks.
 
 @<Set |DTR| pin@>=
-if (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR) {
+if (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR)
   PORTE &= ~(1 << PE6); /* |DTR| pin low */
-  PORTB &= ~(1 << PB0); /* led off */
-}
-else {
+else
   PORTE |= 1 << PE6; /* |DTR| pin high */
-  PORTB |= 1 << PB0; /* led on */
-}
 
 @ Configures the endpoints of a given CDC interface, ready for use. This should be linked to
 the library
@@ -1347,7 +1345,7 @@ void USB_Device_ClearSetFeature(void)
     {
 	if ((uint8_t) USB_ControlRequest.wValue == FEATURE_SEL_DEVICE_REMOTE_WAKEUP) {
 	  USB_Device_RemoteWakeupEnabled = (USB_ControlRequest.bRequest == REQ_SET_FEATURE);
-          PORTC |= 1 << PC7;
+          PORTB |= 1 << PB0;
         }
 	else return;
 	break;
@@ -1682,13 +1680,11 @@ int main(void)
 {
   DDRE |= 1 << PE6;
   PORTE |= 1 << PE6; /* |DTR| pin high */
+
   DDRB |= 1 << PB0;
-  PORTB |= 1 << PB0; /* led on */
 
   DDRD |= 1 << PD5;
   PORTD |= 1 << PD5; /* indicate that microcontroller is connecting */
-
-  DDRC |= 1 << PC7;
 
   clock_prescale_set(clock_div_1); /* disable clock division */
 
