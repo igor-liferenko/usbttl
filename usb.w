@@ -282,7 +282,7 @@ RingBuffer_Remove(&USARTtoUSB_Buffer);
 if (@<USART Data Register Empty@> && !(RingBuffer_IsEmpty(&USBtoUSART_Buffer)))
   UDR1 = RingBuffer_Remove(&USBtoUSART_Buffer); /* transmit a given raw byte through the USART */
 
-@ The transmit buffer can only be written when the |UDRE1| flag in the |UCSR1A| register is set.
+@ The transmit buffer can only be written when the |UDRE1| bit in the |UCSR1A| register is set.
 
 @<USART Data Register Empty@>=
 (UCSR1A & (1 << UDRE1))
@@ -559,7 +559,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 {
   if ((UDINT & (1 << SUSPI)) && (UDIEN & (1 << SUSPE))) {
     UDIEN &= ~(1 << SUSPE); /* disable suspend interrupt */
-    UDIEN |= 1 << WAKEUPE; /* enable wakeup interrupt */
+    UDIEN |= 1 << WAKEUPE; /* trigger interrupt when ``Wakeup'' bit is set in |UDINT| register */
 
     USBCON |= 1 << FRZCLK;
 
@@ -576,7 +576,7 @@ ISR(USB_GEN_vect, ISR_BLOCK)
 
     USBCON &= ~(1 << FRZCLK);
 
-    UDINT &= ~(1 << WAKEUPI); /* clear wakeup flag */
+    UDINT &= ~(1 << WAKEUPI); /* clear wakeup bit */
     UDIEN &= ~(1 << WAKEUPE); /* disable wakeup interrupt */
     UDIEN |= 1 << SUSPE; /* enable suspend interrupt */
 
@@ -589,19 +589,19 @@ ISR(USB_GEN_vect, ISR_BLOCK)
   }
 
   if (UDINT & (1 << EORSTI)) {
-    UDINT &= ~(1 << EORSTI); /* clear ``End Of Reset'' flag */
+    UDINT &= ~(1 << EORSTI); /* clear ``End Of Reset'' bit */
 
     USB_DeviceState = DEVICE_STATE_DEFAULT;
     USB_Device_ConfigurationNumber = 0;
 
-    UDINT &= ~(1 << SUSPI); /* clear ``Suspend'' flag */
+    UDINT &= ~(1 << SUSPI); /* clear ``Suspend'' bit */
     UDIEN &= ~(1 << SUSPE); /* disable suspend interrupt */
     UDIEN |= 1 << WAKEUPE; /* enable wakeup interrupt */
 
     Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
       USB_Device_ControlEndpointSize, 1);
 
-    UEIENX |= 1 << RXSTPE; /* enable endpoint interrupt */
+    UEIENX |= 1 << RXSTPE; /* trigger interrupt when ``Endpoint'' bit in |UDINT| register is set */
   }
 }
 
@@ -659,8 +659,8 @@ USBCON |= 1 << USBE; /* enable USB controller */
 USBCON &= ~(1 << FRZCLK); /* enable clock input */
 UDCON &= ~(1 << LSM); /* set full-speed mode */
 Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL, USB_Device_ControlEndpointSize, 1);
-UDIEN |= 1 << SUSPE; /* trigger interrupt when ``Suspend'' flag is set in |UDINT| register */
-UDIEN |= 1 << EORSTE; /* trigger interrupt when ``End Of Reset'' flag is set in |UDINT| register */
+UDIEN |= 1 << SUSPE; /* trigger interrupt when ``Suspend'' bit is set in |UDINT| register */
+UDIEN |= 1 << EORSTE; /* trigger interrupt when ``End Of Reset'' bit is set in |UDINT| register */
 @#
 USBCON |= 1 << OTGPADE; /* connect device to VBUS */
 UDCON &= ~(1 << DETACH); /* enable pull-up on D+ */
