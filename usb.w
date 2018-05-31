@@ -588,38 +588,38 @@ ISR(USB_GEN_vect, ISR_BLOCK)
     PORTB |= 1 << PB0;
   }
 
-	if (UDINT & (1 << EORSTI)) {
-                UDINT &= ~(1 << EORSTI); /* clear ``End Of Reset'' flag */
+  if (UDINT & (1 << EORSTI)) {
+    UDINT &= ~(1 << EORSTI); /* clear ``End Of Reset'' flag */
 
-		USB_DeviceState                = DEVICE_STATE_DEFAULT;
-		USB_Device_ConfigurationNumber = 0;
+    USB_DeviceState = DEVICE_STATE_DEFAULT;
+    USB_Device_ConfigurationNumber = 0;
 
-		UDINT &= ~(1 << SUSPI); /* clear ``Suspend'' flag */
-		UDIEN &= ~(1 << SUSPE); /* disable suspend interrupt */
-		UDIEN |= 1 << WAKEUPE; /* enable wakeup interrupt */
+    UDINT &= ~(1 << SUSPI); /* clear ``Suspend'' flag */
+    UDIEN &= ~(1 << SUSPE); /* disable suspend interrupt */
+    UDIEN |= 1 << WAKEUPE; /* enable wakeup interrupt */
 
-		Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
-		                           USB_Device_ControlEndpointSize, 1);
+    Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
+      USB_Device_ControlEndpointSize, 1);
 
-		UEIENX |= 1 << RXSTPE; /* enable endpoint interrupt */
-	}
+    UEIENX |= 1 << RXSTPE; /* enable endpoint interrupt */
+  }
 }
 
 @ @c
 ISR(USB_COM_vect, ISR_BLOCK)
 {
-	uint8_t PrevSelectedEndpoint = get_current_endpoint();
+  uint8_t PrevSelectedEndpoint = get_current_endpoint();
 
-	Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
-	UEIENX &= ~(1 << RXSTPE); /* disable endpoint interrupt */
+  Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
+  UEIENX &= ~(1 << RXSTPE); /* disable endpoint interrupt */
 
   @<Enable global interrupt@>@;
 
-	USB_Device_ProcessControlRequest();
+  USB_Device_ProcessControlRequest();
 
-	Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
-	UEIENX |= 1 << RXSTPE; /* enable endpoint interrupt */
-	Endpoint_SelectEndpoint(PrevSelectedEndpoint);
+  Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
+  UEIENX |= 1 << RXSTPE; /* enable endpoint interrupt */
+  Endpoint_SelectEndpoint(PrevSelectedEndpoint);
 }
 
 @ @<Address of USB Device is set@>=
