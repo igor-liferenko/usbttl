@@ -554,26 +554,6 @@ void USB_DeviceTask(void)
 
 @* USB controller interrupt service routine management.
 
-@ @<Func...@>=
-void USB_INT_DisableAllInterrupts(void);
-
-@ @c
-void USB_INT_DisableAllInterrupts(void)
-{
-	USBCON &= ~(1 << VBUSTE);
-	UDIEN   = 0;
-}
-
-@ @<Func...@>=
-void USB_INT_ClearAllInterrupts(void);
-
-@ @c
-void USB_INT_ClearAllInterrupts(void)
-{
-	USBINT = 0;
-	UDINT  = 0;
-}
-
 @ @c
 ISR(USB_GEN_vect, ISR_BLOCK)
 {
