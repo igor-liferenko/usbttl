@@ -474,7 +474,6 @@ Returns size in bytes of the descriptor if it exists, zero or |NO_DESCRIPTOR| ot
 
 @<Func...@>=
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
-                                    const uint16_t wIndex,
                                     const void** const DescriptorAddress);
 
 @ @dSTRING_ID_LANGUAGE 0 /* Supported Languages string descriptor
@@ -484,7 +483,6 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 
 @c
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
-                                    const uint16_t wIndex,
                                     const void** const DescriptorAddress)
 {
 	const uint8_t  DescriptorType   = (wValue >> 8);
@@ -1242,7 +1240,7 @@ void USB_Device_SetConfiguration(void);
 @ @c
 void USB_Device_SetConfiguration(void)
 {
-  if ((uint8_t)USB_ControlRequest.wValue > FIXED_NUM_CONFIGURATIONS)
+  if ((uint8_t) USB_ControlRequest.wValue > FIXED_NUM_CONFIGURATIONS)
 	return;
 
   @<Clear a received SETUP packet on endpoint@>@;
@@ -1313,7 +1311,7 @@ void USB_Device_GetDescriptor(void)
 	}
 
 	if ((DescriptorSize = CALLBACK_USB_GetDescriptor(USB_ControlRequest.wValue,
-             USB_ControlRequest.wIndex, &DescriptorPointer)) == NO_DESCRIPTOR)
+             &DescriptorPointer)) == NO_DESCRIPTOR)
 		return;
 
   @<Clear a received SETUP packet on endpoint@>@;
@@ -1385,7 +1383,7 @@ void USB_Device_ClearSetFeature(void)
     }
     case REQREC_ENDPOINT:
     {
-      if ((uint8_t)USB_ControlRequest.wValue == FEATURE_SEL_ENDPOINT_HALT) {
+      if ((uint8_t) USB_ControlRequest.wValue == FEATURE_SEL_ENDPOINT_HALT) {
         uint8_t endpoint_index = USB_ControlRequest.wIndex;
 
         if (endpoint_index == ENDPOINT_CONTROLEP || endpoint_index >= ENDPOINT_TOTAL_ENDPOINTS)
