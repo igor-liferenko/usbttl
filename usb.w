@@ -460,10 +460,6 @@ type exists, such as the case of string descriptors). The type may be one of
 the standard types defined in the |DescriptorTypes_t| enum, or may be a
 class-specific descriptor type value.
 
-|wIndex| -- The language ID of the string to return if the
-|wValue| type indicates |DTYPE_STRING|, otherwise zero for standard
-descriptors, or as defined in a class-specific standards.
-
 |DescriptorAddress| -- pointer to the descriptor in memory. This should be
 set by the routine to the address of the descriptor.
 
@@ -1155,9 +1151,9 @@ void USB_Device_ProcessControlRequest(void);
 @ @c
 void USB_Device_ProcessControlRequest(void)
 {
-  uint8_t* RequestHeader = (uint8_t*)&USB_ControlRequest;
+  uint8_t* RequestHeader = (uint8_t*) &USB_ControlRequest;
 
-  for (uint8_t RequestHeaderByte = 0; RequestHeaderByte < sizeof(USB_Request_Header_t);
+  for (uint8_t RequestHeaderByte = 0; RequestHeaderByte < sizeof (USB_Request_Header_t);
     RequestHeaderByte++)
 	  *(RequestHeader++) = Endpoint_Read_8();
 
