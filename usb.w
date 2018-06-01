@@ -528,19 +528,13 @@ continuously when the USB system is active (attached to a host)
 in order to manage USB communications. This task may be executed inside an RTOS,
 fast timer ISR or the main user application loop.
 
-The USB task must be serviced within 30ms.
-The task must be serviced at all times.
+This section must be constantly running, within 30ms.
 
-In this program the control endpoint is instead managed via interrupts entirely.
-
-@<Function prototypes@>=
-void USB_DeviceTask(void);
-
-@ @c
-void USB_DeviceTask(void)
-{
+@<Manage control endpoint@>=
+#if 1==0
 	if (USB_DeviceState == DEVICE_STATE_UNATTACHED)
 	  return;
+#endif
 
 	uint8_t PrevEndpoint = get_current_endpoint();
 
@@ -550,28 +544,8 @@ void USB_DeviceTask(void)
 	  USB_Device_ProcessControlRequest();
 
 	UENUM = PrevEndpoint & ENDPOINT_EPNUM_MASK; /* select endpoint */
-}
 
 @* USB controller interrupt service routine management.
-
-@ Handle endpoint interrupts.
-
-@c
-ISR(USB_COM_vect)
-{
-  uint8_t PrevSelectedEndpoint = get_current_endpoint();
-
-  UENUM = ENDPOINT_CONTROLEP; /* select endpoint */
-  UEIENX &= ~(1 << RXSTPE); /* disable endpoint interrupt */
-
-  @<Enable global interrupt@>@;
-
-  USB_Device_ProcessControlRequest();
-
-  UENUM = ENDPOINT_CONTROLEP; /* select endpoint */
-  UEIENX |= 1 << RXSTPE; /* enable endpoint interrupt */
-  UENUM = PrevSelectedEndpoint & ENDPOINT_EPNUM_MASK; /* select endpoint */
-}
 
 @ @<Address of USB Device is set@>=
 (UDADDR & (1 << ADDEN))
@@ -881,8 +855,7 @@ bool CDC_Device_ConfigureEndpoints(USB_ClassInfo_CDC_Device_t* const CDCInterfac
 
 @ General management task for a given CDC class interface, required for the correct operation
 of the interface. This should
-be called frequently in the main program loop, before the master USB management task
-|USB_DeviceTask|.
+be called frequently in the main program loop, before |@<Manage control endpoint@>|.
 
 |CDCInterfaceInfo| -- pointer to a structure containing a CDC Class configuration and state.
 
@@ -1579,8 +1552,7 @@ void EVENT_USB_Device_ConfigurationChanged(void)
 
 @ Once initialized, it is important to maintain the CDC class instance state by repeatedly
 calling the Class Driver's |CDC_Device_USBTask| function in the main program loop.
-
-It needs to be called together with the main USB maintenance routine |USB_DeviceTask|.
+It needs to be called before |@<Manage control endpoint@>|.
 
 @<Main program loop@>=
 int main(void)
@@ -1600,12 +1572,11 @@ int main(void)
 
   @<Initialize USB@>@;
 
-  UEIENX |= 1 << RXSTPE; /* trigger interrupt when ``Endpoint'' bit in |UDINT| register is set */
   @<Enable global interrupt@>@;
   Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
     USB_Device_ControlEndpointSize, 1);
 @#
-#if 0
+#if 1==0
   TCCR0B = (1 << CS02); /* from arduino-usbserial; start the flush timer so that overflows occur
                            rapidly to push received bytes to the USB interface */
 #endif
@@ -1626,7 +1597,7 @@ int main(void)
     @<Load the next byte...@>@;
 
     CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
-    USB_DeviceTask();
+    @<Manage control endpoint@>@;
   }
 }
 
