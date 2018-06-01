@@ -852,10 +852,14 @@ are available in the |ControlLineStates.HostToDevice| value inside the CDC inter
 structure passed as a parameter, set as a mask of \.{CDC\_CONTROL\_LINE\_OUT\_*} masks.
 
 @<Set |DTR| pin@>=
-if (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR)
+if (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR) {
   PORTE &= ~(1 << PE6); /* |DTR| pin low */
-else
+  PORTB &= ~(1 << PB0); /* led off */
+}
+else {
   PORTE |= 1 << PE6; /* |DTR| pin high */
+  PORTB |= 1 << PB0; /* led on */
+}
 
 @ Configures the endpoints of a given CDC interface, ready for use. This should be linked to
 the library
@@ -1594,8 +1598,8 @@ int main(void)
 {
   DDRE |= 1 << PE6;
   PORTE |= 1 << PE6; /* |DTR| pin high */
-
   DDRB |= 1 << PB0;
+  PORTB |= 1 << PB0; /* led on */
 
   DDRD |= 1 << PD5;
   PORTD |= 1 << PD5; /* indicate that microcontroller is connecting */
