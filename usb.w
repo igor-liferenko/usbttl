@@ -599,6 +599,11 @@ When host port detects the pull-up, it asserts
 Device waits until the end of |USB_RESET|. After that it configures control
 endpoint. In my tests the |USB_RESET| lasts for 1446ms. And control endpoint
 may be configured between 1446ms and 1913ms after pulling-up D+ line.
+Note, that ``End Of Reset'' interrupt cannot be used, because it fires
+multiple times (for unknown reason), of which only the last counts.
+So, simply use a delay to configure control endpoint in the middle of this
+interval. If on some host the |PD5| led remains on after plug-in, adjust the delay
+value empirically specifically for that host and create a change-file for it.
 
 @<Initialize USB@>=
 UHWCON |= 1 << UVREGE; /* enable data pad regulator */
