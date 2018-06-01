@@ -1737,52 +1737,6 @@ uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes)
 	return (MaskVal << EPSIZE0);
 }
 
-@ @<Func...@>=
-bool Endpoint_ConfigureEndpoint_Prv(const uint8_t Number,
-                                    const uint8_t UECFG0XData,
-                                    const uint8_t UECFG1XData);
-@ @c
-bool Endpoint_ConfigureEndpoint_Prv(const uint8_t Number,
-                                    const uint8_t UECFG0XData,
-                                    const uint8_t UECFG1XData)
-{
-        for (uint8_t EPNum = Number; EPNum < ENDPOINT_TOTAL_ENDPOINTS; EPNum++) {
-                uint8_t UECFG0XTemp;
-                uint8_t UECFG1XTemp;
-                uint8_t UEIENXTemp;
-
-		UENUM = EPNum; /* select endpoint */
-
-                if (EPNum == Number) {
-                        UECFG0XTemp = UECFG0XData;
-                        UECFG1XTemp = UECFG1XData;
-                        UEIENXTemp  = 0;
-                }
-                else {
-                        UECFG0XTemp = UECFG0X;
-                        UECFG1XTemp = UECFG1X;
-                        UEIENXTemp  = UEIENX;
-                }
-
-                if (!(UECFG1XTemp & (1 << ALLOC)))
-                  continue;
-
-    @<Disable endpoint@>@;
-                UECFG1X &= ~(1 << ALLOC);
-
-                @<Enable endpoint@>@;
-                UECFG0X = UECFG0XTemp;
-                UECFG1X = UECFG1XTemp;
-                UEIENX  = UEIENXTemp;
-
-                if (!@<Endpoint is configured@>)
-                  return false;
-        }
-
-  UENUM = Number & ENDPOINT_EPNUM_MASK; /* select endpoint */
-  return true;
-}
-
 @ Enables the currently selected endpoint so that data can be sent and received through it to
 and from a host.
 
@@ -1853,9 +1807,46 @@ bool Endpoint_ConfigureEndpoint(const uint8_t Address,
 	if (Number >= ENDPOINT_TOTAL_ENDPOINTS)
 	  return false;
 
-	return Endpoint_ConfigureEndpoint_Prv(Number,
-           ((Type << EPTYPE0) | ((Address & ENDPOINT_DIR_IN) ? (1 << EPDIR) : 0)),
-           ((1 << ALLOC) | ((Banks > 1) ? (1 << EPBK0) : 0) | Endpoint_BytesToEPSizeMask(Size)));
+  uint8_t UECFG0XData = (Type << EPTYPE0) | ((Address & ENDPOINT_DIR_IN) ? (1 << EPDIR) : 0);
+  uint8_t UECFG1XData = (1 << ALLOC) | ((Banks > 1) ? (1 << EPBK0) : 0) |
+    Endpoint_BytesToEPSizeMask(Size);
+
+        for (uint8_t EPNum = Number; EPNum < ENDPOINT_TOTAL_ENDPOINTS; EPNum++) {
+                uint8_t UECFG0XTemp;
+                uint8_t UECFG1XTemp;
+                uint8_t UEIENXTemp;
+
+                UENUM = EPNum; /* select endpoint */
+
+                if (EPNum == Number) {
+                        UECFG0XTemp = UECFG0XData;
+                        UECFG1XTemp = UECFG1XData;
+                        UEIENXTemp  = 0;
+                }
+                else {
+                        UECFG0XTemp = UECFG0X;
+                        UECFG1XTemp = UECFG1X;
+                        UEIENXTemp  = UEIENX;
+                }
+
+                if (!(UECFG1XTemp & (1 << ALLOC)))
+                  continue;
+
+    @<Disable endpoint@>@;
+                UECFG1X &= ~(1 << ALLOC);
+
+
+                @<Enable endpoint@>@;
+                UECFG0X = UECFG0XTemp;
+                UECFG1X = UECFG1XTemp;
+                UEIENX  = UEIENXTemp;
+
+                if (!@<Endpoint is configured@>)
+                  return false;
+        }
+
+  UENUM = Number & ENDPOINT_EPNUM_MASK; /* select endpoint */
+  return true;
 }
 
 @ Indicates the number of bytes currently stored in the current endpoint's selected bank.
