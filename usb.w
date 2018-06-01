@@ -1553,16 +1553,17 @@ int main(void)
   PORTD |= 1 << PD5; /* indicate that microcontroller is connecting */
 
   clock_prescale_set(clock_div_1); /* disable clock division */
-@#
+
+  sei();
+
   USB_DeviceState = DEVICE_STATE_DEFAULT;
   USB_Device_ConfigurationNumber = 0;
 
   @<Initialize USB@>@;
 
-  @<Enable global interrupt@>@;
   Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
     USB_Device_ControlEndpointSize, 1);
-@#
+
 #if 1==0
   TCCR0B = (1 << CS02); /* from arduino-usbserial; start the flush timer so that overflows occur
                            rapidly to push received bytes to the USB interface */
@@ -1603,29 +1604,6 @@ such as data
 read and write routines. See each driver's individual documentation for more information
 on the
 class-specific functions.\par}
-
-@* CompilerSpecific.
-Compiler specific definitions for code optimization and correctness.
-
-Compiler specific definitions to expose certain compiler features which may increase
-the level of code optimization
-for a specific compiler, or correct certain issues that may be present such as memory
-barriers for use in conjunction
-with atomic variable access.
-
-Where possible, on alternative compilers, these macros will either have no effect, or
-default to returning a sane value
-so that they can be used in existing code without the need for extra compiler checks in
-the user application code.
-
-@ Forces GCC to create a memory barrier, ensuring that memory accesses are not reordered
-past the barrier point.
-This can be used before ordering-critical operations, to ensure that the compiler does
-not re-order the resulting
-assembly output in an unexpected manner on sections of code that are ordering-specific.
-
-@<Macros@>=
-#define GCC_MEMORY_BARRIER()                  __asm__ __volatile__("" ::: "memory");
 
 @* Attributes.
 Special function/variable attribute macros.
@@ -1668,44 +1646,6 @@ token to reduce the compiled size of the binary at the expense of flexibility.
 
 @<Macros@>=
 #define FIXED_NUM_CONFIGURATIONS         1
-
-@* Common.
-
-@ Retrieves a mask which contains the current state of the global interrupts for the device. This
-value can be stored before altering the global interrupt enable state, before restoring the
-flag(s) back to their previous values after a critical section using
-|@<Set global interrupt mask@>|.
-
-|SREG| contains mask containing the current Global Interrupt Enable Mask bit(s).
-
-@<Get global interrupt mask@>=
-GCC_MEMORY_BARRIER();
-CurrentGlobalInt = SREG;
-
-@ Sets the global interrupt enable state of the microcontroller to the mask passed
-into the function.
-This can be combined with |@<Get global interrupt mask@>| to save and restore the
-Global Interrupt Enable
-Mask bit(s) of the device after a critical section has completed.
-
-@<Set global interrupt mask@>=
-GCC_MEMORY_BARRIER();
-SREG = CurrentGlobalInt;
-GCC_MEMORY_BARRIER();
-
-@ Allow interrupts to be handled.
-
-@<Enable global interrupt@>=
-GCC_MEMORY_BARRIER();
-sei();
-GCC_MEMORY_BARRIER();
-
-@ Prevent interrupts from being handled.
-
-@<Disable global interrupt@>=
-GCC_MEMORY_BARRIER();
-cli();
-GCC_MEMORY_BARRIER();
 
 @* USBController.
 USB Controller definitions for general USB controller management.
@@ -2216,9 +2156,7 @@ inline void USB_Device_GetSerialString(uint16_t* const UnicodeString);
 @ @c
 inline void USB_Device_GetSerialString(uint16_t* const UnicodeString)
 {
-  uint8_t CurrentGlobalInt;
-  @<Get global interrupt mask@>@;
-  @<Disable global interrupt@>@;
+  cli();
 
   uint8_t SigReadAddress = INTERNAL_SERIAL_START_ADDRESS;
 
@@ -2237,7 +2175,7 @@ inline void USB_Device_GetSerialString(uint16_t* const UnicodeString)
 		   (('A' - 10) + SerialByte) : ('0' + SerialByte);
 	}
 
-  @<Set global interrupt mask@>@;
+  sei();
 }
 
 @* StdRequestType.
@@ -3703,7 +3641,7 @@ typedef struct {
 accessing the given
 struct pointer. In some cases GCC will emit non-optimal assembly code when accessing
 a structure through
-a pointer, resulting in a larger binary. When this macro is used on a (non \c const)
+a pointer, resulting in a larger binary. When this macro is used on a (non |const|)
 structure pointer before
 use, it will force GCC to use pointer indirection on the elements rather than direct
 store and load instructions.
@@ -3732,9 +3670,7 @@ inline void RingBuffer_InitBuffer(RingBuffer_t* Buffer,
                                         const uint16_t Size)
 {
   GCC_FORCE_POINTER_ACCESS(Buffer);
-  uint8_t CurrentGlobalInt;
-  @<Get global interrupt mask@>@;
-  @<Disable global interrupt@>@;
+  cli();
 
 	Buffer->In     = DataPtr;
 	Buffer->Out    = DataPtr;
@@ -3743,7 +3679,7 @@ inline void RingBuffer_InitBuffer(RingBuffer_t* Buffer,
 	Buffer->Size   = Size;
 	Buffer->Count  = 0;
 
-  @<Set global interrupt mask@>@;
+  sei();
 }
 
 @ Retrieves the current number of bytes stored in a particular buffer. This value is computed
@@ -3767,13 +3703,11 @@ inline uint16_t RingBuffer_GetCount(RingBuffer_t* const Buffer)
 {
   uint16_t Count;
 
-  uint8_t CurrentGlobalInt;
-  @<Get global interrupt mask@>@;
-  @<Disable global interrupt@>@;
+  cli();
 
   Count = Buffer->Count;
 
-  @<Set global interrupt mask@>@;
+  sei();
 	return Count;
 }
 
@@ -3854,13 +3788,11 @@ inline void RingBuffer_Insert(RingBuffer_t* Buffer, const uint8_t Data)
 	if (++Buffer->In == Buffer->End)
 	  Buffer->In = Buffer->Start;
 
-  uint8_t CurrentGlobalInt;
-  @<Get global interrupt mask@>@;
-  @<Disable global interrupt@>@;
+  cli();
 
 	Buffer->Count++;
 
-  @<Set global interrupt mask@>@;
+  sei();
 }
 
 @ Removes an element from the ring buffer.
@@ -3885,13 +3817,11 @@ inline uint8_t RingBuffer_Remove(RingBuffer_t* Buffer)
 	if (++Buffer->Out == Buffer->End)
 	  Buffer->Out = Buffer->Start;
 
-  uint8_t CurrentGlobalInt;
-  @<Get global interrupt mask@>@;
-  @<Disable global interrupt@>@;
+  cli();
 
 	Buffer->Count--;
 
-  @<Set global interrupt mask@>@;
+  sei();
 
 	return Data;
 }
