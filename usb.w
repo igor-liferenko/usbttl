@@ -338,21 +338,18 @@ line encoding change (containing the serial parity, baud and other configuration
 and may be hooked in the
 user program by declaring a handler function with the same name and parameters listed here.
 The new line encoding
-settings are available in the \c LineEncoding structure inside the CDC interface structure
+settings are available in the |LineEncoding| structure inside the CDC interface structure
 passed as a parameter.
 
-|CDCInterfaceInfo| -- pointer to a structure containing a CDC Class interface configuration
-and state.
-
 @<Func...@>=
-void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo);
+void EVENT_CDC_Device_LineEncodingChanged(void);
 
 @ @c
-void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
+void EVENT_CDC_Device_LineEncodingChanged(void)
 {
 	uint8_t ConfigMask = 0;
 
-	switch (CDCInterfaceInfo->State.LineEncoding.ParityType)
+	switch (VirtualSerial_CDC_Interface.State.LineEncoding.ParityType)
 	{
 		case CDC_PARITY_ODD:
 			ConfigMask = ((1 << UPM11) | (1 << UPM10)); @+
@@ -363,11 +360,11 @@ void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCI
 			break;
 	}
 
-  if (CDCInterfaceInfo->State.LineEncoding.CharFormat == CDC_LINEENCODING_TWO_STOP_BITS)
+  if (VirtualSerial_CDC_Interface.State.LineEncoding.CharFormat == CDC_LINEENCODING_TWO_STOP_BITS)
 	  ConfigMask |= (1 << USBS1);
 @^see datasheet@>
 
-	switch (CDCInterfaceInfo->State.LineEncoding.DataBits)
+	switch (VirtualSerial_CDC_Interface.State.LineEncoding.DataBits)
 	{
 		case 6:
 			ConfigMask |= (1 << UCSZ10); @+
@@ -423,7 +420,7 @@ whereas bps = Bits/Second)
 \item{2.} $F_{OSC}$  = System Clock Frequency (1MHz) (or as per use in case of external oscillator)
 \item{3.} $UBRR$ = Contents of |UBRRL| and |UBRRH| registers
 
-@d BAUD CDCInterfaceInfo->State.LineEncoding.BaudRateBPS
+@d BAUD VirtualSerial_CDC_Interface.State.LineEncoding.BaudRateBPS
 @d UBRRVAL ((F_CPU / 16 + BAUD / 2) / BAUD - 1)
 @d UBRRVAL_2X ((F_CPU / 8 + BAUD / 2) / BAUD - 1)
 @d TOLERANCE 2 /* baud rate tolerance (in percent) that is acceptable during the calculations */
@@ -528,20 +525,21 @@ continuously when the USB system is active (attached to a host)
 in order to manage USB communications. This task may be executed inside an RTOS,
 fast timer ISR or the main user application loop.
 
+Each packet must be acknowledged or sent within 50ms or the host will abort the transfer.
+Use interrupts to manage control endpoint if you are out of this limit.
+
 @<Manage control endpoint@>=
 #if 1==0
+/* FIXME: is it needed? */
 	if (USB_DeviceState == DEVICE_STATE_UNATTACHED)
 	  return;
 #endif
 
-	uint8_t PrevEndpoint = get_current_endpoint();
-
-	UENUM = ENDPOINT_CONTROLEP; /* select endpoint */
-
-	if (@<Endpoint has received a SETUP packet@>)
-	  USB_Device_ProcessControlRequest();
-
-	UENUM = PrevEndpoint & ENDPOINT_EPNUM_MASK; /* select endpoint */
+  uint8_t PrevEndpoint = get_current_endpoint();
+  UENUM = ENDPOINT_CONTROLEP; /* select endpoint */
+  if (@<Endpoint has received a SETUP packet@>)
+    USB_Device_ProcessControlRequest();
+  UENUM = PrevEndpoint & ENDPOINT_EPNUM_MASK; /* select endpoint */
 
 @* USB controller interrupt service routine management.
 
@@ -722,23 +720,13 @@ UDFNUM
 
 @* USB CDC Class driver.
 
-@ Processes incoming control requests from the host, that are directed to the given CDC
-class interface. This should be
-linked to the |EVENT_USB_Device_ControlRequest| event.
-
-|CDCInterfaceInfo| -- pointer to a structure containing a CDC Class configuration
-and state.
-
-@<Func...@>=
-void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo);
+@ @<Func...@>=
+void CDC_Device_ProcessControlRequest(void);
 
 @ @c
-void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
+void CDC_Device_ProcessControlRequest(void)
 {
-  if (!@<Endpoint has received a SETUP packet@>)
-    return;
-
-  if (USB_ControlRequest.wIndex != CDCInterfaceInfo->Config.ControlInterfaceNumber)
+  if (USB_ControlRequest.wIndex != VirtualSerial_CDC_Interface.Config.ControlInterfaceNumber)
     return;
 
   switch (USB_ControlRequest.bRequest)
@@ -750,10 +738,10 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
 
         while (!@<Endpoint is ready for an IN packet@>) ;
 
-        Endpoint_Write_32_LE(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS);
-        Endpoint_Write_8(CDCInterfaceInfo->State.LineEncoding.CharFormat);
-        Endpoint_Write_8(CDCInterfaceInfo->State.LineEncoding.ParityType);
-        Endpoint_Write_8(CDCInterfaceInfo->State.LineEncoding.DataBits);
+        Endpoint_Write_32_LE(VirtualSerial_CDC_Interface.State.LineEncoding.BaudRateBPS);
+        Endpoint_Write_8(VirtualSerial_CDC_Interface.State.LineEncoding.CharFormat);
+        Endpoint_Write_8(VirtualSerial_CDC_Interface.State.LineEncoding.ParityType);
+        Endpoint_Write_8(VirtualSerial_CDC_Interface.State.LineEncoding.DataBits);
 
         @<Clear IN packet on endpoint@>@;
         Endpoint_ClearStatusStage();
@@ -769,15 +757,15 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
             return;
         }
 
-        CDCInterfaceInfo->State.LineEncoding.BaudRateBPS = Endpoint_Read_32_LE();
-        CDCInterfaceInfo->State.LineEncoding.CharFormat = Endpoint_Read_8();
-        CDCInterfaceInfo->State.LineEncoding.ParityType = Endpoint_Read_8();
-        CDCInterfaceInfo->State.LineEncoding.DataBits = Endpoint_Read_8();
+        VirtualSerial_CDC_Interface.State.LineEncoding.BaudRateBPS = Endpoint_Read_32_LE();
+        VirtualSerial_CDC_Interface.State.LineEncoding.CharFormat = Endpoint_Read_8();
+        VirtualSerial_CDC_Interface.State.LineEncoding.ParityType = Endpoint_Read_8();
+        VirtualSerial_CDC_Interface.State.LineEncoding.DataBits = Endpoint_Read_8();
 
         @<Clear OUT packet on endpoint@>@;
         Endpoint_ClearStatusStage();
 
-        EVENT_CDC_Device_LineEncodingChanged(CDCInterfaceInfo);
+        EVENT_CDC_Device_LineEncodingChanged();
       }
       break;
     case CDC_REQ_SET_CONTROL_LINE_STATE:
@@ -786,7 +774,7 @@ void CDC_Device_ProcessControlRequest(USB_ClassInfo_CDC_Device_t* const CDCInter
         @<Clear a received SETUP packet on endpoint@>@;
         Endpoint_ClearStatusStage();
 
-        CDCInterfaceInfo->State.ControlLineStates.HostToDevice = USB_ControlRequest.wValue;
+      VirtualSerial_CDC_Interface.State.ControlLineStates.HostToDevice = USB_ControlRequest.wValue;
 
         @<Set |DTR| pin@>@;
       }
@@ -809,7 +797,7 @@ are available in the |ControlLineStates.HostToDevice| value inside the CDC inter
 structure passed as a parameter, set as a mask of \.{CDC\_CONTROL\_LINE\_OUT\_*} masks.
 
 @<Set |DTR| pin@>=
-if (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR) {
+if (VirtualSerial_CDC_Interface.State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR) {
   PORTE &= ~(1 << PE6); /* |DTR| pin low */
   PORTB &= ~(1 << PB0); /* led off */
 }
@@ -1010,7 +998,9 @@ int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInf
 @ @<Func...@>=
 void USB_Device_ProcessControlRequest(void);
 
-@ @c
+@ Unknown requests are automatically STALLed.
+
+@c
 void USB_Device_ProcessControlRequest(void)
 {
   uint8_t* RequestHeader = (uint8_t*) &USB_ControlRequest;
@@ -1018,10 +1008,9 @@ void USB_Device_ProcessControlRequest(void)
   for (uint8_t RequestHeaderByte = 0; RequestHeaderByte < sizeof (USB_Request_Header_t);
     RequestHeaderByte++)
 	  *(RequestHeader++) = Endpoint_Read_8();
+  /* FIXME: call |@<Endpoint has received a SETUP packet@>| here instead of in |@<Manage...@>|? */
+  CDC_Device_ProcessControlRequest();
 
-  EVENT_USB_Device_ControlRequest();
-
-  if (@<Endpoint has received a SETUP packet@>) {
     uint8_t bmRequestType = USB_ControlRequest.bmRequestType;
 
     switch (USB_ControlRequest.bRequest) {
@@ -1057,9 +1046,9 @@ void USB_Device_ProcessControlRequest(void)
     default:
 	break;
     }
-  }
 
-  if (@<Endpoint has received a SETUP packet@>) {
+  if (@<Endpoint has received a SETUP packet@>) { /* SETUP packet is cleared in above |case|
+    calls */
     @<Clear a received SETUP packet on endpoint@>@;
     @<Stall transaction on endpoint@>@;
   }
@@ -1597,51 +1586,6 @@ int main(void)
     CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
     @<Manage control endpoint@>@;
   }
-}
-
-@ {\emergencystretch=2cm The final standardized Device Class Driver function is the Control
-Request handler function
-|CDC_Device_ProcessControlRequest|, which should be called when the
-|EVENT_USB_Device_ControlRequest| event fires. This function should also be called for
-each class driver instance, using the address of the instance to operate on as the function's
-parameter. The request handler will abort if it is determined that the current request is not
-targeted at the given class driver instance, thus these methods can safely be called
-one-after-another in the event handler with no form of error checking.\par}
-
-Event handler for USB Control Request reception event.
-This event fires when a the USB host issues a control request
-to the mandatory device control endpoint (of address 0). This may either be a standard
-request that the library may have a handler code for internally, or a class specific request
-issued to the device which must be handled appropriately. If a request is not processed in the
-user application via this event, it will be passed to the library for processing internally
-if a suitable handler exists.
-
-This event is time-critical; each packet within the request transaction must be acknowledged or
-sent within 50ms or the host will abort the transfer.
-
-The library internally handles all standard control requests with the exceptions of SYNC FRAME,
-SET DESCRIPTOR and SET INTERFACE. These and all other non-standard control requests
-will be left
-for the user to process via this event if desired. If not handled in the user application or by
-the library internally, unknown requests are automatically STALLed.
-
-Requests should be handled in the same manner as described in the USB 2.0 Specification,
-or appropriate class specification. In all instances, the library has already read the
-request SETUP parameters into the |USB_ControlRequest| structure which should then
-be used by the application to determine how to handle the issued request.
-
-NOTE: |EVENT_USB_Device_ControlRequest| fires before the [request?] [event?] handlers;
-in \hfil\break \.{arduino-usbserial} it fires after [request?] [event?] handlers --- understand
-if there is any difference. (this function is called slightly different name
-in arduino-usbserial - see changelog in lufa tarball)
-
-@<Func...@>=
-void EVENT_USB_Device_ControlRequest(void);
-
-@ @c
-void EVENT_USB_Device_ControlRequest(void)
-{
-	CDC_Device_ProcessControlRequest(&VirtualSerial_CDC_Interface);
 }
 
 @ Class driver also defines a callback function |CALLBACK_USB_GetDescriptor|.
@@ -2427,65 +2371,17 @@ always handled regardless of the request type value).
 
 See Chapter 9 of the USB 2.0 Specification.
 
-@ Passed for other recipients via the |EVENT_USB_Device_ControlRequest| event when received.
-
-@<Macros@>=
+@ @<Macros@>=
 #define REQ_GET_STATUS 0
-
-@ Passed for other recipients via the |EVENT_USB_Device_ControlRequest|
-event when received.
-
-@<Macros@>=
 #define REQ_CLEAR_FEATURE 1
-
-@ Passed for other recipients via the
-|EVENT_USB_Device_ControlRequest| event when received.
-
-@<Macros@>=
 #define REQ_SET_FEATURE 3
-
-@ Passed for other recipients via the
-|EVENT_USB_Device_ControlRequest| event when received.
-
-@<Macros@>=
 #define REQ_SET_ADDRESS 5
-
-@ Passed for other recipients via the
-|EVENT_USB_Device_ControlRequest| event when received.
-
-@<Macros@>=
 #define REQ_GET_DESCRIPTOR 6
-
-@ Passed via the |EVENT_USB_Device_ControlRequest| event when received.
-
-@<Macros@>=
 #define REQ_SET_DESCRIPTOR 7
-
-@ Passed for other recipients via the
-|EVENT_USB_Device_ControlRequest| event when received.
-
-@<Macros@>=
 #define REQ_GET_CONFIGURATION 8
-
-@ Passed for other recipients via the
-|EVENT_USB_Device_ControlRequest| event when received.
-
-@<Macros@>=
 #define REQ_SET_CONFIGURATION 9
-
-@ Passed via the |EVENT_USB_Device_ControlRequest| event when received.
-
-@<Macros@>=
 #define REQ_GET_NITERFACE 10
-
-@ Passed via the |EVENT_USB_Device_ControlRequest| event when received.
-
-@<Macros@>=
 #define REQ_SET_INTERFACE 11
-
-@ Passed via the |EVENT_USB_Device_ControlRequest| event when received.
-
-@<Macros@>=
 #define REQ_SYNCH_FRAME 12
 
 @*1 Feature Selector values.
@@ -2535,8 +2431,7 @@ This contains the function definitions required for the main USB service task,
 which must be called to ensure that the USB connection to a connected USB device
 is maintained.
 
-@ Structure containing the last received Control request for use
-inside of the \hfil\break |EVENT_USB_Device_ControlRequest| event.
+@ Structure containing the last received Control request.
 
 @<Global variables@>=
 USB_Request_Header_t USB_ControlRequest;
