@@ -544,12 +544,12 @@ void USB_DeviceTask(void)
 
 	uint8_t PrevEndpoint = get_current_endpoint();
 
-	Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
+	UENUM = ENDPOINT_CONTROLEP; /* select endpoint */
 
 	if (@<Endpoint has received a SETUP packet@>)
 	  USB_Device_ProcessControlRequest();
 
-	Endpoint_SelectEndpoint(PrevEndpoint);
+	UENUM = PrevEndpoint & ENDPOINT_EPNUM_MASK; /* select endpoint */
 }
 
 @* USB controller interrupt service routine management.
@@ -561,16 +561,16 @@ ISR(USB_COM_vect)
 {
   uint8_t PrevSelectedEndpoint = get_current_endpoint();
 
-  Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
+  UENUM = ENDPOINT_CONTROLEP; /* select endpoint */
   UEIENX &= ~(1 << RXSTPE); /* disable endpoint interrupt */
 
   @<Enable global interrupt@>@;
 
   USB_Device_ProcessControlRequest();
 
-  Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
+  UENUM = ENDPOINT_CONTROLEP; /* select endpoint */
   UEIENX |= 1 << RXSTPE; /* enable endpoint interrupt */
-  Endpoint_SelectEndpoint(PrevSelectedEndpoint);
+  UENUM = PrevSelectedEndpoint & ENDPOINT_EPNUM_MASK; /* select endpoint */
 }
 
 @ @<Address of USB Device is set@>=
@@ -651,21 +651,6 @@ bool Endpoint_ConfigureEndpointTable(const USB_Endpoint_Table_t* const Table,
 	}
 
 	return true;
-}
-
-@ @c
-void Endpoint_ClearEndpoints(void)
-{
-	UEINT = 0;
-
-	for (uint8_t EPNum = 0; EPNum < ENDPOINT_TOTAL_ENDPOINTS; EPNum++)
-	{
-		Endpoint_SelectEndpoint(EPNum);
-		UEIENX  = 0;
-		UEINTX  = 0;
-		UECFG1X = 0;
-		@<Disable endpoint@>@;
-	}
 }
 
 @ Completes the status stage of a control transfer on a CONTROL type endpoint automatically,
@@ -911,7 +896,8 @@ void CDC_Device_USBTask(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
 	  return;
 
-	Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataINEndpoint.Address);
+  UENUM = CDCInterfaceInfo->Config.DataINEndpoint.Address & ENDPOINT_EPNUM_MASK;
+    /* select endpoint */
 
 	if (@<Endpoint is ready for an IN packet@>)
 	  CDC_Device_Flush(CDCInterfaceInfo);
@@ -946,7 +932,8 @@ uint8_t CDC_Device_SendByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo,
  !(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS))
 	  return ENDPOINT_DEV_DISCONNECTED;
 
-	Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataINEndpoint.Address);
+  UENUM = CDCInterfaceInfo->Config.DataINEndpoint.Address & ENDPOINT_EPNUM_MASK;
+    /* select endpoint */
 
 	if (!@<Read-write is allowed for endpoint@>) {
 		@<Clear IN packet on endpoint@>@;
@@ -983,7 +970,8 @@ uint8_t CDC_Device_Flush(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 
   uint8_t ErrorCode;
 
-  Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataINEndpoint.Address);
+  UENUM = CDCInterfaceInfo->Config.DataINEndpoint.Address & ENDPOINT_EPNUM_MASK;
+    /* select endpoint */
 
   if (@<Number of bytes in endpoint@>
                                       == 0)
@@ -1031,7 +1019,8 @@ int16_t CDC_Device_ReceiveByte(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInf
 
   int16_t ReceivedByte = -1;
 
-  Endpoint_SelectEndpoint(CDCInterfaceInfo->Config.DataOUTEndpoint.Address);
+  UENUM = CDCInterfaceInfo->Config.DataOUTEndpoint.Address & ENDPOINT_EPNUM_MASK;
+    /* select endpoint */
 
   if (@<Endpoint received an OUT packet@>) {
     if (@<Number of bytes in endpoint@> != 0)
@@ -1239,11 +1228,11 @@ void USB_Device_GetStatus(void)
 		if (endpoint_index >= ENDPOINT_TOTAL_ENDPOINTS)
 			return;
 
-		Endpoint_SelectEndpoint(endpoint_index);
+                UENUM = endpoint_index & ENDPOINT_EPNUM_MASK; /* select endpoint */
 
 		CurrentStatus = @[@<Endpoint is stalled@>@];
 
-		Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
+                UENUM = ENDPOINT_CONTROLEP; /* select endpoint */
 
 		break;
         }
@@ -1277,7 +1266,7 @@ void USB_Device_ClearSetFeature(void)
         if (endpoint_index == ENDPOINT_CONTROLEP || endpoint_index >= ENDPOINT_TOTAL_ENDPOINTS)
 		  return;
 
-        Endpoint_SelectEndpoint(endpoint_index);
+        UENUM = endpoint_index; /* select endpoint */
 
         if (@<Endpoint is enabled@>) {
           if (USB_ControlRequest.bRequest == REQ_SET_FEATURE)
@@ -1294,7 +1283,7 @@ void USB_Device_ClearSetFeature(void)
       return;
   }
 
-  Endpoint_SelectEndpoint(ENDPOINT_CONTROLEP);
+  UENUM = ENDPOINT_CONTROLEP; /* select endpoint */
 
   @<Clear a received SETUP packet on endpoint@>@;
 
@@ -1605,7 +1594,7 @@ int main(void)
   PORTD |= 1 << PD5; /* indicate that microcontroller is connecting */
 
   clock_prescale_set(clock_div_1); /* disable clock division */
-
+@#
   USB_DeviceState = DEVICE_STATE_DEFAULT;
   USB_Device_ConfigurationNumber = 0;
 
@@ -1615,7 +1604,7 @@ int main(void)
   @<Enable global interrupt@>@;
   Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
     USB_Device_ControlEndpointSize, 1);
-
+@#
 #if 0
   TCCR0B = (1 << CS02); /* from arduino-usbserial; start the flush timer so that overflows occur
                            rapidly to push received bytes to the USB interface */
@@ -1630,7 +1619,8 @@ int main(void)
     @<Only try to read in bytes from the CDC interface if the transmit buffer...@>@;
     uint16_t BufferCount = RingBuffer_GetCount(&USARTtoUSB_Buffer);
     if (BufferCount) {
-      Endpoint_SelectEndpoint(VirtualSerial_CDC_Interface.Config.DataINEndpoint.Address);
+      UENUM = VirtualSerial_CDC_Interface.Config.DataINEndpoint.Address & ENDPOINT_EPNUM_MASK;
+        /* select endpoint */
       @<Try to send more data@>@;
     }
     @<Load the next byte...@>@;
@@ -1908,7 +1898,7 @@ bool Endpoint_ConfigureEndpoint_Prv(const uint8_t Number,
                 uint8_t UECFG1XTemp;
                 uint8_t UEIENXTemp;
 
-                Endpoint_SelectEndpoint(EPNum);
+		UENUM = EPNum; /* select endpoint */
 
                 if (EPNum == Number) {
                         UECFG0XTemp = UECFG0XData;
@@ -1936,8 +1926,8 @@ bool Endpoint_ConfigureEndpoint_Prv(const uint8_t Number,
                   return false;
         }
 
-        Endpoint_SelectEndpoint(Number);
-        return true;
+  UENUM = Number & ENDPOINT_EPNUM_MASK; /* select endpoint */
+  return true;
 }
 
 @ Enables the currently selected endpoint so that data can be sent and received through it to
@@ -2038,21 +2028,6 @@ inline
 uint8_t get_current_endpoint(void)
 {
   return @<Endpoint's direction is IN@> ? (UENUM | ENDPOINT_DIR_IN) : UENUM;
-}
-
-@ Selects the given endpoint address.
-
-Any endpoint operations which do not require the endpoint address to be indicated will
-operate on the currently selected endpoint.
-
-|Address| is endpoint address to select.
-
-@<Inline...@>=
-inline
-@,@=ALWAYS@>
-void Endpoint_SelectEndpoint(const uint8_t Address)
-{
-  UENUM = (Address & ENDPOINT_EPNUM_MASK);
 }
 
 @ Resets the endpoint bank FIFO. This clears all the endpoint banks and resets the USB
