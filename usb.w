@@ -554,26 +554,7 @@ void USB_DeviceTask(void)
 
 @* USB controller interrupt service routine management.
 
-@ Handle ``End Of Reset'' interrupt.
-
-@c
-ISR(USB_GEN_vect)
-{
-  if (UDINT & (1 << EORSTI)) {
-    UDINT &= ~(1 << EORSTI); /* clear ``End Of Reset'' bit */
-
-    USB_DeviceState = DEVICE_STATE_DEFAULT;
-    USB_Device_ConfigurationNumber = 0;
-
-    Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
-      USB_Device_ControlEndpointSize, 1);
-
-    UEIENX |= 1 << RXSTPE; /* trigger interrupt when ``Endpoint'' bit in |UDINT| register is set */
-  }
-}
-
-@ Handle endpoint interrupts. Enabled by ``End Of Reset'' interrupt handler. (Why not in
-|@<Initialize USB@>|?)
+@ Handle endpoint interrupts.
 
 @c
 ISR(USB_COM_vect)
@@ -597,10 +578,7 @@ ISR(USB_COM_vect)
 
 @* USB Controller definitions for the AVR8 microcontrollers.
 
-@ This section relies on interrupts,
-so global interrupts must be enabled before this section is called.
-
-Enable internal 3.3V USB data pad regulator to regulate the voltage of the D+/D- pads,
+@ Enable internal 3.3V USB data pad regulator to regulate the voltage of the D+/D- pads,
 which must be within a 3.0-3.6V range.
 
 PLL (Phase-Locked Loop) is used to generate the high frequency clock that the USB controller
@@ -614,8 +592,13 @@ Set |PINDIV| to configure the PLL input prescaler to generate the 8MHz input clo
 PLL from 16 MHz clock source.
 When the |PLLE| is set, the PLL is started.
 
-The voltage source on the pull-up resistor is taken from VBUS (+5V).
-Host port activates VBUS. When host sees the pull-up, it starts enumeration.
+Host port activates VBUS (+5V).
+The voltage source on the pull-up resistor for D+ line is taken from VBUS.
+When host port detects the pull-up, it asserts
+|USB_RESET| state on the bus, driving both D+ and D- lines to ground.
+Device waits until the end of |USB_RESET|. After that it configures control
+endpoint. In my tests the |USB_RESET| lasts for 1446ms. And control endpoint
+may be configured between 1446ms and 1913ms after pulling-up D+ line.
 
 @<Initialize USB@>=
 UHWCON |= 1 << UVREGE; /* enable data pad regulator */
@@ -628,11 +611,10 @@ while (!(PLLCSR & (1 << PLOCK))) ; /* wait until PLL is ready */
 USBCON |= 1 << USBE; /* enable USB controller */
 USBCON &= ~(1 << FRZCLK); /* enable clock input */
 UDCON &= ~(1 << LSM); /* set full-speed mode */
-Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL, USB_Device_ControlEndpointSize, 1);
-UDIEN |= 1 << EORSTE; /* trigger interrupt when ``End Of Reset'' bit is set in |UDINT| register */
 @#
-USBCON |= 1 << OTGPADE; /* connect device to VBUS */
+USBCON |= 1 << OTGPADE; /* enable VBUS pin */
 UDCON &= ~(1 << DETACH); /* enable pull-up on D+ */
+_delay_ms(1650); /* wait until the end of |USB_RESET| */
 
 @* USB Endpoint definitions.
 
@@ -1617,11 +1599,15 @@ int main(void)
 
   clock_prescale_set(clock_div_1); /* disable clock division */
 
-  @<Enable global interrupt@>@;
+  USB_DeviceState = DEVICE_STATE_DEFAULT;
+  USB_Device_ConfigurationNumber = 0;
 
   @<Initialize USB@>@;
-  USB_DeviceState = DEVICE_STATE_POWERED;
-  USB_Device_ConfigurationNumber = 0;
+
+  UEIENX |= 1 << RXSTPE; /* trigger interrupt when ``Endpoint'' bit in |UDINT| register is set */
+  @<Enable global interrupt@>@;
+  Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
+    USB_Device_ControlEndpointSize, 1);
 
 #if 0
   TCCR0B = (1 << CS02); /* from arduino-usbserial; start the flush timer so that overflows occur
