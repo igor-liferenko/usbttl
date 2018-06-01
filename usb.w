@@ -528,8 +528,6 @@ continuously when the USB system is active (attached to a host)
 in order to manage USB communications. This task may be executed inside an RTOS,
 fast timer ISR or the main user application loop.
 
-This section must be constantly running, within 30ms.
-
 @<Manage control endpoint@>=
 #if 1==0
 	if (USB_DeviceState == DEVICE_STATE_UNATTACHED)
