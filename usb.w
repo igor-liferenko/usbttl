@@ -528,7 +528,7 @@ power cycle
 
 setup device = to host
 
-after power cycle REQ_SET_ADDRESS is called first
+after power cycle REQ_SET_ADDRESS is called first and connection goes fine afterwards
 
 @<Manage control endpoint@>=
 #if 1==0
