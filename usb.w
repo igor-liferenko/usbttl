@@ -309,27 +309,16 @@ RingBuffer_t USARTtoUSB_Buffer;
 uint8_t USARTtoUSB_Buffer_Data[128];
 
 @ ISR to manage the reception of data from the serial port, placing received bytes into
-a circular buffer
-for later transmission to the host.
-
-Macro for the definition of interrupt service routines, so that the compiler can
- insert the required
-  prologue and epilogue code to properly manage the interrupt routine without affecting
- the main thread's
-  state with unintentional side-effects.
-
-  Interrupt handlers written using this macro may still need to be registered with the
- microcontroller's
-  Interrupt Controller (if present) before they will properly handle incoming interrupt events.
+a circular buffer for later transmission to the host.
+Interrupt is enabled via |RXCIE1|.
 
 @c
-ISR(USART1_RX_vect, ISR_BLOCK)
+ISR(USART1_RX_vect)
 {
-	uint8_t ReceivedByte = UDR1;
-@^see datasheet@>
-	if ((USB_DeviceState == DEVICE_STATE_CONFIGURED) &&
- !(RingBuffer_IsFull(&USARTtoUSB_Buffer)))
-	  RingBuffer_Insert(&USARTtoUSB_Buffer, ReceivedByte);
+  uint8_t ReceivedByte = UDR1;
+  if ((USB_DeviceState == DEVICE_STATE_CONFIGURED) &&
+  !(RingBuffer_IsFull(&USARTtoUSB_Buffer)))
+  RingBuffer_Insert(&USARTtoUSB_Buffer, ReceivedByte);
 }
 
 @ CDC class driver event handler for a line encoding change event on a CDC interface. This
