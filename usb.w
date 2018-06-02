@@ -570,8 +570,9 @@ Device waits until the end of |USB_RESET|. After that it configures control
 endpoint. In my tests the |USB_RESET| lasts for 1446ms. And control endpoint
 may be configured between 1446ms and 1913ms after pulling-up D+ line.
 Wait to the middle of this interval before configuring control endpoint.
-If on some host the |PD5| led remains on after plug-in, adjust the delay
-value empirically specifically for that host and create a change-file for it.
+If the |PD5| led remains on after plug-in, adjust the delay
+value empirically specifically for that board and create a change-file for it.
+On chinese clone the tests indicated 74ms--538ms.
 
 @<Initialize USB@>=
 UHWCON |= 1 << UVREGE; /* enable data pad regulator */
