@@ -531,18 +531,19 @@ reason is somewhere else - find it
   uint8_t PrevEndpoint = get_current_endpoint();
   UENUM = ENDPOINT_CONTROLEP; /* select endpoint */
   if (@<Endpoint has received a SETUP packet@>) {
-    /* FIXME: several SETUP packets must be received before EORSTI interrupt can be
-       disabled - find out after which packet EORSTI interrput can be disabled
-       and disable it here, and also ensure that until EORSTI interrupt is
-       disabled (and a short time after it) no two identical SETUP packets
-       arrive */
+    if (reset_count>0) reset_count--;
+    else if ((UDIEN & (1 << EORSTE))) UDIEN &= ~(1 << EORSTE);
     USB_Device_ProcessControlRequest();
   }
   UENUM = PrevEndpoint & ENDPOINT_EPNUM_MASK; /* select endpoint */
 
 @* USB controller interrupt service routine management.
 
-@ @c
+@ It must be done via interrupts because end of reset condition happens in variable time,
+and must react on bouncing also. For clearness, it is disabled after two setup packets were
+received (according to usb protocol).
+
+@c
 ISR(USB_GEN_vect)
 {
   if (UDINT & (1 << EORSTI)) {
@@ -1557,6 +1558,7 @@ It needs to be called before |@<Manage control endpoint@>|.
 @<Main program loop@>=
 int main(void)
 {
+  int reset_count = 2; /* 2 resets are done during enumeration */
   DDRE |= 1 << PE6;
   PORTE |= 1 << PE6; /* |DTR| pin high */
   DDRB |= 1 << PB0;
