@@ -521,6 +521,15 @@ TODO: sometimes device fails to detect - this is not connected with
 the fact that control endpoint is managed not via interrupts (checked it) - the
 reason is somewhere else - find it
 
+conclusion: we must send packet first, only then host sends setup packet (REQ_GET_DESCRIPTOR)
+setup address = to device
+device not accepting address
+power cycle
+
+setup device = to host
+
+after power cycle REQ_SET_ADDRESS is called first
+
 @<Manage control endpoint@>=
 #if 1==0
 /* FIXME: is it needed? */
@@ -537,20 +546,15 @@ reason is somewhere else - find it
        disabled (and a short time after it) no two identical SETUP packets
        arrive */
     USB_Device_ProcessControlRequest();
+first = 0;
+  }
+  else {
+if (first)        Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
+      USB_Device_ControlEndpointSize, 1);
   }
   UENUM = PrevEndpoint & ENDPOINT_EPNUM_MASK; /* select endpoint */
 
 @* USB controller interrupt service routine management.
-
-@ @c
-ISR(USB_GEN_vect)
-{
-  if (UDINT & (1 << EORSTI)) {
-    UDINT &= ~(1 << EORSTI); /* clear ``End Of Reset'' bit for interrupt to fire again */
-    Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
-      USB_Device_ControlEndpointSize, 1);
-  }
-}
 
 @ @<Address of USB Device is set@>=
 (UDADDR & (1 << ADDEN))
@@ -598,7 +602,6 @@ USBCON |= 1 << USBE; /* enable USB controller */
 USBCON &= ~(1 << FRZCLK); /* enable clock input */
 UDCON &= ~(1 << LSM); /* set full-speed mode */
 @#
-UDIEN |= 1 << EORSTE;
 USBCON |= 1 << OTGPADE; /* enable VBUS pin */
 UDCON &= ~(1 << DETACH); /* enable pull-up on D+ */
 
@@ -1044,6 +1047,7 @@ void USB_Device_ProcessControlRequest(void)
 		  USB_Device_SetAddress();
 	break;
     case REQ_GET_DESCRIPTOR:
+if (first) PORTC|=1<<PC7; /* works before power cycle */
 	if ((bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_DEVICE)) ||
 		(bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_INTERFACE)))
 					USB_Device_GetDescriptor();
@@ -1555,8 +1559,10 @@ calling the Class Driver's |CDC_Device_USBTask| function in the main program loo
 It needs to be called before |@<Manage control endpoint@>|.
 
 @<Main program loop@>=
+int first = 1;
 int main(void)
 {
+DDRC |= 1 << PC7;
   DDRE |= 1 << PE6;
   PORTE |= 1 << PE6; /* |DTR| pin high */
   DDRB |= 1 << PB0;
