@@ -530,28 +530,15 @@ reason is somewhere else - find it
 
   uint8_t PrevEndpoint = get_current_endpoint();
   UENUM = ENDPOINT_CONTROLEP; /* select endpoint */
-  if (@<Endpoint has received a SETUP packet@>) {
-    if (reset_count>0) reset_count--;
-    else if ((UDIEN & (1 << EORSTE))) UDIEN &= ~(1 << EORSTE);
+  if (@<Endpoint has received a SETUP packet@>)
     USB_Device_ProcessControlRequest();
-  }
+  if (!done)
+    Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
+      USB_Device_ControlEndpointSize, 1);
+
   UENUM = PrevEndpoint & ENDPOINT_EPNUM_MASK; /* select endpoint */
 
 @* USB controller interrupt service routine management.
-
-@ It must be done via interrupts because end of reset condition happens in variable time,
-and must react on bouncing also. For clearness, it is disabled after two setup packets were
-received (according to usb protocol).
-
-@c
-ISR(USB_GEN_vect)
-{
-  if (UDINT & (1 << EORSTI)) {
-    UDINT &= ~(1 << EORSTI); /* clear ``End Of Reset'' bit for interrupt to fire again */
-    Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
-      USB_Device_ControlEndpointSize, 1);
-  }
-}
 
 @ @<Address of USB Device is set@>=
 (UDADDR & (1 << ADDEN))
@@ -599,7 +586,6 @@ USBCON |= 1 << USBE; /* enable USB controller */
 USBCON &= ~(1 << FRZCLK); /* enable clock input */
 UDCON &= ~(1 << LSM); /* set full-speed mode */
 @#
-UDIEN |= 1 << EORSTE;
 USBCON |= 1 << OTGPADE; /* enable VBUS pin */
 UDCON &= ~(1 << DETACH); /* enable pull-up on D+ */
 
@@ -1041,6 +1027,7 @@ void USB_Device_ProcessControlRequest(void)
 					USB_Device_ClearSetFeature();
 	break;
     case REQ_SET_ADDRESS:
+        done = 1;
 	if (bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_STANDARD | REQREC_DEVICE))
 		  USB_Device_SetAddress();
 	break;
@@ -1556,9 +1543,9 @@ calling the Class Driver's |CDC_Device_USBTask| function in the main program loo
 It needs to be called before |@<Manage control endpoint@>|.
 
 @<Main program loop@>=
+int done = 0;
 int main(void)
 {
-  int reset_count = 2; /* 2 resets are done during enumeration */
   DDRE |= 1 << PE6;
   PORTE |= 1 << PE6; /* |DTR| pin high */
   DDRB |= 1 << PB0;
