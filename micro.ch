@@ -1,13 +1,3 @@
-Adjust attach delay.
-
-@x
-_delay_ms(1650); /* wait until the end of |USB_RESET| */
-@y
-_delay_ms(270); /* wait until the end of |USB_RESET| */
-@z
-
----------------------------------------------------
-
 Invert leds.
 
 @x

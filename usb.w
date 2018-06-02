@@ -543,6 +543,16 @@ Use interrupts to manage control endpoint if you are out of this limit.
 
 @* USB controller interrupt service routine management.
 
+@ @c
+ISR(USB_GEN_vect)
+{
+  if (UDINT & (1 << EORSTI)) {
+    UDINT &= ~(1 << EORSTI); /* clear ``End Of Reset'' bit for interrupt to fire again */
+    Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
+      USB_Device_ControlEndpointSize, 1);
+  }
+}
+
 @ @<Address of USB Device is set@>=
 (UDADDR & (1 << ADDEN))
 
@@ -566,13 +576,16 @@ Host port activates VBUS (+5V).
 The voltage source on the pull-up resistor for D+ line is taken from VBUS.
 When host port detects the pull-up, it asserts
 |USB_RESET| state on the bus, driving both D+ and D- lines to ground.
-Device waits until the end of |USB_RESET|. After that it configures control
-endpoint. In my tests the |USB_RESET| lasts for 1446ms. And control endpoint
-may be configured between 1446ms and 1913ms after pulling-up D+ line.
-Wait to the middle of this interval before configuring control endpoint.
-If the |PD5| led remains on after plug-in, adjust the delay
-value empirically specifically for that board and create a change-file for it.
-On chinese clone the tests indicated 74ms--538ms.
+This happens several times (for unknown reason), so |EORSTE| interrupt must be used
+Simply using \\{\_delay\_ms} makes the following errors appear prior to
+normal logs for the device:
+kernel: [495632.527201] usb 3-1.1: new full-speed USB device number 98 using xhci_hcd
+kernel: [495632.607322] usb 3-1.1: device descriptor read/64, error -32
+kernel: [495632.795324] usb 3-1.1: device descriptor read/64, error -32
+kernel: [495632.983053] usb 3-1.1: new full-speed USB device number 99 using xhci_hcd
+kernel: [495633.063348] usb 3-1.1: device descriptor read/64, error -32
+kernel: [495633.251354] usb 3-1.1: device descriptor read/64, error -32
+kernel: [495633.359724] usb 3-1-port1: attempt power cycle
 
 @<Initialize USB@>=
 UHWCON |= 1 << UVREGE; /* enable data pad regulator */
@@ -586,9 +599,9 @@ USBCON |= 1 << USBE; /* enable USB controller */
 USBCON &= ~(1 << FRZCLK); /* enable clock input */
 UDCON &= ~(1 << LSM); /* set full-speed mode */
 @#
+UDIEN |= 1 << EORSTE;
 USBCON |= 1 << OTGPADE; /* enable VBUS pin */
 UDCON &= ~(1 << DETACH); /* enable pull-up on D+ */
-_delay_ms(1650); /* wait until the end of |USB_RESET| */
 
 @* USB Endpoint definitions.
 
@@ -1561,9 +1574,6 @@ int main(void)
   USB_Device_ConfigurationNumber = 0;
 
   @<Initialize USB@>@;
-
-  Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
-    USB_Device_ControlEndpointSize, 1);
 
 #if 1==0
   TCCR0B = (1 << CS02); /* from arduino-usbserial; start the flush timer so that overflows occur
