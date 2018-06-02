@@ -526,8 +526,14 @@ Use interrupts to manage control endpoint if you are out of this limit.
 
   uint8_t PrevEndpoint = get_current_endpoint();
   UENUM = ENDPOINT_CONTROLEP; /* select endpoint */
-  if (@<Endpoint has received a SETUP packet@>)
+  if (@<Endpoint has received a SETUP packet@>) {
+    /* FIXME: several SETUP packets must be received before EORSTI interrupt can be
+       disabled - find out after which packet EORSTI interrput can be disabled
+       and disable it here, and also ensure that until EORSTI interrupt is
+       disabled (and a short time after it) no two identical SETUP packets
+       arrive */
     USB_Device_ProcessControlRequest();
+  }
   UENUM = PrevEndpoint & ENDPOINT_EPNUM_MASK; /* select endpoint */
 
 @* USB controller interrupt service routine management.
