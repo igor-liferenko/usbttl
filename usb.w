@@ -579,6 +579,16 @@ kernel: [495632.983053] usb 3-1.1: new full-speed USB device number 99 using xhc
 kernel: [495633.063348] usb 3-1.1: device descriptor read/64, error -32
 kernel: [495633.251354] usb 3-1.1: device descriptor read/64, error -32
 kernel: [495633.359724] usb 3-1-port1: attempt power cycle
+Once the USB host has established a USB device is connected, and at what speed it should communicate,
+then the host will reset the USB device and attempt to read the descriptors to identify the USB device
+using a default address.
+This basically follows a question and answer process. The USB host will send a Get_Device_Descriptor
+command and then receive a packet of bytes with the descriptor length and the actual descriptor.
+At the completion of this stage the device is reset and given a unique address before getting the
+configuration and interface descriptors.
+End of reset condition happens in variable time,
+and must react on bouncing also.
+This is why |EORSTE| is used.
 
 @<Initialize USB@>=
 UHWCON |= 1 << UVREGE; /* enable data pad regulator */
