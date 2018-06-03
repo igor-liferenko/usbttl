@@ -532,10 +532,6 @@ reason is somewhere else - find it
   UENUM = ENDPOINT_CONTROLEP; /* select endpoint */
   if (@<Endpoint has received a SETUP packet@>)
     USB_Device_ProcessControlRequest();
-  if (!connected)
-    Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
-      USB_Device_ControlEndpointSize, 1);
-
   UENUM = PrevEndpoint & ENDPOINT_EPNUM_MASK; /* select endpoint */
 
 @* USB controller interrupt service routine management.
@@ -1581,8 +1577,11 @@ int main(void)
     }
     @<Load the next byte...@>@;
 
-    CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
+    if (!connected)
+      Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
+        USB_Device_ControlEndpointSize, 1);
     @<Manage control endpoint@>@;
+    CDC_Device_USBTask(&VirtualSerial_CDC_Interface); /* send data, if any, to host */
   }
 }
 
