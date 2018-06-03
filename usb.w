@@ -1075,11 +1075,8 @@ void USB_Device_ProcessControlRequest(void)
 	break;
     }
 
-    if (@<Endpoint has received a SETUP packet@>) { /* if SETUP packet was not cleared above */
-      PORTD |= 1 << PD5;
-      @<Clear a received SETUP packet on endpoint@>@;
-      @<Stall transaction on endpoint@>@;
-    }
+    if (@<Endpoint has received a SETUP packet@>) /* if SETUP packet was not cleared above */
+      PORTD |= 1 << PD5; /* indicate error */
 }
 
 @ @<Function prototypes@>=
