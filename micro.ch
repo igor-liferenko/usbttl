@@ -1,9 +1,15 @@
 Invert leds.
 
 @x
-    PORTB |= 1 << PB0;
+  PORTB &= ~(1 << PB0); /* led off */
 @y
-    PORTB &= ~(1 << PB0);
+  PORTB |= 1 << PB0;
+@z
+
+@x
+  PORTB |= 1 << PB0; /* led on */
+@y
+  PORTB &= ~(1 << PB0);
 @z
 
 @x
@@ -14,8 +20,8 @@ Invert leds.
 
 @x
   DDRB |= 1 << PB0;
+  PORTB |= 1 << PB0; /* led on */
 @y
-  PORTB |= 1 << PB0;
   DDRB |= 1 << PB0;
 @z
 
