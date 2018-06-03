@@ -1071,11 +1071,13 @@ void USB_Device_ProcessControlRequest(void)
 	if (bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_STANDARD | REQREC_DEVICE))
 		USB_Device_SetConfiguration();
 	break;
-    default:
-        PORTD |= 1 << PD5;
     }
 
-/* TODO: ensure that clear setup packet is called in all of the above */
+    if (@<Endpoint has received a SETUP packet@>) { /* if SETUP packet was not cleared above */
+      PORTD |= 1 << PD5;
+      @<Clear a received SETUP packet on endpoint@>@;
+      @<Stall transaction on endpoint@>@;
+    }
 }
 
 @ @<Function prototypes@>=
