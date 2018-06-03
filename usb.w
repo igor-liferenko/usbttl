@@ -536,6 +536,16 @@ reason is somewhere else - find it
 
 @* USB controller interrupt service routine management.
 
+@ @c
+ISR(USB_GEN_vect)
+{
+  if (UDINT & (1 << EORSTI)) {
+    UDINT &= ~(1 << EORSTI); /* clear ``End Of Reset'' bit for interrupt to fire again */
+    Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
+      USB_Device_ControlEndpointSize, 1);
+  }
+}
+
 @ @<Address of USB Device is set@>=
 (UDADDR & (1 << ADDEN))
 
@@ -582,6 +592,7 @@ USBCON |= 1 << USBE; /* enable USB controller */
 USBCON &= ~(1 << FRZCLK); /* enable clock input */
 UDCON &= ~(1 << LSM); /* set full-speed mode */
 @#
+UDIEN |= 1 << EORSTE;
 USBCON |= 1 << OTGPADE; /* enable VBUS pin */
 UDCON &= ~(1 << DETACH); /* enable pull-up on D+ */
 
@@ -1025,7 +1036,8 @@ void USB_Device_ProcessControlRequest(void)
     case REQ_SET_ADDRESS:
 	if (bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_STANDARD | REQREC_DEVICE))
 		  USB_Device_SetAddress();
-        connected = 1;
+        UDIEN &= ~(1 << EORSTE); /* it is not needed anymore (and helps to ensure that only
+          one interrupt is enabled at a time) */
 	break;
     case REQ_GET_DESCRIPTOR:
 	if ((bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_DEVICE)) ||
@@ -1537,7 +1549,6 @@ calling the Class Driver's |CDC_Device_USBTask| function in the main program loo
 It needs to be called before |@<Manage control endpoint@>|.
 
 @<Main program loop@>=
-int connected = 0;
 int main(void)
 {
   DDRE |= 1 << PE6;
@@ -1577,9 +1588,6 @@ int main(void)
     }
     @<Load the next byte...@>@;
 
-    if (!connected)
-      Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
-        USB_Device_ControlEndpointSize, 1);
     @<Manage control endpoint@>@;
     CDC_Device_USBTask(&VirtualSerial_CDC_Interface); /* send data, if any, to host */
   }
