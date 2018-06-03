@@ -1072,7 +1072,7 @@ void USB_Device_ProcessControlRequest(void)
 		USB_Device_SetConfiguration();
 	break;
     default:
-        PORTB |= 1 << PB0;
+        PORTD |= 1 << PD5;
     }
 
 /* TODO: ensure that clear setup packet is called in all of the above */

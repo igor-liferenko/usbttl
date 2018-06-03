@@ -13,9 +13,9 @@ Invert leds.
 @z
 
 @x
-        PORTB |= 1 << PB0;
+        PORTD |= 1 << PD5;
 @y
-        PORTB &= ~(1 << PB0);
+        PORTD &= ~(1 << PD5);
 @z
 
 @x
