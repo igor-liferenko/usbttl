@@ -613,7 +613,7 @@ USBCON |= 1 << USBE; /* enable USB controller */
 USBCON &= ~(1 << FRZCLK); /* enable clock input */
 UDCON &= ~(1 << LSM); /* set full-speed mode */
 @#
-UDIEN |= 1 << EORSTE;
+UDIEN |= 1 << EORSTE; /* enable End Of Reset interrupt */
 USBCON |= 1 << OTGPADE; /* enable VBUS pin */
 UDCON &= ~(1 << DETACH); /* enable pull-up on D+ */
 
