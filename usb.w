@@ -1533,9 +1533,7 @@ void EVENT_USB_Device_ConfigurationChanged(void);
 void EVENT_USB_Device_ConfigurationChanged(void)
 {
   if (CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface)) /* USB interface is ready */
-    PORTD &= ~(1 << PD5);
-  else /* an error has occurred in the USB interface */
-    PORTD |= 1 << PD5;
+    PORTD &= ~(1 << PD5); /* led off */
 }
 
 @ Once initialized, it is important to maintain the CDC class instance state by repeatedly
