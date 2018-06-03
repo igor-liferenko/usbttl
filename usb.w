@@ -1825,34 +1825,32 @@ bool Endpoint_ConfigureEndpoint(const uint8_t Address,
                                               const uint16_t Size,
                                               const uint8_t Banks)
 {
-	uint8_t Number = (Address & ENDPOINT_EPNUM_MASK);
+	uint8_t Number = Address & ENDPOINT_EPNUM_MASK;
 
 	if (Number >= ENDPOINT_TOTAL_ENDPOINTS)
 	  return false;
 
-  uint8_t UECFG0XData = (Type << EPTYPE0) | ((Address & ENDPOINT_DIR_IN) ? (1 << EPDIR) : 0);
-  uint8_t UECFG1XData = (1 << ALLOC) | ((Banks > 1) ? (1 << EPBK0) : 0) |
-    Endpoint_BytesToEPSizeMask(Size);
-
         for (uint8_t EPNum = Number; EPNum < ENDPOINT_TOTAL_ENDPOINTS; EPNum++) {
-                uint8_t UECFG0XTemp;
-                uint8_t UECFG1XTemp;
-                uint8_t UEIENXTemp;
+                uint8_t UECFG0X_temp;
+                uint8_t UECFG1X_temp;
+                uint8_t UEIENX_temp;
 
                 UENUM = EPNum; /* select endpoint */
 
                 if (EPNum == Number) {
-                        UECFG0XTemp = UECFG0XData;
-                        UECFG1XTemp = UECFG1XData;
-                        UEIENXTemp  = 0;
+                        UECFG0X_temp = Type << EPTYPE0;
+                        if (Address & ENDPOINT_DIR_IN) UECFG0X_temp |= 1 << EPDIR;
+                        UECFG1X_temp = (1 << ALLOC) | Endpoint_BytesToEPSizeMask(Size);
+                        if (Banks > 1) UECFG1X_temp |= 1 << EPBK0;
+                        UEIENX_temp  = 0;
                 }
                 else {
-                        UECFG0XTemp = UECFG0X;
-                        UECFG1XTemp = UECFG1X;
-                        UEIENXTemp  = UEIENX;
+                        UECFG0X_temp = UECFG0X;
+                        UECFG1X_temp = UECFG1X;
+                        UEIENX_temp  = UEIENX;
                 }
 
-                if (!(UECFG1XTemp & (1 << ALLOC)))
+                if (!(UECFG1X_temp & (1 << ALLOC)))
                   continue;
 
     @<Disable endpoint@>@;
@@ -1860,9 +1858,9 @@ bool Endpoint_ConfigureEndpoint(const uint8_t Address,
 
 
                 @<Enable endpoint@>@;
-                UECFG0X = UECFG0XTemp;
-                UECFG1X = UECFG1XTemp;
-                UEIENX  = UEIENXTemp;
+                UECFG0X = UECFG0X_temp;
+                UECFG1X = UECFG1X_temp;
+                UEIENX  = UEIENX_temp;
 
                 if (!@<Endpoint is configured@>)
                   return false;
