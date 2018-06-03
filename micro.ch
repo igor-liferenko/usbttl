@@ -28,12 +28,12 @@ Invert leds.
   DDRB |= 1 << PB0;
   PORTB |= 1 << PB0; /* led on */
 @y
-  DDRB |= 1 << PB0; /* led on by default */
+  DDRB |= 1 << PB0;
 @z
 
 @x
   DDRD |= 1 << PD5;
-  PORTD |= 1 << PD5; /* indicate that microcontroller is connecting */
+  PORTD |= 1 << PD5; /* led on */
 @y
-  DDRD |= 1 << PD5; /* indicate that microcontroller is connecting (led on by default) */
+  DDRD |= 1 << PD5;
 @z

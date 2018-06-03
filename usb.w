@@ -1552,7 +1552,7 @@ int main(void)
   PORTB |= 1 << PB0; /* led on */
 
   DDRD |= 1 << PD5;
-  PORTD |= 1 << PD5; /* indicate that microcontroller is connecting */
+  PORTD |= 1 << PD5; /* led on */
 
   clock_prescale_set(clock_div_1); /* disable clock division */
 
