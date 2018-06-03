@@ -1072,14 +1072,10 @@ void USB_Device_ProcessControlRequest(void)
 		USB_Device_SetConfiguration();
 	break;
     default:
-	break;
+        PORTB |= 1 << PB0;
     }
 
-  if (@<Endpoint has received a SETUP packet@>) { /* SETUP packet is cleared in above |case|
-    calls */
-    @<Clear a received SETUP packet on endpoint@>@;
-    @<Stall transaction on endpoint@>@;
-  }
+/* TODO: ensure that clear setup packet is called in all of the above */
 }
 
 @ @<Function prototypes@>=

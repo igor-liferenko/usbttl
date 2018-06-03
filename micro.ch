@@ -13,6 +13,12 @@ Invert leds.
 @z
 
 @x
+        PORTB |= 1 << PB0;
+@y
+        PORTB &= ~(1 << PB0);
+@z
+
+@x
     PORTD &= ~(1 << PD5); /* led off */
 @y
     PORTD |= 1 << PD5;
