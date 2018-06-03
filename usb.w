@@ -2168,7 +2168,7 @@ inline void USB_Device_GetSerialString(uint16_t* const UnicodeString);
 @ @c
 inline void USB_Device_GetSerialString(uint16_t* const UnicodeString)
 {
-  cli();
+  cli(); /* NOTE: only RXCIE interrupt is used here */
 
   uint8_t SigReadAddress = INTERNAL_SERIAL_START_ADDRESS;
 
@@ -3682,7 +3682,7 @@ inline void RingBuffer_InitBuffer(RingBuffer_t* Buffer,
                                         const uint16_t Size)
 {
   GCC_FORCE_POINTER_ACCESS(Buffer);
-  cli();
+  cli(); /* NOTE: only RXCIE interrupt is used here */
 
 	Buffer->In     = DataPtr;
 	Buffer->Out    = DataPtr;
@@ -3715,7 +3715,7 @@ inline uint16_t RingBuffer_GetCount(RingBuffer_t* const Buffer)
 {
   uint16_t Count;
 
-  cli();
+  cli(); /* NOTE: only RXCIE interrupt is used here */
 
   Count = Buffer->Count;
 
@@ -3800,7 +3800,7 @@ inline void RingBuffer_Insert(RingBuffer_t* Buffer, const uint8_t Data)
 	if (++Buffer->In == Buffer->End)
 	  Buffer->In = Buffer->Start;
 
-  cli();
+  cli(); /* NOTE: only RXCIE interrupt is used here */
 
 	Buffer->Count++;
 
@@ -3829,7 +3829,7 @@ inline uint8_t RingBuffer_Remove(RingBuffer_t* Buffer)
 	if (++Buffer->Out == Buffer->End)
 	  Buffer->Out = Buffer->Start;
 
-  cli();
+  cli(); /* NOTE: only RXCIE interrupt is used here */
 
 	Buffer->Count--;
 
