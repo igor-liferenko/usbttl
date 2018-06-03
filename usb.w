@@ -532,7 +532,7 @@ reason is somewhere else - find it
   UENUM = ENDPOINT_CONTROLEP; /* select endpoint */
   if (@<Endpoint has received a SETUP packet@>)
     USB_Device_ProcessControlRequest();
-  if (!done)
+  if (!connected)
     Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
       USB_Device_ControlEndpointSize, 1);
 
@@ -1027,9 +1027,9 @@ void USB_Device_ProcessControlRequest(void)
 					USB_Device_ClearSetFeature();
 	break;
     case REQ_SET_ADDRESS:
-        done = 1;
 	if (bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_STANDARD | REQREC_DEVICE))
 		  USB_Device_SetAddress();
+        connected = 1;
 	break;
     case REQ_GET_DESCRIPTOR:
 	if ((bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_DEVICE)) ||
@@ -1541,7 +1541,7 @@ calling the Class Driver's |CDC_Device_USBTask| function in the main program loo
 It needs to be called before |@<Manage control endpoint@>|.
 
 @<Main program loop@>=
-int done = 0;
+int connected = 0;
 int main(void)
 {
   DDRE |= 1 << PE6;
