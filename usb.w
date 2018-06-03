@@ -544,6 +544,8 @@ ISR(USB_GEN_vect)
     Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
       USB_Device_ControlEndpointSize, 1);
   }
+  else
+    PORTC |= 1 << PC7; /* DEBUG: if it will never burn, the "if" is not needed */
 }
 
 @ @<Address of USB Device is set@>=
@@ -1568,6 +1570,8 @@ It needs to be called before |@<Manage control endpoint@>|.
 @<Main program loop@>=
 int main(void)
 {
+  DDRC |= 1 << PC7; /* DEBUG */
+
   DDRE |= 1 << PE6;
   PORTE |= 1 << PE6; /* |DTR| pin high */
   DDRB |= 1 << PB0;
