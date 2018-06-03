@@ -593,7 +593,11 @@ getting the
 configuration and interface descriptors.
 End of reset condition happens in variable time,
 and must react on bouncing also.
+Timing is critical.
 This is why |EORSTE| is used.
+
+After first reset (after attach) REQ_GET_DESCRIPTOR is called first, and after
+second reset REQ_SET_ADDRESS is called first.
 
 @<Initialize USB@>=
 UHWCON |= 1 << UVREGE; /* enable data pad regulator */
