@@ -1779,14 +1779,6 @@ to and from a host.
 @<Disable endpoint@>=
 UECONX &= ~(1 << EPEN);
 
-@ Determines if the currently selected endpoint is configured.
-
-Returns boolean true if the currently selected endpoint has been configured, false
-otherwise.
-
-@<Endpoint is configured@>=
-(UESTA0X & (1 << CFGOK))
-
 @ Total number of endpoints (including the default control endpoint at address 0) which may
 be used in the device. Different USB AVR models support different amounts of endpoints,
 this value reflects the maximum number of endpoints for the currently selected AVR model.
@@ -1828,46 +1820,45 @@ bool Endpoint_ConfigureEndpoint(const uint8_t Address,
                                               const uint16_t Size,
                                               const uint8_t Banks)
 {
-	uint8_t Number = Address & ENDPOINT_EPNUM_MASK;
+  uint8_t Number = Address & ENDPOINT_EPNUM_MASK;
 
-	if (Number >= ENDPOINT_TOTAL_ENDPOINTS)
-	  return false;
+  if (Number >= ENDPOINT_TOTAL_ENDPOINTS)
+    return false;
 
-        for (uint8_t EPNum = Number; EPNum < ENDPOINT_TOTAL_ENDPOINTS; EPNum++) {
-                uint8_t UECFG0X_temp;
-                uint8_t UECFG1X_temp;
-                uint8_t UEIENX_temp;
+  for (uint8_t EPNum = Number; EPNum < ENDPOINT_TOTAL_ENDPOINTS; EPNum++) {
+    uint8_t UECFG0X_temp;
+    uint8_t UECFG1X_temp;
+    uint8_t UEIENX_temp;
 
-                UENUM = EPNum; /* select endpoint */
+    UENUM = EPNum; /* select endpoint */
 
-                if (EPNum == Number) {
-                        UECFG0X_temp = Type << EPTYPE0;
-                        if (Address & ENDPOINT_DIR_IN) UECFG0X_temp |= 1 << EPDIR;
-                        UECFG1X_temp = (1 << ALLOC) | Endpoint_BytesToEPSizeMask(Size);
-                        if (Banks > 1) UECFG1X_temp |= 1 << EPBK0;
-                        UEIENX_temp  = 0;
-                }
-                else {
-                        UECFG0X_temp = UECFG0X;
-                        UECFG1X_temp = UECFG1X;
-                        UEIENX_temp  = UEIENX;
-                }
+    if (EPNum == Number) {
+      UECFG0X_temp = Type << EPTYPE0;
+      if (Address & ENDPOINT_DIR_IN) UECFG0X_temp |= 1 << EPDIR;
+      UECFG1X_temp = (1 << ALLOC) | Endpoint_BytesToEPSizeMask(Size);
+      if (Banks > 1) UECFG1X_temp |= 1 << EPBK0;
+      UEIENX_temp  = 0;
+    }
+    else {
+      UECFG0X_temp = UECFG0X;
+      UECFG1X_temp = UECFG1X;
+      UEIENX_temp  = UEIENX;
+    }
 
-                if (!(UECFG1X_temp & (1 << ALLOC)))
-                  continue;
+    if (!(UECFG1X_temp & (1 << ALLOC)))
+      continue;
 
     @<Disable endpoint@>@;
-                UECFG1X &= ~(1 << ALLOC);
+    UECFG1X &= ~(1 << ALLOC);
 
+    @<Enable endpoint@>@;
+    UECFG0X = UECFG0X_temp;
+    UECFG1X = UECFG1X_temp;
+    UEIENX = UEIENX_temp;
 
-                @<Enable endpoint@>@;
-                UECFG0X = UECFG0X_temp;
-                UECFG1X = UECFG1X_temp;
-                UEIENX  = UEIENX_temp;
-
-                if (!@<Endpoint is configured@>)
-                  return false;
-        }
+    if (!(UESTA0X & (1 << CFGOK))) /* endpoint is not configured */
+      return false;
+  }
 
   UENUM = Number & ENDPOINT_EPNUM_MASK; /* select endpoint */
   return true;
