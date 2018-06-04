@@ -544,7 +544,7 @@ ISR(USB_GEN_vect)
 {
   if (UDINT & (1 << EORSTI)) {
     UDINT &= ~(1 << EORSTI); /* clear ``End Of Reset'' bit for interrupt to fire again */
-    Endpoint_ConfigureEndpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
+    configure_endpoint(ENDPOINT_CONTROLEP, EP_TYPE_CONTROL,
       USB_Device_ControlEndpointSize, 1);
   }
   else
@@ -650,7 +650,7 @@ bool Endpoint_ConfigureEndpointTable(const USB_Endpoint_Table_t* const Table,
 		if (!(Table[i].Address))
 		  continue;
 
- if (!(Endpoint_ConfigureEndpoint(Table[i].Address, Table[i].Type, Table[i].Size, Table[i].Banks)))
+ if (!(configure_endpoint(Table[i].Address, Table[i].Type, Table[i].Size, Table[i].Banks)))
 		  return false;
 	}
 
@@ -1765,20 +1765,6 @@ uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes)
 	return (MaskVal << EPSIZE0);
 }
 
-@ Enables the currently selected endpoint so that data can be sent and received through it to
-and from a host.
-
-Note, that endpoints must first be configured properly via |Endpoint_ConfigureEndpoint|.
-
-@<Enable endpoint@>=
-UECONX |= (1 << EPEN);
-
-@ Disables the currently selected endpoint so that data cannot be sent and received through it
-to and from a host.
-
-@<Disable endpoint@>=
-UECONX &= ~(1 << EPEN);
-
 @ Total number of endpoints (including the default control endpoint at address 0) which may
 be used in the device. Different USB AVR models support different amounts of endpoints,
 this value reflects the maximum number of endpoints for the currently selected AVR model.
@@ -1815,7 +1801,7 @@ Returns true if the configuration succeeded, false otherwise.
 @<Inline...@>=
 inline
 @,@=ALWAYS@>
-bool Endpoint_ConfigureEndpoint(const uint8_t Address,
+bool configure_endpoint(const uint8_t Address,
                                               const uint8_t Type,
                                               const uint16_t Size,
                                               const uint8_t Banks)
@@ -1845,13 +1831,16 @@ bool Endpoint_ConfigureEndpoint(const uint8_t Address,
       UEIENX_temp  = UEIENX;
     }
 
-    if (!(UECFG1X_temp & (1 << ALLOC)))
+    if (!(UECFG1X_temp & (1 << ALLOC))) /* ??? */
       continue;
 
-    @<Disable endpoint@>@;
-    UECFG1X &= ~(1 << ALLOC);
+    UECONX &= ~(1 << EPEN); /* disable endpoint so that data cannot be sent and received through it
+      to and from a host */
+    UECFG1X &= ~(1 << ALLOC); /* ??? */
 
-    @<Enable endpoint@>@;
+    UECONX |= (1 << EPEN); /* enable endpoint so that data can be sent and received through it to
+      and from a host */
+/*FIXME: enable after configuring?*/
     UECFG0X = UECFG0X_temp;
     UECFG1X = UECFG1X_temp;
     UEIENX = UEIENX_temp;
