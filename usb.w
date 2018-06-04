@@ -536,7 +536,10 @@ reason is somewhere else - find it
 
 @* USB controller interrupt service routine management.
 
-@ @c
+@ EORSTI and EORSTE are needed because several interrupts may be in USB_GEN_vect
+and it is necessary to distinguesh them .....
+
+@c
 ISR(USB_GEN_vect)
 {
   if (UDINT & (1 << EORSTI)) {
@@ -600,6 +603,8 @@ This is why |EORSTE| is used.
 
 After first reset (after attach) REQ_GET_DESCRIPTOR is called first, and after
 second reset REQ_SET_ADDRESS is called first.
+
+TODO: ensure that the chip is not configured to start on internal RC oscillator
 
 TODO: compare the following with "USB Software Operating modes" in datasheet again
 @<Initialize USB@>=
