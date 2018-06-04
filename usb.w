@@ -1795,12 +1795,12 @@ bool configure_endpoint(const uint8_t Address,
 {
   uint8_t Number = Address & ENDPOINT_EPNUM_MASK;
 
-  if (Number >= ENDPOINT_TOTAL_ENDPOINTS)
+  if (Number >= ENDPOINT_TOTAL_ENDPOINTS) /* FIXME: check through the code if it is needed */
     return false;
 
   UENUM = Number; /* select endpoint */
 
-/* FIXME: if it is not configured, it does not need disabling, right? */
+/* FIXME: if it is not configured, it does not need disabling, right? - check through the code */
   UECONX &= ~(1 << EPEN); /* disable endpoint */
   UECFG1X &= ~(1 << ALLOC); /* free endpoint memory */
 
