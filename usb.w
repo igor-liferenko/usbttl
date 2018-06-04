@@ -1815,8 +1815,6 @@ Note, that different endpoints may have different maximum packet sizes based on 
 endpoint's index - please refer to the microcontroller's datasheet to determine the maximum bank
 size for each endpoint.
 
-The default control endpoint is configured {\it not via this function - where\/}?
-
 Note, that this routine will automatically select the specified endpoint upon success. Upon
 failure, the endpoint which failed to reconfigure correctly will be selected.
 
