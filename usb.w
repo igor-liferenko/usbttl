@@ -1772,17 +1772,7 @@ this value reflects the maximum number of endpoints for the currently selected A
 @<Macros@>=
 #define ENDPOINT_TOTAL_ENDPOINTS 7
 
-@ Configures the specified endpoint address with the given endpoint type, bank size and
-number of hardware
-banks. Once configured, the endpoint may be read from or written to, depending on its
-direction.
-
-|Address| is endpoint address to configure.
-
-|Type| is type of endpoint to configure, a \.{EP\_TYPE\_*} mask. Not all
-endpoint types are available on Low Speed USB devices - refer to the USB 2.0 specification.
-
-|Size| is size of the endpoint's bank, where packets are stored before they
+@ |Size| is size of the endpoint's bank, where packets are stored before they
 are transmitted to the USB host, or after they have been received from the USB host
 (depending on the endpoint's data direction). The bank size must indicate the
 maximum packet size that the endpoint can handle.
@@ -1793,63 +1783,36 @@ Note, that different endpoints may have different maximum packet sizes based on 
 endpoint's index - please refer to the microcontroller's datasheet to determine the maximum bank
 size for each endpoint.
 
-Note, that this routine will automatically select the specified endpoint upon success. Upon
-failure, the endpoint which failed to reconfigure correctly will be selected.
-
 Returns true if the configuration succeeded, false otherwise.
 
 @<Inline...@>=
 inline
 @,@=ALWAYS@>
 bool configure_endpoint(const uint8_t Address,
-                                              const uint8_t Type,
-                                              const uint16_t Size,
-                                              const uint8_t Banks)
+                        const uint8_t Type,
+                        const uint16_t Size,
+                        const uint8_t Banks)
 {
   uint8_t Number = Address & ENDPOINT_EPNUM_MASK;
 
   if (Number >= ENDPOINT_TOTAL_ENDPOINTS)
     return false;
 
-  for (uint8_t EPNum = Number; EPNum < ENDPOINT_TOTAL_ENDPOINTS; EPNum++) {
-    uint8_t UECFG0X_temp;
-    uint8_t UECFG1X_temp;
-    uint8_t UEIENX_temp;
+  UENUM = Number; /* select endpoint */
 
-    UENUM = EPNum; /* select endpoint */
+/* FIXME: if it is not configured, it does not need disabling, right? */
+  UECONX &= ~(1 << EPEN); /* disable endpoint */
+  UECFG1X &= ~(1 << ALLOC); /* free endpoint memory */
 
-    if (EPNum == Number) {
-      UECFG0X_temp = Type << EPTYPE0;
-      if (Address & ENDPOINT_DIR_IN) UECFG0X_temp |= 1 << EPDIR;
-      UECFG1X_temp = (1 << ALLOC) | Endpoint_BytesToEPSizeMask(Size);
-      if (Banks > 1) UECFG1X_temp |= 1 << EPBK0;
-      UEIENX_temp  = 0;
-    }
-    else {
-      UECFG0X_temp = UECFG0X;
-      UECFG1X_temp = UECFG1X;
-      UEIENX_temp  = UEIENX;
-    }
+  UECONX |= (1 << EPEN); /* activate endpoint */
+  UECFG0X = (Type << EPTYPE0) | ((Address & ENDPOINT_DIR_IN) ? (1 << EPDIR) : 0); /* configure
+    direction and type */
+  UECFG1X = (1 << ALLOC) | Endpoint_BytesToEPSizeMask(Size) | ((Banks > 1)?(1 << EPBK0):0);
+    /* allocate memory, configure size and banks */
 
-    if (!(UECFG1X_temp & (1 << ALLOC))) /* ??? */
-      continue;
+  if (!(UESTA0X & (1 << CFGOK))) /* endpoint is not configured */
+    return false;
 
-    UECONX &= ~(1 << EPEN); /* disable endpoint so that data cannot be sent and received through it
-      to and from a host */
-    UECFG1X &= ~(1 << ALLOC); /* ??? */
-
-    UECONX |= (1 << EPEN); /* enable endpoint so that data can be sent and received through it to
-      and from a host */
-/*FIXME: enable after configuring?*/
-    UECFG0X = UECFG0X_temp;
-    UECFG1X = UECFG1X_temp;
-    UEIENX = UEIENX_temp;
-
-    if (!(UESTA0X & (1 << CFGOK))) /* endpoint is not configured */
-      return false;
-  }
-
-  UENUM = Number & ENDPOINT_EPNUM_MASK; /* select endpoint */
   return true;
 }
 
