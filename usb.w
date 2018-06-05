@@ -1597,8 +1597,8 @@ int main(void)
     }
     @<Load the next byte...@>@;
 
-    @<Manage control endpoint@>@;
     CDC_Device_USBTask(&VirtualSerial_CDC_Interface); /* send data, if any, to host */
+    @<Manage control endpoint@>@;
   }
 }
 
