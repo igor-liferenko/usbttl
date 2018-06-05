@@ -531,7 +531,9 @@ Use interrupts to manage control endpoint if you are out of this limit.
 
 @* USB controller interrupt service routine management.
 
-@ EORSTI and EORSTE are needed because several interrupts may be in |USB_GEN_vect|
+@ Configure control endpoint.
+
+EORSTI and EORSTE are needed because several interrupts may be in |USB_GEN_vect|
 and it is necessary to distinguish them .....
 
 @c
@@ -542,6 +544,7 @@ ISR(USB_GEN_vect)
 
     if (UENUM != 0) PORTC |= 1 << PC7;
     if (UECONX & (1 << EPEN)) PORTC |= 1 << PC7;
+    if (UECFG1X & (1 << ALLOC)) PORTC |= 1 << PC7;
 
 /* FIXME: which one of these may be moved to before attaching? */
     UECONX |= (1 << EPEN); /* activate endpoint */
