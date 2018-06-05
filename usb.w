@@ -536,8 +536,8 @@ reason is somewhere else - find it
 
 @* USB controller interrupt service routine management.
 
-@ EORSTI and EORSTE are needed because several interrupts may be in USB_GEN_vect
-and it is necessary to distinguesh them .....
+@ EORSTI and EORSTE are needed because several interrupts may be in |USB_GEN_vect|
+and it is necessary to distinguish them .....
 
 @c
 ISR(USB_GEN_vect)
@@ -575,15 +575,6 @@ The voltage source on the pull-up resistor for D+ line is taken from VBUS.
 When host port detects the pull-up, it asserts
 |USB_RESET| state on the bus, driving both D+ and D- lines to ground.
 This happens several times (for unknown reason), so |EORSTE| interrupt must be used
-Simply using \\{\_delay\_ms} makes the following errors appear prior to
-normal logs for the device:
-kernel: [495632.527201] usb 3-1.1: new full-speed USB device number 98 using xhci_hcd
-kernel: [495632.607322] usb 3-1.1: device descriptor read/64, error -32
-kernel: [495632.795324] usb 3-1.1: device descriptor read/64, error -32
-kernel: [495632.983053] usb 3-1.1: new full-speed USB device number 99 using xhci_hcd
-kernel: [495633.063348] usb 3-1.1: device descriptor read/64, error -32
-kernel: [495633.251354] usb 3-1.1: device descriptor read/64, error -32
-kernel: [495633.359724] usb 3-1-port1: attempt power cycle
 Once the USB host has established a USB device is connected, and at what speed it
 should communicate,
 then the host will reset the USB device and attempt to read the descriptors to
