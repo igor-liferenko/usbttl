@@ -1905,6 +1905,8 @@ The currently selected endpoint remains stalled until either the
 is called, or the host issues a CLEAR FEATURE request to the device for the currently selected
 endpoint.
 
+TODO: remove it from everywhere
+
 @<Stall transaction on endpoint@>=
 UECONX |= (1 << STALLRQ);
 
