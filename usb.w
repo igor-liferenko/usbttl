@@ -550,8 +550,7 @@ ISR(USB_GEN_vect)
 
 /* FIXME: which one of these may be moved to before attaching? */
     UECONX |= (1 << EPEN); /* activate endpoint */
-    UECFG1X = (1 << ALLOC) | Endpoint_BytesToEPSizeMask(USB_Device_ControlEndpointSize);
-      /* allocate memory, configure size and banks */
+    UECFG1X = (1 << ALLOC); /* allocate memory */
   }
 //  else
 //    PORTC |= 1 << PC7; /* DEBUG: if it will never burn, the "if" is not needed */
