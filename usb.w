@@ -575,26 +575,14 @@ Host port activates VBUS (+5V).
 The voltage source on the pull-up resistor for D+ line is taken from VBUS.
 When host port detects the pull-up, it asserts
 |USB_RESET| state on the bus, driving both D+ and D- lines to ground.
-This happens several times (for unknown reason), so |EORSTE| interrupt must be used
-Once the USB host has established a USB device is connected, and at what speed it
-should communicate,
-then the host will reset the USB device and attempt to read the descriptors to
-identify the USB device
-using a default address.
-This basically follows a question and answer process. The USB host will send a
-|Get_Device_Descriptor|
+Device waits until the end of |USB_RESET|. After that it sends to the host
+the descriptors to identify itself using a default address.
+After that the host will send a |REQ_GET_DESCRIPTOR|
 command and then receive a packet of bytes with the descriptor length and the actual
-descriptor.
-At the completion of this stage the device is reset and given a unique address before
-getting the
-configuration and interface descriptors.
-End of reset condition happens in variable time,
-and must react on bouncing also.
-Timing is critical.
-This is why |EORSTE| is used.
-
-After first reset (i.e., after attach) |REQ_GET_DESCRIPTOR| is called first, and after
-second reset \hfil\break |REQ_SET_ADDRESS| is called first.
+descriptor. Then the host resets the device and sends a unique address
+(|REQ_SET_ADDRESS|) before getting the configuration and interface descriptors.
+End of reset condition happens in variable time, and must react on bouncing also.
+Timing is critical. This is why |EORSTE| is used.
 
 TODO: ensure that the chip is not configured to start on internal RC oscillator (see CKSEL fuses
 and "Calibrated Internal RC Oscillator" in datasheet)
