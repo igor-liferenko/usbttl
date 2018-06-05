@@ -516,10 +516,6 @@ fast timer ISR or the main user application loop.
 Each packet must be acknowledged or sent within 50ms or the host will abort the transfer.
 Use interrupts to manage control endpoint if you are out of this limit.
 
-TODO: sometimes device fails to detect - this is not connected with
-the fact that control endpoint is managed not via interrupts (checked it) - the
-reason is somewhere else - find it
-
 @<Manage control endpoint@>=
 #if 1==0
 /* FIXME: is it needed? */
