@@ -316,9 +316,8 @@ Interrupt is enabled via |RXCIE1|.
 ISR(USART1_RX_vect)
 {
   uint8_t ReceivedByte = UDR1;
-  if ((USB_DeviceState == DEVICE_STATE_CONFIGURED) &&
-  !(RingBuffer_IsFull(&USARTtoUSB_Buffer)))
-  RingBuffer_Insert(&USARTtoUSB_Buffer, ReceivedByte);
+  if ((USB_DeviceState == DEVICE_STATE_CONFIGURED) && !(RingBuffer_IsFull(&USARTtoUSB_Buffer)))
+    RingBuffer_Insert(&USARTtoUSB_Buffer, ReceivedByte);
 }
 
 @ CDC class driver event handler for a line encoding change event on a CDC interface. This
