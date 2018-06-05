@@ -593,7 +593,7 @@ Timing is critical.
 This is why |EORSTE| is used.
 
 After first reset (i.e., after attach) |REQ_GET_DESCRIPTOR| is called first, and after
-second reset REQ_SET_ADDRESS is called first.
+second reset \hfil\break |REQ_SET_ADDRESS| is called first.
 
 TODO: ensure that the chip is not configured to start on internal RC oscillator
 
