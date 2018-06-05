@@ -1027,7 +1027,7 @@ void USB_Device_ProcessControlRequest(void)
     RequestHeaderByte++)
 	  *(RequestHeader++) = Endpoint_Read_8();
   /* FIXME: call |@<Endpoint has received a SETUP packet@>| here instead of in |@<Manage...@>|? */
-  CDC_Device_ProcessControlRequest();
+  CDC_Device_ProcessControlRequest(); /* TODO: move from there directly here */
 
     uint8_t bmRequestType = USB_ControlRequest.bmRequestType;
 
@@ -1065,8 +1065,8 @@ void USB_Device_ProcessControlRequest(void)
 	break;
     }
 
-    if (@<Endpoint has received a SETUP packet@>) /* if SETUP packet was not cleared above */
-      PORTD |= 1 << PD5; /* indicate error */
+  if (@<Endpoint has received a SETUP packet@>) /* if SETUP packet was not cleared above */
+    PORTD |= 1 << PD5; /* indicate error */
 }
 
 @ @<Function prototypes@>=
