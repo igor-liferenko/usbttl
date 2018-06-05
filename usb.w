@@ -569,6 +569,7 @@ controls the VCO, such that the entire loop is locked to the desired frequency.
 Set |PINDIV| to configure the PLL input prescaler to generate the 8MHz input clock for the
 PLL from 16 MHz clock source.
 When the |PLLE| is set, the PLL is started.
+Note, that PLL internal VCO clock reference is 48 MHz by default.
 
 Host port activates VBUS (+5V).
 The voltage source on the pull-up resistor for D+ line is taken from VBUS.
@@ -601,13 +602,12 @@ TODO: compare the following with "USB Software Operating modes" in datasheet aga
 @<Initialize USB@>=
 UHWCON |= 1 << UVREGE; /* enable data pad regulator */
 @#
-PLLFRQ |= (1 << PDIV2); /* default */
 PLLCSR |= 1 << PINDIV; /* must be set before starting PLL */
 PLLCSR |= 1 << PLLE; /* start PLL */
 while (!(PLLCSR & (1 << PLOCK))) ; /* wait until PLL is ready */
 @#
 USBCON |= 1 << USBE; /* enable USB controller */
-USBCON &= ~(1 << FRZCLK); /* enable clock input */
+USBCON &= ~(1 << FRZCLK); /* enable USB controller clock input */
 @#
 UDIEN |= 1 << EORSTE; /* enable End Of Reset interrupt */
 USBCON |= 1 << OTGPADE; /* enable VBUS pin */
