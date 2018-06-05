@@ -1567,7 +1567,8 @@ int main(void)
   DDRD |= 1 << PD5;
   PORTD |= 1 << PD5; /* led on */
 
-  clock_prescale_set(clock_div_1); /* disable clock division */
+  if (clock_prescale_get() != 0) PORTC |= 1 << PC7;
+  clock_prescale_set(0); /* disable clock division */
 
   sei();
 
