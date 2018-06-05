@@ -1053,7 +1053,7 @@ void USB_Device_ProcessControlRequest(void)
     case REQ_SET_ADDRESS:
 	if (bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_STANDARD | REQREC_DEVICE))
 		  USB_Device_SetAddress();
-        UDIEN &= ~(1 << EORSTE); /* it is not needed anymore (and helps to ensure that only
+        UDIEN &= ~(1 << EORSTE); /* it is not needed anymore (and ensures that only
           one interrupt is enabled at a time) */
 	break;
     case REQ_GET_DESCRIPTOR:
