@@ -617,11 +617,10 @@ while (!(PLLCSR & (1 << PLOCK))) ; /* wait until PLL is ready */
 @#
 USBCON |= 1 << USBE; /* enable USB controller */
 USBCON &= ~(1 << FRZCLK); /* enable clock input */
-UDCON &= ~(1 << LSM); /* set full-speed mode */
 @#
 UDIEN |= 1 << EORSTE; /* enable End Of Reset interrupt */
 USBCON |= 1 << OTGPADE; /* enable VBUS pin */
-UDCON &= ~(1 << DETACH); /* enable pull-up on D+ */
+UDCON &= ~(1 << DETACH); /* enable pull-up (on D+, because LSM bit was not set) */
 
 @* USB Endpoint definitions.
 
