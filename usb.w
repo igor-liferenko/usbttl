@@ -598,9 +598,11 @@ while (!(PLLCSR & (1 << PLOCK))) ; /* wait until PLL is ready */
 USBCON |= 1 << USBE; /* enable USB controller */
 USBCON &= ~(1 << FRZCLK); /* enable USB controller clock input */
 @#
+/* FIXME: configure all endpoints here? */
+@#
 UDIEN |= 1 << EORSTE; /* enable End Of Reset interrupt */
 USBCON |= 1 << OTGPADE; /* enable VBUS pin */
-UDCON &= ~(1 << DETACH); /* enable pull-up (on D+, because LSM bit was not set) */
+UDCON &= ~(1 << DETACH); /* enable pull-up on D+ */
 
 @* USB Endpoint definitions.
 
