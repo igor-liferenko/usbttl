@@ -596,7 +596,8 @@ This is why |EORSTE| is used.
 After first reset (i.e., after attach) |REQ_GET_DESCRIPTOR| is called first, and after
 second reset \hfil\break |REQ_SET_ADDRESS| is called first.
 
-TODO: ensure that the chip is not configured to start on internal RC oscillator
+TODO: ensure that the chip is not configured to start on internal RC oscillator (see CKSEL fuses
+and "Calibrated Internal RC Oscillator" in datasheet)
 
 TODO: compare the following with "USB Software Operating modes" in datasheet again
 @<Initialize USB@>=
