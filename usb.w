@@ -584,8 +584,8 @@ After that the host will send a |REQ_GET_DESCRIPTOR|
 command and then receive a packet of bytes with the descriptor length and the actual
 descriptor. Then the host resets the device and sends a unique address
 (|REQ_SET_ADDRESS|) before getting the configuration and interface descriptors.
-End of reset condition happens in variable time, and must react on bouncing also.
-Timing is critical. This is why |EORSTE| is used.
+End of reset condition happens in variable time (? does this depend on whether a
+hub is used ?). So, timing is critical. This is why |EORSTE| is used.
 
 TODO: ensure that the chip is not configured to start on internal RC oscillator (see CKSEL fuses
 and "Calibrated Internal RC Oscillator" in datasheet)
