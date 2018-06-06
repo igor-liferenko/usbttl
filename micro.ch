@@ -13,9 +13,9 @@ Invert leds.
 @z
 
 @x
-      PORTD |= 1 << PD5; /* indicate error */
+    PORTD |= 1 << PD5; /* indicate error */
 @y
-      PORTD &= ~(1 << PD5);
+    PORTD &= ~(1 << PD5);
 @z
 
 @x
