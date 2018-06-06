@@ -1,6 +1,5 @@
 Use three pins.
 
-
 Pin low: first disable which goes to ordinary dtr detection,
 then which goes to relay, and then which goes to interrupt detection.
 @x
