@@ -584,8 +584,11 @@ After that the host will send a |REQ_GET_DESCRIPTOR|
 command and then receive a packet of bytes with the descriptor length and the actual
 descriptor. Then the host resets the device and sends a unique address
 (|REQ_SET_ADDRESS|) before getting the configuration and interface descriptors.
-End of reset condition happens in variable time (? does this depend on whether a
-hub is used ?). So, timing is critical. This is why |EORSTE| is used.
+Device must be able to accept a ``set address'' request (refer to
+Section 9.4 of USB spec) after the reset recovery time 10 ms
+after the reset is removed. Failure to accept this request may cause the device not
+to be recognized by the USB system software. So, timing is critical.
+This is why |EORSTE| is used.
 
 TODO: ensure that the chip is not configured to start on internal RC oscillator (see CKSEL fuses
 and "Calibrated Internal RC Oscillator" in datasheet)
