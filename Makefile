@@ -11,3 +11,10 @@ flash:
 baud-rate-calculation.eps: baud-rate-calculation.jpg
 	@convert $< $@
 	@imgsize $@ 16 -
+
+#----------------
+
+avrtel: _avrtel all
+_avrtel:
+	ctie -c tmp.ch usb.w micro.ch avrtel.ch
+	ctangle usb tmp
