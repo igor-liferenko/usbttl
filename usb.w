@@ -575,9 +575,11 @@ When the |PLLE| is set, the PLL is started.
 Note, that PLL internal VCO clock reference is 48 MHz by default.
 
 Host port activates VBUS (+5V).
-The voltage source on the pull-up resistor for D+ line is taken from VBUS.
+The voltage source on the pull-up resistor for D+ line is taken from VBUS (section 7.1.7.4
+in USB spec).
 When host port detects the pull-up, it asserts
-|USB_RESET| state on the bus, driving both D+ and D- lines to ground.
+|USB_RESET| state on the bus, driving both D+ and D- lines to ground (section 7.1.7.5
+of USB spec).
 Device waits until the end of |USB_RESET|. After that it sends to the host
 the descriptors to identify itself using a default address.
 After that the host will send a |REQ_GET_DESCRIPTOR|
@@ -587,8 +589,21 @@ descriptor. Then the host resets the device and sends a unique address
 Device must be able to accept a ``set address'' request (refer to
 Section 9.4 of USB spec) after the reset recovery time 10 ms
 after the reset is removed. Failure to accept this request may cause the device not
-to be recognized by the USB system software. So, timing is critical.
-This is why |EORSTE| is used.
+to be recognized by the USB system software.
+The reset signaling must be driven for a minimum of 10ms, and it
+is required that resets from root ports (i.e., not hubs) have a duration of at least 50 ms.
+It is not required that this be 50 ms of continuous Reset signaling. However, if the
+reset is not continuous, the interval(s) between reset signaling must be less than 3 ms,
+and the duration of each SE0 assertion must be at least 10 ms.
+A device that sees an SE0 on its upstream facing port for more than $2.5 \mu s$
+may treat that signal as a reset. The reset must have taken effect before the reset signaling ends.
+Device must be able to accept a SetAddress() request after the reset recovery time 10 ms after
+the reset is removed. Failure to accept this request may cause the device not to be recognized by
+the USB system software.
+The USB System Software guarantees a minimum of 10 ms for reset recovery. Device
+response to any bus transactions addressed to the default device address during the reset
+recovery time is undefined.
+So, timing is critical. This is why |EORSTE| is used.
 
 TODO: ensure that the chip is not configured to start on internal RC oscillator (see CKSEL fuses
 and "Calibrated Internal RC Oscillator" in datasheet)
