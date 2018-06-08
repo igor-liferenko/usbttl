@@ -541,17 +541,10 @@ ISR(USB_GEN_vect)
 {
   if (UDINT & (1 << EORSTI)) {
     UDINT &= ~(1 << EORSTI); /* clear ``End Of Reset'' bit for interrupt to fire again */
-
-    if (UENUM != 0) PORTC |= 1 << PC7;
-    if (UECONX & (1 << EPEN)) PORTC |= 1 << PC7;
-    if (UECFG1X & (1 << ALLOC)) PORTC |= 1 << PC7;
-
-/* FIXME: which one of these may be moved to before attaching? */
-    UECONX |= (1 << EPEN); /* activate endpoint */
-    UECFG1X = (1 << ALLOC); /* allocate memory */
+    UECONX |= (1 << EPEN); /* activate control endpoint */
   }
-//  else
-//    PORTC |= 1 << PC7; /* DEBUG: if it will never burn, the "if" is not needed */
+  else
+    PORTC |= 1 << PC7; /* DEBUG: if it will never burn, the "if" is not needed */
 }
 
 @ @<Address of USB Device is set@>=
@@ -619,6 +612,7 @@ while (!(PLLCSR & (1 << PLOCK))) ; /* wait until PLL is ready */
 USBCON |= 1 << USBE; /* enable USB controller */
 USBCON &= ~(1 << FRZCLK); /* enable USB controller clock input */
 @#
+UECFG1X = (1 << ALLOC); /* allocate memory for control endpoint */
 /* FIXME: configure all endpoints here? */
 @#
 UDIEN |= 1 << EORSTE; /* enable End Of Reset interrupt */
@@ -1584,9 +1578,6 @@ int main(void)
 
   DDRD |= 1 << PD5;
   PORTD |= 1 << PD5; /* led on */
-
-  if (clock_prescale_get() != 0) PORTC |= 1 << PC7;
-  clock_prescale_set(0); /* disable clock division */
 
   sei();
 
