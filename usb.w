@@ -600,6 +600,7 @@ So, timing is critical. This is why |EORSTE| is used.
 
 TODO: ensure that the chip is not configured to start on internal RC oscillator (see CKSEL fuses
 and "Calibrated Internal RC Oscillator" in datasheet)
+use http://www.engbedded.com/fusecalc (and also check that CKDIV8 is unprogrammed)
 
 TODO: compare the following with "USB Software Operating modes" in datasheet again
 @<Initialize USB@>=
