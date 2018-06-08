@@ -566,6 +566,7 @@ Set |PINDIV| to configure the PLL input prescaler to generate the 8MHz input clo
 PLL from 16 MHz clock source.
 When the |PLLE| is set, the PLL is started.
 Note, that PLL internal VCO clock reference is 48 MHz by default.
+Output from PLL to USB controller is 48 MHz.
 
 Host port activates VBUS (+5V).
 The voltage source on the pull-up resistor for D+ line is taken from VBUS (section 7.1.7.4
