@@ -533,8 +533,10 @@ Use interrupts to manage control endpoint if you are out of this limit.
 
 @ Configure control endpoint.
 
-EORSTI and EORSTE are needed because several interrupts may be in |USB_GEN_vect|
-and it is necessary to distinguish them .....
+Two flags are needed (e.g., |EORSTI| and |EORSTE|) instead of just one, otherwise we won't
+be able to distinguish if an interrupt fired for a given event or the flag of that event
+was set by earlier trigger of interrupt for that event
+(because |USB_GEN_vect| is called for multiple types of interrupts).
 
 @c
 ISR(USB_GEN_vect)
