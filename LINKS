@@ -3,4 +3,4 @@ http://maxembedded.com/2013/09/the-usart-of-the-avr/
 http://www.ftdichip.com/Support/Documents/TechnicalNotes/TN_113_Simplified%20Description%20of%20USB%20Device%20Enumeration.pdf
 https://californiaconsultants.org/wp-content/uploads/2014/05/CNSV-0801-Dion.pdf
 http://www.ftdichip.com/Support/Documents/AppNotes/AN_107_AdvancedDriverOptions_AN_000073.pdf
-read "CONTROL endpoint management" in datasheet
+https://www.freebsd.org/doc/en_US.ISO8859-1/articles/serial-uart/index.html
