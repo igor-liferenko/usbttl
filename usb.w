@@ -541,7 +541,8 @@ was set by earlier trigger of interrupt for that event
 @c
 ISR(USB_GEN_vect)
 {
-  if (UDINT & (1 << EORSTI)) {
+  if (UDINT & (1 << EORSTI)) { if (!(UDIEN & (1 << EORSTE))) PORTC |= 1 << PC 7; /* &&
+                                                          (UDIEN & (1 << EORSTE)) ? */
     UDINT &= ~(1 << EORSTI); /* clear ``End Of Reset'' bit for interrupt to fire again */
     UECONX |= (1 << EPEN); /* activate control endpoint */
   }
