@@ -1059,8 +1059,9 @@ void USB_Device_ProcessControlRequest(void)
     case REQ_SET_ADDRESS:
 	if (bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_STANDARD | REQREC_DEVICE))
 		  USB_Device_SetAddress();
-        UDIEN &= ~(1 << EORSTE); /* it is not needed anymore (and ensures that only
+        /*UDIEN &= ~(1 << EORSTE);*/ /* it is not needed anymore (and ensures that only
           one interrupt is enabled at a time) */
+/* NOTE: doing it prevents the device to be detected during computer boot... why? */
 	break;
     case REQ_GET_DESCRIPTOR:
 	if ((bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_STANDARD | REQREC_DEVICE)) ||
