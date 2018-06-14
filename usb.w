@@ -537,18 +537,15 @@ Two flags are needed (e.g., |EORSTI| and |EORSTE|) instead of just one, otherwis
 be able to distinguish if an interrupt fired for a given event or the flag of that event
 was set by earlier trigger of interrupt for that event (for clearing |UDINT|) and whether
 this interrupt fired for a given event or for another event (for checking |UDIEN|).
-This is because |USB_GEN_vect| is called for multiple types of interrupts.
+This is because |USB_GEN_vect| may be called for multiple types of interrupts.
 
 @c
 ISR(USB_GEN_vect)
 {
-  if (UDINT & (1 << EORSTI)) { if (!(UDIEN & (1 << EORSTE))) PORTC |= 1 << PC 7; /* &&
-                                                          (UDIEN & (1 << EORSTE)) ? */
+  if ((UDINT & (1 << EORSTI)) && (UDIEN & (1 << EORSTE))) {
     UDINT &= ~(1 << EORSTI); /* clear ``End Of Reset'' bit for interrupt to fire again */
     UECONX |= (1 << EPEN); /* activate control endpoint */
   }
-  else
-    PORTC |= 1 << PC7; /* DEBUG: if it will never burn, the "if" is not needed */
 }
 
 @ @<Address of USB Device is set@>=
