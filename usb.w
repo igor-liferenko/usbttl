@@ -535,8 +535,9 @@ Use interrupts to manage control endpoint if you are out of this limit.
 
 Two flags are needed (e.g., |EORSTI| and |EORSTE|) instead of just one, otherwise we won't
 be able to distinguish if an interrupt fired for a given event or the flag of that event
-was set by earlier trigger of interrupt for that event
-(because |USB_GEN_vect| is called for multiple types of interrupts).
+was set by earlier trigger of interrupt for that event (for clearing |UDINT|) and whether
+this interrupt fired for a given event or for another event (for checking |UDIEN|).
+This is because |USB_GEN_vect| is called for multiple types of interrupts.
 
 @c
 ISR(USB_GEN_vect)
