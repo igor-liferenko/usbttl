@@ -545,6 +545,7 @@ ISR(USB_GEN_vect)
   if ((UDINT & (1 << EORSTI)) && (UDIEN & (1 << EORSTE))) {
     UDINT &= ~(1 << EORSTI); /* clear ``End Of Reset'' bit for interrupt to fire again */
     UECONX |= (1 << EPEN); /* activate control endpoint */
+    UECFG1X |= 1 << ALLOC; /* allocate memory for control endpoint */
   }
 }
 
@@ -609,9 +610,6 @@ while (!(PLLCSR & (1 << PLOCK))) ; /* wait until PLL is ready */
 @#
 USBCON |= 1 << USBE; /* enable USB controller */
 USBCON &= ~(1 << FRZCLK); /* enable USB controller clock input */
-@#
-UECFG1X = (1 << ALLOC); /* allocate memory for control endpoint */
-/* FIXME: configure all endpoints here? */
 @#
 UDIEN |= 1 << EORSTE; /* enable End Of Reset interrupt */
 USBCON |= 1 << OTGPADE; /* enable VBUS pin */
