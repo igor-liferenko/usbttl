@@ -575,11 +575,11 @@ in USB spec).
 When host port detects the pull-up, it asserts
 |USB_RESET| state on the bus, driving both D+ and D- lines to ground (section 7.1.7.5
 of USB spec).
-Device waits until the end of |USB_RESET|. After that it sends to the host
-the descriptors to identify itself using a default address.
+Device waits until the end of |USB_RESET|.
 After that the host will send a |REQ_GET_DESCRIPTOR|
-command and then receive a packet of bytes with the descriptor length and the actual
-descriptor. Then the host resets the device and sends a unique address
+command using a default address and then device will send a packet of bytes with the descriptor
+length and the actual descriptor with which the device identifies itself. Then the host resets
+the device and sends a unique address
 (|REQ_SET_ADDRESS|) before getting the configuration and interface descriptors.
 Device must be able to accept a ``set address'' request (refer to
 Section 9.4 of USB spec) after the reset recovery time 10 ms
