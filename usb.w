@@ -610,7 +610,7 @@ while (!(PLLCSR & (1 << PLOCK))) ; /* wait until PLL is ready */
 USBCON |= 1 << USBE; /* enable USB controller */
 USBCON &= ~(1 << FRZCLK); /* enable USB controller clock input */
 @#
-UECFG1X = (1 << ALLOC);
+UECFG1X = (1 << ALLOC); /* allocate memory for control endpoint */
 @#
 UDIEN |= 1 << EORSTE; /* enable End Of Reset interrupt */
 USBCON |= 1 << OTGPADE; /* enable VBUS pin */
