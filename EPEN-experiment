@@ -1,3 +1,4 @@
+the numbers are time interval between first and second frame in nanoseconds
 working                                                                          1117000
 while-1-after-initialize-eor-interrupt-only-once 714313000-843256000          5128943000
 while-1-after-initialize                                                      5064936000
