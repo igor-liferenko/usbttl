@@ -1,8 +1,10 @@
-the numbers are time interval between first and second frame in nanoseconds
+the numbers are time interval between first and second frame in nanoseconds (they are in "Time from request" field in "USB URB" in the second packet
 working                                                                          1117000
 while-1-after-initialize-eor-interrupt-only-once 714313000-843256000          5128943000
 while-1-after-initialize                                                      5064936000
 while-1-after-initialize-without-epen-in-eor-handler 930313000-931420000         1107000
+
+"URB status" in second packet in "USB URB" is respectively "Success", "no such file or directory", "no such file or directory", "timer expired"
 
 conclusion: if we do not do EPEN in eor handler, zero response packet is sent, otherwise it waits
 data to be loaded (if it is not loaded, zero response packet is sent)
