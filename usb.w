@@ -457,17 +457,11 @@ Returns size in bytes of the descriptor if it exists, zero or |NO_DESCRIPTOR| ot
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
                                     const void** const DescriptorAddress);
 
-@ @dSTRING_ID_LANGUAGE 0 /* Supported Languages string descriptor
-    ID (must be zero) */
-@d STRING_ID_MANUFACTURER 1 /* Manufacturer string ID */
-@d STRING_ID_PRODUCT 2 /* Product string ID */
-
-@c
+@ @c
 uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
                                     const void** const DescriptorAddress)
 {
 	const uint8_t  DescriptorType   = (wValue >> 8);
-	const uint8_t  DescriptorNumber = (wValue & 0xFF);
 
 	const void* Address = NULL;
 	uint16_t    Size    = NO_DESCRIPTOR;
@@ -481,24 +475,6 @@ uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 		case DTYPE_CONFIGURATION: @/
 			Address = &ConfigurationDescriptor;
 			Size    = sizeof (USB_Descriptor_Config_t);
-			break;
-		case DTYPE_STRING: @/
-			switch (DescriptorNumber)
-			{
-				case STRING_ID_LANGUAGE: @/
-					Address = &LanguageString;
-				Size    = pgm_read_byte(&LanguageString.Header.Size);
-					break;
-				case STRING_ID_MANUFACTURER: @/
-					Address = &ManufacturerString;
-				Size    = pgm_read_byte(&ManufacturerString.Header.Size);
-					break;
-				case STRING_ID_PRODUCT: @/
-					Address = &ProductString;
-				Size    = pgm_read_byte(&ProductString.Header.Size);
-					break;
-			}
-
 			break;
 	}
 
@@ -1145,29 +1121,6 @@ void USB_Device_GetConfiguration(void)
 }
 
 @ @<Function prototypes@>=
-void USB_Device_GetInternalSerialDescriptor(void);
-
-@ @c
-void USB_Device_GetInternalSerialDescriptor(void)
-{
-	struct
-	{
-		USB_Descriptor_Header_t Header;
-		uint16_t                UnicodeString[INTERNAL_SERIAL_LENGTH_BITS / 4];
-	} SignatureDescriptor;
-
-	SignatureDescriptor.Header.Type = DTYPE_STRING;
-	SignatureDescriptor.Header.Size = USB_STRING_LEN(INTERNAL_SERIAL_LENGTH_BITS / 4);
-
-	USB_Device_GetSerialString(SignatureDescriptor.UnicodeString);
-
-  @<Clear a received SETUP packet on endpoint@>@;
-
-	Endpoint_Write_Control_Stream_LE(&SignatureDescriptor, sizeof(SignatureDescriptor));
-  @<Clear OUT packet on endpoint@>@;
-}
-
-@ @<Function prototypes@>=
 void USB_Device_GetDescriptor(void);
 
 @ @c
@@ -1175,12 +1128,6 @@ void USB_Device_GetDescriptor(void)
 {
 	const void* DescriptorPointer;
 	uint16_t DescriptorSize;
-
-	if (USB_ControlRequest.wValue == ((DTYPE_STRING << 8) | USE_INTERNAL_SERIAL))
-	{
-		USB_Device_GetInternalSerialDescriptor();
-		return;
-	}
 
 	if ((DescriptorSize = CALLBACK_USB_GetDescriptor(USB_ControlRequest.wValue,
              &DescriptorPointer)) == NO_DESCRIPTOR)
@@ -1290,107 +1237,7 @@ UECONX |= (1 << RSTDT);
 @* Endpoint data stream.
 Endpoint data stream transmission and reception management.
 
-@ Writes the given number of bytes to the CONTROL type endpoint from the given buffer in
-little endian,
-sending full packets to the host as needed. The host OUT acknowledgement is not automatically
-cleared
-in both failure and success states; the user is responsible for manually clearing the status
-OUT packet
-to finalize the transfer's status stage via the |@<Clear OUT packet on endpoint@>| macro.
-
-This function automatically sends the last packet in the data stage of the transaction;
-when the
-function returns, the user is responsible for clearing the status stage of the transaction.
-Note that the status stage packet is sent or received in the opposite direction of the data flow.
-
-This routine should only be used on CONTROL type endpoints.
-
-Unlike the standard stream read/write commands, the control stream commands cannot
-be chained
-together; i.e. the entire stream data must be read or written at the one time.
-
-|Buffer| -- pointer to the source data buffer to read from.
-|Length| -- number of bytes to read for the currently selected endpoint into the buffer.
-
-Returns a \.{ENDPOINT\_RWCSTREAM\_*} value.
-
-@<Func...@>=
-uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer, uint16_t Length);
-@ @c
-uint8_t Endpoint_Write_Control_Stream_LE(const void* const Buffer,
-                            uint16_t Length)
-{
-	uint8_t* DataStream     = ((uint8_t*)Buffer + 0);
-	bool     LastPacketFull = false;
-
-	if (Length > USB_ControlRequest.wLength)
-	  Length = USB_ControlRequest.wLength;
-	else if (!(Length))
-	  @<Clear IN packet on endpoint@>@;
-
-	while (Length || LastPacketFull)
-	{
-		uint8_t USB_DeviceState_LCL = USB_DeviceState;
-
-		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_DEV_DISCONNECTED;
-		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
-		  return ENDPOINT_BUS_SUSPENDED;
-		else if (@<Endpoint has received a SETUP packet@>)
-		  return ENDPOINT_HOST_ABORTED;
-		else if (@<Endpoint received an OUT packet@>)
-		  break;
-
-		if (@<Endpoint is ready for an IN packet@>) {
-			uint16_t BytesInEndpoint = @[@<Number of bytes in endpoint@>@];
-
-			while (Length && (BytesInEndpoint < USB_Device_ControlEndpointSize))
-			{
-				Endpoint_Write_8(*DataStream);
-				DataStream += 1;
-				Length--;
-				BytesInEndpoint++;
-			}
-
-			LastPacketFull = (BytesInEndpoint == USB_Device_ControlEndpointSize);
-			@<Clear IN packet on endpoint@>@;
-		}
-	}
-
-	while (!@<Endpoint received an OUT packet@>) {
-		uint8_t USB_DeviceState_LCL = USB_DeviceState;
-
-		if (USB_DeviceState_LCL == DEVICE_STATE_UNATTACHED)
-		  return ENDPOINT_DEV_DISCONNECTED;
-		else if (USB_DeviceState_LCL == DEVICE_STATE_SUSPENDED)
-		  return ENDPOINT_BUS_SUSPENDED;
-		else if (@<Endpoint has received a SETUP packet@>)
-		  return ENDPOINT_HOST_ABORTED;
-	}
-
-	return ENDPOINT_NO_ERROR;
-}
-
-@ FLASH buffer source version of |Endpoint_Write_Control_Stream_LE|.
-
-The FLASH data must be located in the first 64KB of FLASH for this function to work correctly.
-
-This function automatically sends the last packet in the data stage of the transaction;
-when the function returns, the user is responsible for clearing the
-status stage of the transaction.
-Note that the status stage packet is sent or received in the opposite direction of the data flow.
-
-This routine should only be used on CONTROL type endpoints.
-
-Unlike the standard stream read/write commands, the control stream commands cannot be
-chained together; i.e. the entire stream data must be read or written at the one time.
-
-|Buffer| -- pointer to the source data buffer to read from.
-|Length| -- number of bytes to read for the currently selected endpoint into the buffer.
-
-Returns a \.{ENDPOINT\_RWCSTREAM\_*} value.
-
-@<Func...@>=
+@ @<Func...@>=
 uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer, uint16_t Length);
 @ @c
 uint8_t Endpoint_Write_Control_PStream_LE(const void* const Buffer,
@@ -2073,58 +1920,6 @@ should power down to a minimal power level until the bus is resumed.
 
 @<Macros@>=
 #define DEVICE_STATE_SUSPENDED 5
-
-@*1 USB Device Mode Option Masks.
-
-@ String descriptor index for the device's unique serial number string descriptor within
-the device.
-This unique serial number is used by the host to associate resources to the device (such as
-drivers or COM port
-number allocations) to a device regardless of the port it is plugged in to on the host. Some
-microcontrollers contain
-a unique serial number internally, and setting the device descriptors serial number string index
-to this value will cause it to use the internal serial number.
-
-On unsupported devices, this will evaluate to |NO_DESCRIPTOR| and so will force the host to
-create a pseudo-serial number for the device.
-
-@<Macros@>=
-#define USE_INTERNAL_SERIAL            0xDC
-
-@ Length of the device's unique internal serial number, in bits, if present on the selected
-microcontroller model.
-
-@<Macros@>=
-#define INTERNAL_SERIAL_LENGTH_BITS    80
-
-@ Start address of the internal serial number, in the appropriate address space, if present on
-the selected microcontroller model.
-
-@<Macros@>=
-#define INTERNAL_SERIAL_START_ADDRESS  0x0E
-
-@ @<Func...@>=
-inline void USB_Device_GetSerialString(uint16_t* const UnicodeString);
-@ @c
-inline void USB_Device_GetSerialString(uint16_t* const UnicodeString)
-{
-  uint8_t SigReadAddress = INTERNAL_SERIAL_START_ADDRESS;
-
-  for (uint8_t SerialCharNum = 0; SerialCharNum < (INTERNAL_SERIAL_LENGTH_BITS / 4);
-    SerialCharNum++) {
-		uint8_t SerialByte = boot_signature_byte_get(SigReadAddress);
-
-		if (SerialCharNum & 0x01) {
-			SerialByte >>= 4;
-			SigReadAddress++;
-		}
-
-		SerialByte &= 0x0F;
-
-		UnicodeString[SerialCharNum] = (SerialByte >= 10) ?
-		   (('A' - 10) + SerialByte) : ('0' + SerialByte);
-	}
-}
 
 @* StdRequestType.
 USB control endpoint request definitions.
@@ -3316,9 +3111,9 @@ DeviceDescriptor = {@|
   0x03EB, @|
   0x204B, @|
   VERSION_BCD(0,0,1), @|
-  STRING_ID_MANUFACTURER, @|
-  STRING_ID_PRODUCT, @|
-  USE_INTERNAL_SERIAL, @|
+  0x00, @|
+  0x00, @|
+  0x00, @|
   FIXED_NUM_CONFIGURATIONS @/
 };
 
