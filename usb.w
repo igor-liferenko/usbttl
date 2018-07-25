@@ -2173,28 +2173,6 @@ configuration is selected.
 @<Macros@>=
 #define USB_CONFIG_POWER_MA(mA) ((mA) >> 1)
 
-@ Macro to calculate the Unicode length of a string with a given number of Unicode characters.
-Should be used in string descriptor's headers for giving the string descriptor's byte length.
-
-Parameter is number of Unicode characters in the string text.
-
-@<Macros@>=
-#define USB_STRING_LEN(UnicodeChars) (sizeof (USB_Descriptor_Header_t) + ((UnicodeChars) << 1))
-
-@ Convenience macro to easily create |USB_Descriptor_String_t| instances from a wide
-character string.
-
-Parameter is string to initialize a USB String Descriptor structure with.
-
-@<Macros@>=
-#define USB_STRING_DESCRIPTOR(String) { \
-  { \
-    sizeof (USB_Descriptor_Header_t) + ( sizeof (String) - 2 ), \
-    DTYPE_STRING \
-  }, \
-  String \
-}
-
 @ Macro to encode a given major/minor/revision version number into Binary Coded Decimal
 format for descriptor
 fields requiring BCD encoding, such as the USB version number in the standard device
@@ -3262,51 +3240,6 @@ typedef struct {
   CDC_TXRX_EPSIZE,@|
   0x05 @/
 }
-
-@ Language descriptor structure. This descriptor, located in FLASH memory, is returned
-when the host requests
-the string descriptor with index 0 (the first index). It is actually an array of 16-bit
-integers, which indicate
-via the language ID table available at USB.org what languages the device supports for its
-string descriptors.
-
-String language ID for the English language is used
-to indicate that the English language is supported by the device in its string descriptors.
-
-@d LANGUAGE_ID_ENG 0x0409
-
-@<Global...@>=
-const USB_Descriptor_String_t
-@=PROGMEM@>@,@,
-LanguageString = {
-  {
-    sizeof (USB_Descriptor_Header_t) + sizeof ((uint16_t){LANGUAGE_ID_ENG}),
-    DTYPE_STRING
-  },
-  {LANGUAGE_ID_ENG}
-};
-
-@ Manufacturer descriptor string. This is a Unicode string containing the manufacturer's
-details in human readable
-form, and is read out upon request by the host when the appropriate string ID is
-requested, listed in the Device
-Descriptor.
-
-@<Global...@>=
-const USB_Descriptor_String_t
-@=PROGMEM@>@,@,
-ManufacturerString = USB_STRING_DESCRIPTOR(L"Dean Camera");
-
-@ Product descriptor string. This is a Unicode string containing the product's details
-in human readable form,
-and is read out upon request by the host when the appropriate string ID is requested,
-listed in the Device
-Descriptor.
-
-@<Global...@>=
-const USB_Descriptor_String_t
-@=PROGMEM@>@,@,
-ProductString = USB_STRING_DESCRIPTOR(L"LUFA USB-RS232 Adapter");
 
 @** RingBuffer.
 Lightweight ring (circular) buffer, for fast insertion/deletion of bytes.
