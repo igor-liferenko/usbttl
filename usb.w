@@ -2619,69 +2619,6 @@ typedef struct {
 } @=PACKED@>
   USB_StdDescriptor_Endpoint_t;
 
-@ Standard USB String Descriptor (LUFA naming conventions).
-
-Type define for a standard string descriptor. Unlike other standard descriptors, the length
-of the descriptor for placement in the descriptor header must be determined by the
-|USB_STRING_LEN|
-macro rather than by the size of the descriptor structure, as the length is not fixed.
-
-This structure should also be used for string index 0, which contains the supported
-language IDs for
-the device as an array.
-
-This structure uses LUFA-specific element names to make each element's purpose clearer.
-
-See \&{USB\_StdDescriptor\_String\_t} for the version of this type with standard element names.
-
-Regardless of CPU architecture, these values should be stored as little endian.
-
-@s USB_Descriptor_String_t int
-
-@<Type definitions@>=
-typedef struct
-{
-	USB_Descriptor_Header_t Header; /* descriptor header, including type and size */
-
-	wchar_t  UnicodeString[];
-} @=PACKED@>
-  USB_Descriptor_String_t;
-
-@ Standard USB String Descriptor (USB-IF naming conventions).
-
-Type define for a standard string descriptor. Unlike other standard descriptors, the length
-of the descriptor for placement in the descriptor header must be determined by the
-|USB_STRING_LEN|
-macro rather than by the size of the descriptor structure, as the length is not fixed.
-
-This structure should also be used for string index 0, which contains the supported
-language IDs for
-the device as an array.
-
-This structure uses the relevant standard's given element names to ensure compatibility
-with the standard.
-
-See |USB_Descriptor_String_t| for the version of this type with with non-standard
-LUFA specific element names.
-
-Regardless of CPU architecture, these values should be stored as little endian.
-
-@s USB_StdDescriptor_String_t int
-
-@(/dev/null@>=
-typedef struct {
-  uint8_t bLength; /* size of the descriptor, in bytes */
-  uint8_t bDescriptorType; /* type of the descriptor, either a value in
-    \.{DTYPE\_*} or a value given by the specific class */
-  uint16_t bString[]; /* string data, as unicode characters (alternatively, string
-    language IDs); if normal ASCII characters are to be used, they must be
-    added as an array of characters rather than a normal C string so that they
-    are widened to Unicode size; under GCC, strings prefixed with the "L" character
-    are considered to be Unicode strings, and may be used instead
-    of an explicit array of ASCII characters */
-} @=PACKED@>
-  USB_StdDescriptor_String_t;
-
 @** CDC Class Driver module. This module contains an
 implementation of the USB CDC-ACM class Virtual Serial Ports.
 
