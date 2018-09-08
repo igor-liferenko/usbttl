@@ -1,7 +1,0 @@
-check that converted CDCClassDevice.w correctly:
-git wdiff 32d166ebe7d5eeb3c401f1fb0b2c001fe8a1784a..549a6d1d4de1208e60348b5b8079f8cf601386f1 -- CDCClassDevice.w usb.w
-
-check that removed preprocessor directives correctly for 11.04.2018
-
-check that 11.04.2018 between 12:00 and 13:00 converted the files correctly
-^^^
