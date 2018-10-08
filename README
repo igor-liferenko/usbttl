@@ -1,0 +1,2 @@
+For flawless operation, use RS232 devices with RS232-capable host only.
+USB-RS232 converters introduce a lot of complicated issues like simultaneous transmit and receive of data, which requires to switch between transmit and receive after each sent/received byte, must use interrupts to receive data, which causes further complications in synchronization etc etc 
